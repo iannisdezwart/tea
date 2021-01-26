@@ -140,7 +140,7 @@ class Tokeniser {
 
 				// Handle character literals
 
-				else if (c == '"') {
+				else if (c == '\'') {
 					push_token(LITERAL_CHAR, scan_literal_char());
 				}
 
