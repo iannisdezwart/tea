@@ -5,13 +5,6 @@
 
 using namespace std;
 
-enum TokenType {
-	DATATYPE
-};
 
-struct Token {
-	TokenType type;
-	string value;
-};
 
 #endif
