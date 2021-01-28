@@ -9,6 +9,7 @@
 
 #include "ASTNodes/ASTNode.hpp"
 #include "ASTNodes/TypeIdentifierPair.hpp"
+#include "ASTNodes/VariableDeclaration.hpp"
 #include "ASTNodes/FunctionDeclaration.hpp"
 #include "ASTNodes/ReturnStatement.hpp"
 #include "ASTNodes/CodeBlock.hpp"
@@ -65,7 +66,9 @@ class Parser {
 			for (ASTNode *statement : statements) {
 				statement->dfs([](ASTNode *node, size_t depth) {
 					if (node != NULL) {
+						#ifdef PARSER_VERBOSE
 						printf("Deleted: %s\n", node->to_str().c_str());
+						#endif
 
 						// Weird hack that fixes memory leak
 
@@ -314,7 +317,8 @@ class Parser {
 			} else {
 				// This is a variable declaration
 
-				// declaration = scan_variable_declaration(type_id_pair);
+				i--;
+				declaration = scan_variable_declaration(type_id_pair);
 
 				expect_semicolon();
 			}
@@ -346,6 +350,27 @@ class Parser {
 			CodeBlock *code_block = scan_code_block();
 
 			return new FunctionDeclaration(type_id_pair, params, code_block);
+		}
+
+		VariableDeclaration *scan_variable_declaration(
+			TypeIdentifierPair *type_id_pair
+		) {
+			Token next = next_token();
+
+			// Todo: add "," syntax
+			// Only declaration
+
+			if (next.type == SPECIAL_CHARACTER && next.value == ";") {
+				i--;
+				return new VariableDeclaration(type_id_pair, NULL);
+			}
+
+			// Declaration + assignment
+
+			assert_token_type(next, OPERATOR);
+			assert_token_value(next, "=");
+
+			return new VariableDeclaration(type_id_pair, scan_expression());
 		}
 
 		ReturnStatement *scan_return_statement()
