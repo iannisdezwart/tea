@@ -12,5 +12,6 @@ int main(int argc, char **argv)
 	char *input_file_name = argv[1];
 	char *output_file_name = argv[2];
 
-	compile(input_file_name, output_file_name);
+	Compiler compiler(input_file_name, output_file_name);
+	compiler.compile();
 }
