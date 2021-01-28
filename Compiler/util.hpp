@@ -9,6 +9,12 @@
 	exit(0); \
 } while (0)
 
+#define err_at_token(token, prefix, message, ...) do { \
+	fprintf(stderr, "[ %s ]: " message "\n", prefix, ##__VA_ARGS__); \
+	fprintf(stderr, "At %ld:%ld\n", token.line, token.col); \
+	exit(1); \
+} while (0)
+
 #define is_alpha(c) (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' \
 	|| c == '$' || c == '_')
 
