@@ -17,4 +17,12 @@
 
 using namespace std;
 
+template <typename intx_t>
+string to_hex(intx_t num)
+{
+	stringstream stream;
+	stream << "0x" << setfill('0') << setw(8) << hex << num;
+	return stream.str();
+}
+
 #endif
