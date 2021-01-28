@@ -100,6 +100,18 @@ class Tokeniser {
 
 		Tokeniser(FILE *input_file) : file(input_file) {}
 
+		void print_tokens()
+		{
+			printf("\\\\\\ Tokens (%ld) \\\\\\\n\n", tokens.size());
+
+			for (Token token : tokens) {
+				printf("{ type: %d, value: \"%s\", line: %ld, col: %ld }\n",
+					token.type, token.value.c_str(), token.line, token.col);
+			}
+
+			printf("\n/// Tokens ///\n");
+		}
+
 		vector<Token> tokenise()
 		{
 			size_t line = 1;

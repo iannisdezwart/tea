@@ -22,13 +22,7 @@ void compile(char *input_file_name, char *output_file_name)
 
 	Tokeniser tokeniser(input_file);
 	vector<Token> tokens = tokeniser.tokenise();
-
-	printf("Number of tokens: %ld\n\n", tokens.size());
-
-	for (Token token : tokens) {
-		printf("Token: { type: %d, value: \"%s\", line: %ld, col: %ld }\n",
-			token.type, token.value.c_str(), token.line, token.col);
-	}
+	tokeniser.print_tokens();
 
 	Parser parser(tokens);
 	parser.parse();
