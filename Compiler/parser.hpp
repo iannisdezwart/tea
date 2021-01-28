@@ -84,12 +84,14 @@ class Parser {
 			}
 		}
 
-		void parse()
+		vector<ASTNode *> parse()
 		{
 			while (i < tokens.size()) {
 				ASTNode *statement = next_statement();
 				statements.push_back(statement);
 			}
+
+			return statements;
 		}
 
 		void print_ast()
