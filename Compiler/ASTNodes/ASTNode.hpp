@@ -3,6 +3,8 @@
 
 #include <bits/stdc++.h>
 
+#include "../byte_code.hpp"
+
 using namespace std;
 
 enum ASTNodeType {
@@ -23,6 +25,11 @@ class ASTNode {
 
 		virtual string to_str() = 0;
 		virtual void dfs(function<void(ASTNode *, size_t)>, size_t depth = 0) = 0;
+		virtual void compile(
+			unordered_map<string, vector<char>> constants,
+			unordered_map<string, size_t> globals,
+			unordered_map<string, vector<char>> functions
+		) = 0;
 
 		void print(const char *prefix)
 		{

@@ -5,6 +5,7 @@
 
 #include "ASTNode.hpp"
 #include "../tokeniser.hpp"
+#include "../byte_code.hpp"
 #include "../util.hpp"
 #include "TypeIdentifierPair.hpp"
 #include "CodeBlock.hpp"
@@ -56,6 +57,22 @@ class FunctionDeclaration : public ASTNode {
 		{
 			string s = "FunctionDeclaration {} @ " + to_hex((size_t) this);
 			return s;
+		}
+
+		void compile(
+			unordered_map<string, vector<char>> constants,
+			unordered_map<string, size_t> globals,
+			unordered_map<string, vector<char>> functions
+		) {
+			if (functions.count(type_and_id_pair->get_identifier_name()))
+				err_at_token(type_and_id_pair->identifier_token,
+					"Duplicate identifier name",
+					"Identifier %s is already declared",
+					type_and_id_pair->get_identifier_name());
+
+			vector<char> instructions;
+
+			
 		}
 };
 

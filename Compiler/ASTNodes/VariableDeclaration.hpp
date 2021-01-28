@@ -5,6 +5,7 @@
 
 #include "ASTNode.hpp"
 #include "../tokeniser.hpp"
+#include "../byte_code.hpp"
 #include "../util.hpp"
 #include "TypeIdentifierPair.hpp"
 

@@ -5,6 +5,7 @@
 
 #include "ASTNode.hpp"
 #include "../tokeniser.hpp"
+#include "../byte_code.hpp"
 #include "../util.hpp"
 
 using namespace std;
@@ -44,6 +45,12 @@ class TypeIdentifierPair : public ASTNode {
 				+ to_hex((size_t) this);
 			return s;
 		}
+
+		void compile(
+			unordered_map<string, vector<char>> constants,
+			unordered_map<string, size_t> globals,
+			unordered_map<string, vector<char>> functions
+		) {}
 };
 
 #endif

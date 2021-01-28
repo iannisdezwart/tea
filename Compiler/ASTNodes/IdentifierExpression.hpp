@@ -4,8 +4,9 @@
 #include <bits/stdc++.h>
 
 #include "ASTNode.hpp"
-#include "../util.hpp"
 #include "../tokeniser.hpp"
+#include "../byte_code.hpp"
+#include "../util.hpp"
 
 using namespace std;
 
