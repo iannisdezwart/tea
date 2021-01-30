@@ -18,30 +18,80 @@ class Memory {
 			memory = new uint8_t[size];
 		}
 
+		Memory(uint8_t *init_mem, size_t init_mem_size)
+		{
+			size = init_mem_size;
+			memory = new uint8_t[size];
+			memcpy(memory, init_mem, init_mem_size);
+		}
+
 		~Memory()
 		{
 			delete[] memory;
 		}
 
-		template <typename intx_t>
-		intx_t get(size_t offset)
+		uint8_t *location()
 		{
-			intx_t value = 0;
+			return memory;
+		}
 
-			for (uint8_t i = 0; i < sizeof(intx_t); i++) {
-				value |= memory[offset + i] << (8 * (sizeof(intx_t) - 1 - i));
+		void check_memory(uint8_t *location_p)
+		{
+			if (location_p < memory || location_p >= memory + size) {
+				printf("VM Segmentation Fault\n");
+				exit(139);
 			}
-
-			return value;
 		}
 
 		template <typename intx_t>
-		void set(size_t offset, intx_t value)
+		intx_t get(uint8_t *location_p)
 		{
-			for (uint8_t i = 0; i < sizeof(intx_t); i++) {
-				uint8_t byte = (value >> (8 * (sizeof(intx_t) - 1 - i))) & 0xFF;
-				memory[offset + i] = byte;
+			check_memory(location_p);
+			intx_t *value_p = (intx_t *) (location_p);
+			return *value_p;
+		}
+
+		template <typename intx_t>
+		void set(uint8_t *location_p, intx_t value)
+		{
+			check_memory(location_p);
+			intx_t *value_p = (intx_t *) (location_p);
+			*value_p = value;
+		}
+
+		void dump(
+			uint8_t *left_bound,
+			uint8_t *right_bound,
+			uint8_t *highlight = NULL
+		) {
+			for (uint8_t *it = left_bound; it < right_bound; it++) {
+				if (highlight == it) printf("\x1b[92m");
+				printf("%03d\x1b[m ", (int) get<uint8_t>(it));
 			}
+
+			printf("\n");
+		}
+};
+
+class MemoryBuilder {
+	public:
+		vector<uint8_t> buffer;
+		size_t i = 0;
+
+		MemoryBuilder(size_t init_size = 1024) : buffer(init_size) {}
+
+		template <typename intx_t>
+		void push(intx_t value)
+		{
+			buffer.reserve(sizeof(intx_t));
+			intx_t *value_p = (intx_t *) (buffer.data() + i);
+			*value_p = value;
+			i += sizeof(intx_t);
+		}
+
+		Memory *build(size_t stack_size)
+		{
+			return new Memory(buffer.data(), i + stack_size);
 		}
 };
 
