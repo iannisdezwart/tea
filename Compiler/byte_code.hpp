@@ -10,18 +10,20 @@ enum Instruction {
 	PUSH_16,
 	PUSH_32,
 	PUSH_64,
+	PUSH_REG,
 	POP_8,
 	POP_16,
 	POP_32,
 	POP_64,
-	MOVE_REG_REG,
-	MOVE_REG_MEM,
-	MOVE_MEM_REG,
-	MOVE_MEM_MEM,
+	POP_REG,
 	JUMP,
-	CALL,
-	ADD,
-	SUBTRACT
+	// MOVE_REG_REG,
+	// MOVE_REG_MEM,
+	// MOVE_MEM_REG,
+	// MOVE_MEM_MEM,
+	// CALL,
+	// ADD,
+	// SUBTRACT
 };
 
 #endif
