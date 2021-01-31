@@ -2,6 +2,8 @@
 #define TEA_VM_HEADER
 
 #include <bits/stdc++.h>
+
+// #define CPU_DUMP_DEBUG
 #include "cpu.hpp"
 #include "memory.hpp"
 #include "../Compiler/byte_code.hpp"
@@ -10,47 +12,69 @@ using namespace std;
 
 int main()
 {
-	// Memory memory(100);
+	MemoryBuilder memory_builder;
 
-	// memory.set<uint32_t>(0, 0x12345678);
-	// uint32_t m0 = memory.get<uint32_t>(0);
-	// uint8_t m0 = memory.get<uint8_t>(0);
-	// uint8_t m1 = memory.get<uint8_t>(1);
-	// uint8_t m2 = memory.get<uint8_t>(2);
-	// uint8_t m3 = memory.get<uint8_t>(3);
+	// memory_builder.push<uint16_t>(PUSH_32);
+	// memory_builder.push<uint32_t>(123456);
+	// memory_builder.push<uint16_t>(PUSH_8);
+	// memory_builder.push<uint8_t>(222);
+	// memory_builder.push<uint16_t>(POP_8);
+	// memory_builder.push<uint16_t>(POP_32);
 
-	// printf("m0 = %hhx\n", m0);
-	// printf("m1 = %hhx\n", m1);
-	// printf("m2 = %hhx\n", m2);
-	// printf("m3 = %hhx\n", m3);
+	// memory_builder.push<uint16_t>(JUMP);
+	// memory_builder.push<uint64_t>(0);
 
-	// uint32_t m = memory.get<uint32_t>(0);
+	// R_1 = 0
 
-	// printf("m = %lx\n", m);
+	memory_builder.push<uint16_t>(MOVE_LIT_INTO_REG);
+	memory_builder.push<uint8_t>(R_1_ID);
+	memory_builder.push<uint64_t>(0);
 
-	vector<uint8_t> instructions;
-	instructions.push_back(0);
-	instructions.push_back(0);
-	instructions.push_back(0);
-	instructions.push_back(0);
-	instructions.push_back(0);
-	instructions.push_back(0);
-	instructions.push_back(0);
-	instructions.push_back(PUSH_8);
-	instructions.push_back(123);
-	instructions.push_back(0);
-	instructions.push_back(0);
-	instructions.push_back(0);
-	instructions.push_back(0);
-	instructions.push_back(0);
-	instructions.push_back(0);
-	instructions.push_back(0);
-	instructions.push_back(POP_8);
+	// R_2 = 1
 
-	CPU cpu(instructions);
+	memory_builder.push<uint16_t>(MOVE_LIT_INTO_REG);
+	memory_builder.push<uint8_t>(R_2_ID);
+	memory_builder.push<uint64_t>(1);
+
+	// R_3 = R_1
+
+	size_t label = memory_builder.push<uint16_t>(MOVE_REG_INTO_REG);
+	memory_builder.push<uint8_t>(R_1_ID);
+	memory_builder.push<uint8_t>(R_3_ID);
+
+	// R_3 += R_2
+
+	memory_builder.push<uint16_t>(ADD_REG_INTO_REG);
+	memory_builder.push<uint8_t>(R_2_ID);
+	memory_builder.push<uint8_t>(R_3_ID);
+
+	// R_1 = R_2
+
+	memory_builder.push<uint16_t>(MOVE_REG_INTO_REG);
+	memory_builder.push<uint8_t>(R_2_ID);
+	memory_builder.push<uint8_t>(R_1_ID);
+
+	// R_2 = R_3
+
+	memory_builder.push<uint16_t>(MOVE_REG_INTO_REG);
+	memory_builder.push<uint8_t>(R_3_ID);
+	memory_builder.push<uint8_t>(R_2_ID);
+
+	// Push so we will terminate after a while because of a segfault
+
+	memory_builder.push<uint16_t>(PUSH_64);
+	memory_builder.push<uint64_t>(0);
+
+	// Loop
+
+	memory_builder.push<uint16_t>(JUMP);
+	memory_builder.push<uint64_t>(label);
+
+	CPU cpu(memory_builder, 100);
+
 	cpu.run();
-
-	printf("r_1 = %lu\n", cpu.r_1);
+	cpu.dump_stack();
+	cpu.dump_registers();
 }
 
 #endif
