@@ -38,7 +38,9 @@ class Memory {
 		void check_memory(uint8_t *location_p)
 		{
 			if (location_p < memory || location_p >= memory + size) {
-				printf("VM Segmentation Fault\n");
+				printf("Segmentation Fault\n");
+				printf("VM prevented access to memory at %ld (0x%lx)\n",
+					(size_t) location_p, (size_t) location_p);
 				exit(139);
 			}
 		}
@@ -81,12 +83,16 @@ class MemoryBuilder {
 		MemoryBuilder(size_t init_size = 1024) : buffer(init_size) {}
 
 		template <typename intx_t>
-		void push(intx_t value)
+		size_t push(intx_t value)
 		{
 			buffer.reserve(sizeof(intx_t));
+
 			intx_t *value_p = (intx_t *) (buffer.data() + i);
 			*value_p = value;
+
+			size_t prev_i = i;
 			i += sizeof(intx_t);
+			return prev_i;
 		}
 
 		Memory *build(size_t stack_size)
