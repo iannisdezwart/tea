@@ -41,6 +41,7 @@ class CPU {
 
 			r_instruction_p = memory->location();
 			r_stack_p = r_instruction_p + program_size;
+			r_frame_p = r_stack_p;
 		}
 
 		uint64_t get_reg_by_id(uint8_t id)
@@ -100,15 +101,24 @@ class CPU {
 
 		void run()
 		{
+			#ifdef CPU_DUMP_DEBUG
 			dump_stack();
 			dump_registers();
+			#endif
 
 			while (r_instruction_p < memory->location() + program_size) {
 				uint16_t instruction = fetch<uint16_t>();
+
+				#ifdef CPU_DUMP_DEBUG
+				printf("now executing opcode = %hu\n", instruction);
+				#endif
+
 				execute(instruction);
-				printf("opcode = %hu\n", instruction);
+
+				#ifdef CPU_DUMP_DEBUG
 				dump_stack();
 				dump_registers();
+				#endif
 			}
 		}
 
@@ -197,9 +207,51 @@ class CPU {
 				case POP_REG:
 					r_stack_p -= 8;
 					set_reg_by_id(fetch<uint8_t>(), memory->get<uint64_t>(r_stack_p));
+					break;
 
 				case JUMP:
 					r_instruction_p = memory->location() + fetch<uint64_t>();
+					break;
+
+				case MOVE_LIT_INTO_REG:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, fetch<uint64_t>());
+					break;
+				}
+
+				case MOVE_LIT_INTO_MEM:
+				{
+					uint8_t *address = (uint8_t *) fetch<uint64_t>();
+					memory->set(address, fetch<uint64_t>());
+					break;
+				}
+
+				case MOVE_REG_INTO_REG:
+				{
+					uint8_t reg_from = fetch<uint8_t>();
+					uint8_t reg_to = fetch<uint8_t>();
+					set_reg_by_id(reg_to, get_reg_by_id(reg_from));
+					break;
+				}
+
+				case ADD_REG_INTO_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					set_reg_by_id(reg_id_2,
+						get_reg_by_id(reg_id_2) + get_reg_by_id(reg_id_1));
+					break;
+				}
+
+				case SUBTRACT_REG_FROM_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					set_reg_by_id(reg_id_2,
+						get_reg_by_id(reg_id_2) - get_reg_by_id(reg_id_1));
+					break;
+				}
 			}
 		}
 };
