@@ -14,6 +14,8 @@ class CPU {
 		size_t program_size;
 		size_t stack_size;
 
+		// General purpose registers
+
 		uint64_t r_0 = 0;
 		#define R_0_ID 0
 		uint64_t r_1 = 0;
@@ -22,6 +24,8 @@ class CPU {
 		#define R_2_ID 2
 		uint64_t r_3 = 0;
 		#define R_3_ID 3
+
+		// Special registers
 
 		uint8_t *r_instruction_p;
 		#define R_INSTRUCTION_P_ID 4
@@ -33,10 +37,18 @@ class CPU {
 		uint64_t r_accumulator = 0;
 		#define R_ACCUMULATOR_ID 7
 
-		CPU(MemoryBuilder& program, size_t stack_size)
+		// Flags
+
+		bool overflow_flag = false;
+		bool division_error_flag = false;
+		bool equal_flag = false;
+		bool greater_flag = false;
+
+		CPU(ProgramBuilder& program, size_t stack_size)
 		{
 			this->stack_size = stack_size;
 			program_size = program.i;
+			program.update_label_references();
 			memory = program.build(stack_size);
 
 			r_instruction_p = memory->location();
@@ -102,6 +114,7 @@ class CPU {
 		void run()
 		{
 			#ifdef CPU_DUMP_DEBUG
+			dump_program();
 			dump_stack();
 			dump_registers();
 			#endif
@@ -146,6 +159,7 @@ class CPU {
 			printf("r_1             = %020lu\n", r_1);
 			printf("r_2             = %020lu\n", r_2);
 			printf("r_3             = %020lu\n", r_3);
+			printf("greater_flag = %d, equal_flag =  %d\n", greater_flag, equal_flag);
 		}
 
 		template <typename intx_t>
@@ -159,79 +173,123 @@ class CPU {
 		void execute(uint16_t instruction)
 		{
 			switch (instruction) {
-				case PUSH_8:
-					memory->set(r_stack_p, fetch<uint8_t>());
-					r_stack_p += 1;
-					break;
-
-				case PUSH_16:
-					memory->set(r_stack_p, fetch<uint16_t>());
-					r_stack_p += 2;
-					break;
-
-				case PUSH_32:
-					memory->set(r_stack_p, fetch<uint32_t>());
-					r_stack_p += 4;
-					break;
-
-				case PUSH_64:
-					memory->set(r_stack_p, fetch<uint64_t>());
-					r_stack_p += 8;
-					break;
-
-				case PUSH_REG:
-					memory->set(r_stack_p, get_reg_by_id(fetch<uint8_t>()));
-					r_stack_p += 8;
-					break;
-
-				case POP_8:
-					r_stack_p -= 1;
-					r_0 = memory->get<uint8_t>(r_stack_p);
-					break;
-
-				case POP_16:
-					r_stack_p -= 2;
-					r_0 = memory->get<uint16_t>(r_stack_p);
-					break;
-
-				case POP_32:
-					r_stack_p -= 4;
-					r_0 = memory->get<uint32_t>(r_stack_p);
-					break;
-
-				case POP_64:
-					r_stack_p -= 8;
-					r_0 = memory->get<uint64_t>(r_stack_p);
-					break;
-
-				case POP_REG:
-					r_stack_p -= 8;
-					set_reg_by_id(fetch<uint8_t>(), memory->get<uint64_t>(r_stack_p));
-					break;
-
-				case JUMP:
-					r_instruction_p = memory->location() + fetch<uint64_t>();
-					break;
-
-				case MOVE_LIT_INTO_REG:
+				case MOVE_8_INTO_REG:
 				{
+					uint64_t lit = fetch<uint8_t>();
 					uint8_t reg_id = fetch<uint8_t>();
-					set_reg_by_id(reg_id, fetch<uint64_t>());
+					set_reg_by_id(reg_id, lit);
 					break;
 				}
 
-				case MOVE_LIT_INTO_MEM:
+				case MOVE_16_INTO_REG:
 				{
+					uint64_t lit = fetch<uint16_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, lit);
+					break;
+				}
+
+				case MOVE_32_INTO_REG:
+				{
+					uint64_t lit = fetch<uint32_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, lit);
+					break;
+				}
+
+				case MOVE_64_INTO_REG:
+				{
+					uint64_t lit = fetch<uint64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, lit);
+					break;
+				}
+
+				case MOVE_8_INTO_MEM:
+				{
+					uint64_t lit = fetch<uint8_t>();
 					uint8_t *address = (uint8_t *) fetch<uint64_t>();
-					memory->set(address, fetch<uint64_t>());
+					memory->set(address, lit);
+					break;
+				}
+
+				case MOVE_16_INTO_MEM:
+				{
+					uint64_t lit = fetch<uint16_t>();
+					uint8_t *address = (uint8_t *) fetch<uint64_t>();
+					memory->set(address, lit);
+					break;
+				}
+
+				case MOVE_32_INTO_MEM:
+				{
+					uint64_t lit = fetch<uint32_t>();
+					uint8_t *address = (uint8_t *) fetch<uint64_t>();
+					memory->set(address, lit);
+					break;
+				}
+
+				case MOVE_64_INTO_MEM:
+				{
+					uint64_t lit = fetch<uint64_t>();
+					uint8_t *address = (uint8_t *) fetch<uint64_t>();
+					memory->set(address, lit);
 					break;
 				}
 
 				case MOVE_REG_INTO_REG:
 				{
-					uint8_t reg_from = fetch<uint8_t>();
-					uint8_t reg_to = fetch<uint8_t>();
-					set_reg_by_id(reg_to, get_reg_by_id(reg_from));
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_1));
+					break;
+				}
+
+				case MOVE_REG_INTO_MEM:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint8_t *address = (uint8_t *) fetch<uint64_t>();
+					memory->set(address, get_reg_by_id(reg_id));
+					break;
+				}
+
+				case MOVE_MEM_INTO_REG:
+				{
+					uint8_t *address = (uint8_t *) fetch<uint64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, memory->get<uint64_t>(address));
+					break;
+				}
+
+				case ADD_8_INTO_REG:
+				{
+					uint64_t lit = fetch<uint8_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) + lit);
+					break;
+				}
+
+				case ADD_16_INTO_REG:
+				{
+					uint64_t lit = fetch<uint16_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) + lit);
+					break;
+				}
+
+				case ADD_32_INTO_REG:
+				{
+					uint64_t lit = fetch<uint32_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) + lit);
+					break;
+				}
+
+				case ADD_64_INTO_REG:
+				{
+					uint64_t lit = fetch<uint64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) + lit);
 					break;
 				}
 
@@ -239,8 +297,39 @@ class CPU {
 				{
 					uint8_t reg_id_1 = fetch<uint8_t>();
 					uint8_t reg_id_2 = fetch<uint8_t>();
-					set_reg_by_id(reg_id_2,
-						get_reg_by_id(reg_id_2) + get_reg_by_id(reg_id_1));
+					set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) + get_reg_by_id(reg_id_1));
+					break;
+				}
+
+				case SUBTRACT_8_FROM_REG:
+				{
+					uint64_t lit = fetch<uint8_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) - lit);
+					break;
+				}
+
+				case SUBTRACT_16_FROM_REG:
+				{
+					uint64_t lit = fetch<uint16_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) - lit);
+					break;
+				}
+
+				case SUBTRACT_32_FROM_REG:
+				{
+					uint64_t lit = fetch<uint32_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) - lit);
+					break;
+				}
+
+				case SUBTRACT_64_FROM_REG:
+				{
+					uint64_t lit = fetch<uint64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) - lit);
 					break;
 				}
 
@@ -248,8 +337,527 @@ class CPU {
 				{
 					uint8_t reg_id_1 = fetch<uint8_t>();
 					uint8_t reg_id_2 = fetch<uint8_t>();
-					set_reg_by_id(reg_id_2,
-						get_reg_by_id(reg_id_2) - get_reg_by_id(reg_id_1));
+					set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) - get_reg_by_id(reg_id_1));
+					break;
+				}
+
+				case MULTIPLY_8_INTO_REG:
+				{
+					uint64_t lit = fetch<uint8_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) * lit);
+					break;
+				}
+
+				case MULTIPLY_16_INTO_REG:
+				{
+					uint64_t lit = fetch<uint16_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) * lit);
+					break;
+				}
+
+				case MULTIPLY_32_INTO_REG:
+				{
+					uint64_t lit = fetch<uint32_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) * lit);
+					break;
+				}
+
+				case MULTIPLY_64_INTO_REG:
+				{
+					uint64_t lit = fetch<uint64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) * lit);
+					break;
+				}
+
+				case MULTIPLY_REG_INTO_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) * get_reg_by_id(reg_id_1));
+					break;
+				}
+
+				case DIVIDE_8_FROM_REG:
+				{
+					uint64_t lit = fetch<uint8_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) - lit);
+					break;
+				}
+
+				case DIVIDE_16_FROM_REG:
+				{
+					uint64_t lit = fetch<uint16_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) / lit);
+					break;
+				}
+
+				case DIVIDE_32_FROM_REG:
+				{
+					uint64_t lit = fetch<uint32_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) / lit);
+					break;
+				}
+
+				case DIVIDE_64_FROM_REG:
+				{
+					uint64_t lit = fetch<uint64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) / lit);
+					break;
+				}
+
+				case DIVIDE_REG_FROM_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) / get_reg_by_id(reg_id_1));
+					break;
+				}
+
+				case AND_8_INTO_REG:
+				{
+					uint64_t lit = fetch<uint8_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) & lit);
+					break;
+				}
+
+				case AND_16_INTO_REG:
+				{
+					uint64_t lit = fetch<uint16_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) & lit);
+					break;
+				}
+
+				case AND_32_INTO_REG:
+				{
+					uint64_t lit = fetch<uint32_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) & lit);
+					break;
+				}
+
+				case AND_64_INTO_REG:
+				{
+					uint64_t lit = fetch<uint64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) & lit);
+					break;
+				}
+
+				case AND_REG_INTO_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) & get_reg_by_id(reg_id_1));
+					break;
+				}
+
+				case OR_8_INTO_REG:
+				{
+					uint64_t lit = fetch<uint8_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) | lit);
+					break;
+				}
+
+				case OR_16_INTO_REG:
+				{
+					uint64_t lit = fetch<uint16_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) | lit);
+					break;
+				}
+
+				case OR_32_INTO_REG:
+				{
+					uint64_t lit = fetch<uint32_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) | lit);
+					break;
+				}
+
+				case OR_64_INTO_REG:
+				{
+					uint64_t lit = fetch<uint64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) | lit);
+					break;
+				}
+
+				case OR_REG_INTO_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) | get_reg_by_id(reg_id_1));
+					break;
+				}
+
+				case XOR_8_INTO_REG:
+				{
+					uint64_t lit = fetch<uint8_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) ^ lit);
+					break;
+				}
+
+				case XOR_16_INTO_REG:
+				{
+					uint64_t lit = fetch<uint16_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) ^ lit);
+					break;
+				}
+
+				case XOR_32_INTO_REG:
+				{
+					uint64_t lit = fetch<uint32_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) ^ lit);
+					break;
+				}
+
+				case XOR_64_INTO_REG:
+				{
+					uint64_t lit = fetch<uint64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) ^ lit);
+					break;
+				}
+
+				case XOR_REG_INTO_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) ^ get_reg_by_id(reg_id_1));
+					break;
+				}
+
+				case INCREMENT_REG:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) + 1);
+					break;
+				}
+
+				case DECREMENT_REG:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) - 1);
+					break;
+				}
+
+				case NOT_REG:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, !get_reg_by_id(reg_id));
+					break;
+				}
+
+				case COMPARE_8_TO_REG:
+				{
+					uint64_t lit = fetch<uint8_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t reg_value = get_reg_by_id(reg_id);
+
+					if (lit > reg_value) {
+						greater_flag = true;
+						equal_flag = false;
+					} else if (lit == reg_value) {
+						greater_flag = false;
+						equal_flag = true;
+					} else {
+						greater_flag = false;
+						equal_flag = false;
+					}
+
+					break;
+				}
+
+				case COMPARE_16_TO_REG:
+				{
+					uint64_t lit = fetch<uint16_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t reg_value = get_reg_by_id(reg_id);
+
+					if (lit > reg_value) {
+						greater_flag = true;
+						equal_flag = false;
+					} else if (lit == reg_value) {
+						greater_flag = false;
+						equal_flag = true;
+					} else {
+						greater_flag = false;
+						equal_flag = false;
+					}
+
+					break;
+				}
+
+				case COMPARE_32_TO_REG:
+				{
+					uint64_t lit = fetch<uint32_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t reg_value = get_reg_by_id(reg_id);
+
+					if (lit > reg_value) {
+						greater_flag = true;
+						equal_flag = false;
+					} else if (lit == reg_value) {
+						greater_flag = false;
+						equal_flag = true;
+					} else {
+						greater_flag = false;
+						equal_flag = false;
+					}
+
+					break;
+				}
+
+				case COMPARE_64_TO_REG:
+				{
+					uint64_t lit = fetch<uint64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t reg_value = get_reg_by_id(reg_id);
+
+					if (lit > reg_value) {
+						greater_flag = true;
+						equal_flag = false;
+					} else if (lit == reg_value) {
+						greater_flag = false;
+						equal_flag = true;
+					} else {
+						greater_flag = false;
+						equal_flag = false;
+					}
+
+					break;
+				}
+
+				case COMPARE_REG_TO_8:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t reg_value = get_reg_by_id(reg_id);
+					uint64_t lit = fetch<uint8_t>();
+
+					if (reg_value > lit) {
+						greater_flag = true;
+						equal_flag = false;
+					} else if (reg_value == lit) {
+						greater_flag = false;
+						equal_flag = true;
+					} else {
+						greater_flag = false;
+						equal_flag = false;
+					}
+
+					break;
+				}
+
+				case COMPARE_REG_TO_16:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t reg_value = get_reg_by_id(reg_id);
+					uint64_t lit = fetch<uint16_t>();
+
+					if (reg_value > lit) {
+						greater_flag = true;
+						equal_flag = false;
+					} else if (reg_value == lit) {
+						greater_flag = false;
+						equal_flag = true;
+					} else {
+						greater_flag = false;
+						equal_flag = false;
+					}
+
+					break;
+				}
+
+				case COMPARE_REG_TO_32:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t reg_value = get_reg_by_id(reg_id);
+					uint64_t lit = fetch<uint32_t>();
+
+					if (reg_value > lit) {
+						greater_flag = true;
+						equal_flag = false;
+					} else if (reg_value == lit) {
+						greater_flag = false;
+						equal_flag = true;
+					} else {
+						greater_flag = false;
+						equal_flag = false;
+					}
+
+					break;
+				}
+
+				case COMPARE_REG_TO_64:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t reg_value = get_reg_by_id(reg_id);
+					uint64_t lit = fetch<uint64_t>();
+
+					if (reg_value > lit) {
+						greater_flag = true;
+						equal_flag = false;
+					} else if (reg_value == lit) {
+						greater_flag = false;
+						equal_flag = true;
+					} else {
+						greater_flag = false;
+						equal_flag = false;
+					}
+
+					break;
+				}
+
+				case COMPARE_REG_TO_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint64_t reg_value_1 = get_reg_by_id(reg_id_1);
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					uint64_t reg_value_2 = get_reg_by_id(reg_id_2);
+
+					if (reg_value_1 > reg_value_2) {
+						greater_flag = true;
+						equal_flag = false;
+					} else if (reg_value_1 == reg_value_2) {
+						greater_flag = false;
+						equal_flag = true;
+					} else {
+						greater_flag = false;
+						equal_flag = false;
+					}
+
+					break;
+				}
+
+				case JUMP:
+				{
+					uint64_t offset = fetch<uint64_t>();
+					r_instruction_p = memory->location() + offset;
+					break;
+				}
+
+				case JUMP_IF_GREATER:
+				{
+					uint64_t offset = fetch<uint64_t>();
+					if (greater_flag) r_instruction_p = memory->location() + offset;
+					break;
+				}
+
+				case JUMP_IF_GREATER_OR_EQUAL:
+				{
+					uint64_t offset = fetch<uint64_t>();
+					if (greater_flag | equal_flag) r_instruction_p = memory->location() + offset;
+					break;
+				}
+
+				case JUMP_IF_LESS:
+				{
+					uint64_t offset = fetch<uint64_t>();
+					if (!greater_flag & !equal_flag) r_instruction_p = memory->location() + offset;
+					break;
+				}
+
+				case JUMP_IF_LESS_OR_EQUAL:
+				{
+					uint64_t offset = fetch<uint64_t>();
+					if (!greater_flag) r_instruction_p = memory->location() + offset;
+					break;
+				}
+
+				case JUMP_IF_EQUAL:
+				{
+					uint64_t offset = fetch<uint64_t>();
+					if (equal_flag) r_instruction_p = memory->location() + offset;
+					break;
+				}
+
+				case PUSH_8:
+				{
+					uint8_t lit = fetch<uint8_t>();
+					memory->set(r_stack_p, lit);
+					r_stack_p += 1;
+					break;
+				}
+
+				case PUSH_16:
+				{
+					uint16_t lit = fetch<uint16_t>();
+					memory->set(r_stack_p, lit);
+					r_stack_p += 2;
+					break;
+				}
+
+				case PUSH_32:
+				{
+					uint32_t lit = fetch<uint32_t>();
+					memory->set(r_stack_p, lit);
+					r_stack_p += 4;
+					break;
+				}
+
+				case PUSH_64:
+				{
+					uint64_t lit = fetch<uint64_t>();
+					memory->set(r_stack_p, lit);
+					r_stack_p += 8;
+					break;
+				}
+
+				case PUSH_REG:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					memory->set(r_stack_p, get_reg_by_id(reg_id));
+					r_stack_p += 8;
+					break;
+				}
+
+				case POP_8_INTO_REG:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					r_stack_p -= 1;
+					uint8_t value = memory->get<uint8_t>(r_stack_p);
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case POP_16_INTO_REG:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					r_stack_p -= 2;
+					uint16_t value = memory->get<uint16_t>(r_stack_p);
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case POP_32_INTO_REG:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					r_stack_p -= 4;
+					uint32_t value = memory->get<uint32_t>(r_stack_p);
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case POP_64_INTO_REG:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					r_stack_p -= 8;
+					uint64_t value = memory->get<uint64_t>(r_stack_p);
+					set_reg_by_id(reg_id, value);
 					break;
 				}
 			}
