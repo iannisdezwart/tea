@@ -655,6 +655,12 @@ class ProgramBuilder : public MemoryBuilder {
 				}
 			}
 		}
+
+		void log_reg(uint8_t reg_id)
+		{
+			push_instruction(LOG_REG);
+			push(reg_id);
+		}
 };
 
 #endif

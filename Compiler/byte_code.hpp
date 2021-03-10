@@ -6,6 +6,9 @@
 using namespace std;
 
 enum Instruction {
+	// Move instructions
+
+
 	MOVE_8_INTO_REG,
 	MOVE_16_INTO_REG,
 	MOVE_32_INTO_REG,
@@ -23,6 +26,9 @@ enum Instruction {
 	MOVE_MEM_INTO_REG,
 
 	// MOVE_MEM_INTO_MEM,
+
+
+	// Mathematical operations
 
 
 	ADD_8_INTO_REG,
@@ -88,6 +94,9 @@ enum Instruction {
 	NOT_REG,
 
 
+	// Comparison and branching
+
+
 	COMPARE_8_TO_REG,
 	COMPARE_16_TO_REG,
 	COMPARE_32_TO_REG,
@@ -112,6 +121,9 @@ enum Instruction {
 	JUMP_IF_EQUAL,
 
 
+	// Pushing to and popping from stack
+
+
 	PUSH_8,
 	PUSH_16,
 	PUSH_32,
@@ -124,6 +136,12 @@ enum Instruction {
 	POP_16_INTO_REG,
 	POP_32_INTO_REG,
 	POP_64_INTO_REG,
+
+
+	// For debugging purposes
+
+
+	LOG_REG
 };
 
 #endif

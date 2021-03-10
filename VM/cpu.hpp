@@ -860,6 +860,14 @@ class CPU {
 					set_reg_by_id(reg_id, value);
 					break;
 				}
+
+				case LOG_REG:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t value = get_reg_by_id(reg_id);
+					printf("> %lu\n", value);
+					break;
+				}
 			}
 		}
 };
