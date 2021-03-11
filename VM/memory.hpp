@@ -200,6 +200,41 @@ class ProgramBuilder : public MemoryBuilder {
 			push(reg_id);
 		}
 
+		void move_frame_offset_8_into_reg(int64_t offset, uint8_t reg_id)
+		{
+			push_instruction(MOVE_FRAME_OFFSET_8_INTO_REG);
+			push(offset);
+			push(reg_id);
+		}
+
+		void move_frame_offset_16_into_reg(int64_t offset, uint8_t reg_id)
+		{
+			push_instruction(MOVE_FRAME_OFFSET_16_INTO_REG);
+			push(offset);
+			push(reg_id);
+		}
+
+		void move_frame_offset_32_into_reg(int64_t offset, uint8_t reg_id)
+		{
+			push_instruction(MOVE_FRAME_OFFSET_32_INTO_REG);
+			push(offset);
+			push(reg_id);
+		}
+
+		void move_frame_offset_64_into_reg(int64_t offset, uint8_t reg_id)
+		{
+			push_instruction(MOVE_FRAME_OFFSET_64_INTO_REG);
+			push(offset);
+			push(reg_id);
+		}
+
+		void move_reg_into_frame_offset(uint8_t reg_id, int64_t offset)
+		{
+			push_instruction(MOVE_REG_INTO_FRAME_OFFSET);
+			push(reg_id);
+			push(offset);
+		}
+
 		void add_8_into_reg(uint8_t lit, uint8_t reg_id)
 		{
 			push_instruction(ADD_8_INTO_REG);

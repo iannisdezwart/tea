@@ -315,6 +315,51 @@ class CPU {
 					break;
 				}
 
+				case MOVE_FRAME_OFFSET_8_INTO_REG:
+				{
+					int64_t offset = fetch<int64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					uint8_t value = *(r_frame_p + offset);
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case MOVE_FRAME_OFFSET_16_INTO_REG:
+				{
+					int64_t offset = fetch<int64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					uint16_t value = *(r_frame_p + offset);
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case MOVE_FRAME_OFFSET_32_INTO_REG:
+				{
+					int64_t offset = fetch<int64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					uint32_t value = *(r_frame_p + offset);
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case MOVE_FRAME_OFFSET_64_INTO_REG:
+				{
+					int64_t offset = fetch<int64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t value = *(r_frame_p + offset);
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case MOVE_REG_INTO_FRAME_OFFSET:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					int64_t offset = fetch<uint64_t>();
+					uint64_t value = get_reg_by_id(reg_id);
+					*(r_frame_p + offset) = value;
+					break;
+				}
+
 				case ADD_8_INTO_REG:
 				{
 					uint64_t lit = fetch<uint8_t>();
