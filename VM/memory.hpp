@@ -43,7 +43,9 @@ class Memory {
 				printf("Segmentation Fault\n");
 				printf("VM prevented access to memory at %ld (0x%lx)\n",
 					(size_t) location_p, (size_t) location_p);
-				exit(139);
+				printf("Only the region [ 0x%lx, 0x%lx ) is allowed\n",
+					(uint64_t) memory, (uint64_t) memory + size);
+				abort();
 			}
 		}
 
@@ -112,6 +114,29 @@ class ProgramBuilder : public MemoryBuilder {
 	public:
 		unordered_map<string /* id */, uint64_t /* position */> labels;
 		unordered_map<string /* id */, vector<uint64_t>> label_references;
+
+		unordered_map<string /* id */, uint64_t /* position */> static_data_table;
+		MemoryBuilder static_data;
+
+		Memory *assemble(size_t stack_size)
+		{
+			vector<uint8_t> program;
+			program.reserve(static_data.i + i);
+
+			// Combine static data and program instructions
+
+			for (size_t j = 0; j < static_data.i; j++) {
+				program.push_back(static_data.buffer[j]);
+			}
+
+			for (size_t j = 0; j < i; j++) {
+				program.push_back(buffer[j]);
+			}
+
+			// Create memory from the program and return it
+
+			return new Memory(program.data(), program.size() + stack_size);
+		}
 
 		void push_instruction(enum Instruction instruction)
 		{
@@ -740,6 +765,31 @@ class ProgramBuilder : public MemoryBuilder {
 					*reference_point = label_location;
 				}
 			}
+		}
+
+		void add_static_data(const string& id, const uint8_t *data, size_t size)
+		{
+			if (static_data_table.count(id)) {
+				printf("ProgramBuilder error: duplicate static data id %s\n", id.c_str());
+				exit(1);
+			}
+
+			static_data_table[id] = static_data.i;
+
+			for (size_t i = 0; i < size; i++) {
+				static_data.push(data[i]);
+			}
+		}
+
+		uint64_t get_static_data_offset(const string& id)
+		{
+			if (!static_data_table.count(id)) {
+				printf("ProgramBuilder error: reference to non-declared static data id %s",
+					id.c_str());
+				exit(1);
+			}
+
+			return static_data_table[id];
 		}
 };
 

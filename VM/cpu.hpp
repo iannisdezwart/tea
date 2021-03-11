@@ -11,6 +11,7 @@ using namespace std;
 class CPU {
 	public:
 		Memory *memory;
+		size_t static_data_size;
 		size_t program_size;
 		size_t stack_size;
 
@@ -48,14 +49,35 @@ class CPU {
 
 		CPU(ProgramBuilder& program, size_t stack_size)
 		{
+			this->static_data_size = program.static_data.i;
 			this->stack_size = stack_size;
 			program_size = program.i;
 			program.update_label_references();
-			memory = program.build(stack_size);
+			memory = program.assemble(stack_size);
 
-			r_instruction_p = memory->location();
-			r_stack_p = r_instruction_p + memory->size - 1;
+			r_instruction_p = program_location();
+			r_stack_p = stack_bottom() - 1;
 			r_frame_p = r_stack_p;
+		}
+
+		uint8_t *static_data_location()
+		{
+			return memory->location();
+		}
+
+		uint8_t *program_location()
+		{
+			return memory->location() + static_data_size;
+		}
+
+		uint8_t *stack_bottom()
+		{
+			return memory->location() + memory->size - 1;
+		}
+
+		uint8_t *stack_top()
+		{
+			return memory->location() + memory->size - 1 - stack_size;
 		}
 
 		uint64_t get_reg_by_id(uint8_t id)
@@ -121,7 +143,7 @@ class CPU {
 			dump_registers();
 			#endif
 
-			while (r_instruction_p < memory->location() + program_size) {
+			while (r_instruction_p < stack_top()) {
 				uint16_t instruction = fetch<uint16_t>();
 
 				#ifdef CPU_DUMP_DEBUG
@@ -140,15 +162,13 @@ class CPU {
 		void dump_stack()
 		{
 			printf("Stack dump:\n");
-			uint8_t *stack_location = memory->location() + program_size;
-			memory->dump(stack_location, stack_location + stack_size, r_stack_p, r_frame_p);
+			memory->dump(stack_top(), stack_bottom(), r_stack_p, r_frame_p);
 		}
 
 		void dump_program()
 		{
 			printf("Program dump:\n");
-			uint8_t *program_location = memory->location();
-			memory->dump(program_location, program_location + program_size);
+			memory->dump(static_data_location(), stack_top());
 		}
 
 		void dump_registers()
@@ -164,7 +184,7 @@ class CPU {
 			printf("r_1             = %020lu = 0x%016lx\n", r_1, r_1);
 			printf("r_2             = %020lu = 0x%016lx\n", r_2, r_2);
 			printf("r_3             = %020lu = 0x%016lx\n", r_3, r_3);
-			printf("greater_flag = %d, equal_flag =  %d\n", greater_flag, equal_flag);
+			printf("greater_flag = %d, equal_flag = %d\n", greater_flag, equal_flag);
 		}
 
 		template <typename intx_t>
@@ -877,42 +897,42 @@ class CPU {
 				case JUMP:
 				{
 					uint64_t offset = fetch<uint64_t>();
-					r_instruction_p = memory->location() + offset;
+					r_instruction_p = program_location() + offset;
 					break;
 				}
 
 				case JUMP_IF_GREATER:
 				{
 					uint64_t offset = fetch<uint64_t>();
-					if (greater_flag) r_instruction_p = memory->location() + offset;
+					if (greater_flag) r_instruction_p = program_location() + offset;
 					break;
 				}
 
 				case JUMP_IF_GREATER_OR_EQUAL:
 				{
 					uint64_t offset = fetch<uint64_t>();
-					if (greater_flag | equal_flag) r_instruction_p = memory->location() + offset;
+					if (greater_flag | equal_flag) r_instruction_p = program_location() + offset;
 					break;
 				}
 
 				case JUMP_IF_LESS:
 				{
 					uint64_t offset = fetch<uint64_t>();
-					if (!greater_flag & !equal_flag) r_instruction_p = memory->location() + offset;
+					if (!greater_flag & !equal_flag) r_instruction_p = program_location() + offset;
 					break;
 				}
 
 				case JUMP_IF_LESS_OR_EQUAL:
 				{
 					uint64_t offset = fetch<uint64_t>();
-					if (!greater_flag) r_instruction_p = memory->location() + offset;
+					if (!greater_flag) r_instruction_p = program_location() + offset;
 					break;
 				}
 
 				case JUMP_IF_EQUAL:
 				{
 					uint64_t offset = fetch<uint64_t>();
-					if (equal_flag) r_instruction_p = memory->location() + offset;
+					if (equal_flag) r_instruction_p = program_location() + offset;
 					break;
 				}
 
@@ -988,7 +1008,7 @@ class CPU {
 				{
 					uint64_t offset = fetch<uint64_t>();
 					push_stackframe();
-					r_instruction_p = memory->location() + offset;
+					r_instruction_p = program_location() + offset;
 					break;
 				}
 

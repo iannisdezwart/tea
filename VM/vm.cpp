@@ -43,6 +43,9 @@ ProgramBuilder stack_demo()
 {
 	ProgramBuilder program_builder;
 
+	const char *c = "Hello, World!";
+	program_builder.add_static_data("hello_world", (const uint8_t *) c, strlen(c));
+
 	// Push arguments for the add function
 	// We will add 5 and 6
 
@@ -76,6 +79,15 @@ ProgramBuilder stack_demo()
 	// Exit label
 
 	program_builder.add_label("exit");
+
+	return program_builder;
+}
+
+ProgramBuilder cooler_stack_demo()
+{
+	ProgramBuilder program_builder;
+
+	// 
 
 	return program_builder;
 }
