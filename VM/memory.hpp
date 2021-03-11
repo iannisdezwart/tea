@@ -66,11 +66,16 @@ class Memory {
 		void dump(
 			uint8_t *left_bound,
 			uint8_t *right_bound,
-			uint8_t *highlight = NULL
+			uint8_t *highlight_fg = NULL,
+			uint8_t *highlight_bg = NULL
 		) {
+			size_t i = 0;
+
 			for (uint8_t *it = left_bound; it < right_bound; it++) {
-				if (highlight == it) printf("\x1b[92m");
-				printf("%03d\x1b[m ", (int) get<uint8_t>(it));
+				if (highlight_fg == it) printf("\x1b[31m");
+				if (highlight_bg == it) printf("\x1b[43m");
+				uint8_t byte = get<uint8_t>(it);
+				printf("0x%04lx    0x%02hhx    %03hhu\x1b[m\n", i++, byte, byte);
 			}
 
 			printf("\n");
@@ -614,6 +619,24 @@ class ProgramBuilder : public MemoryBuilder {
 		void pop_64_into_reg(uint64_t reg_id)
 		{
 			push_instruction(POP_64_INTO_REG);
+			push(reg_id);
+		}
+
+		void call(const string& label)
+		{
+			push_instruction(CALL);
+			add_label_reference(label);
+			push<uint64_t>(0); // This will be updated later
+		}
+
+		void return_()
+		{
+			push_instruction(RETURN);
+		}
+
+		void log_reg(uint8_t reg_id)
+		{
+			push_instruction(LOG_REG);
 			push(reg_id);
 		}
 

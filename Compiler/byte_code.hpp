@@ -138,6 +138,13 @@ enum Instruction {
 	POP_64_INTO_REG,
 
 
+	// Functions
+
+
+	CALL,
+	RETURN,
+
+
 	// For debugging purposes
 
 

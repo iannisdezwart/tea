@@ -37,6 +37,8 @@ class CPU {
 		uint64_t r_accumulator = 0;
 		#define R_ACCUMULATOR_ID 7
 
+		uint64_t stack_frame_size = 0;
+
 		// Flags
 
 		bool overflow_flag = false;
@@ -52,7 +54,7 @@ class CPU {
 			memory = program.build(stack_size);
 
 			r_instruction_p = memory->location();
-			r_stack_p = r_instruction_p + program_size;
+			r_stack_p = r_instruction_p + memory->size - 1;
 			r_frame_p = r_stack_p;
 		}
 
@@ -139,7 +141,7 @@ class CPU {
 		{
 			printf("Stack dump:\n");
 			uint8_t *stack_location = memory->location() + program_size;
-			memory->dump(stack_location, stack_location + stack_size, r_stack_p);
+			memory->dump(stack_location, stack_location + stack_size, r_stack_p, r_frame_p);
 		}
 
 		void dump_program()
@@ -151,14 +153,17 @@ class CPU {
 
 		void dump_registers()
 		{
-			printf("r_instruction_p = %020lu\n", (size_t) r_instruction_p);
-			printf("r_stack_p       = %020lu\n", (size_t) r_stack_p);
-			printf("r_frame_p       = %020lu\n", (size_t) r_frame_p);
-			printf("r_accumulator   = %020lu\n", r_accumulator);
-			printf("r_0             = %020lu\n", r_0);
-			printf("r_1             = %020lu\n", r_1);
-			printf("r_2             = %020lu\n", r_2);
-			printf("r_3             = %020lu\n", r_3);
+			printf("r_instruction_p = %020lu = 0x%016lx\n",
+				(size_t) r_instruction_p, (size_t) r_instruction_p);
+			printf("r_stack_p       = %020lu = 0x%016lx\n",
+				(size_t) r_stack_p, (size_t) r_stack_p);
+			printf("r_frame_p       = %020lu = 0x%016lx\n",
+				(size_t) r_frame_p, (size_t) r_frame_p);
+			printf("r_accumulator   = %020lu = 0x%016lx\n", r_accumulator, r_accumulator);
+			printf("r_0             = %020lu = 0x%016lx\n", r_0, r_0);
+			printf("r_1             = %020lu = 0x%016lx\n", r_1, r_1);
+			printf("r_2             = %020lu = 0x%016lx\n", r_2, r_2);
+			printf("r_3             = %020lu = 0x%016lx\n", r_3, r_3);
 			printf("greater_flag = %d, equal_flag =  %d\n", greater_flag, equal_flag);
 		}
 
@@ -168,6 +173,55 @@ class CPU {
 			intx_t instruction = memory->get<intx_t>(r_instruction_p);
 			r_instruction_p += sizeof(intx_t);
 			return instruction;
+		}
+
+		template <typename intx_t>
+		void push(intx_t value)
+		{
+			r_stack_p -= sizeof(intx_t);
+			stack_frame_size += sizeof(intx_t);
+			memory->set(r_stack_p, value);
+		}
+
+		template <typename intx_t>
+		intx_t pop()
+		{
+			intx_t value = memory->get<uint64_t>(r_stack_p);
+			r_stack_p += sizeof(intx_t);
+			stack_frame_size -= sizeof(intx_t);
+			return value;
+		}
+
+		void push_stackframe()
+		{
+			push(get_reg_by_id(R_0_ID));
+			push(get_reg_by_id(R_1_ID));
+			push(get_reg_by_id(R_2_ID));
+			push(get_reg_by_id(R_3_ID));
+			push(get_reg_by_id(R_INSTRUCTION_P_ID));
+			push(stack_frame_size + 8);
+
+			r_frame_p = r_stack_p;
+			stack_frame_size = 0;
+		}
+
+		void pop_stackframe()
+		{
+			r_stack_p = r_frame_p;
+
+			stack_frame_size = pop<uint64_t>();
+			uint64_t saved_stack_frame_size = stack_frame_size;
+
+			r_instruction_p = (uint8_t *) pop<uint64_t>();
+			r_3 = pop<uint64_t>();
+			r_2 = pop<uint64_t>();
+			r_1 = pop<uint64_t>();
+			r_0 = pop<uint64_t>();
+
+			uint64_t arguments_size = pop<uint64_t>();
+
+			r_frame_p += saved_stack_frame_size;
+			r_stack_p += arguments_size;
 		}
 
 		void execute(uint16_t instruction)
@@ -858,6 +912,20 @@ class CPU {
 					r_stack_p -= 8;
 					uint64_t value = memory->get<uint64_t>(r_stack_p);
 					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case CALL:
+				{
+					uint64_t offset = fetch<uint64_t>();
+					push_stackframe();
+					r_instruction_p = memory->location() + offset;
+					break;
+				}
+
+				case RETURN:
+				{
+					pop_stackframe();
 					break;
 				}
 
