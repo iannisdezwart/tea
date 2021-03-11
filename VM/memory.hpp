@@ -445,6 +445,34 @@ class ProgramBuilder : public MemoryBuilder {
 			push(reg_id_2);
 		}
 
+		void left_shift_reg_by_8(uint8_t reg_id, uint8_t shift_size)
+		{
+			push_instruction(LEFT_SHIFT_REG_BY_8);
+			push(reg_id);
+			push(shift_size);
+		}
+
+		void left_shift_reg_by_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+		{
+			push_instruction(LEFT_SHIFT_REG_BY_REG);
+			push(reg_id_1);
+			push(reg_id_2);
+		}
+
+		void right_shift_reg_by_8(uint8_t reg_id, uint8_t shift_size)
+		{
+			push_instruction(RIGHT_SHIFT_REG_BY_8);
+			push(reg_id);
+			push(shift_size);
+		}
+
+		void right_shift_reg_by_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+		{
+			push_instruction(RIGHT_SHIFT_REG_BY_REG);
+			push(reg_id_1);
+			push(reg_id_2);
+		}
+
 		void increment_reg(uint8_t reg_id)
 		{
 			push_instruction(INCREMENT_REG);

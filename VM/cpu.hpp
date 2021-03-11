@@ -595,6 +595,38 @@ class CPU {
 					break;
 				}
 
+				case LEFT_SHIFT_REG_BY_8:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint8_t lit = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) << lit);
+					break;
+				}
+
+				case LEFT_SHIFT_REG_BY_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					set_reg_by_id(reg_id_1, get_reg_by_id(reg_id_1) << get_reg_by_id(reg_id_2));
+					break;
+				}
+
+				case RIGHT_SHIFT_REG_BY_8:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint8_t lit = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) >> lit);
+					break;
+				}
+
+				case RIGHT_SHIFT_REG_BY_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					set_reg_by_id(reg_id_1, get_reg_by_id(reg_id_1) >> get_reg_by_id(reg_id_2));
+					break;
+				}
+
 				case INCREMENT_REG:
 				{
 					uint8_t reg_id = fetch<uint8_t>();
