@@ -38,7 +38,7 @@ class CPU {
 		uint64_t r_accumulator = 0;
 		#define R_ACCUMULATOR_ID 7
 
-		uint64_t stack_frame_size = 0;
+		uint64_t current_stack_frame_size = 0;
 
 		// Flags
 
@@ -196,7 +196,7 @@ class CPU {
 		void push(intx_t value)
 		{
 			r_stack_p -= sizeof(intx_t);
-			stack_frame_size += sizeof(intx_t);
+			current_stack_frame_size += sizeof(intx_t);
 			memory->set(r_stack_p, value);
 		}
 
@@ -205,29 +205,31 @@ class CPU {
 		{
 			intx_t value = memory->get<uint64_t>(r_stack_p);
 			r_stack_p += sizeof(intx_t);
-			stack_frame_size -= sizeof(intx_t);
+			current_stack_frame_size -= sizeof(intx_t);
 			return value;
 		}
 
-		void push_stackframe()
+		static constexpr const size_t stack_frame_size = 48;
+
+		void push_stack_frame()
 		{
 			push(get_reg_by_id(R_0_ID));
 			push(get_reg_by_id(R_1_ID));
 			push(get_reg_by_id(R_2_ID));
 			push(get_reg_by_id(R_3_ID));
 			push(get_reg_by_id(R_INSTRUCTION_P_ID));
-			push(stack_frame_size + 8);
+			push(current_stack_frame_size + 8);
 
 			r_frame_p = r_stack_p;
-			stack_frame_size = 0;
+			current_stack_frame_size = 0;
 		}
 
-		void pop_stackframe()
+		void pop_stack_frame()
 		{
 			r_stack_p = r_frame_p;
 
-			stack_frame_size = pop<uint64_t>();
-			uint64_t saved_stack_frame_size = stack_frame_size;
+			current_stack_frame_size = pop<uint64_t>();
+			uint64_t saved_stack_frame_size = current_stack_frame_size;
 
 			r_instruction_p = pop<uint64_t>();
 			r_3 = pop<uint64_t>();
@@ -324,11 +326,79 @@ class CPU {
 					break;
 				}
 
-				case MOVE_MEM_INTO_REG:
+				case MOVE_MEM_8_INTO_REG:
 				{
 					uint64_t address = fetch<uint64_t>();
+					uint8_t value = memory->get<uint8_t>(address);
 					uint8_t reg_id = fetch<uint8_t>();
-					set_reg_by_id(reg_id, memory->get<uint64_t>(address));
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case MOVE_MEM_16_INTO_REG:
+				{
+					uint64_t address = fetch<uint64_t>();
+					uint16_t value = memory->get<uint16_t>(address);
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case MOVE_MEM_32_INTO_REG:
+				{
+					uint64_t address = fetch<uint64_t>();
+					uint32_t value = memory->get<uint32_t>(address);
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case MOVE_MEM_64_INTO_REG:
+				{
+					uint64_t address = fetch<uint64_t>();
+					uint64_t value = memory->get<uint64_t>(address);
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case MOVE_REG_POINTER_8_INTO_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					uint64_t address = get_reg_by_id(reg_id_1);
+					uint8_t value = memory->get<uint8_t>(address);
+					set_reg_by_id(reg_id_2, value);
+					break;
+				}
+
+				case MOVE_REG_POINTER_16_INTO_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					uint64_t address = get_reg_by_id(reg_id_1);
+					uint16_t value = memory->get<uint16_t>(address);
+					set_reg_by_id(reg_id_2, value);
+					break;
+				}
+
+				case MOVE_REG_POINTER_32_INTO_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					uint64_t address = get_reg_by_id(reg_id_1);
+					uint32_t value = memory->get<uint32_t>(address);
+					set_reg_by_id(reg_id_2, value);
+					break;
+				}
+
+				case MOVE_REG_POINTER_64_INTO_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					uint64_t address = get_reg_by_id(reg_id_1);
+					uint64_t value = memory->get<uint64_t>(address);
+					set_reg_by_id(reg_id_2, value);
 					break;
 				}
 
@@ -1004,14 +1074,22 @@ class CPU {
 				case CALL:
 				{
 					uint64_t offset = fetch<uint64_t>();
-					push_stackframe();
+					push_stack_frame();
 					r_instruction_p = program_location() + offset;
 					break;
 				}
 
 				case RETURN:
 				{
-					pop_stackframe();
+					pop_stack_frame();
+					break;
+				}
+
+				case PRINT_CHAR_FROM_REG:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					char c = get_reg_by_id(reg_id) & 0xFF;
+					putc(c, stdout);
 					break;
 				}
 
@@ -1019,7 +1097,7 @@ class CPU {
 				{
 					uint8_t reg_id = fetch<uint8_t>();
 					uint64_t value = get_reg_by_id(reg_id);
-					printf("> %lu\n", value);
+					printf(">>> REG_%hhu = 0x%016lx = %020lu\n", reg_id, value, value);
 					break;
 				}
 			}

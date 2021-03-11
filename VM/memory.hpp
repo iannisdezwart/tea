@@ -106,12 +106,21 @@ class MemoryBuilder {
 		}
 };
 
+struct StaticData {
+	uint64_t offset;
+	uint64_t size;
+
+	uint64_t end()
+	{
+		return offset + size;
+	}
+};
+
 class ProgramBuilder : public MemoryBuilder {
 	public:
 		unordered_map<string /* id */, uint64_t /* position */> labels;
 		unordered_map<string /* id */, vector<uint64_t>> label_references;
 
-		unordered_map<string /* id */, uint64_t /* position */> static_data_table;
 		MemoryBuilder static_data;
 
 		Memory *assemble(size_t stack_size)
@@ -137,11 +146,6 @@ class ProgramBuilder : public MemoryBuilder {
 		void push_instruction(enum Instruction instruction)
 		{
 			push<uint16_t>(instruction);
-		}
-
-		void push_address(uint8_t *address)
-		{
-			push((uint64_t) address);
 		}
 
 		void move_8_into_reg(uint8_t lit, uint8_t reg_id)
@@ -172,32 +176,32 @@ class ProgramBuilder : public MemoryBuilder {
 			push(reg_id);
 		}
 
-		void move_8_into_mem(uint8_t lit, uint8_t *address)
+		void move_8_into_mem(uint8_t lit, uint64_t address)
 		{
 			push_instruction(MOVE_8_INTO_MEM);
 			push(lit);
 			push(address);
 		}
 
-		void move_16_into_mem(uint16_t lit, uint8_t *address)
+		void move_16_into_mem(uint16_t lit, uint64_t address)
 		{
 			push_instruction(MOVE_16_INTO_MEM);
 			push(lit);
 			push(address);
 		}
 
-		void move_32_into_mem(uint32_t lit, uint8_t *address)
+		void move_32_into_mem(uint32_t lit, uint64_t address)
 		{
 			push_instruction(MOVE_32_INTO_MEM);
 			push(lit);
 			push(address);
 		}
 
-		void move_64_into_mem(uint64_t lit, uint8_t *address)
+		void move_64_into_mem(uint64_t lit, uint64_t address)
 		{
 			push_instruction(MOVE_64_INTO_MEM);
 			push(lit);
-			push_address(address);
+			push(address);
 		}
 
 		void move_reg_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
@@ -207,18 +211,67 @@ class ProgramBuilder : public MemoryBuilder {
 			push(reg_id_2);
 		}
 
-		void move_reg_into_mem(uint8_t reg_id, uint8_t *address)
+		void move_reg_into_mem(uint8_t reg_id, uint64_t address)
 		{
 			push_instruction(MOVE_REG_INTO_REG);
 			push(reg_id);
-			push_address(address);
+			push(address);
 		}
 
-		void move_mem_into_reg(uint8_t *address, uint8_t reg_id)
+		void move_mem_8_into_reg(uint64_t address, uint8_t reg_id)
 		{
-			push_instruction(MOVE_MEM_INTO_REG);
-			push_address(address);
+			push_instruction(MOVE_MEM_8_INTO_REG);
+			push(address);
 			push(reg_id);
+		}
+
+		void move_mem_16_into_reg(uint64_t address, uint8_t reg_id)
+		{
+			push_instruction(MOVE_MEM_16_INTO_REG);
+			push(address);
+			push(reg_id);
+		}
+
+		void move_mem_32_into_reg(uint64_t address, uint8_t reg_id)
+		{
+			push_instruction(MOVE_MEM_32_INTO_REG);
+			push(address);
+			push(reg_id);
+		}
+
+		void move_mem_64_into_reg(uint64_t address, uint8_t reg_id)
+		{
+			push_instruction(MOVE_MEM_64_INTO_REG);
+			push(address);
+			push(reg_id);
+		}
+
+		void move_reg_pointer_8_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+		{
+			push_instruction(MOVE_REG_POINTER_8_INTO_REG);
+			push(reg_id_1);
+			push(reg_id_2);
+		}
+
+		void move_reg_pointer_16_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+		{
+			push_instruction(MOVE_REG_POINTER_16_INTO_REG);
+			push(reg_id_1);
+			push(reg_id_2);
+		}
+
+		void move_reg_pointer_32_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+		{
+			push_instruction(MOVE_REG_POINTER_32_INTO_REG);
+			push(reg_id_1);
+			push(reg_id_2);
+		}
+
+		void move_reg_pointer_64_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+		{
+			push_instruction(MOVE_REG_POINTER_64_INTO_REG);
+			push(reg_id_1);
+			push(reg_id_2);
 		}
 
 		void move_frame_offset_8_into_reg(int64_t offset, uint8_t reg_id)
@@ -718,6 +771,12 @@ class ProgramBuilder : public MemoryBuilder {
 			push_instruction(RETURN);
 		}
 
+		void print_char_from_reg(uint8_t reg_id)
+		{
+			push_instruction(PRINT_CHAR_FROM_REG);
+			push(reg_id);
+		}
+
 		void log_reg(uint8_t reg_id)
 		{
 			push_instruction(LOG_REG);
@@ -763,29 +822,20 @@ class ProgramBuilder : public MemoryBuilder {
 			}
 		}
 
-		void add_static_data(const string& id, const uint8_t *data, size_t size)
+		struct StaticData add_static_data(const uint8_t *data, size_t size)
 		{
-			if (static_data_table.count(id)) {
-				printf("ProgramBuilder error: duplicate static data id %s\n", id.c_str());
-				exit(1);
-			}
-
-			static_data_table[id] = static_data.i;
+			uint64_t offset = static_data.i;
 
 			for (size_t i = 0; i < size; i++) {
 				static_data.push(data[i]);
 			}
-		}
 
-		uint64_t get_static_data_offset(const string& id)
-		{
-			if (!static_data_table.count(id)) {
-				printf("ProgramBuilder error: reference to non-declared static data id %s",
-					id.c_str());
-				exit(1);
-			}
+			StaticData static_data = {
+				.offset = offset,
+				.size = size
+			};
 
-			return static_data_table[id];
+			return static_data;
 		}
 };
 
