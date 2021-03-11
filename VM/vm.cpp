@@ -3,7 +3,7 @@
 
 #include <bits/stdc++.h>
 
-// #define CPU_DUMP_DEBUG
+#define CPU_DUMP_DEBUG
 #include "cpu.hpp"
 #include "memory.hpp"
 #include "../Compiler/byte_code.hpp"

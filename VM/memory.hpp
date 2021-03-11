@@ -37,47 +37,43 @@ class Memory {
 			return memory;
 		}
 
-		void check_memory(uint8_t *location_p)
+		void check_memory(uint64_t offset)
 		{
-			if (location_p < memory || location_p >= memory + size) {
+			if (offset >= size) {
 				printf("Segmentation Fault\n");
 				printf("VM prevented access to memory at %ld (0x%lx)\n",
-					(size_t) location_p, (size_t) location_p);
-				printf("Only the region [ 0x%lx, 0x%lx ) is allowed\n",
-					(uint64_t) memory, (uint64_t) memory + size);
+					(size_t) offset, (size_t) offset);
+				printf("Only the region [ 0x0, 0x%lx ) is allowed\n",
+					(uint64_t) size);
 				abort();
 			}
 		}
 
 		template <typename intx_t>
-		intx_t get(uint8_t *location_p)
+		intx_t get(uint64_t offset)
 		{
-			check_memory(location_p);
-			intx_t *value_p = (intx_t *) (location_p);
-			return *value_p;
+			check_memory(offset);
+			return memory[offset];
 		}
 
 		template <typename intx_t>
-		void set(uint8_t *location_p, intx_t value)
+		void set(uint64_t offset, intx_t value)
 		{
-			check_memory(location_p);
-			intx_t *value_p = (intx_t *) (location_p);
-			*value_p = value;
+			check_memory(offset);
+			memory[offset] = value;
 		}
 
 		void dump(
-			uint8_t *left_bound,
-			uint8_t *right_bound,
-			uint8_t *highlight_fg = NULL,
-			uint8_t *highlight_bg = NULL
+			uint64_t left_bound,
+			uint64_t right_bound,
+			uint64_t highlight_fg = -1,
+			uint64_t highlight_bg = -1
 		) {
-			size_t i = 0;
-
-			for (uint8_t *it = left_bound; it < right_bound; it++) {
-				if (highlight_fg == it) printf("\x1b[31m");
-				if (highlight_bg == it) printf("\x1b[43m");
-				uint8_t byte = get<uint8_t>(it);
-				printf("0x%04lx    0x%02hhx    %03hhu\x1b[m\n", i++, byte, byte);
+			for (uint64_t i = left_bound; i < right_bound; i++) {
+				if (highlight_fg == i) printf("\x1b[31m");
+				if (highlight_bg == i) printf("\x1b[43m");
+				uint8_t byte = get<uint8_t>(i);
+				printf("0x%04lx    0x%02hhx    %03hhu\x1b[m\n", i, byte, byte);
 			}
 
 			printf("\n");
