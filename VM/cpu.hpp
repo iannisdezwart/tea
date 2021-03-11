@@ -4,13 +4,14 @@
 #include <bits/stdc++.h>
 
 #include "memory.hpp"
-#include "../Compiler/byte_code.hpp"
+#include "../Assembler/assembler.hpp"
+#include "../Assembler/byte_code.hpp"
 
 using namespace std;
 
 class CPU {
 	public:
-		Memory *memory;
+		Memory memory;
 		size_t static_data_size;
 		size_t program_size;
 		size_t stack_size;
@@ -47,14 +48,13 @@ class CPU {
 		bool equal_flag = false;
 		bool greater_flag = false;
 
-		CPU(ProgramBuilder& program, size_t stack_size)
+		CPU(Memory& program, size_t stack_size)
+			: stack_size(stack_size),
+				static_data_size(program.get<uint64_t>(0)),
+				program_size(program.get<uint64_t>(8)),
+				memory(program.location() + 16,
+					program.get<uint64_t>(0) + program.get<uint64_t>(8), stack_size)
 		{
-			this->static_data_size = program.static_data.i;
-			this->stack_size = stack_size;
-			program_size = program.i;
-			program.update_label_references();
-			memory = program.assemble(stack_size);
-
 			r_instruction_p = program_location();
 			r_stack_p = stack_bottom() - 1;
 			r_frame_p = r_stack_p;
@@ -72,12 +72,12 @@ class CPU {
 
 		uint64_t stack_bottom()
 		{
-			return memory->size - 1;
+			return memory.size - 1;
 		}
 
 		uint64_t stack_top()
 		{
-			return memory->size - 1 - stack_size;
+			return memory.size - 1 - stack_size;
 		}
 
 		uint64_t get_reg_by_id(uint8_t id)
@@ -162,13 +162,13 @@ class CPU {
 		void dump_stack()
 		{
 			printf("Stack dump:\n");
-			memory->dump(stack_top(), stack_bottom(), r_stack_p, r_frame_p);
+			memory.dump(stack_top(), stack_bottom(), r_stack_p, r_frame_p);
 		}
 
 		void dump_program()
 		{
 			printf("Program dump:\n");
-			memory->dump(static_data_location(), stack_top());
+			memory.dump(static_data_location(), stack_top());
 		}
 
 		void dump_registers()
@@ -187,7 +187,7 @@ class CPU {
 		template <typename intx_t>
 		intx_t fetch()
 		{
-			intx_t instruction = memory->get<intx_t>(r_instruction_p);
+			intx_t instruction = memory.get<intx_t>(r_instruction_p);
 			r_instruction_p += sizeof(intx_t);
 			return instruction;
 		}
@@ -197,13 +197,13 @@ class CPU {
 		{
 			r_stack_p -= sizeof(intx_t);
 			current_stack_frame_size += sizeof(intx_t);
-			memory->set(r_stack_p, value);
+			memory.set(r_stack_p, value);
 		}
 
 		template <typename intx_t>
 		intx_t pop()
 		{
-			intx_t value = memory->get<uint64_t>(r_stack_p);
+			intx_t value = memory.get<uint64_t>(r_stack_p);
 			r_stack_p += sizeof(intx_t);
 			current_stack_frame_size -= sizeof(intx_t);
 			return value;
@@ -282,7 +282,7 @@ class CPU {
 				{
 					uint64_t lit = fetch<uint8_t>();
 					uint64_t address = fetch<uint64_t>();
-					memory->set(address, lit);
+					memory.set(address, lit);
 					break;
 				}
 
@@ -290,7 +290,7 @@ class CPU {
 				{
 					uint64_t lit = fetch<uint16_t>();
 					uint64_t address = fetch<uint64_t>();
-					memory->set(address, lit);
+					memory.set(address, lit);
 					break;
 				}
 
@@ -298,7 +298,7 @@ class CPU {
 				{
 					uint64_t lit = fetch<uint32_t>();
 					uint64_t address = fetch<uint64_t>();
-					memory->set(address, lit);
+					memory.set(address, lit);
 					break;
 				}
 
@@ -306,7 +306,7 @@ class CPU {
 				{
 					uint64_t lit = fetch<uint64_t>();
 					uint64_t address = fetch<uint64_t>();
-					memory->set(address, lit);
+					memory.set(address, lit);
 					break;
 				}
 
@@ -322,14 +322,14 @@ class CPU {
 				{
 					uint8_t reg_id = fetch<uint8_t>();
 					uint64_t address = fetch<uint64_t>();
-					memory->set(address, get_reg_by_id(reg_id));
+					memory.set(address, get_reg_by_id(reg_id));
 					break;
 				}
 
 				case MOVE_MEM_8_INTO_REG:
 				{
 					uint64_t address = fetch<uint64_t>();
-					uint8_t value = memory->get<uint8_t>(address);
+					uint8_t value = memory.get<uint8_t>(address);
 					uint8_t reg_id = fetch<uint8_t>();
 					set_reg_by_id(reg_id, value);
 					break;
@@ -338,7 +338,7 @@ class CPU {
 				case MOVE_MEM_16_INTO_REG:
 				{
 					uint64_t address = fetch<uint64_t>();
-					uint16_t value = memory->get<uint16_t>(address);
+					uint16_t value = memory.get<uint16_t>(address);
 					uint8_t reg_id = fetch<uint8_t>();
 					set_reg_by_id(reg_id, value);
 					break;
@@ -347,7 +347,7 @@ class CPU {
 				case MOVE_MEM_32_INTO_REG:
 				{
 					uint64_t address = fetch<uint64_t>();
-					uint32_t value = memory->get<uint32_t>(address);
+					uint32_t value = memory.get<uint32_t>(address);
 					uint8_t reg_id = fetch<uint8_t>();
 					set_reg_by_id(reg_id, value);
 					break;
@@ -356,7 +356,7 @@ class CPU {
 				case MOVE_MEM_64_INTO_REG:
 				{
 					uint64_t address = fetch<uint64_t>();
-					uint64_t value = memory->get<uint64_t>(address);
+					uint64_t value = memory.get<uint64_t>(address);
 					uint8_t reg_id = fetch<uint8_t>();
 					set_reg_by_id(reg_id, value);
 					break;
@@ -367,7 +367,7 @@ class CPU {
 					uint8_t reg_id_1 = fetch<uint8_t>();
 					uint8_t reg_id_2 = fetch<uint8_t>();
 					uint64_t address = get_reg_by_id(reg_id_1);
-					uint8_t value = memory->get<uint8_t>(address);
+					uint8_t value = memory.get<uint8_t>(address);
 					set_reg_by_id(reg_id_2, value);
 					break;
 				}
@@ -377,7 +377,7 @@ class CPU {
 					uint8_t reg_id_1 = fetch<uint8_t>();
 					uint8_t reg_id_2 = fetch<uint8_t>();
 					uint64_t address = get_reg_by_id(reg_id_1);
-					uint16_t value = memory->get<uint16_t>(address);
+					uint16_t value = memory.get<uint16_t>(address);
 					set_reg_by_id(reg_id_2, value);
 					break;
 				}
@@ -387,7 +387,7 @@ class CPU {
 					uint8_t reg_id_1 = fetch<uint8_t>();
 					uint8_t reg_id_2 = fetch<uint8_t>();
 					uint64_t address = get_reg_by_id(reg_id_1);
-					uint32_t value = memory->get<uint32_t>(address);
+					uint32_t value = memory.get<uint32_t>(address);
 					set_reg_by_id(reg_id_2, value);
 					break;
 				}
@@ -397,7 +397,7 @@ class CPU {
 					uint8_t reg_id_1 = fetch<uint8_t>();
 					uint8_t reg_id_2 = fetch<uint8_t>();
 					uint64_t address = get_reg_by_id(reg_id_1);
-					uint64_t value = memory->get<uint64_t>(address);
+					uint64_t value = memory.get<uint64_t>(address);
 					set_reg_by_id(reg_id_2, value);
 					break;
 				}
@@ -406,7 +406,7 @@ class CPU {
 				{
 					int64_t offset = fetch<int64_t>();
 					uint8_t reg_id = fetch<uint8_t>();
-					uint8_t value = memory->get<uint8_t>(r_frame_p + offset);
+					uint8_t value = memory.get<uint8_t>(r_frame_p + offset);
 					set_reg_by_id(reg_id, value);
 					break;
 				}
@@ -415,7 +415,7 @@ class CPU {
 				{
 					int64_t offset = fetch<int64_t>();
 					uint8_t reg_id = fetch<uint8_t>();
-					uint16_t value = memory->get<uint16_t>(r_frame_p + offset);
+					uint16_t value = memory.get<uint16_t>(r_frame_p + offset);
 					set_reg_by_id(reg_id, value);
 					break;
 				}
@@ -424,7 +424,7 @@ class CPU {
 				{
 					int64_t offset = fetch<int64_t>();
 					uint8_t reg_id = fetch<uint8_t>();
-					uint32_t value = memory->get<uint32_t>(r_frame_p + offset);
+					uint32_t value = memory.get<uint32_t>(r_frame_p + offset);
 					set_reg_by_id(reg_id, value);
 					break;
 				}
@@ -433,7 +433,7 @@ class CPU {
 				{
 					int64_t offset = fetch<int64_t>();
 					uint8_t reg_id = fetch<uint8_t>();
-					uint64_t value = memory->get<uint64_t>(r_frame_p + offset);
+					uint64_t value = memory.get<uint64_t>(r_frame_p + offset);
 					set_reg_by_id(reg_id, value);
 					break;
 				}
@@ -443,7 +443,7 @@ class CPU {
 					uint8_t reg_id = fetch<uint8_t>();
 					int64_t offset = fetch<uint64_t>();
 					uint64_t value = get_reg_by_id(reg_id);
-					memory->set(r_frame_p + offset, value);
+					memory.set(r_frame_p + offset, value);
 					break;
 				}
 
