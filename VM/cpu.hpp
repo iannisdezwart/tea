@@ -689,7 +689,7 @@ class CPU {
 				case NOT_REG:
 				{
 					uint8_t reg_id = fetch<uint8_t>();
-					set_reg_by_id(reg_id, !get_reg_by_id(reg_id));
+					set_reg_by_id(reg_id, ~get_reg_by_id(reg_id));
 					break;
 				}
 
@@ -919,48 +919,43 @@ class CPU {
 				case PUSH_8:
 				{
 					uint8_t lit = fetch<uint8_t>();
-					memory->set(r_stack_p, lit);
-					r_stack_p += 1;
+					push(lit);
 					break;
 				}
 
 				case PUSH_16:
 				{
 					uint16_t lit = fetch<uint16_t>();
-					memory->set(r_stack_p, lit);
-					r_stack_p += 2;
+					push(lit);
 					break;
 				}
 
 				case PUSH_32:
 				{
 					uint32_t lit = fetch<uint32_t>();
-					memory->set(r_stack_p, lit);
-					r_stack_p += 4;
+					push(lit);
 					break;
 				}
 
 				case PUSH_64:
 				{
 					uint64_t lit = fetch<uint64_t>();
-					memory->set(r_stack_p, lit);
-					r_stack_p += 8;
+					push(lit);
 					break;
 				}
 
 				case PUSH_REG:
 				{
 					uint8_t reg_id = fetch<uint8_t>();
-					memory->set(r_stack_p, get_reg_by_id(reg_id));
-					r_stack_p += 8;
+					uint64_t value = get_reg_by_id(reg_id);
+					push(value);
 					break;
 				}
 
 				case POP_8_INTO_REG:
 				{
 					uint8_t reg_id = fetch<uint8_t>();
-					r_stack_p -= 1;
-					uint8_t value = memory->get<uint8_t>(r_stack_p);
+					uint8_t value = pop<uint8_t>();
 					set_reg_by_id(reg_id, value);
 					break;
 				}
@@ -968,8 +963,7 @@ class CPU {
 				case POP_16_INTO_REG:
 				{
 					uint8_t reg_id = fetch<uint8_t>();
-					r_stack_p -= 2;
-					uint16_t value = memory->get<uint16_t>(r_stack_p);
+					uint16_t value = pop<uint16_t>();
 					set_reg_by_id(reg_id, value);
 					break;
 				}
@@ -977,8 +971,7 @@ class CPU {
 				case POP_32_INTO_REG:
 				{
 					uint8_t reg_id = fetch<uint8_t>();
-					r_stack_p -= 4;
-					uint32_t value = memory->get<uint32_t>(r_stack_p);
+					uint32_t value = pop<uint32_t>();
 					set_reg_by_id(reg_id, value);
 					break;
 				}
@@ -986,8 +979,7 @@ class CPU {
 				case POP_64_INTO_REG:
 				{
 					uint8_t reg_id = fetch<uint8_t>();
-					r_stack_p -= 8;
-					uint64_t value = memory->get<uint64_t>(r_stack_p);
+					uint64_t value = pop<uint64_t>();
 					set_reg_by_id(reg_id, value);
 					break;
 				}

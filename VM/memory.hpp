@@ -667,19 +667,19 @@ class ProgramBuilder : public MemoryBuilder {
 			push(reg_id);
 		}
 
-		void pop_16_into_reg(uint16_t reg_id)
+		void pop_16_into_reg(uint8_t reg_id)
 		{
 			push_instruction(POP_16_INTO_REG);
 			push(reg_id);
 		}
 
-		void pop_32_into_reg(uint32_t reg_id)
+		void pop_32_into_reg(uint8_t reg_id)
 		{
 			push_instruction(POP_32_INTO_REG);
 			push(reg_id);
 		}
 
-		void pop_64_into_reg(uint64_t reg_id)
+		void pop_64_into_reg(uint8_t reg_id)
 		{
 			push_instruction(POP_64_INTO_REG);
 			push(reg_id);
@@ -740,12 +740,6 @@ class ProgramBuilder : public MemoryBuilder {
 					*reference_point = label_location;
 				}
 			}
-		}
-
-		void log_reg(uint8_t reg_id)
-		{
-			push_instruction(LOG_REG);
-			push(reg_id);
 		}
 };
 
