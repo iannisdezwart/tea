@@ -2,3 +2,4 @@
 Compiler/compile
 Compiler/output
 VM/vm
+Assembler/assemble
