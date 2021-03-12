@@ -5,6 +5,7 @@
 
 #include "memory.hpp"
 #include "../Assembler/assembler.hpp"
+#include "../Assembler/executable.hpp"
 #include "../Assembler/byte_code.hpp"
 
 using namespace std;
@@ -48,12 +49,11 @@ class CPU {
 		bool equal_flag = false;
 		bool greater_flag = false;
 
-		CPU(Memory& program, size_t stack_size)
+		CPU(Executable& executable, size_t stack_size)
 			: stack_size(stack_size),
-				static_data_size(program.get<uint64_t>(0)),
-				program_size(program.get<uint64_t>(8)),
-				memory(program.location() + 16,
-					program.get<uint64_t>(0) + program.get<uint64_t>(8), stack_size)
+				static_data_size(executable.static_data_size),
+				program_size(executable.program_size),
+				memory(executable.data, executable.size, stack_size)
 		{
 			r_instruction_p = program_location();
 			r_stack_p = stack_bottom() - 1;

@@ -176,6 +176,6 @@ int main(int argc, char **argv)
 	const char *file_path = argv[1];
 
 	Assembler assembler = static_data_demo();
-	Memory executable = assembler.assemble();
+	Buffer executable = assembler.assemble();
 	executable.write_to_file(file_path);
 }

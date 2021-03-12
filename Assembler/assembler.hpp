@@ -4,6 +4,8 @@
 #include <bits/stdc++.h>
 
 #include "../VM/memory.hpp"
+#include "buffer-builder.hpp"
+#include "buffer.hpp"
 
 using namespace std;
 
@@ -17,37 +19,37 @@ struct StaticData {
 	}
 };
 
-class Assembler : public MemoryBuilder {
+class Assembler : public BufferBuilder {
 	public:
 		unordered_map<string /* id */, uint64_t /* position */> labels;
 		unordered_map<string /* id */, vector<uint64_t>> label_references;
 
-		MemoryBuilder static_data;
+		BufferBuilder static_data;
 
-		Memory assemble()
+		Buffer assemble()
 		{
-			MemoryBuilder program;
+			BufferBuilder executable;
 			update_label_references();
 
 			// Push the size of the static data segment
 			// and the size of the program instructions
 
-			program.push<uint64_t>(static_data.i);
-			program.push<uint64_t>(i);
+			executable.push<uint64_t>(static_data.offset);
+			executable.push<uint64_t>(offset);
 
 			// Combine static data and program instructions
 
-			for (size_t j = 0; j < static_data.i; j++) {
-				program.push(static_data.buffer[j]);
+			for (size_t j = 0; j < static_data.offset; j++) {
+				executable.push(static_data[j]);
 			}
 
-			for (size_t j = 0; j < i; j++) {
-				program.push(buffer[j]);
+			for (size_t j = 0; j < offset; j++) {
+				executable.push(operator[](j));
 			}
 
 			// Create memory from the program and return it
 
-			return program.build();
+			return executable.build();
 		}
 
 		void push_instruction(enum Instruction instruction)
@@ -697,12 +699,12 @@ class Assembler : public MemoryBuilder {
 				exit(1);
 			}
 
-			labels[id] = i;
+			labels[id] = offset;
 		}
 
 		void add_label_reference(const string& id)
 		{
-			label_references[id].push_back(i);
+			label_references[id].push_back(offset);
 		}
 
 		void update_label_references()
@@ -723,7 +725,7 @@ class Assembler : public MemoryBuilder {
 				// Update all label references
 
 				for (size_t j = 0; j < reference_points.size(); j++) {
-					uint64_t *reference_point = (uint64_t *) (buffer.data() + reference_points[j]);
+					uint64_t *reference_point = (uint64_t *) (data() + reference_points[j]);
 					*reference_point = label_location;
 				}
 			}
@@ -731,18 +733,16 @@ class Assembler : public MemoryBuilder {
 
 		struct StaticData add_static_data(const uint8_t *data, size_t size)
 		{
-			uint64_t offset = static_data.i;
+			size_t offset = static_data.offset;
 
 			for (size_t i = 0; i < size; i++) {
 				static_data.push(data[i]);
 			}
 
-			StaticData static_data = {
+			return {
 				.offset = offset,
 				.size = size
 			};
-
-			return static_data;
 		}
 };
 

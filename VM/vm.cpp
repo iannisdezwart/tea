@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 
 	const char *file_path = argv[1];
 
-	Memory executable = Memory::from_file(file_path);
+	Executable executable = Executable::from_file(file_path);
 	CPU cpu(executable, 100);
 	cpu.run();
 }
