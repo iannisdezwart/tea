@@ -85,6 +85,25 @@ class Memory {
 			fwrite(memory, 1, size, file);
 			fclose(file);
 		}
+
+		static Memory from_file(const char *file_path)
+		{
+			FILE *file = fopen(file_path, "r");
+
+			fseek(file, 0, SEEK_END);
+			size_t file_size = ftell(file);
+			fseek(file, 0, SEEK_SET);
+
+			Memory memory(file_size);
+
+			for (size_t i = 0; i < file_size; i++) {
+				memory.set<uint8_t>(i, fgetc(file));
+			}
+
+			fclose(file);
+
+			return memory;
+		}
 };
 
 class MemoryBuilder {
