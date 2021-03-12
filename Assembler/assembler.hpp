@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "../VM/memory.hpp"
+#include "byte_code.hpp"
 #include "buffer-builder.hpp"
 #include "buffer.hpp"
 

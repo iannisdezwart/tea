@@ -3,38 +3,21 @@
 
 #include <bits/stdc++.h>
 
-#include "../Assembler/byte_code.hpp"
+#include "../Assembler/buffer.hpp"
 
 using namespace std;
 
-class Memory {
-	private:
-		uint8_t *memory;
-
+class Memory : public Buffer {
 	public:
 		size_t size;
 
-		Memory(size_t mem_size)
-		{
-			size = mem_size;
-			memory = new uint8_t[size];
-		}
+		Memory(size_t mem_size) : size(mem_size), Buffer(Buffer::alloc(mem_size)) {}
 
 		Memory(uint8_t *init_mem, size_t init_mem_size, size_t trailing_size = 0)
+			: size(init_mem_size + trailing_size),
+				Buffer(Buffer::alloc(init_mem_size + trailing_size))
 		{
-			size = init_mem_size + trailing_size;
-			memory = new uint8_t[size];
-			memcpy(memory, init_mem, init_mem_size);
-		}
-
-		~Memory()
-		{
-			delete[] memory;
-		}
-
-		uint8_t *location()
-		{
-			return memory;
+			memcpy(data, init_mem, init_mem_size);
 		}
 
 		void check_memory(uint64_t offset)
@@ -53,14 +36,14 @@ class Memory {
 		intx_t get(uint64_t offset)
 		{
 			check_memory(offset);
-			return memory[offset];
+			return data[offset];
 		}
 
 		template <typename intx_t>
 		void set(uint64_t offset, intx_t value)
 		{
 			check_memory(offset);
-			memory[offset] = value;
+			data[offset] = value;
 		}
 
 		void dump(
@@ -77,32 +60,6 @@ class Memory {
 			}
 
 			printf("\n");
-		}
-
-		void write_to_file(const char *file_path)
-		{
-			FILE *file = fopen(file_path, "w");
-			fwrite(memory, 1, size, file);
-			fclose(file);
-		}
-
-		static Memory from_file(const char *file_path)
-		{
-			FILE *file = fopen(file_path, "r");
-
-			fseek(file, 0, SEEK_END);
-			size_t file_size = ftell(file);
-			fseek(file, 0, SEEK_SET);
-
-			Memory memory(file_size);
-
-			for (size_t i = 0; i < file_size; i++) {
-				memory.set<uint8_t>(i, fgetc(file));
-			}
-
-			fclose(file);
-
-			return memory;
 		}
 };
 
