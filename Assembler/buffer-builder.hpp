@@ -54,7 +54,7 @@ class BufferBuilder {
 		{
 			reserve(sizeof(intx_t));
 
-			buffer[offset] = value;
+			*((intx_t *) (buffer + offset)) = value;
 
 			size_t prev_offset = offset;
 			offset += sizeof(intx_t);
