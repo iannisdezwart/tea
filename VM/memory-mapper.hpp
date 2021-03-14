@@ -33,16 +33,6 @@ class MemoryMapper {
 			return make_pair(low, high);
 		}
 
-		size_t find_prev_device_index(uint64_t offset)
-		{
-			return find_device_index(offset).first;
-		}
-
-		size_t find_next_device_index(uint64_t offset)
-		{
-			return find_device_index(offset).second;
-		}
-
 		MemoryDevice *find_device(uint64_t offset)
 		{
 			pair<size_t, size_t> device_index = find_device_index(offset);
