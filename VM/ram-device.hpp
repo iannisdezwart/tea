@@ -14,6 +14,11 @@ class RamDevice : public MemoryDevice, public Buffer {
 			: MemoryDevice(from, to),
 				Buffer(Buffer::alloc(to - from)) {}
 
+		const char *type()
+		{
+			return "RamDevice";
+		}
+
 		void copy_from(uint8_t *source, size_t source_size)
 		{
 			memcpy(data, source, source_size);

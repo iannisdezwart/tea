@@ -7,6 +7,7 @@ using namespace std;
 
 // Memory regions
 
+#define IO_DEVICE_OFFSET 0x10
 #define PROGRAM_START 0x100
 
 class MemoryDevice {
@@ -16,7 +17,7 @@ class MemoryDevice {
 
 		MemoryDevice(uint64_t from, uint64_t to) : from(from), to(to) {}
 
-		virtual ~MemoryDevice() {}
+		virtual const char *type() = 0;
 };
 
 #endif

@@ -5,6 +5,7 @@
 
 #include "memory-device.hpp"
 #include "ram-device.hpp"
+#include "io-device.hpp"
 
 using namespace std;
 
@@ -78,6 +79,10 @@ class MemoryMapper {
 				return ram_device->get<intx_t>(mapped_offset);
 			}
 
+			if (IODevice *io_device = dynamic_cast<IODevice *>(device)) {
+				return io_device->get<intx_t>(mapped_offset);
+			}
+
 			printf("Wasn't able to cast the MemoryDevice (get)\n");
 			abort();
 		}
@@ -89,7 +94,13 @@ class MemoryMapper {
 			uint64_t mapped_offset = offset - device->from;
 
 			if (RamDevice *ram_device = dynamic_cast<RamDevice *>(device)) {
-				return ram_device->set<intx_t>(mapped_offset, value);
+				ram_device->set<intx_t>(mapped_offset, value);
+				return;
+			}
+
+			if (IODevice *io_device = dynamic_cast<IODevice *>(device)) {
+				io_device->set<intx_t>(mapped_offset, value);
+				return;
 			}
 
 			printf("Wasn't able to cast the MemoryDevice (set)\n");
@@ -99,7 +110,8 @@ class MemoryMapper {
 		void print()
 		{
 			for (size_t i = 0; i < devices.size(); i++) {
-				printf("<Device> [ 0x%lx, 0x%lx ]\n", devices[i]->from, devices[i]->to);
+				printf("<%s> [ 0x%lx, 0x%lx ]\n",
+					devices[i]->type(), devices[i]->from, devices[i]->to);
 			}
 		}
 };
