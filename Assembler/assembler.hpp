@@ -3,7 +3,7 @@
 
 #include <bits/stdc++.h>
 
-#include "../VM/memory.hpp"
+#include "../VM/cpu.hpp"
 #include "byte_code.hpp"
 #include "buffer-builder.hpp"
 #include "buffer.hpp"
@@ -734,7 +734,7 @@ class Assembler : public BufferBuilder {
 
 		struct StaticData add_static_data(const uint8_t *data, size_t size)
 		{
-			size_t offset = static_data.offset;
+			size_t offset = PROGRAM_START + static_data.offset;
 
 			for (size_t i = 0; i < size; i++) {
 				static_data.push(data[i]);

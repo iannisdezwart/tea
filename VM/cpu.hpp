@@ -3,7 +3,8 @@
 
 #include <bits/stdc++.h>
 
-#include "memory.hpp"
+#include "memory-mapper.hpp"
+#include "ram-device.hpp"
 #include "../Assembler/assembler.hpp"
 #include "../Assembler/executable.hpp"
 #include "../Assembler/byte_code.hpp"
@@ -12,7 +13,14 @@ using namespace std;
 
 class CPU {
 	public:
-		Memory memory;
+		MemoryMapper memory_mapper;
+
+		// Memory devices
+
+		RamDevice program_ram;
+
+		// Program segment sizes
+
 		size_t static_data_size;
 		size_t program_size;
 		size_t stack_size;
@@ -53,8 +61,11 @@ class CPU {
 			: stack_size(stack_size),
 				static_data_size(executable.static_data_size),
 				program_size(executable.program_size),
-				memory(executable.data, executable.size, stack_size)
+				program_ram(PROGRAM_START, PROGRAM_START + executable.size + stack_size)
 		{
+			memory_mapper.add_device(&program_ram);
+			program_ram.copy_from(executable.data, executable.size);
+
 			r_instruction_p = program_location();
 			r_stack_p = stack_bottom() - 1;
 			r_frame_p = r_stack_p;
@@ -62,22 +73,22 @@ class CPU {
 
 		uint64_t static_data_location()
 		{
-			return 0;
+			return PROGRAM_START;
 		}
 
 		uint64_t program_location()
 		{
-			return static_data_size;
+			return PROGRAM_START + static_data_size;
 		}
 
 		uint64_t stack_bottom()
 		{
-			return memory.size - 1;
+			return PROGRAM_START + static_data_size + program_size + stack_size - 1;
 		}
 
 		uint64_t stack_top()
 		{
-			return memory.size - 1 - stack_size;
+			return PROGRAM_START + static_data_size + program_size - 1;
 		}
 
 		uint64_t get_reg_by_id(uint8_t id)
@@ -162,13 +173,13 @@ class CPU {
 		void dump_stack()
 		{
 			printf("Stack dump:\n");
-			memory.dump(stack_top(), stack_bottom(), r_stack_p, r_frame_p);
+			program_ram.dump(stack_top(), stack_bottom(), r_stack_p, r_frame_p);
 		}
 
 		void dump_program()
 		{
 			printf("Program dump:\n");
-			memory.dump(static_data_location(), stack_top());
+			program_ram.dump(static_data_location(), stack_top());
 		}
 
 		void dump_registers()
@@ -187,7 +198,7 @@ class CPU {
 		template <typename intx_t>
 		intx_t fetch()
 		{
-			intx_t instruction = memory.get<intx_t>(r_instruction_p);
+			intx_t instruction = memory_mapper.get<intx_t>(r_instruction_p);
 			r_instruction_p += sizeof(intx_t);
 			return instruction;
 		}
@@ -197,13 +208,13 @@ class CPU {
 		{
 			r_stack_p -= sizeof(intx_t);
 			current_stack_frame_size += sizeof(intx_t);
-			memory.set(r_stack_p, value);
+			memory_mapper.set(r_stack_p, value);
 		}
 
 		template <typename intx_t>
 		intx_t pop()
 		{
-			intx_t value = memory.get<uint64_t>(r_stack_p);
+			intx_t value = memory_mapper.get<uint64_t>(r_stack_p);
 			r_stack_p += sizeof(intx_t);
 			current_stack_frame_size -= sizeof(intx_t);
 			return value;
@@ -282,7 +293,7 @@ class CPU {
 				{
 					uint64_t lit = fetch<uint8_t>();
 					uint64_t address = fetch<uint64_t>();
-					memory.set(address, lit);
+					memory_mapper.set(address, lit);
 					break;
 				}
 
@@ -290,7 +301,7 @@ class CPU {
 				{
 					uint64_t lit = fetch<uint16_t>();
 					uint64_t address = fetch<uint64_t>();
-					memory.set(address, lit);
+					memory_mapper.set(address, lit);
 					break;
 				}
 
@@ -298,7 +309,7 @@ class CPU {
 				{
 					uint64_t lit = fetch<uint32_t>();
 					uint64_t address = fetch<uint64_t>();
-					memory.set(address, lit);
+					memory_mapper.set(address, lit);
 					break;
 				}
 
@@ -306,7 +317,7 @@ class CPU {
 				{
 					uint64_t lit = fetch<uint64_t>();
 					uint64_t address = fetch<uint64_t>();
-					memory.set(address, lit);
+					memory_mapper.set(address, lit);
 					break;
 				}
 
@@ -322,14 +333,14 @@ class CPU {
 				{
 					uint8_t reg_id = fetch<uint8_t>();
 					uint64_t address = fetch<uint64_t>();
-					memory.set(address, get_reg_by_id(reg_id));
+					memory_mapper.set(address, get_reg_by_id(reg_id));
 					break;
 				}
 
 				case MOVE_MEM_8_INTO_REG:
 				{
 					uint64_t address = fetch<uint64_t>();
-					uint8_t value = memory.get<uint8_t>(address);
+					uint8_t value = memory_mapper.get<uint8_t>(address);
 					uint8_t reg_id = fetch<uint8_t>();
 					set_reg_by_id(reg_id, value);
 					break;
@@ -338,7 +349,7 @@ class CPU {
 				case MOVE_MEM_16_INTO_REG:
 				{
 					uint64_t address = fetch<uint64_t>();
-					uint16_t value = memory.get<uint16_t>(address);
+					uint16_t value = memory_mapper.get<uint16_t>(address);
 					uint8_t reg_id = fetch<uint8_t>();
 					set_reg_by_id(reg_id, value);
 					break;
@@ -347,7 +358,7 @@ class CPU {
 				case MOVE_MEM_32_INTO_REG:
 				{
 					uint64_t address = fetch<uint64_t>();
-					uint32_t value = memory.get<uint32_t>(address);
+					uint32_t value = memory_mapper.get<uint32_t>(address);
 					uint8_t reg_id = fetch<uint8_t>();
 					set_reg_by_id(reg_id, value);
 					break;
@@ -356,7 +367,7 @@ class CPU {
 				case MOVE_MEM_64_INTO_REG:
 				{
 					uint64_t address = fetch<uint64_t>();
-					uint64_t value = memory.get<uint64_t>(address);
+					uint64_t value = memory_mapper.get<uint64_t>(address);
 					uint8_t reg_id = fetch<uint8_t>();
 					set_reg_by_id(reg_id, value);
 					break;
@@ -367,7 +378,7 @@ class CPU {
 					uint8_t reg_id_1 = fetch<uint8_t>();
 					uint8_t reg_id_2 = fetch<uint8_t>();
 					uint64_t address = get_reg_by_id(reg_id_1);
-					uint8_t value = memory.get<uint8_t>(address);
+					uint8_t value = memory_mapper.get<uint8_t>(address);
 					set_reg_by_id(reg_id_2, value);
 					break;
 				}
@@ -377,7 +388,7 @@ class CPU {
 					uint8_t reg_id_1 = fetch<uint8_t>();
 					uint8_t reg_id_2 = fetch<uint8_t>();
 					uint64_t address = get_reg_by_id(reg_id_1);
-					uint16_t value = memory.get<uint16_t>(address);
+					uint16_t value = memory_mapper.get<uint16_t>(address);
 					set_reg_by_id(reg_id_2, value);
 					break;
 				}
@@ -387,7 +398,7 @@ class CPU {
 					uint8_t reg_id_1 = fetch<uint8_t>();
 					uint8_t reg_id_2 = fetch<uint8_t>();
 					uint64_t address = get_reg_by_id(reg_id_1);
-					uint32_t value = memory.get<uint32_t>(address);
+					uint32_t value = memory_mapper.get<uint32_t>(address);
 					set_reg_by_id(reg_id_2, value);
 					break;
 				}
@@ -397,7 +408,7 @@ class CPU {
 					uint8_t reg_id_1 = fetch<uint8_t>();
 					uint8_t reg_id_2 = fetch<uint8_t>();
 					uint64_t address = get_reg_by_id(reg_id_1);
-					uint64_t value = memory.get<uint64_t>(address);
+					uint64_t value = memory_mapper.get<uint64_t>(address);
 					set_reg_by_id(reg_id_2, value);
 					break;
 				}
@@ -406,7 +417,7 @@ class CPU {
 				{
 					int64_t offset = fetch<int64_t>();
 					uint8_t reg_id = fetch<uint8_t>();
-					uint8_t value = memory.get<uint8_t>(r_frame_p + offset);
+					uint8_t value = memory_mapper.get<uint8_t>(r_frame_p + offset);
 					set_reg_by_id(reg_id, value);
 					break;
 				}
@@ -415,7 +426,7 @@ class CPU {
 				{
 					int64_t offset = fetch<int64_t>();
 					uint8_t reg_id = fetch<uint8_t>();
-					uint16_t value = memory.get<uint16_t>(r_frame_p + offset);
+					uint16_t value = memory_mapper.get<uint16_t>(r_frame_p + offset);
 					set_reg_by_id(reg_id, value);
 					break;
 				}
@@ -424,7 +435,7 @@ class CPU {
 				{
 					int64_t offset = fetch<int64_t>();
 					uint8_t reg_id = fetch<uint8_t>();
-					uint32_t value = memory.get<uint32_t>(r_frame_p + offset);
+					uint32_t value = memory_mapper.get<uint32_t>(r_frame_p + offset);
 					set_reg_by_id(reg_id, value);
 					break;
 				}
@@ -433,7 +444,7 @@ class CPU {
 				{
 					int64_t offset = fetch<int64_t>();
 					uint8_t reg_id = fetch<uint8_t>();
-					uint64_t value = memory.get<uint64_t>(r_frame_p + offset);
+					uint64_t value = memory_mapper.get<uint64_t>(r_frame_p + offset);
 					set_reg_by_id(reg_id, value);
 					break;
 				}
@@ -443,7 +454,7 @@ class CPU {
 					uint8_t reg_id = fetch<uint8_t>();
 					int64_t offset = fetch<uint64_t>();
 					uint64_t value = get_reg_by_id(reg_id);
-					memory.set(r_frame_p + offset, value);
+					memory_mapper.set(r_frame_p + offset, value);
 					break;
 				}
 

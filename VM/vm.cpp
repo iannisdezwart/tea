@@ -3,7 +3,6 @@
 // #define CPU_DUMP_DEBUG
 
 #include "cpu.hpp"
-#include "memory.hpp"
 #include "../Assembler/assembler.hpp"
 
 using namespace std;

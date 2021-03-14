@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 
 #include "../VM/cpu.hpp"
-#include "../VM/memory.hpp"
 #include "assembler.hpp"
 
 using namespace std;
