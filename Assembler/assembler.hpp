@@ -123,7 +123,7 @@ class Assembler : public BufferBuilder {
 
 		void move_reg_into_mem(uint8_t reg_id, uint64_t address)
 		{
-			push_instruction(MOVE_REG_INTO_REG);
+			push_instruction(MOVE_REG_INTO_MEM);
 			push(reg_id);
 			push(address);
 		}
@@ -679,12 +679,6 @@ class Assembler : public BufferBuilder {
 		void return_()
 		{
 			push_instruction(RETURN);
-		}
-
-		void print_char_from_reg(uint8_t reg_id)
-		{
-			push_instruction(PRINT_CHAR_FROM_REG);
-			push(reg_id);
 		}
 
 		void log_reg(uint8_t reg_id)

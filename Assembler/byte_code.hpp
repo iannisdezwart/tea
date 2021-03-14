@@ -166,12 +166,6 @@ enum Instruction {
 	RETURN,
 
 
-	// IO operations
-
-
-	PRINT_CHAR_FROM_REG,
-
-
 	// For debugging purposes
 
 

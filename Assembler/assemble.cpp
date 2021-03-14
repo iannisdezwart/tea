@@ -145,7 +145,7 @@ Assembler static_data_demo()
 
 	// Print the character
 
-	assembler.print_char_from_reg(R_2_ID);
+	assembler.move_reg_into_mem(R_2_ID, IO_DEVICE_OFFSET + IODevice::stdout_write);
 
 	// Loop if the running pointer is less than the end pointer
 

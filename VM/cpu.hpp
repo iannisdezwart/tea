@@ -5,6 +5,7 @@
 
 #include "memory-mapper.hpp"
 #include "ram-device.hpp"
+#include "io-device.hpp"
 #include "../Assembler/assembler.hpp"
 #include "../Assembler/executable.hpp"
 #include "../Assembler/byte_code.hpp"
@@ -17,7 +18,8 @@ class CPU {
 
 		// Memory devices
 
-		RamDevice program_ram;
+		IODevice io_device;
+		RamDevice program_ram_device;
 
 		// Program segment sizes
 
@@ -61,10 +63,13 @@ class CPU {
 			: stack_size(stack_size),
 				static_data_size(executable.static_data_size),
 				program_size(executable.program_size),
-				program_ram(PROGRAM_START, PROGRAM_START + executable.size + stack_size)
+				io_device(IO_DEVICE_OFFSET),
+				program_ram_device(PROGRAM_START,
+					PROGRAM_START + executable.size + stack_size)
 		{
-			memory_mapper.add_device(&program_ram);
-			program_ram.copy_from(executable.data, executable.size);
+			memory_mapper.add_device(&io_device);
+			memory_mapper.add_device(&program_ram_device);
+			program_ram_device.copy_from(executable.data, executable.size);
 
 			r_instruction_p = program_location();
 			r_stack_p = stack_bottom() - 1;
@@ -173,13 +178,13 @@ class CPU {
 		void dump_stack()
 		{
 			printf("Stack dump:\n");
-			program_ram.dump(stack_top(), stack_bottom(), r_stack_p, r_frame_p);
+			program_ram_device.dump(stack_top(), stack_bottom(), r_stack_p, r_frame_p);
 		}
 
 		void dump_program()
 		{
 			printf("Program dump:\n");
-			program_ram.dump(static_data_location(), stack_top());
+			program_ram_device.dump(static_data_location(), stack_top());
 		}
 
 		void dump_registers()
@@ -1093,14 +1098,6 @@ class CPU {
 				case RETURN:
 				{
 					pop_stack_frame();
-					break;
-				}
-
-				case PRINT_CHAR_FROM_REG:
-				{
-					uint8_t reg_id = fetch<uint8_t>();
-					char c = get_reg_by_id(reg_id) & 0xFF;
-					putc(c, stdout);
 					break;
 				}
 
