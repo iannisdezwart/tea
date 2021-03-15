@@ -92,7 +92,7 @@ class Tokeniser {
 		#define throw_err(message, ...) do { \
 			fprintf(stderr, "[ Tokenise Error ]: " message "\n", ##__VA_ARGS__); \
 			fprintf(stderr, "At %ld:%ld\n", line, col); \
-			exit(1); \
+			abort(); \
 		} while (0)
 
 	public:
@@ -184,7 +184,7 @@ class Tokeniser {
 
 				// Unknown character
 
-				else throw_err("Found unknown character '%c'", c);
+				else throw_err("Found unknown character '%c' (%hhd)", c, c);
 			}
 
 			return tokens;
@@ -250,12 +250,10 @@ class Tokeniser {
 		{
 			string s;
 			s += first_char;
-			char c;
+			char c = get_char();
 
 			if (first_char == '0') {
 				// We could have to deal with 0x or 0b prefix, or a decimal seperator
-
-				c = get_char();
 
 				if (c == 'x' || c == 'b' || c == '.') {
 					do {

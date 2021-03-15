@@ -4,16 +4,16 @@
 #include <bits/stdc++.h>
 
 #include "ASTNode.hpp"
-#include "../byte_code.hpp"
+#include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
 using namespace std;
 
 class LiteralCharExpression : public ASTNode {
 	public:
-		uint32_t value;
+		uint8_t value;
 
-		LiteralCharExpression(uint32_t value)
+		LiteralCharExpression(uint8_t value)
 		{
 			this->value = value;
 			type = LITERAL_CHAR_EXPRESSION;
@@ -37,6 +37,10 @@ class LiteralCharExpression : public ASTNode {
 			string s = "LiteralCharExpression { value = \"" + to_string(value) +
 				"\" } @ " + to_hex((size_t) this);
 			return s;
+		}
+
+		void compile(Assembler& assembler, CompilerState& compiler_state) {
+			assembler.move_8_into_reg(value, R_ACCUMULATOR_ID);
 		}
 };
 

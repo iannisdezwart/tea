@@ -3,12 +3,14 @@
 
 #include <bits/stdc++.h>
 
-#include "ASTNode.hpp"
-#include "../tokeniser.hpp"
-#include "../byte_code.hpp"
 #include "../util.hpp"
+#include "ASTNode.hpp"
+#include "../../Assembler/byte_code.hpp"
+#include "../../Assembler/assembler.hpp"
+#include "../compiler-state.hpp"
 #include "TypeIdentifierPair.hpp"
 #include "CodeBlock.hpp"
+#include "VariableDeclaration.hpp"
 
 using namespace std;
 
@@ -59,20 +61,61 @@ class FunctionDeclaration : public ASTNode {
 			return s;
 		}
 
-		void compile(
-			unordered_map<string, vector<char>> constants,
-			unordered_map<string, size_t> globals,
-			unordered_map<string, vector<char>> functions
-		) {
-			if (functions.count(type_and_id_pair->get_identifier_name()))
+		Function get_type()
+		{
+			Type return_type = type_and_id_pair->get_type();
+			Function fn_type(return_type);
+
+			// Add parameters
+
+			for (TypeIdentifierPair *param : params) {
+				string param_name = param->get_identifier_name();
+				Type param_type = param->get_type();
+				fn_type.parameter_types.push_back(param_type);
+			}
+
+			return fn_type;
+		}
+
+		void compile(Assembler& assembler, CompilerState& compiler_state) {
+			string fn_name = type_and_id_pair->get_identifier_name();
+			Function fn_type = get_type();
+
+			if (!compiler_state.add_function(fn_name, fn_type))
 				err_at_token(type_and_id_pair->identifier_token,
 					"Duplicate identifier name",
 					"Identifier %s is already declared",
-					type_and_id_pair->get_identifier_name());
+					fn_name.c_str());
 
-			vector<char> instructions;
+			assembler.add_label(fn_name);
 
-			
+			// Gather locals
+
+			size_t locals_size = 0;
+
+			dfs([&compiler_state, &locals_size](ASTNode *node, size_t depth) {
+				if (node->type == VARIABLE_DECLARATION) {
+					VariableDeclaration *local = (VariableDeclaration *) node;
+					string local_name = local->type_and_id_pair->get_identifier_name();
+					Type local_type = local->type_and_id_pair->get_type();
+
+					if (!compiler_state.add_local(local_name, local_type, locals_size))
+						err_at_token(local->type_and_id_pair->identifier_token,
+							"Duplicate identifier name",
+							"Identifier %s is already declared",
+							local_name.c_str());
+
+					locals_size += local_type.byte_size();
+				}
+			}, 0);
+
+			// Make space for the locals on the stack
+
+			assembler.add_64_into_reg(locals_size, R_STACK_P_ID);
+
+			// Compile the function body
+
+			body->compile(assembler, compiler_state);
 		}
 };
 

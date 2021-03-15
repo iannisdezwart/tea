@@ -29,7 +29,7 @@ class Parser {
 		#define syntax_err(token, message, ...) do { \
 			fprintf(stderr, "[ Syntax Error ]: " message "\n", ##__VA_ARGS__); \
 			fprintf(stderr, "At %ld:%ld\n", token.line, token.col); \
-			exit(1); \
+			abort(); \
 		} while (0)
 
 		#define unexpected_token_syntax_err(token) \
@@ -43,7 +43,7 @@ class Parser {
 					"expected a %d token.\n", \
 					token.type, token_type); \
 				fprintf(stderr, "At %ld:%ld\n", token.line, token.col); \
-				exit(1); \
+				abort(); \
 			} \
 		} while (0)
 
@@ -54,7 +54,7 @@ class Parser {
 					"expected a token with value \"%s\".\n", \
 					token.value.c_str(), token_value); \
 				fprintf(stderr, "At %ld:%ld\n", token.line, token.col); \
-				exit(1); \
+				abort(); \
 			} \
 		} while (0)
 

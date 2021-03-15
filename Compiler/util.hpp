@@ -6,13 +6,13 @@
 #define err(message, ...) do { \
 	fprintf(stderr, message, ##__VA_ARGS__); \
 	putc('\n', stderr); \
-	exit(0); \
+	abort(); \
 } while (0)
 
 #define err_at_token(token, prefix, message, ...) do { \
 	fprintf(stderr, "[ %s ]: " message "\n", prefix, ##__VA_ARGS__); \
 	fprintf(stderr, "At %ld:%ld\n", token.line, token.col); \
-	exit(1); \
+	abort(); \
 } while (0)
 
 #define is_alpha(c) (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' \

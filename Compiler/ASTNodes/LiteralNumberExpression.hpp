@@ -4,7 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "ASTNode.hpp"
-#include "../byte_code.hpp"
+#include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
 using namespace std;
@@ -37,6 +37,15 @@ class LiteralNumberExpression : public ASTNode {
 			string s = "LiteralNumberExpression { value = \"" + value + "\" } @ "
 				+ to_hex((size_t) this);
 			return s;
+		}
+
+		uint64_t to_num()
+		{
+			return stoull(value);
+		}
+
+		void compile(Assembler& assembler, CompilerState& compiler_state) {
+			assembler.move_64_into_reg(to_num(), R_ACCUMULATOR_ID);
 		}
 };
 

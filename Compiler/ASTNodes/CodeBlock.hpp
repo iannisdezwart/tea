@@ -3,9 +3,11 @@
 
 #include <bits/stdc++.h>
 
-#include "ASTNode.hpp"
-#include "../byte_code.hpp"
 #include "../util.hpp"
+#include "ASTNode.hpp"
+#include "../../Assembler/byte_code.hpp"
+#include "../../Assembler/assembler.hpp"
+#include "../compiler-state.hpp"
 
 using namespace std;
 
@@ -47,6 +49,12 @@ class CodeBlock : public ASTNode {
 		{
 			string s = "CodeBlock {} @ " + to_hex((size_t) this);
 			return s;
+		}
+
+		void compile(Assembler& assembler, CompilerState& compiler_state) {
+			for (ASTNode *statement : statements) {
+				statement->compile(assembler, compiler_state);
+			}
 		}
 };
 

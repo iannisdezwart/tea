@@ -6,19 +6,25 @@
 #include "util.hpp"
 #include "tokeniser.hpp"
 #include "parser.hpp"
+#include "compiler-state.hpp"
+#include "../Assembler/assembler.hpp"
+#include "../Assembler/buffer.hpp"
 
 using namespace std;
 
 class Compiler {
 	public:
+		char *input_file_name;
 		FILE *input_file;
+
+		char *output_file_name;
 		FILE *output_file;
 
-		unordered_map<string, vector<char>> constants;
-		unordered_map<string, size_t> globals;
-		unordered_map<string, vector<char>> functions;
+		Assembler assembler;
+		CompilerState compiler_state;
 
 		Compiler(char *input_file_name, char *output_file_name)
+			: input_file_name(input_file_name), output_file_name(output_file_name)
 		{
 			input_file = fopen(input_file_name, "r");
 			output_file = fopen(output_file_name, "w");
@@ -46,9 +52,17 @@ class Compiler {
 			vector<ASTNode *> statements = parser.parse();
 			parser.print_ast();
 
+			assembler.call("main");
+			assembler.jump("exit");
+
 			for (size_t i = 0; i < statements.size(); i++) {
-				statements[i]->compile(constants, globals, functions);
+				statements[i]->compile(assembler, compiler_state);
 			}
+
+			assembler.add_label("exit");
+
+			Buffer executable = assembler.assemble();
+			executable.write_to_file(output_file_name);
 		}
 };
 

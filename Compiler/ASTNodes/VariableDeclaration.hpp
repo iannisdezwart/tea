@@ -5,7 +5,7 @@
 
 #include "ASTNode.hpp"
 #include "../tokeniser.hpp"
-#include "../byte_code.hpp"
+#include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 #include "TypeIdentifierPair.hpp"
 
@@ -48,6 +48,40 @@ class VariableDeclaration : public ASTNode {
 		{
 			string s = "VariableDeclaration {} @ " + to_hex((size_t) this);
 			return s;
+		}
+
+		void compile(Assembler& assembler, CompilerState& compiler_state) {
+			if (expression != NULL) {
+				// Moves result into R_ACCUMULATOR
+
+				expression->compile(assembler, compiler_state);
+
+				// Move R_ACCUMULATOR into the offset for the variable
+
+				string id_name = type_and_id_pair->get_identifier_name();
+				Variable& var = compiler_state.locals[id_name];
+				Type& type = var.type;
+				uint64_t offset = var.offset;
+				uint64_t var_size = type.byte_size();
+
+				switch (var_size) {
+					case 1:
+						assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_ID, offset);
+						break;
+
+					case 2:
+						assembler.move_reg_into_frame_offset_16(R_ACCUMULATOR_ID, offset);
+						break;
+
+					case 4:
+						assembler.move_reg_into_frame_offset_32(R_ACCUMULATOR_ID, offset);
+						break;
+
+					case 8:
+						assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_ID, offset);
+						break;
+				}
+			}
 		}
 };
 

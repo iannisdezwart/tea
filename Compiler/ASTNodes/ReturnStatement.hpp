@@ -4,7 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "ASTNode.hpp"
-#include "../byte_code.hpp"
+#include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
 using namespace std;
@@ -38,6 +38,14 @@ class ReturnStatement : public ASTNode {
 		{
 			string s = "ReturnStatement {} @ " + to_hex((size_t) this);
 			return s;
+		}
+
+		void compile(Assembler& assembler, CompilerState& compiler_state) {
+			// Moves the return value into R_ACCUMULATOR
+
+			if (expression != NULL) expression->compile(assembler, compiler_state);
+
+			assembler.return_();
 		}
 };
 

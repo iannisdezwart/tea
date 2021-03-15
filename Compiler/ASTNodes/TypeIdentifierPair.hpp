@@ -5,7 +5,8 @@
 
 #include "ASTNode.hpp"
 #include "../tokeniser.hpp"
-#include "../byte_code.hpp"
+#include "../compiler-state.hpp"
+#include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
 using namespace std;
@@ -46,11 +47,12 @@ class TypeIdentifierPair : public ASTNode {
 			return s;
 		}
 
-		void compile(
-			unordered_map<string, vector<char>> constants,
-			unordered_map<string, size_t> globals,
-			unordered_map<string, vector<char>> functions
-		) {}
+		Type get_type()
+		{
+			return Type::from_string(type_token.value);
+		}
+
+		void compile(Assembler& assembler, CompilerState& compiler_state) {}
 };
 
 #endif
