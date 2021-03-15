@@ -14,8 +14,6 @@ class IODevice : public MemoryDevice {
 		static constexpr const uint64_t stdout_write = 1;
 		static constexpr const uint64_t stderr_write = 2;
 
-		uint8_t stdin_read_byte;
-
 		IODevice(uint64_t offset) : MemoryDevice(offset, offset + IODevice::size) {}
 
 		const char *type()
@@ -28,11 +26,11 @@ class IODevice : public MemoryDevice {
 		{
 			switch (offset) {
 				case stdin_read:
-					return stdin_read_byte;
+					return fgetc(stdin);
 
 				default:
 					printf("Write-only memory access violation\n");
-					printf("VM prevented reading from memory at %ld (0x%lx)\n",
+					printf("VM prevented reading from memory at %ld (0%lx)\n",
 						offset, offset);
 					abort();
 			}

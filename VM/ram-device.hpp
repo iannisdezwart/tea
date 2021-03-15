@@ -47,7 +47,7 @@ class RamDevice : public MemoryDevice, public Buffer {
 			uint64_t highlight_fg = -1,
 			uint64_t highlight_bg = -1
 		) {
-			for (uint64_t i = left_bound; i < right_bound; i++) {
+			for (uint64_t i = left_bound; i <= right_bound; i++) {
 				if (highlight_fg == i) printf("\x1b[31m");
 				if (highlight_bg == i) printf("\x1b[43m");
 				uint8_t byte = get<uint8_t>(i - from);

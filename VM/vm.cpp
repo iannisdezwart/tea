@@ -10,7 +10,7 @@ using namespace std;
 int main(int argc, char **argv)
 {
 	if (argc < 2) {
-		printf("Usage: ./vm input_file_name.teax\n");
+		fprintf(stderr, "Usage: ./vm input_file_name.teax\n");
 		exit(1);
 	}
 
@@ -18,5 +18,7 @@ int main(int argc, char **argv)
 
 	Executable executable = Executable::from_file(file_path);
 	CPU cpu(executable, 100);
+	cpu.memory_mapper.print();
+	cpu.dump_program();
 	cpu.run();
 }
