@@ -212,9 +212,30 @@ class Assembler : public BufferBuilder {
 			push(reg_id);
 		}
 
-		void move_reg_into_frame_offset(uint8_t reg_id, int64_t offset)
+		void move_reg_into_frame_offset_8(uint8_t reg_id, int64_t offset)
 		{
-			push_instruction(MOVE_REG_INTO_FRAME_OFFSET);
+			push_instruction(MOVE_REG_INTO_FRAME_OFFSET_8);
+			push(reg_id);
+			push(offset);
+		}
+
+		void move_reg_into_frame_offset_16(uint8_t reg_id, int64_t offset)
+		{
+			push_instruction(MOVE_REG_INTO_FRAME_OFFSET_32);
+			push(reg_id);
+			push(offset);
+		}
+
+		void move_reg_into_frame_offset_32(uint8_t reg_id, int64_t offset)
+		{
+			push_instruction(MOVE_REG_INTO_FRAME_OFFSET_32);
+			push(reg_id);
+			push(offset);
+		}
+
+		void move_reg_into_frame_offset_64(uint8_t reg_id, int64_t offset)
+		{
+			push_instruction(MOVE_REG_INTO_FRAME_OFFSET_64);
 			push(reg_id);
 			push(offset);
 		}
@@ -691,7 +712,7 @@ class Assembler : public BufferBuilder {
 		{
 			if (labels.count(id)) {
 				printf("ProgramBuilder error: duplicate label %s\n", id.c_str());
-				exit(1);
+				abort();
 			}
 
 			labels[id] = offset;
@@ -712,7 +733,7 @@ class Assembler : public BufferBuilder {
 
 				if (!labels.count(label)) {
 					printf("ProgramBuilder error: referenced non-defined label %s\n", label.c_str());
-					exit(1);
+					abort();
 				}
 
 				const uint64_t& label_location = labels[label];
