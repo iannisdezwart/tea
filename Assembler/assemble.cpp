@@ -57,8 +57,8 @@ Assembler stack_demo()
 
 	// Move the parameters into registers
 
-	assembler.move_frame_offset_64_into_reg(CPU::stack_frame_size + 8, R_ACCUMULATOR_ID);
-	assembler.move_frame_offset_64_into_reg(CPU::stack_frame_size + 16, R_0_ID);
+	assembler.move_frame_offset_64_into_reg(-CPU::stack_frame_size - 16, R_ACCUMULATOR_ID);
+	assembler.move_frame_offset_64_into_reg(-CPU::stack_frame_size - 24, R_0_ID);
 
 	// Add parameter 2 into parameter 1
 
@@ -126,11 +126,11 @@ Assembler static_data_demo()
 
 	// Move the start pointer to the string into R_0
 
-	assembler.move_frame_offset_64_into_reg(CPU::stack_frame_size + 16, R_0_ID);
+	assembler.move_frame_offset_64_into_reg(-CPU::stack_frame_size - 24, R_0_ID);
 
 	// Move the size parameter into R_1
 
-	assembler.move_frame_offset_64_into_reg(CPU::stack_frame_size + 8, R_1_ID);
+	assembler.move_frame_offset_64_into_reg(-CPU::stack_frame_size - 16, R_1_ID);
 
 	// Add the start pointer to the size, so we get the end pointer
 
@@ -168,7 +168,7 @@ Assembler static_data_demo()
 int main(int argc, char **argv)
 {
 	if (argc < 2) {
-		printf("Usage: ./assemble output_file_name.teax\n");
+		fprintf(stderr, "Usage: ./assemble output_file_name.teax\n");
 		exit(1);
 	}
 

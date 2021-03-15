@@ -72,7 +72,7 @@ class CPU {
 			program_ram_device.copy_from(executable.data, executable.size);
 
 			r_instruction_p = program_location();
-			r_stack_p = stack_bottom() - 1;
+			r_stack_p = stack_top();
 			r_frame_p = r_stack_p;
 		}
 
@@ -88,12 +88,12 @@ class CPU {
 
 		uint64_t stack_bottom()
 		{
-			return PROGRAM_START + static_data_size + program_size + stack_size - 1;
+			return PROGRAM_START + static_data_size + program_size + stack_size;
 		}
 
 		uint64_t stack_top()
 		{
-			return PROGRAM_START + static_data_size + program_size - 1;
+			return PROGRAM_START + static_data_size + program_size;
 		}
 
 		uint64_t get_reg_by_id(uint8_t id)
@@ -117,7 +117,7 @@ class CPU {
 					return r_accumulator;
 				default:
 					printf("Unknown register with id %hhu\n", id);
-					exit(1);
+					abort();
 			}
 		}
 
@@ -211,21 +211,21 @@ class CPU {
 		template <typename intx_t>
 		void push(intx_t value)
 		{
-			r_stack_p -= sizeof(intx_t);
-			current_stack_frame_size += sizeof(intx_t);
 			memory_mapper.set(r_stack_p, value);
+			r_stack_p += sizeof(intx_t);
+			current_stack_frame_size += sizeof(intx_t);
 		}
 
 		template <typename intx_t>
 		intx_t pop()
 		{
+			r_stack_p -= sizeof(intx_t);
 			intx_t value = memory_mapper.get<uint64_t>(r_stack_p);
-			r_stack_p += sizeof(intx_t);
 			current_stack_frame_size -= sizeof(intx_t);
 			return value;
 		}
 
-		static constexpr const size_t stack_frame_size = 48;
+		static constexpr const ssize_t stack_frame_size = 48;
 
 		void push_stack_frame()
 		{
@@ -254,9 +254,10 @@ class CPU {
 			r_0 = pop<uint64_t>();
 
 			uint64_t arguments_size = pop<uint64_t>();
+			current_stack_frame_size -= arguments_size + 8;
 
-			r_frame_p += saved_stack_frame_size;
-			r_stack_p += arguments_size;
+			r_frame_p -= saved_stack_frame_size;
+			r_stack_p -= arguments_size;
 		}
 
 		void execute(uint16_t instruction)
@@ -454,7 +455,34 @@ class CPU {
 					break;
 				}
 
-				case MOVE_REG_INTO_FRAME_OFFSET:
+				case MOVE_REG_INTO_FRAME_OFFSET_8:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					int64_t offset = fetch<uint64_t>();
+					uint8_t value = get_reg_by_id(reg_id) & 0xFF;
+					memory_mapper.set(r_frame_p + offset, value);
+					break;
+				}
+
+				case MOVE_REG_INTO_FRAME_OFFSET_16:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					int64_t offset = fetch<uint64_t>();
+					uint16_t value = get_reg_by_id(reg_id) & 0xFFFF;
+					memory_mapper.set(r_frame_p + offset, value);
+					break;
+				}
+
+				case MOVE_REG_INTO_FRAME_OFFSET_32:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					int64_t offset = fetch<uint64_t>();
+					uint32_t value = get_reg_by_id(reg_id) & 0xFFFFFFFF;
+					memory_mapper.set(r_frame_p + offset, value);
+					break;
+				}
+
+				case MOVE_REG_INTO_FRAME_OFFSET_64:
 				{
 					uint8_t reg_id = fetch<uint8_t>();
 					int64_t offset = fetch<uint64_t>();
