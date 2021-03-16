@@ -23,6 +23,14 @@ struct Token {
 	string value;
 	size_t line;
 	size_t col;
+
+	string to_str()
+	{
+		string s = "Token { type = " + to_string(type) + ", value = \"" + value +
+			"\" , line = " + to_string(line) + " , col = " + to_string(col)
+			+ " } @ " + to_hex(this);
+		return s;
+	}
 };
 
 unordered_set<char> whitespace_chars = {

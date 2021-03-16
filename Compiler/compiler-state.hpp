@@ -23,11 +23,19 @@ class Type {
 			UNDEFINED,
 			UNSIGNED_INTEGER,
 			SIGNED_INTEGER,
-			USER_DEFINED_CLASS
+			USER_DEFINED_CLASS,
+			POINTER
 		};
+
+		Type *referenced_type = NULL;
 
 		Type() : value(UNDEFINED) {}
 		Type(enum Value value, size_t size) : value(value), size(size) {}
+
+		~Type()
+		{
+			if (referenced_type != NULL) delete referenced_type;
+		}
 
 		// Allow switch comparisons
 
@@ -85,6 +93,27 @@ class Type {
 		{
 			return (value == Type::SIGNED_INTEGER || value == Type::UNSIGNED_INTEGER)
 				&& size <= 8;
+		}
+
+		string to_str()
+		{
+			switch (value) {
+				default:
+				case Type::UNDEFINED:
+					return "undefined";
+
+				case Type::SIGNED_INTEGER:
+					return string("int") + to_string(size * 8);
+
+				case Type::UNSIGNED_INTEGER:
+					return string("uint") + to_string(size * 8);
+
+				case Type::USER_DEFINED_CLASS:
+					return "user_defined_class";
+
+				case Type::POINTER:
+					return referenced_type->to_str() + "*";
+			}
 		}
 
 	private:

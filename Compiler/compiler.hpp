@@ -14,32 +14,25 @@ using namespace std;
 
 class Compiler {
 	public:
-		char *input_file_name;
 		FILE *input_file;
 
 		char *output_file_name;
-		FILE *output_file;
 
 		Assembler assembler;
 		CompilerState compiler_state;
 
 		Compiler(char *input_file_name, char *output_file_name)
-			: input_file_name(input_file_name), output_file_name(output_file_name)
+			: output_file_name(output_file_name)
 		{
 			input_file = fopen(input_file_name, "r");
-			output_file = fopen(output_file_name, "w");
 
 			if (input_file == NULL)
 				err("Input file %s does not exist", input_file_name);
-
-			if (output_file == NULL)
-				err("Output file %s does not exist", output_file_name);
 		}
 
 		~Compiler()
 		{
 			fclose(input_file);
-			fclose(output_file);
 		}
 
 		void compile()
