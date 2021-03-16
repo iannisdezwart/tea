@@ -19,4 +19,4 @@ Compiler/compile: Compiler/main.cpp
 	g++ Compiler/main.cpp -o Compiler/compile
 
 clean:
-	rm -rf VM/vm Assembler/assemble Compiler/compile
+	rm -rf VM/vm Disassembler/disassemble Assembler/assemble Compiler/compile
