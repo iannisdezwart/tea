@@ -42,6 +42,29 @@ class IdentifierExpression : public ASTNode {
 			return s;
 		}
 
+		Type get_type(CompilerState& compiler_state)
+		{
+			string id_name = identifier_token.value;
+			IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
+
+			switch (id_kind) {
+				case IdentifierKind::LOCAL:
+					return compiler_state.locals[id_name].type;
+
+				case IdentifierKind::PARAMETER:
+					return compiler_state.parameters[id_name].type;
+
+				case IdentifierKind::GLOBAL:
+					return compiler_state.globals[id_name].type;
+
+				default:
+					err_at_token(identifier_token,
+						"Identifier has unknown kind",
+						"Identifier: %s. this might be a bug in the compiler",
+						id_name.c_str());
+			}
+		}
+
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
 			string id_name = identifier_token.value;
 			IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
@@ -55,25 +78,39 @@ class IdentifierExpression : public ASTNode {
 			uint64_t offset;
 			uint64_t var_size;
 
-			if (id_kind == IdentifierKind::LOCAL) {
-				Variable& var = compiler_state.locals[id_name];
-				Type& type = var.type;
-				offset = var.offset;
-				var_size = type.byte_size();
-			}
+			switch (id_kind) {
+				case IdentifierKind::LOCAL:
+				{
+					Variable& var = compiler_state.locals[id_name];
+					Type& type = var.type;
+					offset = var.offset;
+					var_size = type.byte_size();
+					break;
+				}
 
-			else if (id_kind == IdentifierKind::PARAMETER) {
-				Variable& var = compiler_state.parameters[id_name];
-				Type& type = var.type;
-				offset = -compiler_state.parameters_size + var.offset;
-				var_size = type.byte_size();
-			}
+				case IdentifierKind::PARAMETER:
+				{
+					Variable& var = compiler_state.parameters[id_name];
+					Type& type = var.type;
+					offset = -compiler_state.parameters_size + var.offset;
+					var_size = type.byte_size();
+					break;
+				}
 
-			else if (id_kind == IdentifierKind::GLOBAL) {
-				Variable& var = compiler_state.globals[id_name];
-				Type& type = var.type;
-				offset = var.offset;
-				var_size = type.byte_size();
+				case IdentifierKind::GLOBAL:
+				{
+					Variable& var = compiler_state.globals[id_name];
+					Type& type = var.type;
+					offset = var.offset;
+					var_size = type.byte_size();
+					break;
+				}
+
+				default:
+					err_at_token(identifier_token,
+						"Identifier has unknown kind",
+						"Identifier: %s. this might be a bug in the compiler",
+						id_name.c_str());
 			}
 
 			switch (var_size) {

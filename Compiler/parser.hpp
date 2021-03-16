@@ -17,6 +17,7 @@
 #include "ASTNodes/LiteralCharExpression.hpp"
 #include "ASTNodes/LiteralNumberExpression.hpp"
 #include "ASTNodes/IdentifierExpression.hpp"
+#include "ASTNodes/FunctionCall.hpp"
 
 using namespace std;
 
@@ -88,6 +89,7 @@ class Parser {
 		{
 			while (i < tokens.size()) {
 				ASTNode *statement = next_statement();
+
 				statements.push_back(statement);
 			}
 
@@ -99,7 +101,7 @@ class Parser {
 			printf("\\\\\\ AST \\\\\\\n\n");
 
 			for (ASTNode *statement : statements) {
-				statement->dfs([](ASTNode * node, size_t depth) {
+				statement->dfs([](ASTNode *node, size_t depth) {
 					for (size_t i = 0; i < depth; i++) putc('\t', stdout);
 					node->print("\u279a");
 				});
@@ -110,7 +112,7 @@ class Parser {
 
 		Token get_token(size_t offset = 0)
 		{
-			if (i >= tokens.size()) abort();
+			if (i + offset >= tokens.size()) abort();
 			return tokens[i + offset];
 		}
 
@@ -123,14 +125,18 @@ class Parser {
 		ASTNode *next_statement()
 		{
 			Token token = get_token();
+			ASTNode *node;
 
 			switch (token.type) {
 				case TYPE:
 					return scan_declaration();
 
 				case KEYWORD:
-					if (token.value == "return")
-						return scan_return_statement();
+					if (token.value == "return") {
+						node = scan_return_statement();
+						expect_semicolon();
+						return node;
+					}
 					// if (token.value == "if")
 					// 	return scan_if_statement();
 					// if (token.value == "loop")
@@ -148,19 +154,27 @@ class Parser {
 					else err("[ Parser Error ]: Keyword %s not handled.\n",
 						token.value.c_str());
 
-				// case IDENTIFIER:
-				// {
-				// 	// Could be a function call or an assignment
+				case IDENTIFIER:
+				{
+					// Could be a function call or an assignment
 
-				// 	Token maybe_left_bracket = get_token(1);
+					Token maybe_left_bracket = get_token(1);
 
-				// 	if (
-				// 		maybe_left_bracket.type == SPECIAL_CHARACTER &&
-				// 		maybe_left_bracket.value == "{"
-				// 	) {
-				// 		scan_function_call();
-				// 	} else scan_assignment();
-				// }
+					if (
+						maybe_left_bracket.type == SPECIAL_CHARACTER &&
+						maybe_left_bracket.value == "("
+					) {
+						node = scan_function_call();
+						expect_semicolon();
+						return node;
+					} else {
+						// node = scan_assignment();
+						expect_semicolon();
+						printf("assignment not implemented yet\n");
+						abort();
+						return node;
+					}
+				}
 
 				// case OPERATOR:
 				// 	// Prefix unary assignments
@@ -223,12 +237,14 @@ class Parser {
 
 		ASTNode *scan_expression()
 		{
-			Token first_token = next_token();
+			Token first_token = get_token();
 
 			// Parenthesised Expression
 			// Todo: make casting work
 
 			if (first_token.type == SPECIAL_CHARACTER && first_token.value == "(") {
+				i++;
+
 				ASTNode *expression = scan_expression();
 
 				// Expect right parenthesis
@@ -243,6 +259,8 @@ class Parser {
 			// Literal string
 
 			if (first_token.type == LITERAL_STRING) {
+				i++;
+
 				LiteralStringExpression *expression =
 					new LiteralStringExpression(first_token.value);
 
@@ -254,6 +272,8 @@ class Parser {
 			// Literal char
 
 			if (first_token.type == LITERAL_CHAR) {
+				i++;
+
 				LiteralCharExpression *expression =
 					new LiteralCharExpression(0);
 
@@ -265,6 +285,8 @@ class Parser {
 			// Literal number
 
 			if (first_token.type == LITERAL_NUMBER) {
+				i++;
+
 				LiteralNumberExpression *expression =
 					new LiteralNumberExpression(first_token.value);
 
@@ -277,13 +299,25 @@ class Parser {
 				return expression;
 			}
 
-			// Identifier
+			// Identifier or FunctionCall
 
 			if (first_token.type == IDENTIFIER) {
+				Token next = get_token(1);
+
+				// FunctionCall
+
+				printf("first_token.type was an IDENTIFIER\n");
+				printf("%s\n", next.to_str().c_str());
+				if (next.type == SPECIAL_CHARACTER && next.value == "(") {
+					return scan_function_call();
+				}
+
+				// IdentifierExpression
+
+				i++;
+
 				IdentifierExpression *expression =
 					new IdentifierExpression(first_token);
-
-				Token next = get_token();
 
 				if (next.type == OPERATOR) {
 					// Todo: create
@@ -354,6 +388,36 @@ class Parser {
 			return new FunctionDeclaration(type_id_pair, params, code_block);
 		}
 
+		FunctionCall *scan_function_call()
+		{
+			Token identifier_token = next_token();
+			assert_token_type(identifier_token, IDENTIFIER);
+
+			Token left_parenthesis_token = next_token();
+			assert_token_type(left_parenthesis_token, SPECIAL_CHARACTER);
+			assert_token_value(left_parenthesis_token, "(");
+
+			vector<ASTNode *> arguments;
+			Token next = next_token();
+
+			// Scan arguments
+
+			while (!(next.type == SPECIAL_CHARACTER && next.value == ")")) {
+				arguments.push_back(scan_expression());
+				next = next_token();
+
+				if (next.type != SPECIAL_CHARACTER)
+					unexpected_token_syntax_err(next);
+
+				if (next.value == ",") continue;
+				if (next.value == ")") break;
+
+				unexpected_token_syntax_err(next);
+			}
+
+			return new FunctionCall(identifier_token, arguments);
+		}
+
 		VariableDeclaration *scan_variable_declaration(
 			TypeIdentifierPair *type_id_pair
 		) {
@@ -383,15 +447,12 @@ class Parser {
 
 			Token next = get_token();
 
-			if (next.type == SPECIAL_CHARACTER, next.value == ";") {
-				i++;
+			if (next.type == SPECIAL_CHARACTER && next.value == ";") {
 				return new ReturnStatement(NULL);
 			}
 
 			ASTNode *expression = scan_expression();
 			ReturnStatement *return_statement = new ReturnStatement(expression);
-
-			expect_semicolon();
 
 			return return_statement;
 		}

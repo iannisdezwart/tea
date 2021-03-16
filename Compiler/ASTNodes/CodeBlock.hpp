@@ -51,6 +51,11 @@ class CodeBlock : public ASTNode {
 			return s;
 		}
 
+		Type get_type(CompilerState& compiler_state)
+		{
+			return Type();
+		}
+
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
 			for (ASTNode *statement : statements) {
 				statement->compile(assembler, compiler_state);

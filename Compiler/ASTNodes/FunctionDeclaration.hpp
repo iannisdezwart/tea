@@ -22,11 +22,11 @@ class FunctionDeclaration : public ASTNode {
 
 		FunctionDeclaration(
 			TypeIdentifierPair *type_and_id_pair,
-			vector<TypeIdentifierPair *> params,
+			vector<TypeIdentifierPair *>& params,
 			CodeBlock *body
-		) {
+		) : params(params)
+		{
 			this->type_and_id_pair = type_and_id_pair;
-			this->params = params;
 			this->body = body;
 			type = FUNCTION_DECLARATION;
 
@@ -61,25 +61,30 @@ class FunctionDeclaration : public ASTNode {
 			return s;
 		}
 
-		Function get_type()
+		Function get_fn_type(CompilerState& compiler_state)
 		{
-			Type return_type = type_and_id_pair->get_type();
+			Type return_type = type_and_id_pair->get_type(compiler_state);
 			Function fn_type(return_type);
 
 			// Add parameters
 
 			for (TypeIdentifierPair *param : params) {
 				string param_name = param->get_identifier_name();
-				Type param_type = param->get_type();
+				Type param_type = param->get_type(compiler_state);
 				fn_type.parameter_types.push_back(param_type);
 			}
 
 			return fn_type;
 		}
 
+		Type get_type(CompilerState& compiler_state)
+		{
+			return Type();
+		}
+
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
 			string fn_name = type_and_id_pair->get_identifier_name();
-			Function fn_type = get_type();
+			Function fn_type = get_fn_type(compiler_state);
 
 			if (!compiler_state.add_function(fn_name, fn_type))
 				err_at_token(type_and_id_pair->identifier_token,
@@ -97,7 +102,7 @@ class FunctionDeclaration : public ASTNode {
 				if (node->type == VARIABLE_DECLARATION) {
 					VariableDeclaration *local = (VariableDeclaration *) node;
 					string local_name = local->type_and_id_pair->get_identifier_name();
-					Type local_type = local->type_and_id_pair->get_type();
+					Type local_type = local->type_and_id_pair->get_type(compiler_state);
 
 					if (!compiler_state.add_local(local_name, local_type, locals_size))
 						err_at_token(local->type_and_id_pair->identifier_token,

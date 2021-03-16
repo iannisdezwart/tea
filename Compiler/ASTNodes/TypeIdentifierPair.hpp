@@ -47,7 +47,7 @@ class TypeIdentifierPair : public ASTNode {
 			return s;
 		}
 
-		Type get_type()
+		Type get_type(CompilerState& compiler_state)
 		{
 			return Type::from_string(type_token.value);
 		}

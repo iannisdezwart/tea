@@ -39,6 +39,13 @@ class LiteralStringExpression : public ASTNode {
 			return s;
 		}
 
+		Type get_type(CompilerState& compiler_state)
+		{
+			Type type(Type::POINTER, 8);
+			type.referenced_type = new Type(Type::UNSIGNED_INTEGER, 1);
+			return type;
+		}
+
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
 			StaticData static_data = assembler.add_static_data(
 				(uint8_t *) value.data(), value.size());

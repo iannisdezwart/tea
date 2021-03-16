@@ -39,6 +39,11 @@ class LiteralCharExpression : public ASTNode {
 			return s;
 		}
 
+		Type get_type(CompilerState& compiler_state)
+		{
+			return Type(Type::UNSIGNED_INTEGER, 1);
+		}
+
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
 			assembler.move_8_into_reg(value, R_ACCUMULATOR_0_ID);
 		}

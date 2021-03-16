@@ -18,7 +18,8 @@ enum ASTNodeType {
 	LITERAL_STRING_EXPRESSION,
 	LITERAL_CHAR_EXPRESSION,
 	LITERAL_NUMBER_EXPRESSION,
-	IDENTIFIER_EXPRESSION
+	IDENTIFIER_EXPRESSION,
+	FUNCTION_CALL
 };
 
 class ASTNode {
@@ -28,6 +29,7 @@ class ASTNode {
 		virtual string to_str() = 0;
 		virtual void dfs(function<void(ASTNode *, size_t)>, size_t depth = 0) = 0;
 		virtual void compile(Assembler& assembler, CompilerState& compiler_state) = 0;
+		virtual Type get_type(CompilerState& compiler_state) = 0;
 
 		void print(const char *prefix)
 		{

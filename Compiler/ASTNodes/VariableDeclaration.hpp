@@ -50,6 +50,11 @@ class VariableDeclaration : public ASTNode {
 			return s;
 		}
 
+		Type get_type(CompilerState& compiler_state)
+		{
+			return type_and_id_pair->get_type(compiler_state);
+		}
+
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
 			if (expression != NULL) {
 				// Moves result into R_ACCUMULATOR

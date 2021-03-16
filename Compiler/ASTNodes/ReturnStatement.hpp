@@ -40,6 +40,12 @@ class ReturnStatement : public ASTNode {
 			return s;
 		}
 
+		Type get_type(CompilerState& compiler_state)
+		{
+			if (expression == NULL) return Type();
+			return expression->get_type(compiler_state);
+		}
+
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
 			// Moves the return value into R_ACCUMULATOR
 
