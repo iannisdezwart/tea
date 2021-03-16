@@ -31,6 +31,11 @@ class BufferBuilder {
 			buffer = new uint8_t[capacity];
 		}
 
+		void free_buffer()
+		{
+			delete[] buffer;
+		}
+
 		const uint8_t *data() const
 		{
 			return buffer;

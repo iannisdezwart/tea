@@ -27,6 +27,12 @@ class Assembler : public BufferBuilder {
 
 		BufferBuilder static_data;
 
+		~Assembler()
+		{
+			free_buffer();
+			static_data.free_buffer();
+		}
+
 		Buffer assemble()
 		{
 			BufferBuilder executable;
