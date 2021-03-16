@@ -52,6 +52,9 @@ class Compiler {
 			vector<ASTNode *> statements = parser.parse();
 			parser.print_ast();
 
+			// Parameter count
+
+			assembler.push_64(0);
 			assembler.call("main");
 			assembler.jump("exit");
 
