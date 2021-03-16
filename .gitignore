@@ -1,5 +1,7 @@
 .vscode/
-Compiler/compile
-Compiler/output
-VM/vm
 Assembler/assemble
+Compiler/compile
+Compiler/output.teax
+Disassembler/disassemble
+VM/vm
+VM/program.teax
