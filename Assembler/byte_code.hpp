@@ -5,7 +5,7 @@
 
 using namespace std;
 
-enum Instruction {
+enum Instruction : uint16_t {
 	// Move instructions
 
 
