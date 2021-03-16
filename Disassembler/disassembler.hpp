@@ -6,6 +6,7 @@
 #include "file-reader.hpp"
 #include "../Assembler/byte_code.hpp"
 #include "../VM/memory-device.hpp"
+#include "../VM/cpu.hpp"
 
 using namespace std;
 
@@ -53,8 +54,8 @@ class Disassembler {
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_8_INTO_REG %hhu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "MOVE_8_INTO_REG %hhu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -63,8 +64,8 @@ class Disassembler {
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_16_INTO_REG %hu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "MOVE_16_INTO_REG %hu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -73,8 +74,8 @@ class Disassembler {
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_32_INTO_REG %u, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "MOVE_32_INTO_REG %u, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -83,8 +84,8 @@ class Disassembler {
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_8_INTO_REG %lu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "MOVE_8_INTO_REG %lu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -133,8 +134,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_REG_INTO_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "MOVE_REG_INTO_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -143,8 +144,8 @@ class Disassembler {
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "MOVE_REG_INTO_MEM %hhu, %lu\n",
-							reg_id, address);
+						fprintf(file_out, "MOVE_REG_INTO_MEM %s, %lu\n",
+							CPU::reg_to_str(reg_id), address);
 						break;
 					}
 
@@ -153,8 +154,8 @@ class Disassembler {
 						uint64_t address = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_MEM_8_INTO_REG %lu, %hhu\n",
-							address, reg_id);
+						fprintf(file_out, "MOVE_MEM_8_INTO_REG %lu, %s\n",
+							address, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -163,8 +164,8 @@ class Disassembler {
 						uint64_t address = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_MEM_16_INTO_REG %lu, %hhu\n",
-							address, reg_id);
+						fprintf(file_out, "MOVE_MEM_16_INTO_REG %lu, %s\n",
+							address, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -173,8 +174,8 @@ class Disassembler {
 						uint64_t address = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_MEM_32_INTO_REG %lu, %hhu\n",
-							address, reg_id);
+						fprintf(file_out, "MOVE_MEM_32_INTO_REG %lu, %s\n",
+							address, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -183,8 +184,8 @@ class Disassembler {
 						uint64_t address = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_MEM_64_INTO_REG %lu, %hhu\n",
-							address, reg_id);
+						fprintf(file_out, "MOVE_MEM_64_INTO_REG %lu, %s\n",
+							address, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -193,8 +194,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_REG_POINTER_8_INTO_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "MOVE_REG_POINTER_8_INTO_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -203,8 +204,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_REG_POINTER_16_INTO_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "MOVE_REG_POINTER_16_INTO_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -213,8 +214,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_REG_POINTER_32_INTO_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "MOVE_REG_POINTER_32_INTO_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -223,8 +224,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_REG_POINTER_64_INTO_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "MOVE_REG_POINTER_64_INTO_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -233,8 +234,8 @@ class Disassembler {
 						uint64_t offset = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_FRAME_OFFSET_8_INTO_REG %lu, %hhu\n",
-							offset, reg_id);
+						fprintf(file_out, "MOVE_FRAME_OFFSET_8_INTO_REG %lu, %s\n",
+							offset, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -243,8 +244,8 @@ class Disassembler {
 						uint64_t offset = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_FRAME_OFFSET_16_INTO_REG %lu, %hhu\n",
-							offset, reg_id);
+						fprintf(file_out, "MOVE_FRAME_OFFSET_16_INTO_REG %lu, %s\n",
+							offset, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -253,8 +254,8 @@ class Disassembler {
 						uint64_t offset = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_FRAME_OFFSET_32_INTO_REG %lu, %hhu\n",
-							offset, reg_id);
+						fprintf(file_out, "MOVE_FRAME_OFFSET_32_INTO_REG %lu, %s\n",
+							offset, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -263,8 +264,8 @@ class Disassembler {
 						uint64_t offset = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_FRAME_OFFSET_64_INTO_REG %lu, %hhu\n",
-							offset, reg_id);
+						fprintf(file_out, "MOVE_FRAME_OFFSET_64_INTO_REG %lu, %s\n",
+							offset, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -273,8 +274,8 @@ class Disassembler {
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t offset = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_8 %hhu, %lu\n",
-							reg_id, offset);
+						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_8 %s, %lu\n",
+							CPU::reg_to_str(reg_id), offset);
 						break;
 					}
 
@@ -283,8 +284,8 @@ class Disassembler {
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t offset = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_16 %hhu, %lu\n",
-							reg_id, offset);
+						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_16 %s, %lu\n",
+							CPU::reg_to_str(reg_id), offset);
 						break;
 					}
 
@@ -293,8 +294,8 @@ class Disassembler {
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t offset = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_32 %hhu, %lu\n",
-							reg_id, offset);
+						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_32 %s, %lu\n",
+							CPU::reg_to_str(reg_id), offset);
 						break;
 					}
 
@@ -303,8 +304,8 @@ class Disassembler {
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t offset = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_64 %hhu, %lu\n",
-							reg_id, offset);
+						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_64 %s, %lu\n",
+							CPU::reg_to_str(reg_id), offset);
 						break;
 					}
 
@@ -313,8 +314,8 @@ class Disassembler {
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "ADD_8_INTO_REG %hhu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "ADD_8_INTO_REG %hhu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -323,8 +324,8 @@ class Disassembler {
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "ADD_16_INTO_REG %hu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "ADD_16_INTO_REG %hu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -333,8 +334,8 @@ class Disassembler {
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "ADD_32_INTO_REG %u, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "ADD_32_INTO_REG %u, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -343,8 +344,8 @@ class Disassembler {
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "ADD_64_INTO_REG %lu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "ADD_64_INTO_REG %lu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -353,8 +354,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "ADD_REG_INTO_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "ADD_REG_INTO_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -363,8 +364,8 @@ class Disassembler {
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "SUBTRACT_8_FROM_REG %hhu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "SUBTRACT_8_FROM_REG %hhu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -373,8 +374,8 @@ class Disassembler {
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "SUBTRACT_16_FROM_REG %hu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "SUBTRACT_16_FROM_REG %hu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -383,8 +384,8 @@ class Disassembler {
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "SUBTRACT_32_FROM_REG %u, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "SUBTRACT_32_FROM_REG %u, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -393,8 +394,8 @@ class Disassembler {
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "SUBTRACT_64_FROM_REG %lu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "SUBTRACT_64_FROM_REG %lu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -403,8 +404,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "SUBTRACT_REG_FROM_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "SUBTRACT_REG_FROM_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -413,8 +414,8 @@ class Disassembler {
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MULTIPLY_8_INTO_REG %hhu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "MULTIPLY_8_INTO_REG %hhu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -423,8 +424,8 @@ class Disassembler {
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MULTIPLY_16_INTO_REG %hu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "MULTIPLY_16_INTO_REG %hu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -433,8 +434,8 @@ class Disassembler {
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MULTIPLY_32_INTO_REG %u, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "MULTIPLY_32_INTO_REG %u, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -443,8 +444,8 @@ class Disassembler {
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MULTIPLY_64_INTO_REG %lu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "MULTIPLY_64_INTO_REG %lu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -453,8 +454,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MULTIPLY_REG_INTO_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "MULTIPLY_REG_INTO_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -463,8 +464,8 @@ class Disassembler {
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "DIVIDE_8_FROM_REG %hhu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "DIVIDE_8_FROM_REG %hhu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -473,8 +474,8 @@ class Disassembler {
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "DIVIDE_16_FROM_REG %hu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "DIVIDE_16_FROM_REG %hu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -483,8 +484,8 @@ class Disassembler {
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "DIVIDE_32_FROM_REG %u, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "DIVIDE_32_FROM_REG %u, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -493,8 +494,8 @@ class Disassembler {
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "DIVIDE_64_FROM_REG %lu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "DIVIDE_64_FROM_REG %lu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -503,8 +504,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "DIVIDE_REG_FROM_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "DIVIDE_REG_FROM_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -513,8 +514,8 @@ class Disassembler {
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "AND_8_INTO_REG %hhu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "AND_8_INTO_REG %hhu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -523,8 +524,8 @@ class Disassembler {
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "AND_16_INTO_REG %hu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "AND_16_INTO_REG %hu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -533,8 +534,8 @@ class Disassembler {
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "AND_32_INTO_REG %u, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "AND_32_INTO_REG %u, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -543,8 +544,8 @@ class Disassembler {
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "AND_64_INTO_REG %lu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "AND_64_INTO_REG %lu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -553,8 +554,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "AND_REG_INTO_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "AND_REG_INTO_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -563,8 +564,8 @@ class Disassembler {
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "OR_8_INTO_REG %hhu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "OR_8_INTO_REG %hhu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -573,8 +574,8 @@ class Disassembler {
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "OR_16_INTO_REG %hu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "OR_16_INTO_REG %hu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -583,8 +584,8 @@ class Disassembler {
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "OR_32_INTO_REG %u, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "OR_32_INTO_REG %u, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -593,8 +594,8 @@ class Disassembler {
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "OR_64_INTO_REG %lu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "OR_64_INTO_REG %lu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -603,8 +604,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "OR_REG_INTO_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "OR_REG_INTO_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -613,8 +614,8 @@ class Disassembler {
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "XOR_8_INTO_REG %hhu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "XOR_8_INTO_REG %hhu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -623,8 +624,8 @@ class Disassembler {
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "XOR_16_INTO_REG %hu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "XOR_16_INTO_REG %hu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -633,8 +634,8 @@ class Disassembler {
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "XOR_32_INTO_REG %u, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "XOR_32_INTO_REG %u, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -643,8 +644,8 @@ class Disassembler {
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "XOR_64_INTO_REG %lu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "XOR_64_INTO_REG %lu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -653,8 +654,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "XOR_REG_INTO_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "XOR_REG_INTO_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -663,8 +664,8 @@ class Disassembler {
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "LEFT_SHIFT_REG_BY_8 %hhu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "LEFT_SHIFT_REG_BY_8 %hhu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -674,8 +675,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "LEFT_SHIFT_REG_BY_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "LEFT_SHIFT_REG_BY_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -684,8 +685,8 @@ class Disassembler {
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "RIGHT_SHIFT_REG_BY_8 %hhu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "RIGHT_SHIFT_REG_BY_8 %hhu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -694,8 +695,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "DIVIDE_REG_FROM_REG %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "DIVIDE_REG_FROM_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -703,8 +704,8 @@ class Disassembler {
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "INCREMENT_REG %hhu\n",
-							reg_id);
+						fprintf(file_out, "INCREMENT_REG %s\n",
+							CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -712,8 +713,8 @@ class Disassembler {
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "DECREMENT_REG %hhu\n",
-							reg_id);
+						fprintf(file_out, "DECREMENT_REG %s\n",
+							CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -721,8 +722,8 @@ class Disassembler {
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "NOT_REG %hhu\n",
-							reg_id);
+						fprintf(file_out, "NOT_REG %s\n",
+							CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -731,8 +732,8 @@ class Disassembler {
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "COMPARE_8_TO_REG %hhu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "COMPARE_8_TO_REG %hhu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -741,8 +742,8 @@ class Disassembler {
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "COMPARE_16_TO_REG %hu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "COMPARE_16_TO_REG %hu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -751,8 +752,8 @@ class Disassembler {
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "COMPARE_32_TO_REG %u, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "COMPARE_32_TO_REG %u, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -761,8 +762,8 @@ class Disassembler {
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "COMPARE_64_TO_REG %lu, %hhu\n",
-							lit, reg_id);
+						fprintf(file_out, "COMPARE_64_TO_REG %lu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -771,8 +772,8 @@ class Disassembler {
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint8_t lit = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "COMPARE_REG_TO_8 %hhu, %hhu\n",
-							reg_id, lit);
+						fprintf(file_out, "COMPARE_REG_TO_8 %s, %hhu\n",
+							CPU::reg_to_str(reg_id), lit);
 						break;
 					}
 
@@ -781,8 +782,8 @@ class Disassembler {
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint16_t lit = file_reader.read<uint16_t>();
 
-						fprintf(file_out, "COMPARE_REG_TO_16 %hhu, %hu\n",
-							reg_id, lit);
+						fprintf(file_out, "COMPARE_REG_TO_16 %s, %hu\n",
+							CPU::reg_to_str(reg_id), lit);
 						break;
 					}
 
@@ -791,8 +792,8 @@ class Disassembler {
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint32_t lit = file_reader.read<uint32_t>();
 
-						fprintf(file_out, "COMPARE_REG_TO_32 %hhu, %u\n",
-							reg_id, lit);
+						fprintf(file_out, "COMPARE_REG_TO_32 %s, %u\n",
+							CPU::reg_to_str(reg_id), lit);
 						break;
 					}
 
@@ -801,8 +802,8 @@ class Disassembler {
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t lit = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "COMPARE_REG_TO_64 %hhu, %lu\n",
-							reg_id, lit);
+						fprintf(file_out, "COMPARE_REG_TO_64 %s, %lu\n",
+							CPU::reg_to_str(reg_id), lit);
 						break;
 					}
 
@@ -811,8 +812,8 @@ class Disassembler {
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "COMPARE_REG_TO_8 %hhu, %hhu\n",
-							reg_id_1, reg_id_2);
+						fprintf(file_out, "COMPARE_REG_TO_8 %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
 						break;
 					}
 
@@ -904,8 +905,8 @@ class Disassembler {
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "PUSH_REG_8 %hhu\n",
-							reg_id);
+						fprintf(file_out, "PUSH_REG_8 %s\n",
+							CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -913,8 +914,8 @@ class Disassembler {
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "PUSH_REG_16 %hhu\n",
-							reg_id);
+						fprintf(file_out, "PUSH_REG_16 %s\n",
+							CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -922,8 +923,8 @@ class Disassembler {
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "PUSH_REG_32 %hhu\n",
-							reg_id);
+						fprintf(file_out, "PUSH_REG_32 %s\n",
+							CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -931,8 +932,8 @@ class Disassembler {
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "PUSH_REG_64 %hhu\n",
-							reg_id);
+						fprintf(file_out, "PUSH_REG_64 %s\n",
+							CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -940,8 +941,8 @@ class Disassembler {
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "POP_8_INTO_REG %hhu\n",
-							reg_id);
+						fprintf(file_out, "POP_8_INTO_REG %s\n",
+							CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -949,8 +950,8 @@ class Disassembler {
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "POP_16_INTO_REG %hhu\n",
-							reg_id);
+						fprintf(file_out, "POP_16_INTO_REG %s\n",
+							CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -958,8 +959,8 @@ class Disassembler {
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "POP_32_INTO_REG %hhu\n",
-							reg_id);
+						fprintf(file_out, "POP_32_INTO_REG %s\n",
+							CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -967,8 +968,8 @@ class Disassembler {
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "POP_64_INTO_REG %hhu\n",
-							reg_id);
+						fprintf(file_out, "POP_64_INTO_REG %s\n",
+							CPU::reg_to_str(reg_id));
 						break;
 					}
 
@@ -991,7 +992,7 @@ class Disassembler {
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "LOG_REG %hhu\n", reg_id);
+						fprintf(file_out, "LOG_REG %s\n", CPU::reg_to_str(reg_id));
 						break;
 					}
 				}

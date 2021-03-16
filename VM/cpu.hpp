@@ -54,6 +54,41 @@ class CPU {
 
 		uint64_t current_stack_frame_size = 0;
 
+		static constexpr const char *reg_to_str(uint8_t reg_id)
+		{
+			switch (reg_id) {
+				default:
+					return "UNDEFINED";
+
+				case R_0_ID:
+					return "R_0";
+
+				case R_1_ID:
+					return "R_1";
+
+				case R_2_ID:
+					return "R_2";
+
+				case R_3_ID:
+					return "R_3";
+
+				case R_INSTRUCTION_P_ID:
+					return "R_INSTRUCTION_P_ID";
+
+				case R_STACK_P_ID:
+					return "R_STACK_P_ID";
+
+				case R_FRAME_P_ID:
+					return "R_FRAME_P_ID";
+
+				case R_ACCUMULATOR_0_ID:
+					return "R_ACCUMULATOR_0_ID";
+
+				case R_ACCUMULATOR_1_ID:
+					return "R_ACCUMULATOR_1_ID";
+			}
+		}
+
 		// Flags
 
 		bool overflow_flag = false;
