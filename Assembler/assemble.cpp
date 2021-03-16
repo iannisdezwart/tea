@@ -93,7 +93,7 @@ Assembler static_data_demo()
 	// Print the first message
 
 	assembler.move_32_into_reg(hello_world.offset, R_0_ID);
-	assembler.push_reg(R_0_ID);
+	assembler.push_reg_64(R_0_ID);
 	assembler.push_64(hello_world.size);
 	assembler.push_64(16);
 	assembler.call("print");
@@ -101,7 +101,7 @@ Assembler static_data_demo()
 	// Print the second message
 
 	assembler.move_32_into_reg(bye_world.offset, R_0_ID);
-	assembler.push_reg(R_0_ID);
+	assembler.push_reg_64(R_0_ID);
 	assembler.push_64(bye_world.size);
 	assembler.push_64(16);
 	assembler.call("print");
@@ -109,7 +109,7 @@ Assembler static_data_demo()
 	// Print the third message
 
 	assembler.move_32_into_reg(it_wurk.offset, R_0_ID);
-	assembler.push_reg(R_0_ID);
+	assembler.push_reg_64(R_0_ID);
 	assembler.push_64(it_wurk.size);
 	assembler.push_64(16);
 	assembler.call("print");

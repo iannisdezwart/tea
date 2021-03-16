@@ -153,7 +153,10 @@ enum Instruction {
 	PUSH_32,
 	PUSH_64,
 
-	PUSH_REG,
+	PUSH_REG_8,
+	PUSH_REG_16,
+	PUSH_REG_32,
+	PUSH_REG_64,
 
 
 	POP_8_INTO_REG,

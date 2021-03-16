@@ -666,9 +666,27 @@ class Assembler : public BufferBuilder {
 			push(lit);
 		}
 
-		void push_reg(uint8_t reg_id)
+		void push_reg_8(uint8_t reg_id)
 		{
-			push_instruction(PUSH_REG);
+			push_instruction(PUSH_REG_8);
+			push(reg_id);
+		}
+
+		void push_reg_16(uint8_t reg_id)
+		{
+			push_instruction(PUSH_REG_16);
+			push(reg_id);
+		}
+
+		void push_reg_32(uint8_t reg_id)
+		{
+			push_instruction(PUSH_REG_32);
+			push(reg_id);
+		}
+
+		void push_reg_64(uint8_t reg_id)
+		{
+			push_instruction(PUSH_REG_64);
 			push(reg_id);
 		}
 

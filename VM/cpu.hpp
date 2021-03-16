@@ -1083,7 +1083,31 @@ class CPU {
 					break;
 				}
 
-				case PUSH_REG:
+				case PUSH_REG_8:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint8_t value = get_reg_by_id(reg_id) & 0xFF;
+					push(value);
+					break;
+				}
+
+				case PUSH_REG_16:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint16_t value = get_reg_by_id(reg_id) & 0xFFFF;
+					push(value);
+					break;
+				}
+
+				case PUSH_REG_32:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint32_t value = get_reg_by_id(reg_id) & 0xFFFFFFFF;
+					push(value);
+					break;
+				}
+
+				case PUSH_REG_64:
 				{
 					uint8_t reg_id = fetch<uint8_t>();
 					uint64_t value = get_reg_by_id(reg_id);
@@ -1125,6 +1149,8 @@ class CPU {
 
 				case CALL:
 				{
+					// Todo: think of making this absolute instead of offset-based
+
 					uint64_t offset = fetch<uint64_t>();
 					push_stack_frame();
 					r_instruction_p = program_location() + offset;
