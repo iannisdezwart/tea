@@ -47,8 +47,10 @@ class CPU {
 		uint64_t r_frame_p;
 		#define R_FRAME_P_ID 6
 
-		uint64_t r_accumulator = 0;
-		#define R_ACCUMULATOR_ID 7
+		uint64_t r_accumulator_0 = 0;
+		#define R_ACCUMULATOR_0_ID 7
+		uint64_t r_accumulator_1 = 0;
+		#define R_ACCUMULATOR_1_ID 8
 
 		uint64_t current_stack_frame_size = 0;
 
@@ -113,8 +115,10 @@ class CPU {
 					return r_stack_p;
 				case R_FRAME_P_ID:
 					return r_frame_p;
-				case R_ACCUMULATOR_ID:
-					return r_accumulator;
+				case R_ACCUMULATOR_0_ID:
+					return r_accumulator_0;
+				case R_ACCUMULATOR_1_ID:
+					return r_accumulator_1;
 				default:
 					printf("Unknown register with id %hhu\n", id);
 					abort();
@@ -145,8 +149,11 @@ class CPU {
 				case R_FRAME_P_ID:
 					r_frame_p = value;
 					break;
-				case R_ACCUMULATOR_ID:
-					r_accumulator = value;
+				case R_ACCUMULATOR_0_ID:
+					r_accumulator_0 = value;
+					break;
+				case R_ACCUMULATOR_1_ID:
+					r_accumulator_1 = value;
 					break;
 			}
 		}
@@ -192,7 +199,8 @@ class CPU {
 			printf("r_instruction_p = 0x%016lx = %020lu\n", r_instruction_p, r_instruction_p);
 			printf("r_stack_p       = 0x%016lx = %020lu\n", r_stack_p, r_stack_p);
 			printf("r_frame_p       = 0x%016lx = %020lu\n", r_frame_p, r_frame_p);
-			printf("r_accumulator   = 0x%016lx = %020lu\n", r_accumulator, r_accumulator);
+			printf("r_accumulator_0 = 0x%016lx = %020lu\n", r_accumulator_0, r_accumulator_0);
+			printf("r_accumulator_1 = 0x%016lx = %020lu\n", r_accumulator_1, r_accumulator_1);
 			printf("r_0             = 0x%016lx = %020lu\n", r_0, r_0);
 			printf("r_1             = 0x%016lx = %020lu\n", r_1, r_1);
 			printf("r_2             = 0x%016lx = %020lu\n", r_2, r_2);

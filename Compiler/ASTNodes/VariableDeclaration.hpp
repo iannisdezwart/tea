@@ -66,19 +66,19 @@ class VariableDeclaration : public ASTNode {
 
 				switch (var_size) {
 					case 1:
-						assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_ID, offset);
+						assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_0_ID, offset);
 						break;
 
 					case 2:
-						assembler.move_reg_into_frame_offset_16(R_ACCUMULATOR_ID, offset);
+						assembler.move_reg_into_frame_offset_16(R_ACCUMULATOR_0_ID, offset);
 						break;
 
 					case 4:
-						assembler.move_reg_into_frame_offset_32(R_ACCUMULATOR_ID, offset);
+						assembler.move_reg_into_frame_offset_32(R_ACCUMULATOR_0_ID, offset);
 						break;
 
 					case 8:
-						assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_ID, offset);
+						assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_0_ID, offset);
 						break;
 				}
 			}

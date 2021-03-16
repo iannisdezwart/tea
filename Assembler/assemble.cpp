@@ -48,7 +48,7 @@ Assembler stack_demo()
 	// Call the add function, log its return value, and exit the program
 
 	assembler.call("add_two_uint64s");
-	assembler.log_reg(R_ACCUMULATOR_ID);
+	assembler.log_reg(R_ACCUMULATOR_0_ID);
 	assembler.jump("exit");
 
 	// Where the add function lives in memory
@@ -57,12 +57,12 @@ Assembler stack_demo()
 
 	// Move the parameters into registers
 
-	assembler.move_frame_offset_64_into_reg(-CPU::stack_frame_size - 16, R_ACCUMULATOR_ID);
+	assembler.move_frame_offset_64_into_reg(-CPU::stack_frame_size - 16, R_ACCUMULATOR_0_ID);
 	assembler.move_frame_offset_64_into_reg(-CPU::stack_frame_size - 24, R_0_ID);
 
 	// Add parameter 2 into parameter 1
 
-	assembler.add_reg_into_reg(R_0_ID, R_ACCUMULATOR_ID);
+	assembler.add_reg_into_reg(R_0_ID, R_ACCUMULATOR_0_ID);
 
 	// The accumulator is set to the return value, now we can return
 

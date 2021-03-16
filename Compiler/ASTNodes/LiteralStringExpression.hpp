@@ -43,7 +43,8 @@ class LiteralStringExpression : public ASTNode {
 			StaticData static_data = assembler.add_static_data(
 				(uint8_t *) value.data(), value.size());
 
-			assembler.move_64_into_reg(static_data.offset, R_ACCUMULATOR_ID);
+			assembler.move_64_into_reg(PROGRAM_START + static_data.offset,
+				R_ACCUMULATOR_0_ID);
 		}
 };
 

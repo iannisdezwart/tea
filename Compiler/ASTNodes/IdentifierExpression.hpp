@@ -78,19 +78,19 @@ class IdentifierExpression : public ASTNode {
 
 			switch (var_size) {
 				case 1:
-					assembler.move_frame_offset_8_into_reg(offset, R_ACCUMULATOR_ID);
+					assembler.move_frame_offset_8_into_reg(offset, R_ACCUMULATOR_0_ID);
 					break;
 
 				case 2:
-					assembler.move_frame_offset_16_into_reg(offset, R_ACCUMULATOR_ID);
+					assembler.move_frame_offset_16_into_reg(offset, R_ACCUMULATOR_0_ID);
 					break;
 
 				case 4:
-					assembler.move_frame_offset_32_into_reg(offset, R_ACCUMULATOR_ID);
+					assembler.move_frame_offset_32_into_reg(offset, R_ACCUMULATOR_0_ID);
 					break;
 
 				case 8:
-					assembler.move_frame_offset_64_into_reg(offset, R_ACCUMULATOR_ID);
+					assembler.move_frame_offset_64_into_reg(offset, R_ACCUMULATOR_0_ID);
 					break;
 
 				default:

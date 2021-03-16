@@ -41,11 +41,17 @@ class LiteralNumberExpression : public ASTNode {
 
 		uint64_t to_num()
 		{
+			if (value[0] == '0' && value[1] == 'x')
+				return stoull(value.substr(2), NULL, 16);
+
+			if (value[0] == '0' && value[1] == 'b')
+				return stoull(value.substr(2), NULL, 2);
+
 			return stoull(value);
 		}
 
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
-			assembler.move_64_into_reg(to_num(), R_ACCUMULATOR_ID);
+			assembler.move_64_into_reg(to_num(), R_ACCUMULATOR_0_ID);
 		}
 };
 
