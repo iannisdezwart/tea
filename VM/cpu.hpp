@@ -1050,43 +1050,43 @@ class CPU {
 
 				case JUMP:
 				{
-					uint64_t offset = fetch<uint64_t>();
-					r_instruction_p = program_location() + offset;
+					uint64_t address = fetch<uint64_t>();
+					r_instruction_p = address;
 					break;
 				}
 
 				case JUMP_IF_GREATER:
 				{
-					uint64_t offset = fetch<uint64_t>();
-					if (greater_flag) r_instruction_p = program_location() + offset;
+					uint64_t address = fetch<uint64_t>();
+					if (greater_flag) r_instruction_p = address;
 					break;
 				}
 
 				case JUMP_IF_GREATER_OR_EQUAL:
 				{
-					uint64_t offset = fetch<uint64_t>();
-					if (greater_flag | equal_flag) r_instruction_p = program_location() + offset;
+					uint64_t address = fetch<uint64_t>();
+					if (greater_flag | equal_flag) r_instruction_p = address;
 					break;
 				}
 
 				case JUMP_IF_LESS:
 				{
-					uint64_t offset = fetch<uint64_t>();
-					if (!greater_flag & !equal_flag) r_instruction_p = program_location() + offset;
+					uint64_t address = fetch<uint64_t>();
+					if (!greater_flag & !equal_flag) r_instruction_p = address;
 					break;
 				}
 
 				case JUMP_IF_LESS_OR_EQUAL:
 				{
-					uint64_t offset = fetch<uint64_t>();
-					if (!greater_flag) r_instruction_p = program_location() + offset;
+					uint64_t address = fetch<uint64_t>();
+					if (!greater_flag) r_instruction_p = address;
 					break;
 				}
 
 				case JUMP_IF_EQUAL:
 				{
-					uint64_t offset = fetch<uint64_t>();
-					if (equal_flag) r_instruction_p = program_location() + offset;
+					uint64_t address = fetch<uint64_t>();
+					if (equal_flag) r_instruction_p = address;
 					break;
 				}
 
