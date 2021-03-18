@@ -19,6 +19,7 @@ int main(int argc, char **argv)
 	Executable executable = Executable::from_file(file_path);
 	CPU cpu(executable, 200);
 	cpu.memory_mapper.print();
-	cpu.dump_program();
 	cpu.run();
+
+	printf("VM exited with exit code %lu\n", cpu.r_accumulator_0);
 }

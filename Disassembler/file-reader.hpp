@@ -24,7 +24,7 @@ class FileReader {
 
 				if (c == EOF) return EOF;
 
-				intx_t byte = c << (i * 8);
+				intx_t byte = (intx_t) c << (i * 8);
 				value |= byte;
 			}
 

@@ -1,9 +1,29 @@
-int get_five()
+#include "trick-the-vscode-c-syntax-highlighter.h"
+
+// i32 fn(u64 a, u64 b)
+// {
+// 	i32 c = a * b / 2;
+// 	return c;
+// }
+
+// i32 main()
+// {
+// 	return fn(5, 7);
+// }
+
+u64 multiply(u64 a, u64 b)
 {
-	return 5;
+	u64 ans = a * b;
+	return ans;
 }
 
-int main()
+u64 add(u64 a, u64 b)
 {
-	return get_five();
+	u64 ans = a + b;
+	return ans;
+}
+
+u64 main()
+{
+	return 1 - 2;
 }
