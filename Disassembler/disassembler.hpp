@@ -94,7 +94,7 @@ class Disassembler {
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "MOVE_8_INTO_MEM %hhu, %lu\n",
+						fprintf(file_out, "MOVE_8_INTO_MEM %hhu, 0x%lx\n",
 							lit, address);
 						break;
 					}
@@ -104,7 +104,7 @@ class Disassembler {
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "MOVE_16_INTO_MEM %hu, %lu\n",
+						fprintf(file_out, "MOVE_16_INTO_MEM %hu, 0x%lx\n",
 							lit, address);
 						break;
 					}
@@ -114,7 +114,7 @@ class Disassembler {
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "MOVE_32_INTO_MEM %u, %lu\n",
+						fprintf(file_out, "MOVE_32_INTO_MEM %u, 0x%lx\n",
 							lit, address);
 						break;
 					}
@@ -124,7 +124,7 @@ class Disassembler {
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "MOVE_64_INTO_MEM %lu, %lu\n",
+						fprintf(file_out, "MOVE_64_INTO_MEM %lu, 0x%lx\n",
 							lit, address);
 						break;
 					}
@@ -144,7 +144,7 @@ class Disassembler {
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "MOVE_REG_INTO_MEM %s, %lu\n",
+						fprintf(file_out, "MOVE_REG_INTO_MEM %s, 0x%lx\n",
 							CPU::reg_to_str(reg_id), address);
 						break;
 					}
@@ -154,7 +154,7 @@ class Disassembler {
 						uint64_t address = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_MEM_8_INTO_REG %lu, %s\n",
+						fprintf(file_out, "MOVE_MEM_8_INTO_REG 0x%lx, %s\n",
 							address, CPU::reg_to_str(reg_id));
 						break;
 					}
@@ -164,7 +164,7 @@ class Disassembler {
 						uint64_t address = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_MEM_16_INTO_REG %lu, %s\n",
+						fprintf(file_out, "MOVE_MEM_16_INTO_REG 0x%lx, %s\n",
 							address, CPU::reg_to_str(reg_id));
 						break;
 					}
@@ -174,7 +174,7 @@ class Disassembler {
 						uint64_t address = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_MEM_32_INTO_REG %lu, %s\n",
+						fprintf(file_out, "MOVE_MEM_32_INTO_REG 0x%lx, %s\n",
 							address, CPU::reg_to_str(reg_id));
 						break;
 					}
@@ -184,7 +184,7 @@ class Disassembler {
 						uint64_t address = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_MEM_64_INTO_REG %lu, %s\n",
+						fprintf(file_out, "MOVE_MEM_64_INTO_REG 0x%lx, %s\n",
 							address, CPU::reg_to_str(reg_id));
 						break;
 					}
@@ -821,7 +821,7 @@ class Disassembler {
 					{
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "JUMP %lu\n", address);
+						fprintf(file_out, "JUMP 0x%lx\n", address);
 						break;
 					}
 
@@ -829,7 +829,7 @@ class Disassembler {
 					{
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "JUMP_IF_GREATER %lu\n", address);
+						fprintf(file_out, "JUMP_IF_GREATER 0x%lx\n", address);
 						break;
 					}
 
@@ -837,7 +837,7 @@ class Disassembler {
 					{
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "JUMP_IF_GREATER_OR_EQUAL %lu\n", address);
+						fprintf(file_out, "JUMP_IF_GREATER_OR_EQUAL 0x%lx\n", address);
 						break;
 					}
 
@@ -845,7 +845,7 @@ class Disassembler {
 					{
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "JUMP_IF_LESS %lu\n", address);
+						fprintf(file_out, "JUMP_IF_LESS 0x%lx\n", address);
 						break;
 					}
 
@@ -853,7 +853,7 @@ class Disassembler {
 					{
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "JUMP_IF_LESS_OR_EQUAL %lu\n", address);
+						fprintf(file_out, "JUMP_IF_LESS_OR_EQUAL 0x%lx\n", address);
 						break;
 					}
 
@@ -861,7 +861,7 @@ class Disassembler {
 					{
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "JUMP_IF_EQUAL %lu\n", address);
+						fprintf(file_out, "JUMP_IF_EQUAL 0x%lx\n", address);
 						break;
 					}
 
@@ -977,7 +977,7 @@ class Disassembler {
 					{
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "CALL %lu\n",
+						fprintf(file_out, "CALL 0x%lx\n",
 							address);
 						break;
 					}
