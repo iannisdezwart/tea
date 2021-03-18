@@ -54,7 +54,7 @@ class CPU {
 
 		uint64_t current_stack_frame_size = 0;
 
-		static constexpr const char *reg_to_str(uint8_t reg_id)
+		static const char *reg_to_str(uint8_t reg_id)
 		{
 			switch (reg_id) {
 				default:
@@ -658,7 +658,7 @@ class CPU {
 				{
 					uint64_t lit = fetch<uint8_t>();
 					uint8_t reg_id = fetch<uint8_t>();
-					set_reg_by_id(reg_id, get_reg_by_id(reg_id) - lit);
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) / lit);
 					break;
 				}
 
@@ -1184,11 +1184,9 @@ class CPU {
 
 				case CALL:
 				{
-					// Todo: think of making this absolute instead of offset-based
-
-					uint64_t offset = fetch<uint64_t>();
+					uint64_t address = fetch<uint64_t>();
 					push_stack_frame();
-					r_instruction_p = program_location() + offset;
+					r_instruction_p = address;
 					break;
 				}
 

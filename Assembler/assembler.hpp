@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "../VM/cpu.hpp"
+#include "../VM/memory-device.hpp"
 #include "byte_code.hpp"
 #include "buffer-builder.hpp"
 #include "buffer.hpp"
@@ -756,11 +757,12 @@ class Assembler : public BufferBuilder {
 				// Get the location of the label
 
 				if (!labels.count(label)) {
-					printf("ProgramBuilder error: referenced non-defined label %s\n", label.c_str());
+					printf("ProgramBuilder error: referenced non-defined label %s\n",
+						label.c_str());
 					abort();
 				}
 
-				const uint64_t& label_location = labels[label];
+				uint64_t label_location = PROGRAM_START + static_data.offset + labels[label];
 
 				// Update all label references
 
