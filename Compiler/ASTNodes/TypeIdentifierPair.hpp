@@ -16,9 +16,10 @@ class TypeIdentifierPair : public ASTNode {
 		Token type_token;
 		Token identifier_token;
 
-		TypeIdentifierPair(Token type_token, Token identifier_token) {
-			this->type_token = type_token;
-			this->identifier_token = identifier_token;
+		TypeIdentifierPair(Token type_token, Token identifier_token)
+			: type_token(type_token), identifier_token(identifier_token),
+				ASTNode(identifier_token)
+		{
 			type = TYPE_IDENTIFIER_PAIR;
 
 			#ifdef PARSER_VERBOSE

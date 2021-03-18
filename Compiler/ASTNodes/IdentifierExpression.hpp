@@ -17,8 +17,8 @@ class IdentifierExpression : public ASTNode {
 		Token identifier_token;
 
 		IdentifierExpression(Token identifier_token)
+			: identifier_token(identifier_token), ASTNode(identifier_token)
 		{
-			this->identifier_token = identifier_token;
 			type = IDENTIFIER_EXPRESSION;
 
 			#ifdef PARSER_VERBOSE

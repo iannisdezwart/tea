@@ -19,12 +19,18 @@ enum ASTNodeType {
 	LITERAL_CHAR_EXPRESSION,
 	LITERAL_NUMBER_EXPRESSION,
 	IDENTIFIER_EXPRESSION,
-	FUNCTION_CALL
+	FUNCTION_CALL,
+	BINARY_OPERATION,
+	ASSIGNMENT_EXPRESSION
 };
 
 class ASTNode {
 	public:
 		ASTNodeType type;
+		const Token& accountable_token;
+
+		ASTNode(const Token& accountable_token)
+			: accountable_token(accountable_token) {}
 
 		virtual string to_str() = 0;
 		virtual void dfs(function<void(ASTNode *, size_t)>, size_t depth = 0) = 0;
@@ -34,6 +40,11 @@ class ASTNode {
 		void print(const char *prefix)
 		{
 			printf("%s: %s\n", prefix, to_str().c_str());
+		}
+
+		bool is_operation()
+		{
+			return type == BINARY_OPERATION;
 		}
 };
 

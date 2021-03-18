@@ -16,12 +16,11 @@ class VariableDeclaration : public ASTNode {
 		TypeIdentifierPair *type_and_id_pair;
 		ASTNode *expression;
 
-		VariableDeclaration(
-			TypeIdentifierPair *type_and_id_pair,
-			ASTNode *expression
-		) {
-			this->type_and_id_pair = type_and_id_pair;
-			this->expression = expression;
+		VariableDeclaration(TypeIdentifierPair *type_and_id_pair,
+			ASTNode *expression)
+		: type_and_id_pair(type_and_id_pair), expression(expression),
+			ASTNode(type_and_id_pair->identifier_token)
+		{
 			type = VARIABLE_DECLARATION;
 
 			#ifdef PARSER_VERBOSE

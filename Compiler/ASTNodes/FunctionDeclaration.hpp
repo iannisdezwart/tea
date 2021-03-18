@@ -24,7 +24,7 @@ class FunctionDeclaration : public ASTNode {
 			TypeIdentifierPair *type_and_id_pair,
 			vector<TypeIdentifierPair *>& params,
 			CodeBlock *body
-		) : params(params)
+		) : params(params), ASTNode(type_and_id_pair->identifier_token)
 		{
 			this->type_and_id_pair = type_and_id_pair;
 			this->body = body;

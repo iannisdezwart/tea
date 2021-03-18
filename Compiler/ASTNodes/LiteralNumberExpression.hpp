@@ -11,11 +11,13 @@ using namespace std;
 
 class LiteralNumberExpression : public ASTNode {
 	public:
+		Token literal_number_token;
 		string value;
 
-		LiteralNumberExpression(string value)
+		LiteralNumberExpression(Token literal_number_token, string value)
+			: literal_number_token(literal_number_token),
+				ASTNode(literal_number_token), value(value)
 		{
-			this->value = value;
 			type = LITERAL_NUMBER_EXPRESSION;
 
 			#ifdef PARSER_VERBOSE

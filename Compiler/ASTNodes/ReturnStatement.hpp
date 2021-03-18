@@ -11,10 +11,12 @@ using namespace std;
 
 class ReturnStatement : public ASTNode {
 	public:
+		Token return_token;
 		ASTNode *expression;
 
-		ReturnStatement(ASTNode *expression) {
-			this->expression = expression;
+		ReturnStatement(Token return_token, ASTNode *expression)
+			: expression(expression), return_token(return_token), ASTNode(return_token)
+		{
 			type = RETURN_STATEMENT;
 
 			#ifdef PARSER_VERBOSE

@@ -14,8 +14,9 @@ using namespace std;
 class CodeBlock : public ASTNode {
 	public:
 		vector<ASTNode *> statements;
+		Token start_token;
 
-		CodeBlock()
+		CodeBlock(Token start_token) : start_token(start_token), ASTNode(start_token)
 		{
 			type = CODE_BLOCK;
 

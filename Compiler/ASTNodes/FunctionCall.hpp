@@ -17,7 +17,7 @@ class FunctionCall : public ASTNode {
 		vector<ASTNode *> arguments;
 
 		FunctionCall(Token& fn_token, vector<ASTNode *>& arguments)
-			: fn_token(fn_token), arguments(arguments)
+			: fn_token(fn_token), arguments(arguments), ASTNode(fn_token)
 		{
 			type = FUNCTION_CALL;
 
@@ -92,7 +92,7 @@ class FunctionCall : public ASTNode {
 
 				if (param_type != arg_type)
 					err_at_token(fn_token,
-						"Function call arguments list does not match"
+						"Function call arguments list does not match "
 						"function parameter type template",
 						"argument[%lu] is of type %s. Expected type %s",
 						i, arg.c_str(), param.c_str());
