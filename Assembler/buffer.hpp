@@ -20,13 +20,13 @@ class Buffer {
 		template <typename intx_t>
 		intx_t get(uint64_t offset)
 		{
-			return data[offset];
+			return *((intx_t *) (data + offset));
 		}
 
 		template <typename intx_t>
 		void set(uint64_t offset, intx_t value)
 		{
-			data[offset] = value;
+			*((intx_t *) (data + offset)) = value;
 		}
 
 		void write_to_file(const char *file_path)
