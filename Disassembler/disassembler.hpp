@@ -231,40 +231,40 @@ class Disassembler {
 
 					case MOVE_FRAME_OFFSET_8_INTO_REG:
 					{
-						uint64_t offset = file_reader.read<uint64_t>();
+						int64_t offset = file_reader.read<int64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_FRAME_OFFSET_8_INTO_REG %lu, %s\n",
+						fprintf(file_out, "MOVE_FRAME_OFFSET_8_INTO_REG %ld, %s\n",
 							offset, CPU::reg_to_str(reg_id));
 						break;
 					}
 
 					case MOVE_FRAME_OFFSET_16_INTO_REG:
 					{
-						uint64_t offset = file_reader.read<uint64_t>();
+						int64_t offset = file_reader.read<int64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_FRAME_OFFSET_16_INTO_REG %lu, %s\n",
+						fprintf(file_out, "MOVE_FRAME_OFFSET_16_INTO_REG %ld, %s\n",
 							offset, CPU::reg_to_str(reg_id));
 						break;
 					}
 
 					case MOVE_FRAME_OFFSET_32_INTO_REG:
 					{
-						uint64_t offset = file_reader.read<uint64_t>();
+						int64_t offset = file_reader.read<int64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_FRAME_OFFSET_32_INTO_REG %lu, %s\n",
+						fprintf(file_out, "MOVE_FRAME_OFFSET_32_INTO_REG %ld, %s\n",
 							offset, CPU::reg_to_str(reg_id));
 						break;
 					}
 
 					case MOVE_FRAME_OFFSET_64_INTO_REG:
 					{
-						uint64_t offset = file_reader.read<uint64_t>();
+						int64_t offset = file_reader.read<int64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						fprintf(file_out, "MOVE_FRAME_OFFSET_64_INTO_REG %lu, %s\n",
+						fprintf(file_out, "MOVE_FRAME_OFFSET_64_INTO_REG %ld, %s\n",
 							offset, CPU::reg_to_str(reg_id));
 						break;
 					}
@@ -272,9 +272,9 @@ class Disassembler {
 					case MOVE_REG_INTO_FRAME_OFFSET_8:
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
-						uint64_t offset = file_reader.read<uint64_t>();
+						int64_t offset = file_reader.read<int64_t>();
 
-						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_8 %s, %lu\n",
+						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_8 %s, %ld\n",
 							CPU::reg_to_str(reg_id), offset);
 						break;
 					}
@@ -282,9 +282,9 @@ class Disassembler {
 					case MOVE_REG_INTO_FRAME_OFFSET_16:
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
-						uint64_t offset = file_reader.read<uint64_t>();
+						int64_t offset = file_reader.read<int64_t>();
 
-						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_16 %s, %lu\n",
+						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_16 %s, %ld\n",
 							CPU::reg_to_str(reg_id), offset);
 						break;
 					}
@@ -292,9 +292,9 @@ class Disassembler {
 					case MOVE_REG_INTO_FRAME_OFFSET_32:
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
-						uint64_t offset = file_reader.read<uint64_t>();
+						int64_t offset = file_reader.read<int64_t>();
 
-						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_32 %s, %lu\n",
+						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_32 %s, %ld\n",
 							CPU::reg_to_str(reg_id), offset);
 						break;
 					}
@@ -302,9 +302,9 @@ class Disassembler {
 					case MOVE_REG_INTO_FRAME_OFFSET_64:
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
-						uint64_t offset = file_reader.read<uint64_t>();
+						int64_t offset = file_reader.read<int64_t>();
 
-						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_64 %s, %lu\n",
+						fprintf(file_out, "MOVE_REG_INTO_FRAME_OFFSET_64 %s, %ld\n",
 							CPU::reg_to_str(reg_id), offset);
 						break;
 					}
