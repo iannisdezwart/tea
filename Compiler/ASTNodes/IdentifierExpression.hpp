@@ -45,24 +45,15 @@ class IdentifierExpression : public ASTNode {
 		Type get_type(CompilerState& compiler_state)
 		{
 			string id_name = identifier_token.value;
-			IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
+			Type type = compiler_state.get_type_of_identifier(id_name);
 
-			switch (id_kind) {
-				case IdentifierKind::LOCAL:
-					return compiler_state.locals[id_name].type;
+			if (type == Type::UNDEFINED)
+				err_at_token(identifier_token,
+					"Identifier has unknown kind",
+					"Identifier: %s. this might be a bug in the compiler",
+					id_name.c_str());
 
-				case IdentifierKind::PARAMETER:
-					return compiler_state.parameters[id_name].type;
-
-				case IdentifierKind::GLOBAL:
-					return compiler_state.globals[id_name].type;
-
-				default:
-					err_at_token(identifier_token,
-						"Identifier has unknown kind",
-						"Identifier: %s. this might be a bug in the compiler",
-						id_name.c_str());
-			}
+			return type;
 		}
 
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
@@ -75,7 +66,7 @@ class IdentifierExpression : public ASTNode {
 					"Identifier %s was referenced, but not declared",
 					id_name.c_str());
 
-			uint64_t offset;
+			int64_t offset;
 			uint64_t var_size;
 
 			switch (id_kind) {
@@ -92,7 +83,8 @@ class IdentifierExpression : public ASTNode {
 				{
 					Variable& var = compiler_state.parameters[id_name];
 					Type& type = var.type;
-					offset = -compiler_state.parameters_size + var.offset;
+					offset = -compiler_state.parameters_size + var.offset
+						- 16 - CPU::stack_frame_size;
 					var_size = type.byte_size();
 					break;
 				}

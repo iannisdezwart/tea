@@ -18,6 +18,8 @@
 #include "ASTNodes/LiteralNumberExpression.hpp"
 #include "ASTNodes/IdentifierExpression.hpp"
 #include "ASTNodes/FunctionCall.hpp"
+#include "ASTNodes/BinaryOperation.hpp"
+#include "ASTNodes/AssignmentExpression.hpp"
 
 using namespace std;
 
@@ -168,10 +170,11 @@ class Parser {
 						expect_semicolon();
 						return node;
 					} else {
+						node = scan_expression();
 						// node = scan_assignment();
+						// printf("assignment not implemented yet\n");
+						// abort();
 						expect_semicolon();
-						printf("assignment not implemented yet\n");
-						abort();
 						return node;
 					}
 				}
@@ -214,7 +217,7 @@ class Parser {
 			assert_token_type(curly_brace_start, SPECIAL_CHARACTER);
 			assert_token_value(curly_brace_start, "{");
 
-			CodeBlock *code_block = new CodeBlock();
+			CodeBlock *code_block = new CodeBlock(curly_brace_start);
 
 			while (true) {
 				Token maybe_curly_brace_end = get_token();
@@ -236,6 +239,156 @@ class Parser {
 		}
 
 		ASTNode *scan_expression()
+		{
+			vector<ASTNode *> expressions;
+			vector<Token> operators;
+
+			while (true) {
+				expressions.push_back(scan_sub_expression());
+
+				// Check if the next token is an operator
+
+				Token maybe_operator_token = get_token();
+				if (maybe_operator_token.type != OPERATOR) break;
+
+				// It is an operator, push its token to the operator vector
+
+				i++;
+				operators.push_back(maybe_operator_token);
+			}
+
+			// Go through all existing operators, descending in precedence
+
+			for (size_t i = 0; i < operator_precedence.size(); i++) {
+				const OperatorPrecedencePair& o_p_pair = operator_precedence[i];
+				const vector<Operator>& active_ops = o_p_pair.first;
+				const Associativity& associativity = o_p_pair.second;
+
+				// Go through the operators of the compound expression left-to-right
+
+				if (associativity == LEFT_TO_RIGHT) {
+					for (size_t j = 0; j < operators.size(); j++) {
+						Token& op_token = operators[j];
+						enum Operator op = str_to_operator(op_token.value);
+
+						// Check if this operator is mergeable
+
+						for (size_t k = 0; k < active_ops.size(); k++) {
+							if (active_ops[k] == op) goto merge_op;
+						}
+
+						// It is not mergeable, check the next operator of the
+						// compund expression
+
+						continue;
+
+						// It is mergeable into a BinaryOperation, so merge it
+
+						merge_op:
+
+						ASTNode *left = expressions[j];
+						ASTNode *right = expressions[j + 1];
+						ASTNode *new_expr;
+
+						switch (op) {
+							default:
+								printf("Operator %d isn't yet implemented by the parser\n", op);
+								abort();
+
+							case MULTIPLICATION:
+							case DIVISION:
+							case REMAINDER:
+							case ADDITION:
+							case SUBTRACTION:
+							case BITWISE_AND:
+							case BITWISE_XOR:
+							case BITWISE_OR:
+							case LEFT_SHIFT:
+							case RIGHT_SHIFT:
+								new_expr = new BinaryOperation(left, right, op_token);
+								break;
+						}
+
+						expressions[j] = new_expr;
+
+						operators.erase(operators.begin() + j);
+						expressions.erase(expressions.begin() + j + 1);
+
+						j--;
+					}
+				}
+
+				// Go through the operators of the compound expression right-to-left
+
+				else {
+					for (size_t j = operators.size(); j != 0; j--) {
+						Token& op_token = operators[j - 1];
+						enum Operator op = str_to_operator(op_token.value);
+
+						// Check if this operator is mergeable
+
+						for (size_t k = 0; k < active_ops.size(); k++) {
+							if (active_ops[k] == op) goto merge_op_1;
+						}
+
+						// It is not mergeable, check the next operator of the
+						// compound expression
+
+						continue;
+
+						// It is mergeable into a BinaryOperation, so merge it
+
+						merge_op_1:
+
+						ASTNode *left = expressions[j - 1];
+						ASTNode *right = expressions[j];
+						ASTNode *new_expr;
+
+						switch (op) {
+							default:
+								printf("Operator %d isn't yet implemented by the parser\n", op);
+								abort();
+
+							case ASSIGNMENT:
+							case SUM_ASSIGNMENT:
+							case DIFFERENCE_ASSIGNMENT:
+							case QUOTIENT_ASSIGNMENT:
+							case REMAINDER_ASSIGNMENT:
+							case PRODUCT_ASSIGNMENT:
+							case LEFT_SHIFT_ASSIGNMENT:
+							case RIGHT_SHIFT_ASSIGNMENT:
+							case BITWISE_AND_ASSIGNMENT:
+							case BITWISE_XOR_ASSIGNMENT:
+							case BITWISE_OR_ASSIGNMENT:
+							{
+								if (left->type != IDENTIFIER_EXPRESSION)
+									err_at_token(op_token,
+										"Expected an identifier on the left of an AssignmentExpression",
+										"found a %d token instead.", op_token.type);
+
+								IdentifierExpression *id_expr = (IdentifierExpression *) left;
+
+								new_expr = new AssignmentExpression(id_expr->identifier_token,
+									right, op_token);
+
+								delete id_expr;
+
+								break;
+							}
+						}
+
+						expressions[j - 1] = new_expr;
+
+						operators.erase(operators.begin() + j - 1);
+						expressions.erase(expressions.begin() + j);
+					}
+				}
+			}
+
+			return expressions[0];
+		}
+
+		ASTNode *scan_sub_expression()
 		{
 			Token first_token = get_token();
 
@@ -262,7 +415,7 @@ class Parser {
 				i++;
 
 				LiteralStringExpression *expression =
-					new LiteralStringExpression(first_token.value);
+					new LiteralStringExpression(first_token, first_token.value);
 
 				// Todo: allow multiple literal strings next to each other
 
@@ -275,7 +428,7 @@ class Parser {
 				i++;
 
 				LiteralCharExpression *expression =
-					new LiteralCharExpression(0);
+					new LiteralCharExpression(first_token, 0);
 
 				// Todo: make a method that parses a char correctly
 
@@ -288,7 +441,7 @@ class Parser {
 				i++;
 
 				LiteralNumberExpression *expression =
-					new LiteralNumberExpression(first_token.value);
+					new LiteralNumberExpression(first_token, first_token.value);
 
 				Token next = get_token();
 
@@ -306,8 +459,6 @@ class Parser {
 
 				// FunctionCall
 
-				printf("first_token.type was an IDENTIFIER\n");
-				printf("%s\n", next.to_str().c_str());
 				if (next.type == SPECIAL_CHARACTER && next.value == "(") {
 					return scan_function_call();
 				}
@@ -365,23 +516,32 @@ class Parser {
 		FunctionDeclaration *scan_function_declaration(
 			TypeIdentifierPair *type_id_pair
 		) {
-			Token next = next_token();
 			vector<TypeIdentifierPair *> params;
+			Token next = get_token();
+
+			// Check if there are no parameters
+
+			if (next.type == SPECIAL_CHARACTER && next.value == ")") {
+				i++;
+				goto end_parameters;
+			}
 
 			// Scan parameters
 
-			while (!(next.type == SPECIAL_CHARACTER && next.value == ")")) {
-				params.push_back(scan_type_identifier_pair());
-				next = next_token();
+			next_parameter:
 
-				if (next.type != SPECIAL_CHARACTER)
-					unexpected_token_syntax_err(next);
+			params.push_back(scan_type_identifier_pair());
+			next = next_token();
 
-				if (next.value == ",") continue;
-				if (next.value == ")") break;
+			if (next.type != SPECIAL_CHARACTER) goto param_err;
+			if (next.value == ")") goto end_parameters;
+			if (next.value == ",") goto next_parameter;
 
-				unexpected_token_syntax_err(next);
-			}
+			param_err:
+
+			unexpected_token_syntax_err(next);
+
+			end_parameters:
 
 			CodeBlock *code_block = scan_code_block();
 
@@ -398,22 +558,31 @@ class Parser {
 			assert_token_value(left_parenthesis_token, "(");
 
 			vector<ASTNode *> arguments;
-			Token next = next_token();
+			Token next = get_token();
 
-			// Scan arguments
+			// Check if there are no arguments
 
-			while (!(next.type == SPECIAL_CHARACTER && next.value == ")")) {
-				arguments.push_back(scan_expression());
-				next = next_token();
-
-				if (next.type != SPECIAL_CHARACTER)
-					unexpected_token_syntax_err(next);
-
-				if (next.value == ",") continue;
-				if (next.value == ")") break;
-
-				unexpected_token_syntax_err(next);
+			if (next.type == SPECIAL_CHARACTER && next.value == ")") {
+				i++;
+				goto end_arguments;
 			}
+
+			// Scan parameters
+
+			next_argument:
+
+			arguments.push_back(scan_expression());
+			next = next_token();
+
+			if (next.type != SPECIAL_CHARACTER) goto argument_err;
+			if (next.value == ")") goto end_arguments;
+			if (next.value == ",") goto next_argument;
+
+			argument_err:
+
+			unexpected_token_syntax_err(next);
+
+			end_arguments:
 
 			return new FunctionCall(identifier_token, arguments);
 		}
@@ -448,11 +617,12 @@ class Parser {
 			Token next = get_token();
 
 			if (next.type == SPECIAL_CHARACTER && next.value == ";") {
-				return new ReturnStatement(NULL);
+				return new ReturnStatement(return_token, NULL);
 			}
 
 			ASTNode *expression = scan_expression();
-			ReturnStatement *return_statement = new ReturnStatement(expression);
+			ReturnStatement *return_statement = new ReturnStatement(
+				return_token, expression);
 
 			return return_statement;
 		}

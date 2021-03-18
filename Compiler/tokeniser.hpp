@@ -42,16 +42,159 @@ unordered_set<char> special_chars = {
 };
 
 unordered_set<char> operator_chars = {
-	'+', '-', '*', '/', '%', '=', '<', '>', '&', '|', '!', '~'
+	'+', '-', '*', '/', '%', '=', '<', '>', '&', '^', '|', '!', '~'
 };
 
 unordered_set<string> types = {
-	"int", "string", "void"
+	"u8", "i8", "u16", "i16", "u32", "i32", "u64", "i64"
+	"string", "void"
 };
 
 unordered_set<string> keywords = {
 	"if", "else", "return", "loop", "while", "for", "break", "continue", "goto"
 };
+
+enum Operator {
+	POSTFIX_INCREMENT,
+	POSTFIX_DECREMENT,
+
+	PREFIX_INCREMENT,
+	PREFIX_DECREMENT,
+
+	UNARY_PLUS,
+	UNARY_MINUS,
+
+	BITWISE_NOT,
+	LOGICAL_NOT,
+
+	DEREFERENCE,
+	ADDRESS_OF,
+
+	POINTER_TO_MEMBER,
+	DEREFERENCED_POINTER_TO_MEMBER,
+
+	DIVISION,
+	REMAINDER,
+	MULTIPLICATION,
+
+	ADDITION,
+	SUBTRACTION,
+
+	LEFT_SHIFT,
+	RIGHT_SHIFT,
+
+	LESS,
+	LESS_OR_EQUAL,
+	GREATER,
+	GREATER_OR_EQUAL,
+
+	EQUAL,
+	NOT_EQUAL,
+
+	BITWISE_AND,
+	BITWISE_XOR,
+	BITWISE_OR,
+
+	LOGICAL_AND,
+	LOGICAL_OR,
+
+	ASSIGNMENT,
+
+	SUM_ASSIGNMENT,
+	DIFFERENCE_ASSIGNMENT,
+
+	QUOTIENT_ASSIGNMENT,
+	REMAINDER_ASSIGNMENT,
+	PRODUCT_ASSIGNMENT,
+
+	LEFT_SHIFT_ASSIGNMENT,
+	RIGHT_SHIFT_ASSIGNMENT,
+
+	BITWISE_AND_ASSIGNMENT,
+	BITWISE_XOR_ASSIGNMENT,
+	BITWISE_OR_ASSIGNMENT,
+
+	UNDEFINED
+};
+
+enum Associativity {
+	LEFT_TO_RIGHT,
+	RIGHT_TO_LEFT
+};
+
+typedef pair<vector<Operator>, enum Associativity> OperatorPrecedencePair;
+#define mp make_pair<vector<Operator>, enum Associativity>
+
+vector<OperatorPrecedencePair> operator_precedence = {
+	mp({ POSTFIX_INCREMENT, POSTFIX_DECREMENT }, LEFT_TO_RIGHT),
+	mp({ PREFIX_INCREMENT, PREFIX_DECREMENT, UNARY_PLUS, UNARY_MINUS,
+		BITWISE_NOT, LOGICAL_NOT, DEREFERENCE, ADDRESS_OF }, RIGHT_TO_LEFT),
+	mp({ POINTER_TO_MEMBER, DEREFERENCED_POINTER_TO_MEMBER }, LEFT_TO_RIGHT),
+	mp({ MULTIPLICATION, DIVISION, REMAINDER }, LEFT_TO_RIGHT),
+	mp({ ADDITION, SUBTRACTION }, LEFT_TO_RIGHT),
+	mp({ LEFT_SHIFT, RIGHT_SHIFT }, LEFT_TO_RIGHT),
+	mp({ LESS, LESS_OR_EQUAL, GREATER, GREATER_OR_EQUAL }, LEFT_TO_RIGHT),
+	mp({ EQUAL, NOT_EQUAL }, LEFT_TO_RIGHT),
+	mp({ BITWISE_AND }, LEFT_TO_RIGHT),
+	mp({ BITWISE_XOR }, LEFT_TO_RIGHT),
+	mp({ BITWISE_OR }, LEFT_TO_RIGHT),
+	mp({ LOGICAL_AND }, LEFT_TO_RIGHT),
+	mp({ LOGICAL_OR }, LEFT_TO_RIGHT),
+	mp({ ASSIGNMENT, SUM_ASSIGNMENT, DIFFERENCE_ASSIGNMENT, QUOTIENT_ASSIGNMENT,
+		REMAINDER_ASSIGNMENT, PRODUCT_ASSIGNMENT, LEFT_SHIFT_ASSIGNMENT,
+		RIGHT_SHIFT_ASSIGNMENT, BITWISE_AND_ASSIGNMENT, BITWISE_XOR_ASSIGNMENT,
+		BITWISE_OR_ASSIGNMENT }, RIGHT_TO_LEFT)
+};
+
+#undef mp
+
+enum Operator str_to_operator(string& str, bool prefix = false)
+{
+	if (str.size() > 3) return UNDEFINED;
+
+	if (str == "++" && prefix) return PREFIX_INCREMENT;
+	if (str == "--" && prefix) return PREFIX_DECREMENT;
+	if (str == "++") return POSTFIX_INCREMENT;
+	if (str == "--") return POSTFIX_DECREMENT;
+	if (str == "+" && prefix) return UNARY_PLUS;
+	if (str == "-" && prefix) return UNARY_MINUS;
+	if (str == "~" && prefix) return BITWISE_NOT;
+	if (str == "!" && prefix) return LOGICAL_NOT;
+	if (str == "*" && prefix) return DEREFERENCE;
+	if (str == "&" && prefix) return ADDRESS_OF;
+	if (str == ".") return POINTER_TO_MEMBER;
+	if (str == "->") return DEREFERENCED_POINTER_TO_MEMBER;
+	if (str == "*") return MULTIPLICATION;
+	if (str == "/") return DIVISION;
+	if (str == "%") return REMAINDER;
+	if (str == "+") return ADDITION;
+	if (str == "-") return SUBTRACTION;
+	if (str == "<<") return LEFT_SHIFT;
+	if (str == ">>") return RIGHT_SHIFT;
+	if (str == "<") return LESS;
+	if (str == "<=") return LESS_OR_EQUAL;
+	if (str == ">") return GREATER;
+	if (str == ">=") return GREATER_OR_EQUAL;
+	if (str == "==") return EQUAL;
+	if (str == "!=") return NOT_EQUAL;
+	if (str == "&") return BITWISE_AND;
+	if (str == "^") return BITWISE_XOR;
+	if (str == "|") return BITWISE_OR;
+	if (str == "&&") return LOGICAL_AND;
+	if (str == "||") return LOGICAL_OR;
+	if (str == "=") return ASSIGNMENT;
+	if (str == "+=") return SUM_ASSIGNMENT;
+	if (str == "-=") return DIFFERENCE_ASSIGNMENT;
+	if (str == "/=") return QUOTIENT_ASSIGNMENT;
+	if (str == "%=") return REMAINDER_ASSIGNMENT;
+	if (str == "*=") return PRODUCT_ASSIGNMENT;
+	if (str == "<<=") return LEFT_SHIFT_ASSIGNMENT;
+	if (str == ">>=") return RIGHT_SHIFT_ASSIGNMENT;
+	if (str == "&=") return BITWISE_AND_ASSIGNMENT;
+	if (str == "^=") return BITWISE_XOR_ASSIGNMENT;
+	if (str == "|=") return BITWISE_OR_ASSIGNMENT;
+	return UNDEFINED;
+}
 
 class Tokeniser {
 	private:
@@ -140,22 +283,27 @@ class Tokeniser {
 					}
 				}
 
+				if (c == '#') {
+					ignore_until_eol();
+					continue;
+				}
+
+				// Handle string literals
+
+				if (c == '"') {
+					push_token(LITERAL_STRING, scan_literal_string());
+				}
+
 				// Handle special character
 
-				if (special_chars.count(c)) {
+				else if (special_chars.count(c)) {
 					push_token(SPECIAL_CHARACTER, string(1, c));
 				}
 
 				// Handle operator
 
 				else if (operator_chars.count(c)) {
-					push_token(OPERATOR, string(1, c));
-				}
-
-				// Handle string literals
-
-				else if (c == '"') {
-					push_token(LITERAL_STRING, scan_literal_string());
+					push_token(OPERATOR, scan_operator(c));
 				}
 
 				// Handle character literals
@@ -203,16 +351,21 @@ class Tokeniser {
 			char next_char = get_char();
 
 			if (next_char == '/') {
-				// Ignore all characters until the next '\n'
-
-				while (next_char != '\n' && next_char != EOF)
-					next_char = get_char();
+				ignore_until_eol();
 
 				return true;
 			} else {
 				unget_char(next_char);
 				return false;
 			}
+		}
+
+		void ignore_until_eol()
+		{
+			char next_char = get_char();
+
+			while (next_char != '\n' && next_char != EOF)
+				next_char = get_char();
 		}
 
 		string scan_literal_string()
@@ -306,6 +459,29 @@ class Tokeniser {
 			}
 
 			return s;
+		}
+
+		string scan_operator(char first_char)
+		{
+			string op;
+			op += first_char;
+			char c;
+
+			while(true) {
+				c = get_char();
+
+				if (!operator_chars.count(c)) {
+					unget_char(c);
+					break;
+				}
+
+				op += c;
+			}
+
+			if (str_to_operator(op) == UNDEFINED)
+				throw_err("Found unknown operator combination \"%s\"", op.c_str());
+
+			return op;
 		}
 };
 

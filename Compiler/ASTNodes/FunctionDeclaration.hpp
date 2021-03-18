@@ -94,6 +94,20 @@ class FunctionDeclaration : public ASTNode {
 
 			assembler.add_label(fn_name);
 
+			// Gather parameters
+
+			size_t params_size = 0;
+
+			for (size_t i = 0; i < params.size(); i++) {
+				string param_name = params[i]->get_identifier_name();
+				Type param_type = params[i]->get_type(compiler_state);
+
+				compiler_state.add_parameter(param_name, param_type, params_size);
+				printf("add_parameter(%s, %s, %lu)\n",
+					param_name.c_str(), param_type.to_str().c_str(), params_size);
+				params_size += param_type.byte_size();
+			}
+
 			// Gather locals
 
 			size_t locals_size = 0;
@@ -115,12 +129,17 @@ class FunctionDeclaration : public ASTNode {
 			}, 0);
 
 			// Make space for the locals on the stack
+			// Note: could be optimised by not performing this instruction if locals_size == 0
 
 			assembler.add_64_into_reg(locals_size, R_STACK_P_ID);
 
 			// Compile the function body
 
 			body->compile(assembler, compiler_state);
+
+			// Clear parameters and globals from the compiler state
+
+			compiler_state.end_function_scope();
 		}
 };
 

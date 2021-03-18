@@ -62,28 +62,28 @@ class Type {
 
 		static Type from_string(string str)
 		{
-			if (str == "uint8" || str == "char")
+			if (str == "u8")
 				return Type(Type::UNSIGNED_INTEGER, 1);
 
-			if (str == "int8")
+			if (str == "i8")
 				return Type(Type::SIGNED_INTEGER, 1);
 
-			if (str == "uint16")
+			if (str == "u16")
 				return Type(Type::UNSIGNED_INTEGER, 2);
 
-			if (str == "int16")
+			if (str == "i16")
 				return Type(Type::SIGNED_INTEGER, 2);
 
-			if (str == "uint32")
+			if (str == "u32")
 				return Type(Type::UNSIGNED_INTEGER, 4);
 
-			if (str == "int32" || str == "int")
+			if (str == "i32")
 				return Type(Type::SIGNED_INTEGER, 4);
 
-			if (str == "uint64")
+			if (str == "u64")
 				return Type(Type::UNSIGNED_INTEGER, 8);
 
-			if (str == "int64")
+			if (str == "i64")
 				return Type(Type::SIGNED_INTEGER, 8);
 
 			err("Wasn't able to convert \"%s\" to a Type", str.c_str());
@@ -147,6 +147,8 @@ class CompilerState {
 
 		map<string, Variable> locals;
 
+		bool root_of_operation_tree = true;
+
 		enum IdentifierKind get_identifier_kind(string id_name)
 		{
 			if (locals.count(id_name)) return IdentifierKind::LOCAL;
@@ -195,6 +197,25 @@ class CompilerState {
 			locals.clear();
 			parameters.clear();
 			parameters_size = 0;
+		}
+
+		Type get_type_of_identifier(string id_name)
+		{
+			IdentifierKind id_kind = get_identifier_kind(id_name);
+
+			switch (id_kind) {
+				case IdentifierKind::LOCAL:
+					return locals[id_name].type;
+
+				case IdentifierKind::PARAMETER:
+					return parameters[id_name].type;
+
+				case IdentifierKind::GLOBAL:
+					return globals[id_name].type;
+
+				default:
+					return Type();
+			}
 		}
 };
 
