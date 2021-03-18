@@ -171,9 +171,6 @@ class Parser {
 						return node;
 					} else {
 						node = scan_expression();
-						// node = scan_assignment();
-						// printf("assignment not implemented yet\n");
-						// abort();
 						expect_semicolon();
 						return node;
 					}

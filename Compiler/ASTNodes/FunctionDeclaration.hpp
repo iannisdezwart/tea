@@ -103,8 +103,6 @@ class FunctionDeclaration : public ASTNode {
 				Type param_type = params[i]->get_type(compiler_state);
 
 				compiler_state.add_parameter(param_name, param_type, params_size);
-				printf("add_parameter(%s, %s, %lu)\n",
-					param_name.c_str(), param_type.to_str().c_str(), params_size);
 				params_size += param_type.byte_size();
 			}
 
