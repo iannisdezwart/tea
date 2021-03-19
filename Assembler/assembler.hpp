@@ -387,6 +387,41 @@ class Assembler : public BufferBuilder {
 			push(reg_id_2);
 		}
 
+		void take_modulo_8_of_reg(uint8_t lit, uint8_t reg_id)
+		{
+			push_instruction(TAKE_MODULO_8_OF_REG);
+			push(lit);
+			push(reg_id);
+		}
+
+		void take_modulo_16_of_reg(uint16_t lit, uint8_t reg_id)
+		{
+			push_instruction(TAKE_MODULO_16_OF_REG);
+			push(lit);
+			push(reg_id);
+		}
+
+		void take_modulo_32_of_reg(uint32_t lit, uint8_t reg_id)
+		{
+			push_instruction(TAKE_MODULO_32_OF_REG);
+			push(lit);
+			push(reg_id);
+		}
+
+		void take_modulo_64_of_reg(uint64_t lit, uint8_t reg_id)
+		{
+			push_instruction(TAKE_MODULO_64_OF_REG);
+			push(lit);
+			push(reg_id);
+		}
+
+		void take_modulo_reg_of_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+		{
+			push_instruction(TAKE_MODULO_REG_OF_REG);
+			push(reg_id_1);
+			push(reg_id_2);
+		}
+
 		void and_8_into_reg(uint8_t lit, uint8_t reg_id)
 		{
 			push_instruction(AND_8_INTO_REG);

@@ -694,6 +694,46 @@ class CPU {
 					break;
 				}
 
+				case TAKE_MODULO_8_OF_REG:
+				{
+					uint8_t lit = fetch<uint8_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) % lit);
+					break;
+				}
+
+				case TAKE_MODULO_16_OF_REG:
+				{
+					uint16_t lit = fetch<uint16_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) % lit);
+					break;
+				}
+
+				case TAKE_MODULO_32_OF_REG:
+				{
+					uint32_t lit = fetch<uint32_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) % lit);
+					break;
+				}
+
+				case TAKE_MODULO_64_OF_REG:
+				{
+					uint64_t lit = fetch<uint64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, get_reg_by_id(reg_id) % lit);
+					break;
+				}
+
+				case TAKE_MODULO_REG_OF_REG:
+				{
+					uint8_t reg_id_1 = fetch<uint8_t>();
+					uint8_t reg_id_2 = fetch<uint8_t>();
+					set_reg_by_id(reg_id_2, get_reg_by_id(2) % get_reg_by_id(reg_id_2));
+					break;
+				}
+
 				case AND_8_INTO_REG:
 				{
 					uint64_t lit = fetch<uint8_t>();

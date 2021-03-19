@@ -509,6 +509,56 @@ class Disassembler {
 						break;
 					}
 
+					case TAKE_MODULO_8_OF_REG:
+					{
+						uint8_t lit = file_reader.read<uint8_t>();
+						uint8_t reg_id = file_reader.read<uint8_t>();
+
+						fprintf(file_out, "TAKE_MODULO_8_OF_REG %hhu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
+						break;
+					}
+
+					case TAKE_MODULO_16_OF_REG:
+					{
+						uint16_t lit = file_reader.read<uint16_t>();
+						uint8_t reg_id = file_reader.read<uint8_t>();
+
+						fprintf(file_out, "TAKE_MODULO_16_OF_REG %hu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
+						break;
+					}
+
+					case TAKE_MODULO_32_OF_REG:
+					{
+						uint32_t lit = file_reader.read<uint32_t>();
+						uint8_t reg_id = file_reader.read<uint8_t>();
+
+						fprintf(file_out, "TAKE_MODULO_32_OF_REG %u, %s\n",
+							lit, CPU::reg_to_str(reg_id));
+						break;
+					}
+
+					case TAKE_MODULO_64_OF_REG:
+					{
+						uint64_t lit = file_reader.read<uint64_t>();
+						uint8_t reg_id = file_reader.read<uint8_t>();
+
+						fprintf(file_out, "TAKE_MODULO_64_OF_REG %lu, %s\n",
+							lit, CPU::reg_to_str(reg_id));
+						break;
+					}
+
+					case TAKE_MODULO_REG_OF_REG:
+					{
+						uint8_t reg_id_1 = file_reader.read<uint8_t>();
+						uint8_t reg_id_2 = file_reader.read<uint8_t>();
+
+						fprintf(file_out, "TAKE_MODULO_REG_OF_REG %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
+						break;
+					}
+
 					case AND_8_INTO_REG:
 					{
 						uint8_t lit = file_reader.read<uint8_t>();
