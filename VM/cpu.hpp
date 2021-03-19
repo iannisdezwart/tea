@@ -1196,6 +1196,22 @@ class CPU {
 					break;
 				}
 
+				case ALLOCATE_STACK:
+				{
+					uint64_t size = fetch<uint64_t>();
+					r_stack_p += size;
+					current_stack_frame_size += size;
+					break;
+				}
+
+				case DEALLOCATE_STACK:
+				{
+					uint64_t size = fetch<uint64_t>();
+					r_stack_p -= size;
+					current_stack_frame_size -= size;
+					break;
+				}
+
 				case LOG_REG:
 				{
 					uint8_t reg_id = fetch<uint8_t>();

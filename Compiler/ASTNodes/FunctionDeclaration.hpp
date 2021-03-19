@@ -96,40 +96,34 @@ class FunctionDeclaration : public ASTNode {
 
 			// Gather parameters
 
-			size_t params_size = 0;
-
 			for (size_t i = 0; i < params.size(); i++) {
 				string param_name = params[i]->get_identifier_name();
 				Type param_type = params[i]->get_type(compiler_state);
 
-				compiler_state.add_parameter(param_name, param_type, params_size);
-				params_size += param_type.byte_size();
+				compiler_state.add_parameter(param_name, param_type);
 			}
 
 			// Gather locals
 
-			size_t locals_size = 0;
-
-			dfs([&compiler_state, &locals_size](ASTNode *node, size_t depth) {
+			dfs([&compiler_state](ASTNode *node, size_t depth) {
 				if (node->type == VARIABLE_DECLARATION) {
 					VariableDeclaration *local = (VariableDeclaration *) node;
 					string local_name = local->type_and_id_pair->get_identifier_name();
 					Type local_type = local->type_and_id_pair->get_type(compiler_state);
 
-					if (!compiler_state.add_local(local_name, local_type, locals_size))
+					if (!compiler_state.add_local(local_name, local_type))
 						err_at_token(local->type_and_id_pair->identifier_token,
 							"Duplicate identifier name",
 							"Identifier %s is already declared",
 							local_name.c_str());
-
-					locals_size += local_type.byte_size();
 				}
 			}, 0);
 
 			// Make space for the locals on the stack
-			// Note: could be optimised by not performing this instruction if locals_size == 0
 
-			assembler.add_64_into_reg(locals_size, R_STACK_P_ID);
+			if (compiler_state.locals_size) {
+				assembler.allocate_stack(compiler_state.locals_size);
+			}
 
 			// Compile the function body
 

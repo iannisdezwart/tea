@@ -1,29 +1,20 @@
 #include "trick-the-vscode-c-syntax-highlighter.h"
 
-// i32 fn(u64 a, u64 b)
-// {
-// 	i32 c = a * b / 2;
-// 	return c;
-// }
-
-// i32 main()
-// {
-// 	return fn(5, 7);
-// }
-
-u64 multiply(u64 a, u64 b)
+u64 fn2()
 {
-	u64 ans = a * b;
-	return ans;
+	return 12;
 }
 
-u64 add(u64 a, u64 b)
+u64 fn()
 {
-	u64 ans = a + b;
-	return ans;
+	u64 a;
+
+	return fn2();
 }
 
 u64 main()
 {
-	return 1 - 2;
+	u64 a;
+
+	return fn();
 }

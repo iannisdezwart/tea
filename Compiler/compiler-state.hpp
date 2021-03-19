@@ -146,6 +146,7 @@ class CompilerState {
 		uint64_t parameters_size = 0;
 
 		map<string, Variable> locals;
+		uint64_t locals_size = 0;
 
 		bool root_of_operation_tree = true;
 
@@ -175,26 +176,29 @@ class CompilerState {
 			return true;
 		}
 
-		bool add_parameter(string param_name, Type param_type, size_t offset)
+		bool add_parameter(string param_name, Type param_type)
 		{
 			if (parameters.count(param_name)) return false;
 
-			parameters[param_name] = Variable(param_type, offset);
-			parameters_size += offset;
+			parameters[param_name] = Variable(param_type, parameters_size);
+			parameters_size += param_type.byte_size();
 			return true;
 		}
 
-		bool add_local(string local_name, Type local_type, size_t offset)
+		bool add_local(string local_name, Type local_type)
 		{
 			if (locals.count(local_name)) return false;
 
-			locals[local_name] = Variable(local_type, offset);
+			locals[local_name] = Variable(local_type, locals_size);
+			locals_size += local_type.byte_size();
 			return true;
 		}
 
 		void end_function_scope()
 		{
 			locals.clear();
+			locals_size = 0;
+
 			parameters.clear();
 			parameters_size = 0;
 		}

@@ -727,6 +727,18 @@ class Assembler : public BufferBuilder {
 			push_instruction(RETURN);
 		}
 
+		void allocate_stack(uint64_t size)
+		{
+			push_instruction(ALLOCATE_STACK);
+			push(size);
+		}
+
+		void deallocate_stack(uint64_t size)
+		{
+			push_instruction(DEALLOCATE_STACK);
+			push(size);
+		}
+
 		void log_reg(uint8_t reg_id)
 		{
 			push_instruction(LOG_REG);

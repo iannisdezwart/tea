@@ -172,6 +172,10 @@ enum Instruction : uint16_t {
 	RETURN,
 
 
+	ALLOCATE_STACK,
+	DEALLOCATE_STACK,
+
+
 	// For debugging purposes
 
 

@@ -988,6 +988,20 @@ class Disassembler {
 						break;
 					}
 
+					case ALLOCATE_STACK:
+					{
+						uint64_t size = file_reader.read<uint64_t>();
+						fprintf(file_out, "ALLOCATE_STACK %lu\n", size);
+						break;
+					}
+
+					case DEALLOCATE_STACK:
+					{
+						uint64_t size = file_reader.read<uint64_t>();
+						fprintf(file_out, "DEALLOCATE_STACK %lu\n", size);
+						break;
+					}
+
 					case LOG_REG:
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
