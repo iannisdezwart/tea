@@ -730,7 +730,7 @@ class CPU {
 				{
 					uint8_t reg_id_1 = fetch<uint8_t>();
 					uint8_t reg_id_2 = fetch<uint8_t>();
-					set_reg_by_id(reg_id_2, get_reg_by_id(2) % get_reg_by_id(reg_id_2));
+					set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) % get_reg_by_id(reg_id_1));
 					break;
 				}
 

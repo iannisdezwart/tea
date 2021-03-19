@@ -96,8 +96,7 @@ class BinaryOperation : public ASTNode {
 					break;
 
 				case REMAINDER:
-					printf("remainder BinaryOperation not implemented\n");
-					abort();
+					assembler.take_modulo_reg_of_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
 					break;
 
 				case MULTIPLICATION:

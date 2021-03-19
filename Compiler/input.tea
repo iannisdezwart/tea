@@ -14,8 +14,7 @@ u64 main()
 {
 	u64 a = 2;
 	u64 b = 3;
+	u64 c = 4;
 
-	u64 c = add(a, b);
-
-	return c;
+	return multiply(add(a, b), c) % 3;
 }

@@ -125,9 +125,8 @@ class AssignmentExpression : public ASTNode {
 					break;
 
 				case REMAINDER_ASSIGNMENT:
-					err_at_token(op_token,
-						"not implemented",
-						"remainder assignment is not implemented yet");
+					assembler.take_modulo_reg_of_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					break;
 
 				case PRODUCT_ASSIGNMENT:
 					assembler.multiply_reg_into_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
