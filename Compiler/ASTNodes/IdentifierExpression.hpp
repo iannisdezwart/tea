@@ -84,7 +84,7 @@ class IdentifierExpression : public ASTNode {
 					Variable& var = compiler_state.parameters[id_name];
 					Type& type = var.type;
 					offset = -compiler_state.parameters_size + var.offset
-						- 16 - CPU::stack_frame_size;
+						- 8 - CPU::stack_frame_size;
 					var_size = type.byte_size();
 					break;
 				}

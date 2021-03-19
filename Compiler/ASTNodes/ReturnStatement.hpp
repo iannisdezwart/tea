@@ -49,7 +49,7 @@ class ReturnStatement : public ASTNode {
 		}
 
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
-			// Moves the return value into R_ACCUMULATOR
+			// Moves the return value into R_ACCUMULATOR_0
 
 			if (expression != NULL) expression->compile(assembler, compiler_state);
 

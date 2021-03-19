@@ -1,20 +1,21 @@
 #include "trick-the-vscode-c-syntax-highlighter.h"
 
-u64 fn2()
+u64 add(u64 a, u64 b)
 {
-	return 12;
+	return a + b;
 }
 
-u64 fn()
+u64 multiply(u64 a, u64 b)
 {
-	u64 a;
-
-	return fn2();
+	return a * b;
 }
 
 u64 main()
 {
-	u64 a;
+	u64 a = 2;
+	u64 b = 3;
 
-	return fn();
+	u64 c = add(a, b);
+
+	return c;
 }
