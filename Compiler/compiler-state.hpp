@@ -23,19 +23,14 @@ class Type {
 			UNDEFINED,
 			UNSIGNED_INTEGER,
 			SIGNED_INTEGER,
-			USER_DEFINED_CLASS,
-			POINTER
+			USER_DEFINED_CLASS
 		};
 
-		Type *referenced_type = NULL;
+		size_t pointer_depth;
 
 		Type() : value(UNDEFINED) {}
-		Type(enum Value value, size_t size) : value(value), size(size) {}
-
-		~Type()
-		{
-			if (referenced_type != NULL) delete referenced_type;
-		}
+		Type(enum Value value, size_t size, size_t pointer_depth = 0)
+			: value(value), size(size), pointer_depth(pointer_depth) {}
 
 		// Allow switch comparisons
 
@@ -60,31 +55,31 @@ class Type {
 			return size;
 		}
 
-		static Type from_string(string str)
+		static Type from_string(string str, size_t pointer_depth = 0)
 		{
 			if (str == "u8")
-				return Type(Type::UNSIGNED_INTEGER, 1);
+				return Type(Type::UNSIGNED_INTEGER, 1, pointer_depth);
 
 			if (str == "i8")
-				return Type(Type::SIGNED_INTEGER, 1);
+				return Type(Type::SIGNED_INTEGER, 1, pointer_depth);
 
 			if (str == "u16")
-				return Type(Type::UNSIGNED_INTEGER, 2);
+				return Type(Type::UNSIGNED_INTEGER, 2, pointer_depth);
 
 			if (str == "i16")
-				return Type(Type::SIGNED_INTEGER, 2);
+				return Type(Type::SIGNED_INTEGER, 2, pointer_depth);
 
 			if (str == "u32")
-				return Type(Type::UNSIGNED_INTEGER, 4);
+				return Type(Type::UNSIGNED_INTEGER, 4, pointer_depth);
 
 			if (str == "i32")
-				return Type(Type::SIGNED_INTEGER, 4);
+				return Type(Type::SIGNED_INTEGER, 4, pointer_depth);
 
 			if (str == "u64")
-				return Type(Type::UNSIGNED_INTEGER, 8);
+				return Type(Type::UNSIGNED_INTEGER, 8, pointer_depth);
 
 			if (str == "i64")
-				return Type(Type::SIGNED_INTEGER, 8);
+				return Type(Type::SIGNED_INTEGER, 8, pointer_depth);
 
 			err("Wasn't able to convert \"%s\" to a Type", str.c_str());
 		}
@@ -97,23 +92,33 @@ class Type {
 
 		string to_str()
 		{
+			string s;
+
 			switch (value) {
 				default:
 				case Type::UNDEFINED:
-					return "undefined";
+					s += "undefined";
+					break;
 
 				case Type::SIGNED_INTEGER:
-					return string("int") + to_string(size * 8);
+					s += "int" + to_string(size * 8);
+					break;
 
 				case Type::UNSIGNED_INTEGER:
-					return string("uint") + to_string(size * 8);
+					s += "uint" + to_string(size * 8);
+					break;
 
 				case Type::USER_DEFINED_CLASS:
-					return "user_defined_class";
-
-				case Type::POINTER:
-					return referenced_type->to_str() + "*";
+					s += "user_defined_class";
+					break;
 			}
+
+			if (pointer_depth) {
+				s += ' ';
+				s += string(pointer_depth, '*');
+			}
+
+			return s;
 		}
 
 	private:

@@ -43,8 +43,7 @@ class LiteralStringExpression : public ASTNode {
 
 		Type get_type(CompilerState& compiler_state)
 		{
-			Type type(Type::POINTER, 8);
-			type.referenced_type = new Type(Type::UNSIGNED_INTEGER, 1);
+			Type type(Type::UNSIGNED_INTEGER, 8, 1);
 			return type;
 		}
 

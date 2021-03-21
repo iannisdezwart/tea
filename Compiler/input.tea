@@ -1,20 +1,8 @@
 #include "trick-the-vscode-c-syntax-highlighter.h"
 
-u64 add(u64 a, u64 b)
-{
-	return a + b;
-}
-
-u64 multiply(u64 a, u64 b)
-{
-	return a * b;
-}
-
 u64 main()
 {
-	u64 a = 2;
-	u64 b = 3;
-	u64 c = 4;
-
-	return multiply(add(a, b), c) % 3;
+	u64 a = 123;
+	u64 *b = &a;
+	u64 c = *b;
 }

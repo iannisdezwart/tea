@@ -14,11 +14,13 @@ using namespace std;
 class TypeIdentifierPair : public ASTNode {
 	public:
 		Token type_token;
+		uint8_t pointer_depth;
 		Token identifier_token;
 
-		TypeIdentifierPair(Token type_token, Token identifier_token)
-			: type_token(type_token), identifier_token(identifier_token),
-				ASTNode(identifier_token)
+		TypeIdentifierPair(Token type_token, uint8_t pointer_depth,
+			Token identifier_token)
+				: type_token(type_token), pointer_depth(pointer_depth),
+					identifier_token(identifier_token), ASTNode(identifier_token)
 		{
 			type = TYPE_IDENTIFIER_PAIR;
 
@@ -43,14 +45,15 @@ class TypeIdentifierPair : public ASTNode {
 		string to_str()
 		{
 			string s = "TypeIdentifierPair { type = \"" + type_token.value + "\", "
-				"identifier = \"" + identifier_token.value + "\" } @ "
+				"identifier = \"" + identifier_token.value +
+				"\", pointer_depth = \"" + to_string(pointer_depth) + "\" } @ "
 				+ to_hex((size_t) this);
 			return s;
 		}
 
 		Type get_type(CompilerState& compiler_state)
 		{
-			return Type::from_string(type_token.value);
+			return Type::from_string(type_token.value, pointer_depth);
 		}
 
 		void compile(Assembler& assembler, CompilerState& compiler_state) {}
