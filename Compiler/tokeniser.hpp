@@ -478,8 +478,8 @@ class Tokeniser {
 				op += c;
 			}
 
-			if (str_to_operator(op) == UNDEFINED)
-				throw_err("Found unknown operator combination \"%s\"", op.c_str());
+			// if (str_to_operator(op) == UNDEFINED)
+			// 	throw_err("Found unknown operator combination \"%s\"", op.c_str());
 
 			return op;
 		}

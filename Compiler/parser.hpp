@@ -19,6 +19,7 @@
 #include "ASTNodes/IdentifierExpression.hpp"
 #include "ASTNodes/FunctionCall.hpp"
 #include "ASTNodes/BinaryOperation.hpp"
+#include "ASTNodes/UnaryOperation.hpp"
 #include "ASTNodes/AssignmentExpression.hpp"
 
 using namespace std;
@@ -182,7 +183,10 @@ class Parser {
 				// 	scan_prefix_unary_assignment();
 
 				default:
-					unexpected_token_syntax_err(token);
+					// unexpected_token_syntax_err(token);
+					node = scan_expression();
+					expect_semicolon();
+					return node;
 			}
 		}
 
@@ -200,12 +204,27 @@ class Parser {
 
 			// Todo: add generics, &, * etc
 
-			Token identifier_token = next_token();
+			Token pointer_token = next_token();
+			uint8_t pointer_depth = 0;
+
+			while (pointer_token.type == OPERATOR) {
+				for (size_t i = 0; i < pointer_token.value.size(); i++) {
+					if (pointer_token.value[i] != '*') goto end_pointer;
+				}
+
+				pointer_depth += pointer_token.value.size();
+				pointer_token = next_token();
+			}
+
+			end_pointer:
+
+			Token& identifier_token = pointer_token;
 			assert_token_type(identifier_token, IDENTIFIER);
 
 			// Todo: add [] etc.
 
-			return new TypeIdentifierPair(type_name_token, identifier_token);
+			return new TypeIdentifierPair(type_name_token, pointer_depth,
+				identifier_token);
 		}
 
 		CodeBlock *scan_code_block()
@@ -404,6 +423,17 @@ class Parser {
 				assert_token_value(right_parenthesis, ")");
 
 				return expression;
+			}
+
+			// Prefix unary operators
+
+			if (first_token.type == OPERATOR) {
+				i++;
+
+				UnaryOperation *unary_operation =
+					new UnaryOperation(scan_expression(), first_token, true);
+
+				return unary_operation;
 			}
 
 			// Literal string
