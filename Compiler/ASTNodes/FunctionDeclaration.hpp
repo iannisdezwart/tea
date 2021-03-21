@@ -129,6 +129,10 @@ class FunctionDeclaration : public ASTNode {
 
 			body->compile(assembler, compiler_state);
 
+			// Todo: check branching and return statements
+
+			assembler.return_();
+
 			// Clear parameters and globals from the compiler state
 
 			compiler_state.end_function_scope();

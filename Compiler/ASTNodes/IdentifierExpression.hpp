@@ -95,6 +95,8 @@ class IdentifierExpression : public ASTNode {
 					Type& type = var.type;
 					offset = var.offset;
 					var_size = type.byte_size();
+					printf("global in IdentifierExpression is not implemented yet\n");
+					abort();
 					break;
 				}
 
