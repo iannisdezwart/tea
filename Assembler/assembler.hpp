@@ -191,6 +191,34 @@ class Assembler : public BufferBuilder {
 			push(reg_id_2);
 		}
 
+		void move_reg_into_reg_pointer_8(uint8_t reg_id_1, uint8_t reg_id_2)
+		{
+			push_instruction(MOVE_REG_INTO_REG_POINTER_8);
+			push(reg_id_1);
+			push(reg_id_2);
+		}
+
+		void move_reg_into_reg_pointer_16(uint8_t reg_id_1, uint8_t reg_id_2)
+		{
+			push_instruction(MOVE_REG_INTO_REG_POINTER_16);
+			push(reg_id_1);
+			push(reg_id_2);
+		}
+
+		void move_reg_into_reg_pointer_32(uint8_t reg_id_1, uint8_t reg_id_2)
+		{
+			push_instruction(MOVE_REG_INTO_REG_POINTER_32);
+			push(reg_id_1);
+			push(reg_id_2);
+		}
+
+		void move_reg_into_reg_pointer_64(uint8_t reg_id_1, uint8_t reg_id_2)
+		{
+			push_instruction(MOVE_REG_INTO_REG_POINTER_64);
+			push(reg_id_1);
+			push(reg_id_2);
+		}
+
 		void move_frame_offset_8_into_reg(int64_t offset, uint8_t reg_id)
 		{
 			push_instruction(MOVE_FRAME_OFFSET_8_INTO_REG);

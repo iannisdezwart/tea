@@ -229,6 +229,46 @@ class Disassembler {
 						break;
 					}
 
+					case MOVE_REG_INTO_REG_POINTER_8:
+					{
+						uint8_t reg_id_1 = file_reader.read<uint8_t>();
+						uint8_t reg_id_2 = file_reader.read<uint8_t>();
+
+						fprintf(file_out, "MOVE_REG_INTO_REG_POINTER_8 %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
+						break;
+					}
+
+					case MOVE_REG_INTO_REG_POINTER_16:
+					{
+						uint8_t reg_id_1 = file_reader.read<uint8_t>();
+						uint8_t reg_id_2 = file_reader.read<uint8_t>();
+
+						fprintf(file_out, "MOVE_REG_INTO_REG_POINTER_16 %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
+						break;
+					}
+
+					case MOVE_REG_INTO_REG_POINTER_32:
+					{
+						uint8_t reg_id_1 = file_reader.read<uint8_t>();
+						uint8_t reg_id_2 = file_reader.read<uint8_t>();
+
+						fprintf(file_out, "MOVE_REG_INTO_REG_POINTER_32 %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
+						break;
+					}
+
+					case MOVE_REG_INTO_REG_POINTER_64:
+					{
+						uint8_t reg_id_1 = file_reader.read<uint8_t>();
+						uint8_t reg_id_2 = file_reader.read<uint8_t>();
+
+						fprintf(file_out, "MOVE_REG_INTO_REG_POINTER_64 %s, %s\n",
+							CPU::reg_to_str(reg_id_1), CPU::reg_to_str(reg_id_2));
+						break;
+					}
+
 					case MOVE_FRAME_OFFSET_8_INTO_REG:
 					{
 						int64_t offset = file_reader.read<int64_t>();
