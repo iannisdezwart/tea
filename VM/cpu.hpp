@@ -73,19 +73,19 @@ class CPU {
 					return "R_3";
 
 				case R_INSTRUCTION_P_ID:
-					return "R_INSTRUCTION_P_ID";
+					return "R_INS_P";
 
 				case R_STACK_P_ID:
-					return "R_STACK_P_ID";
+					return "R_STACK_P";
 
 				case R_FRAME_P_ID:
-					return "R_FRAME_P_ID";
+					return "R_FRAME_P";
 
 				case R_ACCUMULATOR_0_ID:
-					return "R_ACCUMULATOR_0_ID";
+					return "R_ACC_0";
 
 				case R_ACCUMULATOR_1_ID:
-					return "R_ACCUMULATOR_1_ID";
+					return "R_ACC_1";
 			}
 		}
 

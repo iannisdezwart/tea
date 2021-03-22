@@ -14,8 +14,8 @@ int main(int argc, char **argv)
 	char *file_in_name = argv[1];
 	FILE *file_in = fopen(file_in_name, "r");
 
-	Disassembler disassembler(file_in);
-	disassembler.disassemble(stdout);
+	Disassembler disassembler(file_in, stdout);
+	disassembler.disassemble();
 
 	fclose(file_in);
 }
