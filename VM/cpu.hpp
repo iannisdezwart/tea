@@ -374,15 +374,44 @@ class CPU {
 				{
 					uint8_t reg_id_1 = fetch<uint8_t>();
 					uint8_t reg_id_2 = fetch<uint8_t>();
-					set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_1));
+					uint64_t value = get_reg_by_id(reg_id_1);
+					set_reg_by_id(reg_id_2, value);
 					break;
 				}
 
-				case MOVE_REG_INTO_MEM:
+				case MOVE_REG_INTO_MEM_8:
 				{
 					uint8_t reg_id = fetch<uint8_t>();
 					uint64_t address = fetch<uint64_t>();
-					memory_mapper.set(address, get_reg_by_id(reg_id));
+					uint8_t value = get_reg_by_id(reg_id) & 0xFF;
+					memory_mapper.set(address, value);
+					break;
+				}
+
+				case MOVE_REG_INTO_MEM_16:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t address = fetch<uint64_t>();
+					uint16_t value = get_reg_by_id(reg_id) & 0xFFFF;
+					memory_mapper.set(address, value);
+					break;
+				}
+
+				case MOVE_REG_INTO_MEM_32:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t address = fetch<uint64_t>();
+					uint32_t value = get_reg_by_id(reg_id) & 0xFFFFFFFF;
+					memory_mapper.set(address, value);
+					break;
+				}
+
+				case MOVE_REG_INTO_MEM_64:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t address = fetch<uint64_t>();
+					uint64_t value = get_reg_by_id(reg_id);
+					memory_mapper.set(address, value);
 					break;
 				}
 

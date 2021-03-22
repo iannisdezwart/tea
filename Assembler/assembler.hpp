@@ -128,9 +128,30 @@ class Assembler : public BufferBuilder {
 			push(reg_id_2);
 		}
 
-		void move_reg_into_mem(uint8_t reg_id, uint64_t address)
+		void move_reg_into_mem_8(uint8_t reg_id, uint64_t address)
 		{
-			push_instruction(MOVE_REG_INTO_MEM);
+			push_instruction(MOVE_REG_INTO_MEM_8);
+			push(reg_id);
+			push(address);
+		}
+
+		void move_reg_into_mem_16(uint8_t reg_id, uint64_t address)
+		{
+			push_instruction(MOVE_REG_INTO_MEM_16);
+			push(reg_id);
+			push(address);
+		}
+
+		void move_reg_into_mem_32(uint8_t reg_id, uint64_t address)
+		{
+			push_instruction(MOVE_REG_INTO_MEM_32);
+			push(reg_id);
+			push(address);
+		}
+
+		void move_reg_into_mem_64(uint8_t reg_id, uint64_t address)
+		{
+			push_instruction(MOVE_REG_INTO_MEM_64);
 			push(reg_id);
 			push(address);
 		}

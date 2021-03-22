@@ -139,12 +139,42 @@ class Disassembler {
 						break;
 					}
 
-					case MOVE_REG_INTO_MEM:
+					case MOVE_REG_INTO_MEM_8:
 					{
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						fprintf(file_out, "MOVE_REG_INTO_MEM %s, 0x%lx\n",
+						fprintf(file_out, "MOVE_REG_INTO_MEM_8 %s, 0x%lx\n",
+							CPU::reg_to_str(reg_id), address);
+						break;
+					}
+
+					case MOVE_REG_INTO_MEM_16:
+					{
+						uint8_t reg_id = file_reader.read<uint8_t>();
+						uint64_t address = file_reader.read<uint64_t>();
+
+						fprintf(file_out, "MOVE_REG_INTO_MEM_16 %s, 0x%lx\n",
+							CPU::reg_to_str(reg_id), address);
+						break;
+					}
+
+					case MOVE_REG_INTO_MEM_32:
+					{
+						uint8_t reg_id = file_reader.read<uint8_t>();
+						uint64_t address = file_reader.read<uint64_t>();
+
+						fprintf(file_out, "MOVE_REG_INTO_MEM_32 %s, 0x%lx\n",
+							CPU::reg_to_str(reg_id), address);
+						break;
+					}
+
+					case MOVE_REG_INTO_MEM_64:
+					{
+						uint8_t reg_id = file_reader.read<uint8_t>();
+						uint64_t address = file_reader.read<uint64_t>();
+
+						fprintf(file_out, "MOVE_REG_INTO_MEM_64 %s, 0x%lx\n",
 							CPU::reg_to_str(reg_id), address);
 						break;
 					}
