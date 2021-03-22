@@ -114,7 +114,7 @@ class UnaryOperation : public ASTNode {
 					Type& type = var.type;
 					offset = var.offset;
 					var_size = type.byte_size();
-					break;
+					goto store_at_frame_offset;
 				}
 
 				case IdentifierKind::PARAMETER:
@@ -124,7 +124,7 @@ class UnaryOperation : public ASTNode {
 					offset = -compiler_state.parameters_size + var.offset
 						- 8 - CPU::stack_frame_size;
 					var_size = type.byte_size();
-					break;
+					goto store_at_frame_offset;
 				}
 
 				case IdentifierKind::GLOBAL:
@@ -133,7 +133,7 @@ class UnaryOperation : public ASTNode {
 					Type& type = var.type;
 					offset = var.offset;
 					var_size = type.byte_size();
-					break;
+					goto store_at_stack_top_offset;
 				}
 
 				default:
@@ -144,6 +144,8 @@ class UnaryOperation : public ASTNode {
 			}
 
 			// Move R_ACCUMULATOR_0 into the offset for the variable
+
+			store_at_frame_offset:
 
 			switch (var_size) {
 				case 1:
@@ -160,6 +162,26 @@ class UnaryOperation : public ASTNode {
 
 				case 8:
 					assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_0_ID, offset);
+					break;
+			}
+
+			store_at_stack_top_offset:
+
+			switch (var_size) {
+				case 1:
+					assembler.move_reg_into_stack_top_offset_8(R_ACCUMULATOR_0_ID, offset);
+					break;
+
+				case 2:
+					assembler.move_reg_into_stack_top_offset_16(R_ACCUMULATOR_0_ID, offset);
+					break;
+
+				case 4:
+					assembler.move_reg_into_stack_top_offset_32(R_ACCUMULATOR_0_ID, offset);
+					break;
+
+				case 8:
+					assembler.move_reg_into_stack_top_offset_64(R_ACCUMULATOR_0_ID, offset);
 					break;
 			}
 		}
@@ -333,6 +355,15 @@ class UnaryOperation : public ASTNode {
 
 				case DEREFERENCE:
 				{
+					if (expression->type == ASSIGNMENT_EXPRESSION) {
+						AssignmentExpression *assignment_expr =
+							(AssignmentExpression *) expression;
+
+						
+
+						break;
+					}
+
 					// Moves the address of what to dereference into R_ACCUMULATOR_0
 
 					expression->compile(assembler, compiler_state);
