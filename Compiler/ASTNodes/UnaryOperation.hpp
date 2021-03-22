@@ -6,6 +6,7 @@
 #include "../util.hpp"
 #include "ASTNode.hpp"
 #include "IdentifierExpression.hpp"
+#include "AssignmentExpression.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../../Assembler/assembler.hpp"
 #include "../compiler-state.hpp"
@@ -359,7 +360,58 @@ class UnaryOperation : public ASTNode {
 						AssignmentExpression *assignment_expr =
 							(AssignmentExpression *) expression;
 
-						
+						// Create an IdentifierExpression of the identifier token
+
+						const Token& id_token = assignment_expr->identifier_token;
+						IdentifierExpression id_expr(id_token);
+
+						// Check types
+
+						Type var_type = id_expr.get_type(compiler_state);
+						var_type.pointer_depth--;
+						Type value_type = assignment_expr->value->get_type(compiler_state);
+
+						if (var_type != value_type)
+							err_at_token(op_token,
+								"Dereferenced type does not match type of value",
+								"var_type = %s, value_type = %s",
+								var_type.to_str().c_str(), value_type.to_str().c_str());
+
+						// Moves the address of what to dereference into R_ACCUMULATOR_1
+
+						id_expr.compile(assembler, compiler_state);
+						assembler.move_reg_into_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+
+						// Moves the value to R_ACCUMULATOR_0
+
+						assignment_expr->value->compile(assembler, compiler_state);
+
+						switch (var_type.byte_size()) {
+							case 1:
+								assembler.move_reg_into_reg_pointer_8(
+									R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+								break;
+
+							case 2:
+								assembler.move_reg_into_reg_pointer_16(
+									R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+								break;
+
+							case 4:
+								assembler.move_reg_into_reg_pointer_32(
+									R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+								break;
+
+							case 8:
+								assembler.move_reg_into_reg_pointer_64(
+									R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+								break;
+
+							default:
+								printf("Dereference assignments for "
+									"	byte size %lu is not implemented\n", var_type.byte_size());
+								abort();
+						}
 
 						break;
 					}

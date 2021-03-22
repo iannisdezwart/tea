@@ -42,12 +42,14 @@ class Type {
 
 		constexpr bool operator==(const Type& other) const
 		{
-			return value == other.value && size == other.size;
+			return value == other.value && size == other.size
+				&& pointer_depth == other.pointer_depth;
 		}
 
 		constexpr bool operator!=(const Type& other) const
 		{
-			return value != other.value || size != other.size;
+			return value != other.value || size != other.size
+				|| pointer_depth != other.pointer_depth;
 		}
 
 		constexpr size_t byte_size()
