@@ -101,10 +101,11 @@ class Disassembler {
 
 					case MOVE_8_INTO_REG:
 					{
+						print_instruction("MOVE_8_INTO_REG");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_8_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -112,10 +113,11 @@ class Disassembler {
 
 					case MOVE_16_INTO_REG:
 					{
+						print_instruction("MOVE_16_INTO_REG");
+
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_16_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -123,10 +125,11 @@ class Disassembler {
 
 					case MOVE_32_INTO_REG:
 					{
+						print_instruction("MOVE_32_INTO_REG");
+
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_32_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -134,10 +137,11 @@ class Disassembler {
 
 					case MOVE_64_INTO_REG:
 					{
+						print_instruction("MOVE_64_INTO_REG");
+
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_64_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -145,10 +149,11 @@ class Disassembler {
 
 					case MOVE_8_INTO_MEM:
 					{
+						print_instruction("MOVE_8_INTO_MEM");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("MOVE_8_INTO_MEM");
 						print_arg_literal_number(lit);
 						print_arg_address(address);
 						break;
@@ -156,10 +161,11 @@ class Disassembler {
 
 					case MOVE_16_INTO_MEM:
 					{
+						print_instruction("MOVE_16_INTO_MEM");
+
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("MOVE_16_INTO_MEM");
 						print_arg_literal_number(lit);
 						print_arg_address(address);
 						break;
@@ -167,10 +173,11 @@ class Disassembler {
 
 					case MOVE_32_INTO_MEM:
 					{
+						print_instruction("MOVE_32_INTO_MEM");
+
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("MOVE_32_INTO_MEM");
 						print_arg_literal_number(lit);
 						print_arg_address(address);
 						break;
@@ -178,10 +185,11 @@ class Disassembler {
 
 					case MOVE_64_INTO_MEM:
 					{
+						print_instruction("MOVE_64_INTO_MEM");
+
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("MOVE_64_INTO_MEM");
 						print_arg_literal_number(lit);
 						print_arg_address(address);
 						break;
@@ -189,10 +197,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_REG:
 					{
+						print_instruction("MOVE_REG_INTO_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_REG_INTO_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -200,10 +209,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_MEM_8:
 					{
+						print_instruction("MOVE_REG_INTO_MEM_8");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("MOVE_REG_INTO_MEM_8");
 						print_arg_reg(reg_id);
 						print_arg_address(address);
 						break;
@@ -211,10 +221,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_MEM_16:
 					{
+						print_instruction("MOVE_REG_INTO_MEM_16");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("MOVE_REG_INTO_MEM_16");
 						print_arg_reg(reg_id);
 						print_arg_address(address);
 						break;
@@ -222,10 +233,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_MEM_32:
 					{
+						print_instruction("MOVE_REG_INTO_MEM_32");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("MOVE_REG_INTO_MEM_32");
 						print_arg_reg(reg_id);
 						print_arg_address(address);
 						break;
@@ -233,10 +245,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_MEM_64:
 					{
+						print_instruction("MOVE_REG_INTO_MEM_64");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("MOVE_REG_INTO_MEM_64");
 						print_arg_reg(reg_id);
 						print_arg_address(address);
 						break;
@@ -244,10 +257,11 @@ class Disassembler {
 
 					case MOVE_MEM_8_INTO_REG:
 					{
+						print_instruction("MOVE_MEM_8_INTO_REG");
+
 						uint64_t address = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_MEM_8_INTO_REG");
 						print_arg_address(address);
 						print_arg_reg(reg_id);
 						break;
@@ -255,10 +269,11 @@ class Disassembler {
 
 					case MOVE_MEM_16_INTO_REG:
 					{
+						print_instruction("MOVE_MEM_16_INTO_REG");
+
 						uint64_t address = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_MEM_16_INTO_REG");
 						print_arg_address(address);
 						print_arg_reg(reg_id);
 						break;
@@ -266,10 +281,11 @@ class Disassembler {
 
 					case MOVE_MEM_32_INTO_REG:
 					{
+						print_instruction("MOVE_MEM_32_INTO_REG");
+
 						uint64_t address = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_MEM_32_INTO_REG");
 						print_arg_address(address);
 						print_arg_reg(reg_id);
 						break;
@@ -277,10 +293,11 @@ class Disassembler {
 
 					case MOVE_MEM_64_INTO_REG:
 					{
+						print_instruction("MOVE_MEM_64_INTO_REG");
+
 						uint64_t address = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_MEM_64_INTO_REG");
 						print_arg_address(address);
 						print_arg_reg(reg_id);
 						break;
@@ -288,10 +305,11 @@ class Disassembler {
 
 					case MOVE_REG_POINTER_8_INTO_REG:
 					{
+						print_instruction("MOVE_REG_POINTER_8_INTO_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_REG_POINTER_8_INTO_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -299,10 +317,11 @@ class Disassembler {
 
 					case MOVE_REG_POINTER_16_INTO_REG:
 					{
+						print_instruction("MOVE_REG_POINTER_16_INTO_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_REG_POINTER_16_INTO_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -310,10 +329,11 @@ class Disassembler {
 
 					case MOVE_REG_POINTER_32_INTO_REG:
 					{
+						print_instruction("MOVE_REG_POINTER_32_INTO_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_REG_POINTER_32_INTO_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -321,10 +341,11 @@ class Disassembler {
 
 					case MOVE_REG_POINTER_64_INTO_REG:
 					{
+						print_instruction("MOVE_REG_POINTER_64_INTO_REG");
+						
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_REG_POINTER_64_INTO_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -332,10 +353,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_REG_POINTER_8:
 					{
+						print_instruction("MOVE_REG_INTO_REG_POINTER_8");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_REG_INTO_REG_POINTER_8");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -343,10 +365,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_REG_POINTER_16:
 					{
+						print_instruction("MOVE_REG_INTO_REG_POINTER_16");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_REG_INTO_REG_POINTER_16");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -354,10 +377,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_REG_POINTER_32:
 					{
+						print_instruction("MOVE_REG_INTO_REG_POINTER_32");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_REG_INTO_REG_POINTER_32");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -365,10 +389,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_REG_POINTER_64:
 					{
+						print_instruction("MOVE_REG_INTO_REG_POINTER_64");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_REG_INTO_REG_POINTER_64");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -376,10 +401,11 @@ class Disassembler {
 
 					case MOVE_FRAME_OFFSET_8_INTO_REG:
 					{
+						print_instruction("MOVE_FRAME_OFFSET_8_INTO_REG");
+
 						int64_t offset = file_reader.read<int64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_FRAME_OFFSET_8_INTO_REG");
 						print_arg_literal_number(offset);
 						print_arg_reg(reg_id);
 						break;
@@ -387,10 +413,11 @@ class Disassembler {
 
 					case MOVE_FRAME_OFFSET_16_INTO_REG:
 					{
+						print_instruction("MOVE_FRAME_OFFSET_16_INTO_REG");
+
 						int64_t offset = file_reader.read<int64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_FRAME_OFFSET_16_INTO_REG");
 						print_arg_literal_number(offset);
 						print_arg_reg(reg_id);
 						break;
@@ -398,10 +425,11 @@ class Disassembler {
 
 					case MOVE_FRAME_OFFSET_32_INTO_REG:
 					{
+						print_instruction("MOVE_FRAME_OFFSET_32_INTO_REG");
+
 						int64_t offset = file_reader.read<int64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_FRAME_OFFSET_32_INTO_REG");
 						print_arg_literal_number(offset);
 						print_arg_reg(reg_id);
 						break;
@@ -409,10 +437,11 @@ class Disassembler {
 
 					case MOVE_FRAME_OFFSET_64_INTO_REG:
 					{
+						print_instruction("MOVE_FRAME_OFFSET_64_INTO_REG");
+
 						int64_t offset = file_reader.read<int64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_FRAME_OFFSET_64_INTO_REG");
 						print_arg_literal_number(offset);
 						print_arg_reg(reg_id);
 						break;
@@ -420,10 +449,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_FRAME_OFFSET_8:
 					{
+						print_instruction("MOVE_REG_INTO_FRAME_OFFSET_8");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						int64_t offset = file_reader.read<int64_t>();
 
-						print_instruction("MOVE_REG_INTO_FRAME_OFFSET_8");
 						print_arg_reg(reg_id);
 						print_arg_literal_number(offset);
 						break;
@@ -431,10 +461,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_FRAME_OFFSET_16:
 					{
+						print_instruction("MOVE_REG_INTO_FRAME_OFFSET_16");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						int64_t offset = file_reader.read<int64_t>();
 
-						print_instruction("MOVE_REG_INTO_FRAME_OFFSET_16");
 						print_arg_reg(reg_id);
 						print_arg_literal_number(offset);
 						break;
@@ -442,10 +473,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_FRAME_OFFSET_32:
 					{
+						print_instruction("MOVE_REG_INTO_FRAME_OFFSET_32");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						int64_t offset = file_reader.read<int64_t>();
 
-						print_instruction("MOVE_REG_INTO_FRAME_OFFSET_32");
 						print_arg_reg(reg_id);
 						print_arg_literal_number(offset);
 						break;
@@ -453,10 +485,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_FRAME_OFFSET_64:
 					{
+						print_instruction("MOVE_REG_INTO_FRAME_OFFSET_64");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						int64_t offset = file_reader.read<int64_t>();
 
-						print_instruction("MOVE_REG_INTO_FRAME_OFFSET_64");
 						print_arg_reg(reg_id);
 						print_arg_literal_number(offset);
 						break;
@@ -464,10 +497,11 @@ class Disassembler {
 
 					case MOVE_STACK_TOP_OFFSET_8_INTO_REG:
 					{
+						print_instruction("MOVE_STACK_TOP_OFFSET_8_INTO_REG");
+
 						int64_t offset = file_reader.read<int64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_STACK_TOP_OFFSET_8_INTO_REG");
 						print_arg_literal_number(offset);
 						print_arg_reg(reg_id);
 						break;
@@ -475,10 +509,11 @@ class Disassembler {
 
 					case MOVE_STACK_TOP_OFFSET_16_INTO_REG:
 					{
+						print_instruction("MOVE_STACK_TOP_OFFSET_16_INTO_REG");
+
 						int64_t offset = file_reader.read<int64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_STACK_TOP_OFFSET_16_INTO_REG");
 						print_arg_literal_number(offset);
 						print_arg_reg(reg_id);
 						break;
@@ -486,10 +521,11 @@ class Disassembler {
 
 					case MOVE_STACK_TOP_OFFSET_32_INTO_REG:
 					{
+						print_instruction("MOVE_STACK_TOP_OFFSET_32_INTO_REG");
+
 						int64_t offset = file_reader.read<int64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_STACK_TOP_OFFSET_32_INTO_REG");
 						print_arg_literal_number(offset);
 						print_arg_reg(reg_id);
 						break;
@@ -497,10 +533,11 @@ class Disassembler {
 
 					case MOVE_STACK_TOP_OFFSET_64_INTO_REG:
 					{
+						print_instruction("MOVE_STACK_TOP_OFFSET_64_INTO_REG");
+
 						int64_t offset = file_reader.read<int64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MOVE_STACK_TOP_OFFSET_64_INTO_REG");
 						print_arg_literal_number(offset);
 						print_arg_reg(reg_id);
 						break;
@@ -508,10 +545,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_STACK_TOP_OFFSET_8:
 					{
+						print_instruction("MOVE_REG_INTO_STACK_TOP_OFFSET_8");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						int64_t offset = file_reader.read<int64_t>();
 
-						print_instruction("MOVE_REG_INTO_STACK_TOP_OFFSET_8");
 						print_arg_reg(reg_id);
 						print_arg_literal_number(offset);
 						break;
@@ -519,10 +557,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_STACK_TOP_OFFSET_16:
 					{
+						print_instruction("MOVE_REG_INTO_STACK_TOP_OFFSET_16");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						int64_t offset = file_reader.read<int64_t>();
 
-						print_instruction("MOVE_REG_INTO_STACK_TOP_OFFSET_16");
 						print_arg_reg(reg_id);
 						print_arg_literal_number(offset);
 						break;
@@ -530,10 +569,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_STACK_TOP_OFFSET_32:
 					{
+						print_instruction("MOVE_REG_INTO_STACK_TOP_OFFSET_32");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						int64_t offset = file_reader.read<int64_t>();
 
-						print_instruction("MOVE_REG_INTO_STACK_TOP_OFFSET_32");
 						print_arg_reg(reg_id);
 						print_arg_literal_number(offset);
 						break;
@@ -541,10 +581,11 @@ class Disassembler {
 
 					case MOVE_REG_INTO_STACK_TOP_OFFSET_64:
 					{
+						print_instruction("MOVE_REG_INTO_STACK_TOP_OFFSET_64");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						int64_t offset = file_reader.read<int64_t>();
 
-						print_instruction("MOVE_REG_INTO_STACK_TOP_OFFSET_64");
 						print_arg_reg(reg_id);
 						print_arg_literal_number(offset);
 						break;
@@ -552,10 +593,11 @@ class Disassembler {
 
 					case ADD_8_INTO_REG:
 					{
+						print_instruction("ADD_8_INTO_REG");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("ADD_8_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -563,10 +605,11 @@ class Disassembler {
 
 					case ADD_16_INTO_REG:
 					{
+						print_instruction("ADD_16_INTO_REG");
+
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("ADD_16_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -574,10 +617,11 @@ class Disassembler {
 
 					case ADD_32_INTO_REG:
 					{
+						print_instruction("ADD_32_INTO_REG");
+
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("ADD_32_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -585,10 +629,11 @@ class Disassembler {
 
 					case ADD_64_INTO_REG:
 					{
+						print_instruction("ADD_64_INTO_REG");
+
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("ADD_64_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -596,10 +641,11 @@ class Disassembler {
 
 					case ADD_REG_INTO_REG:
 					{
+						print_instruction("ADD_REG_INTO_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("ADD_REG_INTO_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -607,10 +653,11 @@ class Disassembler {
 
 					case SUBTRACT_8_FROM_REG:
 					{
+						print_instruction("SUBTRACT_8_FROM_REG");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("SUBTRACT_8_FROM_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -618,10 +665,11 @@ class Disassembler {
 
 					case SUBTRACT_16_FROM_REG:
 					{
+						print_instruction("SUBTRACT_16_FROM_REG");
+
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("SUBTRACT_16_FROM_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -629,10 +677,11 @@ class Disassembler {
 
 					case SUBTRACT_32_FROM_REG:
 					{
+						print_instruction("SUBTRACT_32_FROM_REG");
+
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("SUBTRACT_32_FROM_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -640,10 +689,11 @@ class Disassembler {
 
 					case SUBTRACT_64_FROM_REG:
 					{
+						print_instruction("SUBTRACT_64_FROM_REG");
+
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("SUBTRACT_64_FROM_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -651,10 +701,11 @@ class Disassembler {
 
 					case SUBTRACT_REG_FROM_REG:
 					{
+						print_instruction("SUBTRACT_REG_FROM_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("SUBTRACT_REG_FROM_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -662,10 +713,11 @@ class Disassembler {
 
 					case MULTIPLY_8_INTO_REG:
 					{
+						print_instruction("MULTIPLY_8_INTO_REG");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MULTIPLY_8_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -673,10 +725,11 @@ class Disassembler {
 
 					case MULTIPLY_16_INTO_REG:
 					{
+						print_instruction("MULTIPLY_16_INTO_REG");
+
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MULTIPLY_16_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -684,10 +737,11 @@ class Disassembler {
 
 					case MULTIPLY_32_INTO_REG:
 					{
+						print_instruction("MULTIPLY_32_INTO_REG");
+
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MULTIPLY_32_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -695,10 +749,11 @@ class Disassembler {
 
 					case MULTIPLY_64_INTO_REG:
 					{
+						print_instruction("MULTIPLY_64_INTO_REG");
+
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("MULTIPLY_64_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -706,10 +761,11 @@ class Disassembler {
 
 					case MULTIPLY_REG_INTO_REG:
 					{
+						print_instruction("MULTIPLY_REG_INTO_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("MULTIPLY_REG_INTO_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -717,10 +773,11 @@ class Disassembler {
 
 					case DIVIDE_8_FROM_REG:
 					{
+						print_instruction("DIVIDE_8_FROM_REG");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("DIVIDE_8_FROM_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -728,10 +785,11 @@ class Disassembler {
 
 					case DIVIDE_16_FROM_REG:
 					{
+						print_instruction("DIVIDE_16_FROM_REG");
+
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("DIVIDE_16_FROM_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -739,10 +797,11 @@ class Disassembler {
 
 					case DIVIDE_32_FROM_REG:
 					{
+						print_instruction("DIVIDE_32_FROM_REG");
+
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("DIVIDE_32_FROM_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -750,10 +809,11 @@ class Disassembler {
 
 					case DIVIDE_64_FROM_REG:
 					{
+						print_instruction("DIVIDE_64_FROM_REG");
+
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("DIVIDE_64_FROM_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -761,10 +821,11 @@ class Disassembler {
 
 					case DIVIDE_REG_FROM_REG:
 					{
+						print_instruction("DIVIDE_REG_FROM_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("DIVIDE_REG_FROM_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -772,10 +833,11 @@ class Disassembler {
 
 					case TAKE_MODULO_8_OF_REG:
 					{
+						print_instruction("TAKE_MODULO_8_OF_REG");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("TAKE_MODULO_8_OF_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -783,10 +845,11 @@ class Disassembler {
 
 					case TAKE_MODULO_16_OF_REG:
 					{
+						print_instruction("TAKE_MODULO_16_OF_REG");
+
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("TAKE_MODULO_16_OF_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -794,10 +857,11 @@ class Disassembler {
 
 					case TAKE_MODULO_32_OF_REG:
 					{
+						print_instruction("TAKE_MODULO_32_OF_REG");
+
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("TAKE_MODULO_32_OF_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -805,10 +869,11 @@ class Disassembler {
 
 					case TAKE_MODULO_64_OF_REG:
 					{
+						print_instruction("TAKE_MODULO_64_OF_REG");
+
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("TAKE_MODULO_64_OF_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -816,10 +881,11 @@ class Disassembler {
 
 					case TAKE_MODULO_REG_OF_REG:
 					{
+						print_instruction("TAKE_MODULO_8_OF_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("TAKE_MODULO_8_OF_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -827,10 +893,11 @@ class Disassembler {
 
 					case AND_8_INTO_REG:
 					{
+						print_instruction("AND_8_INTO_REG");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("AND_8_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -838,10 +905,11 @@ class Disassembler {
 
 					case AND_16_INTO_REG:
 					{
+						print_instruction("AND_16_INTO_REG");
+
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("AND_16_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -849,10 +917,11 @@ class Disassembler {
 
 					case AND_32_INTO_REG:
 					{
+						print_instruction("AND_32_INTO_REG");
+
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("AND_32_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -860,10 +929,11 @@ class Disassembler {
 
 					case AND_64_INTO_REG:
 					{
+						print_instruction("AND_64_INTO_REG");
+
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("AND_64_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -871,10 +941,11 @@ class Disassembler {
 
 					case AND_REG_INTO_REG:
 					{
+						print_instruction("AND_REG_INTO_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("AND_REG_INTO_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -882,10 +953,11 @@ class Disassembler {
 
 					case OR_8_INTO_REG:
 					{
+						print_instruction("OR_8_INTO_REG");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("OR_8_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -893,10 +965,11 @@ class Disassembler {
 
 					case OR_16_INTO_REG:
 					{
+						print_instruction("OR_16_INTO_REG");
+						
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("OR_16_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -904,10 +977,11 @@ class Disassembler {
 
 					case OR_32_INTO_REG:
 					{
+						print_instruction("OR832_INTO_REG");
+
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("OR832_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -915,10 +989,11 @@ class Disassembler {
 
 					case OR_64_INTO_REG:
 					{
+						print_instruction("OR_64_INTO_REG");
+
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("OR_64_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -926,10 +1001,11 @@ class Disassembler {
 
 					case OR_REG_INTO_REG:
 					{
+						print_instruction("OR_REG_INTO_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("OR_REG_INTO_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -937,10 +1013,11 @@ class Disassembler {
 
 					case XOR_8_INTO_REG:
 					{
+						print_instruction("XOR_8_INTO_REG");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("XOR_8_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -948,10 +1025,11 @@ class Disassembler {
 
 					case XOR_16_INTO_REG:
 					{
+						print_instruction("XOR_16_INTO_REG");
+
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("XOR_16_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -959,10 +1037,11 @@ class Disassembler {
 
 					case XOR_32_INTO_REG:
 					{
+						print_instruction("XOR_32_INTO_REG");
+
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("XOR_32_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -970,10 +1049,11 @@ class Disassembler {
 
 					case XOR_64_INTO_REG:
 					{
+						print_instruction("XOR_64_INTO_REG");
+
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("XOR_64_INTO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -981,10 +1061,11 @@ class Disassembler {
 
 					case XOR_REG_INTO_REG:
 					{
+						print_instruction("XOR_REG_INTO_REG");
+						
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("XOR_REG_INTO_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -992,10 +1073,11 @@ class Disassembler {
 
 					case LEFT_SHIFT_REG_BY_8:
 					{
+						print_instruction("LEFT_SHIFT_REG_BY_8");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("LEFT_SHIFT_REG_BY_8");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -1004,10 +1086,11 @@ class Disassembler {
 
 					case LEFT_SHIFT_REG_BY_REG:
 					{
+						print_instruction("LEFT_SHIFT_REG_BY_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("LEFT_SHIFT_REG_BY_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -1015,10 +1098,11 @@ class Disassembler {
 
 					case RIGHT_SHIFT_REG_BY_8:
 					{
+						print_instruction("RIGHT_SHIFT_REG_BY_8");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("RIGHT_SHIFT_REG_BY_8");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -1026,10 +1110,11 @@ class Disassembler {
 
 					case RIGHT_SHIFT_REG_BY_REG:
 					{
+						print_instruction("RIGHT_SHIFT_REG_BY_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("RIGHT_SHIFT_REG_BY_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -1037,37 +1122,41 @@ class Disassembler {
 
 					case INCREMENT_REG:
 					{
+						print_instruction("INCREMENT_REG");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("INCREMENT_REG");
 						print_arg_reg(reg_id);
 						break;
 					}
 
 					case DECREMENT_REG:
 					{
+						print_instruction("DECREMENT_REG");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("DECREMENT_REG");
 						print_arg_reg(reg_id);
 						break;
 					}
 
 					case NOT_REG:
 					{
+						print_instruction("NOT_REG");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("NOT_REG");
 						print_arg_reg(reg_id);
 						break;
 					}
 
 					case COMPARE_8_TO_REG:
 					{
+						print_instruction("COMPARE_8_TO_REG");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("COMPARE_8_TO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -1075,10 +1164,11 @@ class Disassembler {
 
 					case COMPARE_16_TO_REG:
 					{
+						print_instruction("COMPARE_16_TO_REG");
+
 						uint16_t lit = file_reader.read<uint16_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("COMPARE_16_TO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -1086,10 +1176,11 @@ class Disassembler {
 
 					case COMPARE_32_TO_REG:
 					{
+						print_instruction("COMPARE_32_TO_REG");
+
 						uint32_t lit = file_reader.read<uint32_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("COMPARE_32_TO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -1097,10 +1188,11 @@ class Disassembler {
 
 					case COMPARE_64_TO_REG:
 					{
+						print_instruction("COMPARE_64_TO_REG");
+
 						uint64_t lit = file_reader.read<uint64_t>();
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("COMPARE_64_TO_REG");
 						print_arg_literal_number(lit);
 						print_arg_reg(reg_id);
 						break;
@@ -1108,10 +1200,11 @@ class Disassembler {
 
 					case COMPARE_REG_TO_8:
 					{
+						print_instruction("COMPARE_REG_TO_8");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint8_t lit = file_reader.read<uint8_t>();
 
-						print_instruction("COMPARE_REG_TO_8");
 						print_arg_reg(reg_id);
 						print_arg_literal_number(lit);
 						break;
@@ -1119,10 +1212,11 @@ class Disassembler {
 
 					case COMPARE_REG_TO_16:
 					{
+						print_instruction("COMPARE_REG_TO_16");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint16_t lit = file_reader.read<uint16_t>();
 
-						print_instruction("COMPARE_REG_TO_16");
 						print_arg_reg(reg_id);
 						print_arg_literal_number(lit);
 						break;
@@ -1130,10 +1224,11 @@ class Disassembler {
 
 					case COMPARE_REG_TO_32:
 					{
+						print_instruction("COMPARE_REG_TO_32");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint32_t lit = file_reader.read<uint32_t>();
 
-						print_instruction("COMPARE_REG_TO_32");
 						print_arg_reg(reg_id);
 						print_arg_literal_number(lit);
 						break;
@@ -1141,10 +1236,11 @@ class Disassembler {
 
 					case COMPARE_REG_TO_64:
 					{
+						print_instruction("COMPARE_REG_TO_64");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 						uint64_t lit = file_reader.read<uint64_t>();
 
-						print_instruction("COMPARE_REG_TO_64");
 						print_arg_reg(reg_id);
 						print_arg_literal_number(lit);
 						break;
@@ -1152,10 +1248,11 @@ class Disassembler {
 
 					case COMPARE_REG_TO_REG:
 					{
+						print_instruction("COMPARE_REG_TO_REG");
+
 						uint8_t reg_id_1 = file_reader.read<uint8_t>();
 						uint8_t reg_id_2 = file_reader.read<uint8_t>();
 
-						print_instruction("COMPARE_REG_TO_REG");
 						print_arg_reg(reg_id_1);
 						print_arg_reg(reg_id_2);
 						break;
@@ -1163,171 +1260,190 @@ class Disassembler {
 
 					case JUMP:
 					{
+						print_instruction("JUMP");
+
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("JUMP");
 						print_arg_address(address);
 						break;
 					}
 
 					case JUMP_IF_GREATER:
 					{
+						print_instruction("JUMP_IF_GREATER");
+
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("JUMP_IF_GREATER");
 						print_arg_address(address);
 						break;
 					}
 
 					case JUMP_IF_GREATER_OR_EQUAL:
 					{
+						print_instruction("JUMP_IF_GREATER_OR_EQUAL");
+
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("JUMP_IF_GREATER_OR_EQUAL");
 						print_arg_address(address);
 						break;
 					}
 
 					case JUMP_IF_LESS:
 					{
+						print_instruction("JUMP_IF_LESS");
+
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("JUMP_IF_LESS");
 						print_arg_address(address);
 						break;
 					}
 
 					case JUMP_IF_LESS_OR_EQUAL:
 					{
+						print_instruction("JUMP_IF_LESS_OR_EQUAL");
+
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("JUMP_IF_LESS_OR_EQUAL");
 						print_arg_address(address);
 						break;
 					}
 
 					case JUMP_IF_EQUAL:
 					{
+						print_instruction("JUMP_IF_EQUAL");
+
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("JUMP_IF_EQUAL");
 						print_arg_address(address);
 						break;
 					}
 
 					case PUSH_8:
 					{
+						print_instruction("PUSH_8");
+
 						uint8_t lit = file_reader.read<uint8_t>();
 
-						print_instruction("PUSH_8");
 						print_arg_literal_number(lit);
 						break;
 					}
 
 					case PUSH_16:
 					{
+						print_instruction("PUSH_16");
+
 						uint16_t lit = file_reader.read<uint16_t>();
 
-						print_instruction("PUSH_16");
 						print_arg_literal_number(lit);
 						break;
 					}
 
 					case PUSH_32:
 					{
+						print_instruction("PUSH_32");
+
 						uint32_t lit = file_reader.read<uint32_t>();
 
-						print_instruction("PUSH_32");
 						print_arg_literal_number(lit);
 						break;
 					}
 
 					case PUSH_64:
 					{
+						print_instruction("PUSH_64");
+
 						uint64_t lit = file_reader.read<uint64_t>();
 
-						print_instruction("PUSH_64");
 						print_arg_literal_number(lit);
 						break;
 					}
 
 					case PUSH_REG_8:
 					{
+						print_instruction("PUSH_REG_8");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("PUSH_REG_8");
 						print_arg_reg(reg_id);
 						break;
 					}
 
 					case PUSH_REG_16:
 					{
+						print_instruction("PUSH_REG_16");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("PUSH_REG_16");
 						print_arg_reg(reg_id);
 						break;
 					}
 
 					case PUSH_REG_32:
 					{
+						print_instruction("PUSH_REG_32");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("PUSH_REG_32");
 						print_arg_reg(reg_id);
 						break;
 					}
 
 					case PUSH_REG_64:
 					{
+						print_instruction("PUSH_REG_64");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("PUSH_REG_64");
 						print_arg_reg(reg_id);
 						break;
 					}
 
 					case POP_8_INTO_REG:
 					{
+						print_instruction("POP_8_INTO_REG");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("POP_8_INTO_REG");
 						print_arg_reg(reg_id);
 						break;
 					}
 
 					case POP_16_INTO_REG:
 					{
+						print_instruction("POP_16_INTO_REG");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("POP_16_INTO_REG");
 						print_arg_reg(reg_id);
 						break;
 					}
 
 					case POP_32_INTO_REG:
 					{
+						print_instruction("POP_32_INTO_REG");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("POP_32_INTO_REG");
 						print_arg_reg(reg_id);
 						break;
 					}
 
 					case POP_64_INTO_REG:
 					{
+						print_instruction("POP_64_INTO_REG");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("POP_64_INTO_REG");
 						print_arg_reg(reg_id);
 						break;
 					}
 
 					case CALL:
 					{
+						print_instruction("CALL");
+
 						uint64_t address = file_reader.read<uint64_t>();
 
-						print_instruction("CALL");
 						print_arg_address(address);
 						break;
 					}
@@ -1340,27 +1456,30 @@ class Disassembler {
 
 					case ALLOCATE_STACK:
 					{
+						print_instruction("ALLOCATE_STACK");
+
 						uint64_t size = file_reader.read<uint64_t>();
 
-						print_instruction("ALLOCATE_STACK");
 						print_arg_literal_number(size);
 						break;
 					}
 
 					case DEALLOCATE_STACK:
 					{
+						print_instruction("ALLOCATE_STACK");
+
 						uint64_t size = file_reader.read<uint64_t>();
 
-						print_instruction("ALLOCATE_STACK");
 						print_arg_literal_number(size);
 						break;
 					}
 
 					case LOG_REG:
 					{
+						print_instruction("LOG_REG");
+
 						uint8_t reg_id = file_reader.read<uint8_t>();
 
-						print_instruction("LOG_REG");
 						print_arg_reg(reg_id);
 						break;
 					}
