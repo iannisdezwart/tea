@@ -574,6 +574,78 @@ class CPU {
 					break;
 				}
 
+				case MOVE_STACK_TOP_OFFSET_8_INTO_REG:
+				{
+					int64_t offset = fetch<int64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					uint8_t value = memory_mapper.get<uint8_t>(stack_top() + offset);
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case MOVE_STACK_TOP_OFFSET_16_INTO_REG:
+				{
+					int64_t offset = fetch<int64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					uint16_t value = memory_mapper.get<uint16_t>(stack_top() + offset);
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case MOVE_STACK_TOP_OFFSET_32_INTO_REG:
+				{
+					int64_t offset = fetch<int64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					uint32_t value = memory_mapper.get<uint32_t>(stack_top() + offset);
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case MOVE_STACK_TOP_OFFSET_64_INTO_REG:
+				{
+					int64_t offset = fetch<int64_t>();
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t value = memory_mapper.get<uint64_t>(stack_top() + offset);
+					set_reg_by_id(reg_id, value);
+					break;
+				}
+
+				case MOVE_REG_INTO_STACK_TOP_OFFSET_8:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					int64_t offset = fetch<int64_t>();
+					uint8_t value = get_reg_by_id(reg_id) & 0xFF;
+					memory_mapper.set(stack_top() + offset, value);
+					break;
+				}
+
+				case MOVE_REG_INTO_STACK_TOP_OFFSET_16:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					int64_t offset = fetch<int64_t>();
+					uint16_t value = get_reg_by_id(reg_id) & 0xFFFF;
+					memory_mapper.set(stack_top() + offset, value);
+					break;
+				}
+
+				case MOVE_REG_INTO_STACK_TOP_OFFSET_32:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					int64_t offset = fetch<int64_t>();
+					uint32_t value = get_reg_by_id(reg_id) & 0xFFFFFFFF;
+					memory_mapper.set(stack_top() + offset, value);
+					break;
+				}
+
+				case MOVE_REG_INTO_STACK_TOP_OFFSET_64:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					int64_t offset = fetch<int64_t>();
+					uint64_t value = get_reg_by_id(reg_id);
+					memory_mapper.set(stack_top() + offset, value);
+					break;
+				}
+
 				case ADD_8_INTO_REG:
 				{
 					uint64_t lit = fetch<uint8_t>();
