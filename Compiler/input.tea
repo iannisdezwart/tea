@@ -1,8 +1,28 @@
 #include "trick-the-vscode-c-syntax-highlighter.h"
 
+u8 *out = 0x11; // Output device
+
+void putc(u8 c)
+{
+	*out = c;
+}
+
 u64 main()
 {
-	u64 a = 123;
-	u64 *b = &a;
-	*b = 69;
+	putc('H');
+	putc('e');
+	putc('l');
+	putc('l');
+	putc('o');
+	putc(',');
+	putc(' ');
+	putc('W');
+	putc('o');
+	putc('r');
+	putc('l');
+	putc('d');
+	putc('\x21');
+	putc('\n');
+
+	return 0;
 }

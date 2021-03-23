@@ -76,7 +76,7 @@ class IdentifierExpression : public ASTNode {
 					Type& type = var.type;
 					offset = var.offset;
 					var_size = type.byte_size();
-					break;
+					goto get_id_at_frame_offset;
 				}
 
 				case IdentifierKind::PARAMETER:
@@ -86,7 +86,7 @@ class IdentifierExpression : public ASTNode {
 					offset = -compiler_state.parameters_size + var.offset
 						- 8 - CPU::stack_frame_size;
 					var_size = type.byte_size();
-					break;
+					goto get_id_at_frame_offset;
 				}
 
 				case IdentifierKind::GLOBAL:
@@ -95,9 +95,7 @@ class IdentifierExpression : public ASTNode {
 					Type& type = var.type;
 					offset = var.offset;
 					var_size = type.byte_size();
-					printf("global in IdentifierExpression is not implemented yet\n");
-					abort();
-					break;
+					goto get_id_at_stack_top_offset;
 				}
 
 				default:
@@ -106,6 +104,8 @@ class IdentifierExpression : public ASTNode {
 						"Identifier: %s. this might be a bug in the compiler",
 						id_name.c_str());
 			}
+
+			get_id_at_frame_offset:
 
 			switch (var_size) {
 				case 1:
@@ -122,6 +122,33 @@ class IdentifierExpression : public ASTNode {
 
 				case 8:
 					assembler.move_frame_offset_64_into_reg(offset, R_ACCUMULATOR_0_ID);
+					break;
+
+				default:
+					err_at_token(identifier_token,
+					"Variable doesn't fit in register",
+					"Support for this is not implemented yet");
+			}
+
+			return;
+
+			get_id_at_stack_top_offset:
+
+			switch (var_size) {
+				case 1:
+					assembler.move_stack_top_offset_8_into_reg(offset, R_ACCUMULATOR_0_ID);
+					break;
+
+				case 2:
+					assembler.move_stack_top_offset_16_into_reg(offset, R_ACCUMULATOR_0_ID);
+					break;
+
+				case 4:
+					assembler.move_stack_top_offset_32_into_reg(offset, R_ACCUMULATOR_0_ID);
+					break;
+
+				case 8:
+					assembler.move_stack_top_offset_64_into_reg(offset, R_ACCUMULATOR_0_ID);
 					break;
 
 				default:

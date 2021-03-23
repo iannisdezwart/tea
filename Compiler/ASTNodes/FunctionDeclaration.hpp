@@ -83,6 +83,11 @@ class FunctionDeclaration : public ASTNode {
 		}
 
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
+			if (compiler_state.scope_depth > 0)
+				err_at_token(type_and_id_pair->identifier_token,
+					"Nested functions are not allowed",
+					"Functions cannot be declared within other functions");
+
 			string fn_name = type_and_id_pair->get_identifier_name();
 			Function fn_type = get_fn_type(compiler_state);
 
@@ -127,7 +132,9 @@ class FunctionDeclaration : public ASTNode {
 
 			// Compile the function body
 
+			compiler_state.scope_depth++;
 			body->compile(assembler, compiler_state);
+			compiler_state.scope_depth--;
 
 			// Todo: check branching and return statements
 

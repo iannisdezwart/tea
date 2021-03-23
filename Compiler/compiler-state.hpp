@@ -83,6 +83,9 @@ class Type {
 			if (str == "i64")
 				return Type(Type::SIGNED_INTEGER, 8, pointer_depth);
 
+			if (str == "void")
+				return Type(Type::UNSIGNED_INTEGER, 0, pointer_depth);
+
 			err("Wasn't able to convert \"%s\" to a Type", str.c_str());
 		}
 
@@ -146,15 +149,18 @@ struct Function {
 
 class CompilerState {
 	public:
-		map<string, Variable> globals;
 		unordered_map<string, Function> functions;
 
-		map<string, Variable> parameters;
+		unordered_map<string, Variable> globals;
+		uint64_t globals_size = 0;
+
+		unordered_map<string, Variable> parameters;
 		uint64_t parameters_size = 0;
 
-		map<string, Variable> locals;
+		unordered_map<string, Variable> locals;
 		uint64_t locals_size = 0;
 
+		size_t scope_depth = 0;
 		bool root_of_operation_tree = true;
 
 		enum IdentifierKind get_identifier_kind(string id_name)
@@ -166,11 +172,13 @@ class CompilerState {
 			return IdentifierKind::UNDEFINED;
 		}
 
-		bool add_global(string id_name, Type id_type, size_t offset)
+		bool add_global(string global_name, Type global_type)
 		{
-			if (globals.count(id_name) || functions.count(id_name)) return false;
+			if (globals.count(global_name) || functions.count(global_name))
+				return false;
 
-			globals[id_name] = Variable(id_type, offset);
+			globals[global_name] = Variable(global_type, globals_size);
+			globals_size += global_type.byte_size();
 			return true;
 		}
 

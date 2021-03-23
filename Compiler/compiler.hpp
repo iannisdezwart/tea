@@ -9,6 +9,7 @@
 #include "compiler-state.hpp"
 #include "../Assembler/assembler.hpp"
 #include "../Assembler/buffer.hpp"
+#include "ASTNodes/VariableDeclaration.hpp"
 
 using namespace std;
 
@@ -45,14 +46,65 @@ class Compiler {
 			vector<ASTNode *> statements = parser.parse();
 			parser.print_ast();
 
-			// Parameter count
+			// Collect declarations
+
+			vector<VariableDeclaration *> global_var_decls;
+			vector<FunctionDeclaration *> fn_decls;
+
+			for (size_t i = 0; i < statements.size(); i++) {
+				ASTNode *statement = statements[i];
+
+				switch (statement->type) {
+					case VARIABLE_DECLARATION:
+						global_var_decls.push_back((VariableDeclaration *) statement);
+						break;
+
+					case FUNCTION_DECLARATION:
+						fn_decls.push_back((FunctionDeclaration *) statement);
+						break;
+
+					default:
+						err_at_token(statement->accountable_token, "Unexpected statement",
+							"Unexpected statement of type %d",
+							statement->type);
+						break;
+				}
+			}
+
+			// Add global variables
+
+			for (size_t i = 0; i < global_var_decls.size(); i++) {
+				VariableDeclaration *decl = global_var_decls[i];
+				string var_name = decl->type_and_id_pair->get_identifier_name();
+				Type var_type = decl->get_type(compiler_state);
+
+				compiler_state.add_global(var_name, var_type);
+			}
+
+			// Allocate space for globals & update stack and frame pointer
+
+			assembler.allocate_stack(compiler_state.globals_size);
+			assembler.add_64_into_reg(compiler_state.globals_size, R_STACK_P_ID);
+			assembler.add_64_into_reg(compiler_state.globals_size, R_FRAME_P_ID);
+
+			// Compile intitialisation values for global variables
+
+			for (size_t i = 0; i < global_var_decls.size(); i++) {
+				VariableDeclaration *decl = global_var_decls[i];
+				decl->compile(assembler, compiler_state);
+			}
+
+			// Push parameter count and call main
 
 			assembler.push_64(0);
 			assembler.call("main");
 			assembler.jump("exit");
 
-			for (size_t i = 0; i < statements.size(); i++) {
-				statements[i]->compile(assembler, compiler_state);
+			// Compile function declarations
+
+			for (size_t i = 0; i < fn_decls.size(); i++) {
+				FunctionDeclaration *decl = fn_decls[i];
+				decl->compile(assembler, compiler_state);
 			}
 
 			assembler.add_label("exit");

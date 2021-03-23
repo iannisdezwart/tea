@@ -60,30 +60,82 @@ class VariableDeclaration : public ASTNode {
 
 				expression->compile(assembler, compiler_state);
 
-				// Move R_ACCUMULATOR into the offset for the variable
+				// Move R_ACCUMULATOR into the address of the variable
 
 				string id_name = type_and_id_pair->get_identifier_name();
-				Variable& var = compiler_state.locals[id_name];
-				Type& type = var.type;
-				uint64_t offset = var.offset;
-				uint64_t var_size = type.byte_size();
+				IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
 
-				switch (var_size) {
-					case 1:
-						assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_0_ID, offset);
-						break;
+				switch (id_kind) {
+					case IdentifierKind::LOCAL:
+					{
+						Variable& var = compiler_state.locals[id_name];
+						Type& type = var.type;
+						uint64_t offset = var.offset;
+						uint64_t var_size = type.byte_size();
 
-					case 2:
-						assembler.move_reg_into_frame_offset_16(R_ACCUMULATOR_0_ID, offset);
-						break;
+						switch (var_size) {
+							case 1:
+								assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_0_ID, offset);
+								break;
 
-					case 4:
-						assembler.move_reg_into_frame_offset_32(R_ACCUMULATOR_0_ID, offset);
-						break;
+							case 2:
+								assembler.move_reg_into_frame_offset_16(R_ACCUMULATOR_0_ID, offset);
+								break;
 
-					case 8:
-						assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_0_ID, offset);
+							case 4:
+								assembler.move_reg_into_frame_offset_32(R_ACCUMULATOR_0_ID, offset);
+								break;
+
+							case 8:
+								assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_0_ID, offset);
+								break;
+
+							default:
+								err_at_token(accountable_token, "Invalid VariableDeclaration",
+									"Cannot declare a variable of with size %lu\n"
+									"This behaviour is not implemented yet", var_size);
+						}
+
 						break;
+					}
+
+					case IdentifierKind::GLOBAL:
+					{
+						Variable& var = compiler_state.globals[id_name];
+						Type& type = var.type;
+						uint64_t offset = var.offset;
+						uint64_t var_size = type.byte_size();
+
+						switch (var_size) {
+							case 1:
+								assembler.move_reg_into_stack_top_offset_8(R_ACCUMULATOR_0_ID, offset);
+								break;
+
+							case 2:
+								assembler.move_reg_into_stack_top_offset_16(R_ACCUMULATOR_0_ID, offset);
+								break;
+
+							case 4:
+								assembler.move_reg_into_stack_top_offset_32(R_ACCUMULATOR_0_ID, offset);
+								break;
+
+							case 8:
+								assembler.move_reg_into_stack_top_offset_64(R_ACCUMULATOR_0_ID, offset);
+								break;
+
+							default:
+								err_at_token(accountable_token, "Invalid VariableDeclaration",
+									"Cannot declare a variable of with size %lu\n"
+									"This behaviour is not implemented yet", var_size);
+						}
+
+						break;
+					}
+
+					default:
+						err_at_token(accountable_token, "Invalid VariableDeclaration",
+							"Cannot declare a variable of this type\n"
+							"Only locals and globals can be declared");
 				}
 			}
 		}

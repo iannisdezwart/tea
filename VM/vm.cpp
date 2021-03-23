@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 
-#define CPU_DUMP_DEBUG
+// #define CPU_DUMP_DEBUG
 
 #include "cpu.hpp"
 #include "../Assembler/assembler.hpp"
