@@ -14,11 +14,11 @@ class LiteralCharExpression : public ASTNode {
 		Token literal_char_token;
 		uint8_t value;
 
-		LiteralCharExpression(Token literal_char_token, uint8_t value)
-			: literal_char_token(literal_char_token),
-				ASTNode(literal_char_token), value(value)
+		LiteralCharExpression(Token literal_char_token)
+			: literal_char_token(literal_char_token), ASTNode(literal_char_token)
 		{
 			type = LITERAL_CHAR_EXPRESSION;
+			value = literal_char_token.value[0];
 
 			#ifdef PARSER_VERBOSE
 			print("Created");

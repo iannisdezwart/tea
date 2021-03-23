@@ -46,8 +46,7 @@ unordered_set<char> operator_chars = {
 };
 
 unordered_set<string> types = {
-	"u8", "i8", "u16", "i16", "u32", "i32", "u64", "i64"
-	"string", "void"
+	"u8", "i8", "u16", "i16", "u32", "i32", "u64", "i64", "void"
 };
 
 unordered_set<string> keywords = {
@@ -294,6 +293,12 @@ class Tokeniser {
 					push_token(LITERAL_STRING, scan_literal_string());
 				}
 
+				// Handle character literals
+
+				else if (c == '\'') {
+					push_token(LITERAL_CHAR, string(1, scan_literal_char()));
+				}
+
 				// Handle special character
 
 				else if (special_chars.count(c)) {
@@ -304,12 +309,6 @@ class Tokeniser {
 
 				else if (operator_chars.count(c)) {
 					push_token(OPERATOR, scan_operator(c));
-				}
-
-				// Handle character literals
-
-				else if (c == '\'') {
-					push_token(LITERAL_CHAR, scan_literal_char());
 				}
 
 				// Handle number literals
@@ -368,6 +367,63 @@ class Tokeniser {
 				next_char = get_char();
 		}
 
+		char scan_escape_sequence()
+		{
+			char c = get_char();
+
+			switch (c) {
+				case 'a':
+					return '\x07';
+
+				case 'b':
+					return '\x08';
+
+				case 'e':
+					return '\x01b';
+
+				case 'f':
+					return '\x0c';
+
+				case 'n':
+					return '\x0a';
+
+				case 'r':
+					return '\x0d';
+
+				case 't':
+					return '\x09';
+
+				case 'v':
+					return '\x0b';
+
+				case '\\':
+					return '\x5c';
+
+				case '\'':
+					return '\x27';
+
+				case '"':
+					return '\x22';
+
+				case '?':
+					return '\x3f';
+
+				case 'x':
+				{
+					char xc1 = get_char();
+					char xc2 = get_char();
+
+					if (!is_hex(xc1) || !is_hex(xc2))
+						throw_err("Invalid hexadecimal escape code");
+
+					return hex_chars_to_byte(xc1, xc2);
+				}
+
+				default:
+					throw_err("Invalid escape code");
+			}
+		}
+
 		string scan_literal_string()
 		{
 			string s;
@@ -377,7 +433,12 @@ class Tokeniser {
 				c = get_char();
 				if (c == EOF) throw_err("Unexpected EOF");
 
-				// Todo: fix escape sequences
+				// Escape sequence
+
+				if (c == '\\') {
+					s += scan_escape_sequence();
+					continue;
+				}
 
 				// Stop on end of string
 
@@ -393,18 +454,22 @@ class Tokeniser {
 			return s;
 		}
 
-		string scan_literal_char()
+		char scan_literal_char()
 		{
 			char c = get_char();
 			if (c == EOF) throw_err("Unexpected EOF");
 
-			// Todo: fix escape sequences
+			// Escape sequence
+
+			if (c == '\\')
+				c = scan_escape_sequence();
 
 			char next = get_char();
 			if (next == EOF) throw_err("Unexpected EOF");
-			if (next != '\'') throw_err("Unexpected char '%c'", next);
+			if (next != '\'')
+				throw_err("Unexpected char '%c', expected ending quote", next);
 
-			return string(1, c);
+			return c;
 		}
 
 		string scan_literal_number(char first_char)

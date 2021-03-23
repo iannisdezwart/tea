@@ -455,7 +455,7 @@ class Parser {
 				i++;
 
 				LiteralCharExpression *expression =
-					new LiteralCharExpression(first_token, 0);
+					new LiteralCharExpression(first_token);
 
 				// Todo: make a method that parses a char correctly
 
