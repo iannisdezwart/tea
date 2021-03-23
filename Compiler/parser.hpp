@@ -294,7 +294,7 @@ class Parser {
 						}
 
 						// It is not mergeable, check the next operator of the
-						// compund expression
+						// compound expression
 
 						continue;
 
@@ -377,18 +377,33 @@ class Parser {
 							case BITWISE_XOR_ASSIGNMENT:
 							case BITWISE_OR_ASSIGNMENT:
 							{
-								if (left->type != IDENTIFIER_EXPRESSION)
-									err_at_token(op_token,
-										"Expected an identifier on the left of an AssignmentExpression",
-										"found a %d token instead.", op_token.type);
+								size_t dereference_depth = 0;
+								Token id_token;
+
+								while (left->type != IDENTIFIER_EXPRESSION) {
+									if (left->type != UNARY_OPERATION)
+										err_at_token(left->accountable_token,
+											"Syntax Error",
+											"Unexpected operator of type %d", op_token.type);
+
+									UnaryOperation *unary_op = (UnaryOperation *) left;
+
+									if (unary_op->op != DEREFERENCE)
+										err_at_token(left->accountable_token,
+											"Syntax Error",
+											"Unexpected operator of type %d", op_token.type);
+
+									left = unary_op->expression;
+									delete unary_op;
+									dereference_depth++;
+								}
 
 								IdentifierExpression *id_expr = (IdentifierExpression *) left;
 
-								new_expr = new AssignmentExpression(id_expr->identifier_token,
-									right, op_token);
+								new_expr = new AssignmentExpression(
+									id_expr->identifier_token, right, op_token, dereference_depth);
 
 								delete id_expr;
-
 								break;
 							}
 						}
@@ -425,93 +440,168 @@ class Parser {
 				return expression;
 			}
 
+			vector<pair<Token, bool>> operators; // bool => true = prefix
+			ASTNode *expression;
+
 			// Prefix unary operators
 
-			if (first_token.type == OPERATOR) {
+			while (true) {
+				// Check if the next token is an operator
+
+				Token maybe_operator_token = get_token();
+				if (maybe_operator_token.type != OPERATOR) break;
+
+				enum Operator op = str_to_operator(maybe_operator_token.value, true);
+				if (!is_prefix_unary_operator(op)) break;
+
+				// It is a prefix unary operator, push its token to the operator vector
+
+				printf("prefix unary op: %s\n", maybe_operator_token.to_str().c_str());
 				i++;
-
-				UnaryOperation *unary_operation =
-					new UnaryOperation(scan_expression(), first_token, true);
-
-				return unary_operation;
+				operators.push_back(make_pair(maybe_operator_token, true));
 			}
+
+			// if (first_token.type == OPERATOR) {
+			// 	i++;
+
+			// 	UnaryOperation *unary_operation =
+			// 		new UnaryOperation(scan_expression(), first_token, true);
+
+			// 	return unary_operation;
+			// }
+
+			Token expr_token = next_token();
 
 			// Literal string
 
-			if (first_token.type == LITERAL_STRING) {
-				i++;
-
-				LiteralStringExpression *expression =
-					new LiteralStringExpression(first_token, first_token.value);
+			if (expr_token.type == LITERAL_STRING) {
+				expression = new LiteralStringExpression(expr_token, expr_token.value);
 
 				// Todo: allow multiple literal strings next to each other
-
-				return expression;
 			}
 
 			// Literal char
 
-			if (first_token.type == LITERAL_CHAR) {
-				i++;
-
-				LiteralCharExpression *expression =
-					new LiteralCharExpression(first_token);
+			else if (expr_token.type == LITERAL_CHAR) {
+				expression = new LiteralCharExpression(expr_token);
 
 				// Todo: make a method that parses a char correctly
-
-				return expression;
 			}
 
 			// Literal number
 
-			if (first_token.type == LITERAL_NUMBER) {
-				i++;
-
-				LiteralNumberExpression *expression =
-					new LiteralNumberExpression(first_token, first_token.value);
-
-				Token next = get_token();
-
-				if (next.type == OPERATOR) {
-					// Todo: create
-				}
-
-				return expression;
+			else if (expr_token.type == LITERAL_NUMBER) {
+				expression = new LiteralNumberExpression(expr_token, expr_token.value);
 			}
 
 			// Identifier or FunctionCall
 
-			if (first_token.type == IDENTIFIER) {
-				Token next = get_token(1);
+			else if (expr_token.type == IDENTIFIER) {
+				Token next = get_token();
 
 				// FunctionCall
 
 				if (next.type == SPECIAL_CHARACTER && next.value == "(") {
+					i--;
 					return scan_function_call();
 				}
 
 				// IdentifierExpression
 
-				i++;
-
-				IdentifierExpression *expression =
-					new IdentifierExpression(first_token);
-
-				if (next.type == OPERATOR) {
-					// Todo: create
-				}
-
-				if (next.type == SPECIAL_CHARACTER) {
-					// Todo: do something with:
-					// - "[" (member access)
-					// - "." (member access)
-					// - "(" (function call)
-				}
-
-				return expression;
+				expression = new IdentifierExpression(expr_token);
 			}
 
-			unexpected_token_syntax_err(first_token);
+			else unexpected_token_syntax_err(expr_token);
+
+			// Postfix unary operators
+
+			while (true) {
+				// Check if the next token is an operator
+
+				Token maybe_operator_token = get_token();
+				if (maybe_operator_token.type != OPERATOR) break;
+
+				enum Operator op = str_to_operator(maybe_operator_token.value);
+				if (!is_postfix_unary_operator(op)) break;
+
+				// It is a postfix unary operator, push its token to the operator vector
+
+				printf("postfix unary op: %s\n", maybe_operator_token.to_str().c_str());
+				i++;
+				operators.push_back(make_pair(maybe_operator_token, false));
+			}
+
+			// Go through all existing operators, descending in precedence
+
+			for (size_t i = 0; i < operator_precedence.size(); i++) {
+				const OperatorPrecedencePair& o_p_pair = operator_precedence[i];
+				const vector<Operator>& active_ops = o_p_pair.first;
+				const Associativity& associativity = o_p_pair.second;
+
+				// Go through the operators of the compound unary expression left-to-right
+
+				if (associativity == LEFT_TO_RIGHT) {
+					for (size_t j = 0; j < operators.size(); j++) {
+						Token& op_token = operators[j].first;
+						bool prefix = operators[j].second;
+						enum Operator op = str_to_operator(op_token.value);
+
+						// Check if this operator is mergeable
+
+						for (size_t k = 0; k < active_ops.size(); k++) {
+							if (active_ops[k] == op) goto merge_op;
+						}
+
+						// It is not mergeable, check the next operator of the
+						// compound unary expression
+
+						continue;
+
+						// It is mergeable into a UnaryOperation, so merge it
+
+						merge_op:
+
+						ASTNode *new_expr = new UnaryOperation(expression, op_token, prefix);
+						expression = new_expr;
+
+						operators.erase(operators.begin() + j);
+
+						j--;
+					}
+				}
+
+				// Go through the operators of the compound unary expression right-to-left
+
+				else {
+					for (size_t j = operators.size(); j != 0; j--) {
+						Token& op_token = operators[j - 1].first;
+						bool prefix = operators[j - 1].second;
+						enum Operator op = str_to_operator(op_token.value);
+
+						// Check if this operator is mergeable
+
+						for (size_t k = 0; k < active_ops.size(); k++) {
+							if (active_ops[k] == op) goto merge_op_1;
+						}
+
+						// It is not mergeable, check the next operator of the
+						// compound unary expression
+
+						continue;
+
+						// It is mergeable into a UnaryOperation, so merge it
+
+						merge_op_1:
+
+						ASTNode *new_expr = new UnaryOperation(expression, op_token, prefix);
+						expression = new_expr;
+
+						operators.erase(operators.begin() + j - 1);
+					}
+				}
+			}
+
+			return expression;
 		}
 
 		ASTNode *scan_declaration()

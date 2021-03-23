@@ -17,15 +17,17 @@ class AssignmentExpression : public ASTNode {
 	public:
 		Token identifier_token;
 		ASTNode *value;
+		size_t dereference_depth;
 		Token op_token;
 		enum Operator op;
 
 		AssignmentExpression(
 			Token identifier_token,
 			ASTNode *value,
-			Token op_token
+			Token op_token,
+			size_t dereference_depth = 0
 		) : identifier_token(identifier_token), value(value), op_token(op_token),
-				ASTNode(op_token)
+				dereference_depth(dereference_depth), ASTNode(op_token)
 		{
 			type = ASSIGNMENT_EXPRESSION;
 			op = str_to_operator(op_token.value);
@@ -49,7 +51,8 @@ class AssignmentExpression : public ASTNode {
 		string to_str()
 		{
 			string s = "AssignmentExpression { op = \"" + to_string(op)
-				+ "\" } @ " + to_hex((size_t) this);
+				+ "\", dereference_depth = " + to_string(dereference_depth)
+				+ " } @ " + to_hex((size_t) this);
 			return s;
 		}
 
@@ -57,6 +60,7 @@ class AssignmentExpression : public ASTNode {
 		{
 			string id_name = identifier_token.value;
 			Type id_type = compiler_state.get_type_of_identifier(id_name);
+			id_type.pointer_depth -= dereference_depth;
 			Type value_type = value->get_type(compiler_state);
 
 			if (id_type != value_type)
@@ -69,6 +73,76 @@ class AssignmentExpression : public ASTNode {
 		}
 
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
+			size_t deref_dep = dereference_depth;
+
+			if (deref_dep > 0) {
+				IdentifierExpression id_expr(identifier_token);
+				Type var_type = get_type(compiler_state);
+
+				// Moves the address of what to dereference into R_ACCUMULATOR_1
+
+				id_expr.compile(assembler, compiler_state);
+
+				while (--deref_dep) {
+					switch (var_type.byte_size()) {
+						case 1:
+							assembler.move_reg_pointer_8_into_reg(
+								R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+							break;
+
+						case 2:
+							assembler.move_reg_pointer_16_into_reg(
+								R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+							break;
+
+						case 4:
+							assembler.move_reg_pointer_32_into_reg(
+								R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+							break;
+
+						case 8:
+							assembler.move_reg_pointer_64_into_reg(
+								R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+							break;
+					}
+				}
+
+				assembler.move_reg_into_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+
+				// Moves the value to R_ACCUMULATOR_0
+
+				value->compile(assembler, compiler_state);
+
+				switch (var_type.byte_size()) {
+					case 1:
+						assembler.move_reg_into_reg_pointer_8(
+							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+						break;
+
+					case 2:
+						assembler.move_reg_into_reg_pointer_16(
+							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+						break;
+
+					case 4:
+						assembler.move_reg_into_reg_pointer_32(
+							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+						break;
+
+					case 8:
+						assembler.move_reg_into_reg_pointer_64(
+							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+						break;
+
+					default:
+						printf("Dereference assignments for "
+							"	byte size %lu is not implemented\n", var_type.byte_size());
+						abort();
+				}
+
+				return;
+			}
+
 			// Moves result into R_ACCUMULATOR_0
 
 			value->compile(assembler, compiler_state);

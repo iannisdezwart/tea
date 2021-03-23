@@ -116,6 +116,77 @@ enum Operator {
 	UNDEFINED
 };
 
+bool is_prefix_unary_operator(enum Operator op)
+{
+	switch (op) {
+		case PREFIX_INCREMENT:
+		case PREFIX_DECREMENT:
+		case UNARY_PLUS:
+		case UNARY_MINUS:
+		case BITWISE_NOT:
+		case LOGICAL_NOT:
+		case DEREFERENCE:
+		case ADDRESS_OF:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+bool is_postfix_unary_operator(enum Operator op)
+{
+	switch (op) {
+		case POSTFIX_INCREMENT:
+		case POSTFIX_DECREMENT:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+bool is_binary_operator(enum Operator op)
+{
+	switch (op) {
+		case POINTER_TO_MEMBER:
+		case DEREFERENCED_POINTER_TO_MEMBER:
+		case DIVISION:
+		case REMAINDER:
+		case MULTIPLICATION:
+		case ADDITION:
+		case SUBTRACTION:
+		case LEFT_SHIFT:
+		case RIGHT_SHIFT:
+		case LESS:
+		case LESS_OR_EQUAL:
+		case GREATER:
+		case GREATER_OR_EQUAL:
+		case EQUAL:
+		case NOT_EQUAL:
+		case BITWISE_AND:
+		case BITWISE_XOR:
+		case BITWISE_OR:
+		case LOGICAL_AND:
+		case LOGICAL_OR:
+		case ASSIGNMENT:
+		case SUM_ASSIGNMENT:
+		case DIFFERENCE_ASSIGNMENT:
+		case QUOTIENT_ASSIGNMENT:
+		case REMAINDER_ASSIGNMENT:
+		case PRODUCT_ASSIGNMENT:
+		case LEFT_SHIFT_ASSIGNMENT:
+		case RIGHT_SHIFT_ASSIGNMENT:
+		case BITWISE_AND_ASSIGNMENT:
+		case BITWISE_XOR_ASSIGNMENT:
+		case BITWISE_OR_ASSIGNMENT:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 enum Associativity {
 	LEFT_TO_RIGHT,
 	RIGHT_TO_LEFT

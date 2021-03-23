@@ -7,22 +7,31 @@ void putc(u8 c)
 	*out = c;
 }
 
+// u64 main()
+// {
+// 	putc('H');
+// 	putc('e');
+// 	putc('l');
+// 	putc('l');
+// 	putc('o');
+// 	putc(',');
+// 	putc(' ');
+// 	putc('W');
+// 	putc('o');
+// 	putc('r');
+// 	putc('l');
+// 	putc('d');
+// 	putc('\x21');
+// 	putc('\n');
+
+// 	return 0;
+// }
+
 u64 main()
 {
-	putc('H');
-	putc('e');
-	putc('l');
-	putc('l');
-	putc('o');
-	putc(',');
-	putc(' ');
-	putc('W');
-	putc('o');
-	putc('r');
-	putc('l');
-	putc('d');
-	putc('\x21');
-	putc('\n');
-
-	return 0;
+	u8 a = 'A';
+	u8 *b = &a;
+	u8 **c = &b;
+	* *c = 'B';
+	putc(a);
 }
