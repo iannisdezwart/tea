@@ -5,3 +5,4 @@ Compiler/output.teax
 Disassembler/disassemble
 VM/vm
 VM/program.teax
+*.dSYM
