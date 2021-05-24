@@ -1229,6 +1229,54 @@ class CPU {
 					break;
 				}
 
+				case SET_REG_IF_GREATER:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					if (greater_flag) set_reg_by_id(reg_id, 1);
+					else set_reg_by_id(reg_id, 0);
+					break;
+				}
+
+				case SET_REG_IF_GREATER_OR_EQUAL:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					if (greater_flag | equal_flag) set_reg_by_id(reg_id, 1);
+					else set_reg_by_id(reg_id, 0);
+					break;
+				}
+
+				case SET_REG_IF_LESS:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					if (!greater_flag & !equal_flag) set_reg_by_id(reg_id, 1);
+					else set_reg_by_id(reg_id, 0);
+					break;
+				}
+
+				case SET_REG_IF_LESS_OR_EQUAL:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					if (!greater_flag) set_reg_by_id(reg_id, 1);
+					else set_reg_by_id(reg_id, 0);
+					break;
+				}
+
+				case SET_REG_IF_EQUAL:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					if (equal_flag) set_reg_by_id(reg_id, 1);
+					else set_reg_by_id(reg_id, 0);
+					break;
+				}
+
+				case SET_REG_IF_NOT_EQUAL:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					if (!equal_flag) set_reg_by_id(reg_id, 1);
+					else set_reg_by_id(reg_id, 0);
+					break;
+				}
+
 				case JUMP:
 				{
 					uint64_t address = fetch<uint64_t>();
@@ -1268,6 +1316,13 @@ class CPU {
 				{
 					uint64_t address = fetch<uint64_t>();
 					if (equal_flag) r_instruction_p = address;
+					break;
+				}
+
+				case JUMP_IF_NOT_EQUAL:
+				{
+					uint64_t address = fetch<uint64_t>();
+					if (!equal_flag) r_instruction_p = address;
 					break;
 				}
 

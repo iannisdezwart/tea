@@ -17,7 +17,7 @@ class Disassembler {
 		bool first_arg;
 
 		Disassembler(FILE *file_in, FILE *file_out)
-			: file_reader(file_in), file_out(file_out) {}
+			: file_reader(file_in), file_out(file_out), first_arg(true) {}
 
 		void print_instruction(const char *instruction)
 		{
@@ -1258,6 +1258,66 @@ class Disassembler {
 						break;
 					}
 
+					case SET_REG_IF_GREATER:
+					{
+						print_instruction("SET_REG_IF_GREATER");
+
+						uint8_t reg_id = file_reader.read<uint8_t>();
+
+						print_arg_reg(reg_id);
+						break;
+					}
+
+					case SET_REG_IF_GREATER_OR_EQUAL:
+					{
+						print_instruction("SET_REG_IF_GREATER_OR_EQUAL");
+
+						uint8_t reg_id = file_reader.read<uint8_t>();
+
+						print_arg_reg(reg_id);
+						break;
+					}
+
+					case SET_REG_IF_LESS:
+					{
+						print_instruction("SET_REG_IF_LESS");
+
+						uint8_t reg_id = file_reader.read<uint8_t>();
+
+						print_arg_reg(reg_id);
+						break;
+					}
+
+					case SET_REG_IF_LESS_OR_EQUAL:
+					{
+						print_instruction("SET_REG_IF_LESS_OR_EQUAL");
+
+						uint8_t reg_id = file_reader.read<uint8_t>();
+
+						print_arg_reg(reg_id);
+						break;
+					}
+
+					case SET_REG_IF_EQUAL:
+					{
+						print_instruction("SET_REG_IF_EQUAL");
+
+						uint8_t reg_id = file_reader.read<uint8_t>();
+
+						print_arg_reg(reg_id);
+						break;
+					}
+
+					case SET_REG_IF_NOT_EQUAL:
+					{
+						print_instruction("SET_REG_IF_NOT_EQUAL");
+
+						uint8_t reg_id = file_reader.read<uint8_t>();
+
+						print_arg_reg(reg_id);
+						break;
+					}
+
 					case JUMP:
 					{
 						print_instruction("JUMP");
@@ -1311,6 +1371,16 @@ class Disassembler {
 					case JUMP_IF_EQUAL:
 					{
 						print_instruction("JUMP_IF_EQUAL");
+
+						uint64_t address = file_reader.read<uint64_t>();
+
+						print_arg_address(address);
+						break;
+					}
+
+					case JUMP_IF_NOT_EQUAL:
+					{
+						print_instruction("JUMP_IF_NOT_EQUAL");
 
 						uint64_t address = file_reader.read<uint64_t>();
 

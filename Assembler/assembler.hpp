@@ -741,6 +741,42 @@ class Assembler : public BufferBuilder {
 			push(reg_id_2);
 		}
 
+		void set_reg_if_greater(uint8_t reg_id)
+		{
+			push_instruction(SET_REG_IF_GREATER);
+			push(reg_id);
+		}
+
+		void set_reg_if_greater_or_equal(uint8_t reg_id)
+		{
+			push_instruction(SET_REG_IF_GREATER_OR_EQUAL);
+			push(reg_id);
+		}
+
+		void set_reg_if_less(uint8_t reg_id)
+		{
+			push_instruction(SET_REG_IF_LESS);
+			push(reg_id);
+		}
+
+		void set_reg_if_less_or_equal(uint8_t reg_id)
+		{
+			push_instruction(SET_REG_IF_LESS_OR_EQUAL);
+			push(reg_id);
+		}
+
+		void set_reg_if_equal(uint8_t reg_id)
+		{
+			push_instruction(SET_REG_IF_EQUAL);
+			push(reg_id);
+		}
+
+		void set_reg_if_not_equal(uint8_t reg_id)
+		{
+			push_instruction(SET_REG_IF_EQUAL);
+			push(reg_id);
+		}
+
 		void jump(const string& label)
 		{
 			push_instruction(JUMP);
@@ -779,6 +815,13 @@ class Assembler : public BufferBuilder {
 		void jump_if_equal(const string& label)
 		{
 			push_instruction(JUMP_IF_EQUAL);
+			add_label_reference(label);
+			push<uint64_t>(0); // This will be updated later
+		}
+
+		void jump_if_not_equal(const string& label)
+		{
+			push_instruction(JUMP_IF_NOT_EQUAL);
 			add_label_reference(label);
 			push<uint64_t>(0); // This will be updated later
 		}

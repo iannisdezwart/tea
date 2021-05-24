@@ -161,6 +161,16 @@ enum Instruction : uint16_t {
 	COMPARE_REG_TO_REG,
 
 
+	SET_REG_IF_GREATER,
+	SET_REG_IF_GREATER_OR_EQUAL,
+
+	SET_REG_IF_LESS,
+	SET_REG_IF_LESS_OR_EQUAL,
+
+	SET_REG_IF_EQUAL,
+	SET_REG_IF_NOT_EQUAL,
+
+
 	JUMP,
 
 	JUMP_IF_GREATER,
@@ -170,6 +180,7 @@ enum Instruction : uint16_t {
 	JUMP_IF_LESS_OR_EQUAL,
 
 	JUMP_IF_EQUAL,
+	JUMP_IF_NOT_EQUAL,
 
 
 	// Pushing to and popping from stack
