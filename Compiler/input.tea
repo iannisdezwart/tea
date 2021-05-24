@@ -1,5 +1,6 @@
 #include "trick-the-vscode-c-syntax-highlighter.h"
 
+u8 *in = 0x10; // Input device
 u8 *out = 0x11; // Output device
 
 void putc(u8 c)
@@ -7,31 +8,28 @@ void putc(u8 c)
 	*out = c;
 }
 
+u8 getc()
+{
+	return *in;
+}
+
 // u64 main()
 // {
-// 	putc('H');
-// 	putc('e');
-// 	putc('l');
-// 	putc('l');
-// 	putc('o');
-// 	putc(',');
-// 	putc(' ');
-// 	putc('W');
-// 	putc('o');
-// 	putc('r');
-// 	putc('l');
-// 	putc('d');
-// 	putc('\x21');
-// 	putc('\n');
-
-// 	return 0;
+// 	u8 a = 'A';
+// 	u8 *b = &a;
+// 	u8 **c = &b;
+// 	u8 ***d = &c;
+// 	***d = 'D';
+// 	putc(***d);
 // }
 
 u64 main()
 {
-	u8 a = 'A';
-	u8 *b = &a;
-	u8 **c = &b;
-	* *c = 'B';
-	putc(a);
+	u8 a = getc();
+	u8 b = getc();
+
+	if (a == b)
+		putc('y');
+	else
+		putc('n');
 }

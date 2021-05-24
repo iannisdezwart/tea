@@ -21,6 +21,7 @@
 #include "ASTNodes/BinaryOperation.hpp"
 #include "ASTNodes/UnaryOperation.hpp"
 #include "ASTNodes/AssignmentExpression.hpp"
+#include "ASTNodes/IfStatement.hpp"
 
 using namespace std;
 
@@ -140,6 +141,11 @@ class Parser {
 						expect_semicolon();
 						return node;
 					}
+
+					if (token.value == "if") {
+						return scan_if_statement();
+					}
+
 					// if (token.value == "if")
 					// 	return scan_if_statement();
 					// if (token.value == "loop")
@@ -157,25 +163,25 @@ class Parser {
 					else err("[ Parser Error ]: Keyword %s not handled.\n",
 						token.value.c_str());
 
-				case IDENTIFIER:
-				{
-					// Could be a function call or an assignment
+				// case IDENTIFIER:
+				// {
+				// 	// Could be a function call or an assignment
 
-					Token maybe_left_bracket = get_token(1);
+				// 	Token maybe_left_bracket = get_token(1);
 
-					if (
-						maybe_left_bracket.type == SPECIAL_CHARACTER &&
-						maybe_left_bracket.value == "("
-					) {
-						node = scan_function_call();
-						expect_semicolon();
-						return node;
-					} else {
-						node = scan_expression();
-						expect_semicolon();
-						return node;
-					}
-				}
+				// 	if (
+				// 		maybe_left_bracket.type == SPECIAL_CHARACTER &&
+				// 		maybe_left_bracket.value == "("
+				// 	) {
+				// 		node = scan_function_call();
+				// 		expect_semicolon();
+				// 		return node;
+				// 	} else {
+				// 		node = scan_expression();
+				// 		expect_semicolon();
+				// 		return node;
+				// 	}
+				// }
 
 				// case OPERATOR:
 				// 	// Prefix unary assignments
@@ -254,6 +260,32 @@ class Parser {
 			return code_block;
 		}
 
+		CodeBlock *scan_and_wrap_statement_inside_code_block()
+		{
+			Token first_token = get_token();
+			ASTNode *statement = next_statement();
+			CodeBlock *code_block = new CodeBlock(first_token);
+			code_block->add_statement(statement);
+			return code_block;
+		}
+
+		CodeBlock *scan_code_block_or_statement()
+		{
+			Token first_token = get_token();
+
+			// Check if there is an opening curly brace
+
+			if (first_token.type == SPECIAL_CHARACTER && first_token.value == "{") {
+				// If so, scan the code block
+
+				return scan_code_block();
+			} else {
+				// Else, scan the statement and wrap it inside a code block
+
+				return scan_and_wrap_statement_inside_code_block();
+			}
+		}
+
 		ASTNode *scan_expression()
 		{
 			vector<ASTNode *> expressions;
@@ -321,6 +353,12 @@ class Parser {
 							case BITWISE_OR:
 							case LEFT_SHIFT:
 							case RIGHT_SHIFT:
+							case LESS:
+							case LESS_OR_EQUAL:
+							case GREATER:
+							case GREATER_OR_EQUAL:
+							case EQUAL:
+							case NOT_EQUAL:
 								new_expr = new BinaryOperation(left, right, op_token);
 								break;
 						}
@@ -742,6 +780,61 @@ class Parser {
 				return_token, expression);
 
 			return return_statement;
+		}
+
+		IfStatement *scan_if_statement()
+		{
+			Token if_token = next_token();
+			assert_token_type(if_token, KEYWORD);
+			assert_token_value(if_token, "if");
+
+			// Scan test
+
+			Token left_parenthesis_token = next_token();
+			assert_token_type(left_parenthesis_token, SPECIAL_CHARACTER);
+			assert_token_value(left_parenthesis_token, "(");
+
+			ASTNode *test = scan_expression();
+
+			Token right_parenthesis_token = next_token();
+			assert_token_type(right_parenthesis_token, SPECIAL_CHARACTER);
+			assert_token_value(right_parenthesis_token, ")");
+
+			// Scan then block
+
+			CodeBlock *then_block = scan_code_block_or_statement();
+
+			// See what comes after the then block
+
+			Token after_if_token = get_token();
+
+			if (after_if_token.type == KEYWORD && after_if_token.value == "else") {
+				i++;
+				Token after_else_token = get_token();
+
+				CodeBlock *else_block;
+
+				// Else if
+
+				if (
+					after_else_token.type == KEYWORD
+					&& after_else_token.value == "if"
+				) {
+					else_block = new CodeBlock(after_else_token);
+					IfStatement *nested_if_statement = scan_if_statement();
+					else_block->add_statement(nested_if_statement);
+				}
+
+				// Normal else
+
+				else {
+					else_block = scan_code_block_or_statement();
+				}
+
+				return new IfStatement(test, if_token, then_block, else_block);
+			}
+
+			return new IfStatement(test, if_token, then_block, NULL);
 		}
 };
 
