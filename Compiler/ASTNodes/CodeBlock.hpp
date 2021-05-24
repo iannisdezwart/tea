@@ -5,6 +5,7 @@
 
 #include "../util.hpp"
 #include "ASTNode.hpp"
+#include "../tokeniser.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../../Assembler/assembler.hpp"
 #include "../compiler-state.hpp"

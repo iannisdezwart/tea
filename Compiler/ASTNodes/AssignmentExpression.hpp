@@ -84,27 +84,30 @@ class AssignmentExpression : public ASTNode {
 				id_expr.compile(assembler, compiler_state);
 
 				while (--deref_dep) {
-					switch (var_type.byte_size()) {
-						case 1:
-							assembler.move_reg_pointer_8_into_reg(
-								R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
-							break;
+					// switch (var_type.byte_size()) {
+					// 	case 1:
+					// 		assembler.move_reg_pointer_8_into_reg(
+					// 			R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+					// 		break;
 
-						case 2:
-							assembler.move_reg_pointer_16_into_reg(
-								R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
-							break;
+					// 	case 2:
+					// 		assembler.move_reg_pointer_16_into_reg(
+					// 			R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+					// 		break;
 
-						case 4:
-							assembler.move_reg_pointer_32_into_reg(
-								R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
-							break;
+					// 	case 4:
+					// 		assembler.move_reg_pointer_32_into_reg(
+					// 			R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+					// 		break;
 
-						case 8:
-							assembler.move_reg_pointer_64_into_reg(
-								R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
-							break;
-					}
+					// 	case 8:
+					// 		assembler.move_reg_pointer_64_into_reg(
+					// 			R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+					// 		break;
+					// }
+
+					assembler.move_reg_pointer_64_into_reg(
+						R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
 				}
 
 				assembler.move_reg_into_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);

@@ -91,6 +91,8 @@ class BinaryOperation : public ASTNode {
 			assembler.pop_64_into_reg(R_ACCUMULATOR_0_ID);
 
 			switch (op) {
+				// Mathematical binary operations
+
 				case DIVISION:
 					assembler.divide_reg_from_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
 					break;
@@ -121,6 +123,38 @@ class BinaryOperation : public ASTNode {
 
 				case BITWISE_OR:
 					assembler.or_reg_into_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					break;
+
+				// Logical binary operations
+
+				case LESS:
+					assembler.compare_reg_to_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+					assembler.set_reg_if_less(R_ACCUMULATOR_0_ID);
+					break;
+
+				case LESS_OR_EQUAL:
+					assembler.compare_reg_to_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+					assembler.set_reg_if_less_or_equal(R_ACCUMULATOR_0_ID);
+					break;
+
+				case GREATER:
+					assembler.compare_reg_to_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+					assembler.set_reg_if_greater(R_ACCUMULATOR_0_ID);
+					break;
+
+				case GREATER_OR_EQUAL:
+					assembler.compare_reg_to_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+					assembler.set_reg_if_greater_or_equal(R_ACCUMULATOR_0_ID);
+					break;
+
+				case EQUAL:
+					assembler.compare_reg_to_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+					assembler.set_reg_if_equal(R_ACCUMULATOR_0_ID);
+					break;
+
+				case NOT_EQUAL:
+					assembler.compare_reg_to_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+					assembler.set_reg_if_not_equal(R_ACCUMULATOR_0_ID);
 					break;
 
 				default:

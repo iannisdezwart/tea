@@ -599,25 +599,70 @@ class Tokeniser {
 
 		string scan_operator(char first_char)
 		{
-			string op;
-			op += first_char;
-			char c;
+			// Check if the next two characters are maybe also operators
 
-			while(true) {
-				c = get_char();
+			char op_char_2 = get_char();
 
-				if (!operator_chars.count(c)) {
-					unget_char(c);
-					break;
+			if (!operator_chars.count(op_char_2)) {
+				// Only the first character is an operator
+
+				unget_char(op_char_2);
+			} else {
+				// The second character is an operator
+				// Check if the third is too
+
+				char op_char_3 = get_char();
+
+				if (!operator_chars.count(op_char_3)) {
+					// Only the first two characters are operators
+
+					unget_char(op_char_3);
+				} else {
+					// The third character is also an operator
+					// Check if we can form a triple character operator
+
+					string op;
+					op += first_char;
+					op += op_char_2;
+					op += op_char_3;
+
+					if (str_to_operator(op) != UNDEFINED) return op;
+					else unget_char(op_char_3);
 				}
 
-				op += c;
+				// Check if we can form a double character operator
+
+				string op;
+				op += first_char;
+				op += op_char_2;
+
+				if (str_to_operator(op) != UNDEFINED) return op;
+				else unget_char(op_char_2);
 			}
 
-			// if (str_to_operator(op) == UNDEFINED)
-			// 	throw_err("Found unknown operator combination \"%s\"", op.c_str());
-
+			string op;
+			op += first_char;
 			return op;
+
+			// op += first_char;
+			// op += first_char;
+			// char c;
+
+			// while (true) {
+			// 	c = get_char();
+
+			// 	if (!operator_chars.count(c)) {
+			// 		unget_char(c);
+			// 		break;
+			// 	}
+
+			// 	op += c;
+			// }
+
+			// // if (str_to_operator(op) == UNDEFINED)
+			// // 	throw_err("Found unknown operator combination \"%s\"", op.c_str());
+
+			// return op;
 		}
 };
 
