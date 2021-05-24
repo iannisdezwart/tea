@@ -57,6 +57,11 @@ class Type {
 			return (pointer_depth > 0) ? 8 : size;
 		}
 
+		constexpr size_t pointed_byte_size()
+		{
+			return size;
+		}
+
 		static Type from_string(string str, size_t pointer_depth = 0)
 		{
 			if (str == "u8")

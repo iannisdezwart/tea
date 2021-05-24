@@ -36,6 +36,8 @@ class IfStatement : public ASTNode {
 			print("dfs");
 			#endif
 
+			test->dfs(callback, depth + 1);
+
 			then_block->dfs(callback, depth + 1);
 
 			if (else_block != NULL)

@@ -22,6 +22,7 @@
 #include "ASTNodes/UnaryOperation.hpp"
 #include "ASTNodes/AssignmentExpression.hpp"
 #include "ASTNodes/IfStatement.hpp"
+#include "ASTNodes/WhileStatement.hpp"
 
 using namespace std;
 
@@ -144,6 +145,10 @@ class Parser {
 
 					if (token.value == "if") {
 						return scan_if_statement();
+					}
+
+					if (token.value == "while") {
+						return scan_while_statement();
 					}
 
 					// if (token.value == "if")
@@ -459,25 +464,6 @@ class Parser {
 
 		ASTNode *scan_sub_expression()
 		{
-			Token first_token = get_token();
-
-			// Parenthesised Expression
-			// Todo: make casting work
-
-			if (first_token.type == SPECIAL_CHARACTER && first_token.value == "(") {
-				i++;
-
-				ASTNode *expression = scan_expression();
-
-				// Expect right parenthesis
-
-				Token right_parenthesis = next_token();
-				assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
-				assert_token_value(right_parenthesis, ")");
-
-				return expression;
-			}
-
 			vector<pair<Token, bool>> operators; // bool => true = prefix
 			ASTNode *expression;
 
@@ -499,20 +485,24 @@ class Parser {
 				operators.push_back(make_pair(maybe_operator_token, true));
 			}
 
-			// if (first_token.type == OPERATOR) {
-			// 	i++;
-
-			// 	UnaryOperation *unary_operation =
-			// 		new UnaryOperation(scan_expression(), first_token, true);
-
-			// 	return unary_operation;
-			// }
-
 			Token expr_token = next_token();
+
+			// Parenthesised Expression
+			// Todo: make casting work
+
+			if (expr_token.type == SPECIAL_CHARACTER && expr_token.value == "(") {
+				expression = scan_expression();
+
+				// Expect right parenthesis
+
+				Token right_parenthesis = next_token();
+				assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
+				assert_token_value(right_parenthesis, ")");
+			}
 
 			// Literal string
 
-			if (expr_token.type == LITERAL_STRING) {
+			else if (expr_token.type == LITERAL_STRING) {
 				expression = new LiteralStringExpression(expr_token, expr_token.value);
 
 				// Todo: allow multiple literal strings next to each other
@@ -541,12 +531,14 @@ class Parser {
 
 				if (next.type == SPECIAL_CHARACTER && next.value == "(") {
 					i--;
-					return scan_function_call();
+					expression = scan_function_call();
 				}
 
 				// IdentifierExpression
 
-				expression = new IdentifierExpression(expr_token);
+				else {
+					expression = new IdentifierExpression(expr_token);
+				}
 			}
 
 			else unexpected_token_syntax_err(expr_token);
@@ -835,6 +827,31 @@ class Parser {
 			}
 
 			return new IfStatement(test, if_token, then_block, NULL);
+		}
+
+		WhileStatement *scan_while_statement()
+		{
+			Token while_token = next_token();
+			assert_token_type(while_token, KEYWORD);
+			assert_token_value(while_token, "while");
+
+			// Scan test
+
+			Token left_parenthesis_token = next_token();
+			assert_token_type(left_parenthesis_token, SPECIAL_CHARACTER);
+			assert_token_value(left_parenthesis_token, "(");
+
+			ASTNode *test = scan_expression();
+
+			Token right_parenthesis_token = next_token();
+			assert_token_type(right_parenthesis_token, SPECIAL_CHARACTER);
+			assert_token_value(right_parenthesis_token, ")");
+
+			// Scan body block
+
+			CodeBlock *body = scan_code_block_or_statement();
+
+			return new WhileStatement(test, while_token, body);
 		}
 };
 

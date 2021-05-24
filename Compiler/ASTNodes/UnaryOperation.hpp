@@ -199,11 +199,21 @@ class UnaryOperation : public ASTNode {
 							"expected an identifier, found something else");
 
 					IdentifierExpression *id_expr = (IdentifierExpression *) expression;
+					Type type = id_expr->get_type(compiler_state);
 
 					// Move result into R_ACCUMULATOR_0 and increment it
 
 					id_expr->compile(assembler, compiler_state);
-					assembler.increment_reg(R_ACCUMULATOR_0_ID);
+
+					size_t increment;
+
+					if (type.pointer_depth > 0) {
+						increment = type.pointed_byte_size();
+					} else {
+						increment = 1;
+					}
+
+					assembler.add_64_into_reg(increment, R_ACCUMULATOR_0_ID);
 
 					// Store the value back into memory
 
@@ -211,7 +221,7 @@ class UnaryOperation : public ASTNode {
 
 					// Decrement R_ACCUMULATOR_0
 
-					assembler.decrement_reg(R_ACCUMULATOR_0_ID);
+					assembler.subtract_64_from_reg(increment, R_ACCUMULATOR_0_ID);
 					break;
 				}
 
@@ -224,11 +234,21 @@ class UnaryOperation : public ASTNode {
 							"expected an identifier, found something else");
 
 					IdentifierExpression *id_expr = (IdentifierExpression *) expression;
+					Type type = id_expr->get_type(compiler_state);
 
 					// Move result into R_ACCUMULATOR_0 and decrement it
 
 					id_expr->compile(assembler, compiler_state);
-					assembler.decrement_reg(R_ACCUMULATOR_0_ID);
+
+					size_t increment;
+
+					if (type.pointer_depth > 0) {
+						increment = type.pointed_byte_size();
+					} else {
+						increment = 1;
+					}
+
+					assembler.subtract_64_from_reg(increment, R_ACCUMULATOR_0_ID);
 
 					// Store the value back into memory
 
@@ -249,11 +269,21 @@ class UnaryOperation : public ASTNode {
 							"expected an identifier, found something else");
 
 					IdentifierExpression *id_expr = (IdentifierExpression *) expression;
+					Type type = id_expr->get_type(compiler_state);
 
 					// Move result into R_ACCUMULATOR_0 and increment it
 
 					id_expr->compile(assembler, compiler_state);
-					assembler.increment_reg(R_ACCUMULATOR_0_ID);
+
+					size_t increment;
+
+					if (type.pointer_depth > 0) {
+						increment = type.pointed_byte_size();
+					} else {
+						increment = 1;
+					}
+
+					assembler.add_64_into_reg(increment, R_ACCUMULATOR_0_ID);
 
 					// Store the value back into memory
 
@@ -270,11 +300,21 @@ class UnaryOperation : public ASTNode {
 							"expected an identifier, found something else");
 
 					IdentifierExpression *id_expr = (IdentifierExpression *) expression;
+					Type type = id_expr->get_type(compiler_state);
 
 					// Move result into R_ACCUMULATOR_0 and decrement it
 
 					id_expr->compile(assembler, compiler_state);
-					assembler.decrement_reg(R_ACCUMULATOR_0_ID);
+
+					size_t increment;
+
+					if (type.pointer_depth > 0) {
+						increment = type.pointed_byte_size();
+					} else {
+						increment = 1;
+					}
+
+					assembler.subtract_64_from_reg(increment, R_ACCUMULATOR_0_ID);
 
 					// Store the value back into memory
 
@@ -360,6 +400,8 @@ class UnaryOperation : public ASTNode {
 
 					expression->compile(assembler, compiler_state);
 					Type type = expression->get_type(compiler_state);
+					type.pointer_depth--;
+					printf("dereference of %s type, byte_size = %lu\n", type.to_str().c_str(), type.byte_size());
 
 					// Move the dereferenced value into R_ACCUMULATOR_0
 
