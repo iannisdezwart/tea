@@ -54,7 +54,7 @@ class Type {
 
 		constexpr size_t byte_size()
 		{
-			return size;
+			return (pointer_depth > 0) ? 8 : size;
 		}
 
 		static Type from_string(string str, size_t pointer_depth = 0)
@@ -163,6 +163,8 @@ class CompilerState {
 		size_t scope_depth = 0;
 		bool root_of_operation_tree = true;
 
+		uint64_t label_id = 0;
+
 		enum IdentifierKind get_identifier_kind(string id_name)
 		{
 			if (locals.count(id_name)) return IdentifierKind::LOCAL;
@@ -235,6 +237,15 @@ class CompilerState {
 				default:
 					return Type();
 			}
+		}
+
+		string generate_label(string type)
+		{
+			string label = "compiler-generated-label-";
+			label += to_string(label_id++);
+			label += "-for-";
+			label += type;
+			return label;
 		}
 };
 
