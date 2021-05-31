@@ -49,6 +49,12 @@ class MemoryMapper {
 			return devices[device_index.first];
 		}
 
+		bool is_safe(uint64_t offset)
+		{
+			pair<size_t, size_t> device_index = find_device_index(offset);
+			return device_index.first == device_index.second;
+		}
+
 		void add_device(MemoryDevice *device)
 		{
 			if (devices.size() == 0) {
@@ -113,6 +119,30 @@ class MemoryMapper {
 				printf("<%s> [ 0x%lx, 0x%lx ]\n",
 					devices[i]->type(), devices[i]->from, devices[i]->to);
 			}
+		}
+};
+
+class MemoryMapperReader {
+	private:
+		MemoryMapper& memory_mapper;
+
+	public:
+		size_t offset;
+
+		MemoryMapperReader(MemoryMapper& memory_mapper, size_t offset)
+			: memory_mapper(memory_mapper), offset(offset) {}
+
+		bool is_safe()
+		{
+			return memory_mapper.is_safe(offset);
+		}
+
+		template <typename intx_t>
+		intx_t read()
+		{
+			intx_t value = memory_mapper.get<intx_t>(offset);
+			offset += sizeof(intx_t);
+			return value;
 		}
 };
 

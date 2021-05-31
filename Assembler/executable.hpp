@@ -23,7 +23,6 @@ class Executable : public Buffer {
 			Buffer buffer = Buffer::from_file(file_name);
 			size_t static_data_size = buffer.get<uint64_t>(0);
 			size_t program_size = buffer.get<uint64_t>(8);
-
 			size_t size_of_executable = buffer.size - 16;
 			uint8_t *executable = new uint8_t[size_of_executable];
 			memcpy(executable, buffer.data + 16, size_of_executable);

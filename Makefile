@@ -1,12 +1,13 @@
 CXX = g++
 
-all: VM/vm Assembler/assemble Disassembler/disassemble Compiler/compile
+all: VM/vm Assembler/assemble Disassembler/disassemble Compiler/compile Debugger/debug
 
 debug:
 	$(CXX) VM/vm.cpp -o VM/vm -g
 	$(CXX) Assembler/assemble.cpp -o Assembler/assemble -g
 	$(CXX) Disassembler/disassemble.cpp -o Disassembler/disassemble -g
 	$(CXX) Compiler/main.cpp -o Compiler/compile -g
+	$(CXX) Debugger/debug.cpp -o Debugger/debug -g
 
 VM/vm: VM/vm.cpp
 	$(CXX) VM/vm.cpp -o VM/vm
@@ -19,6 +20,9 @@ Disassembler/disassemble: Disassembler/disassemble.cpp
 
 Compiler/compile: Compiler/main.cpp
 	$(CXX) Compiler/main.cpp -o Compiler/compile
+
+Debugger/debug: Debugger/debug.cpp
+	$(CXX) Debugger/debug.cpp -o Debugger/debug
 
 clean:
 	rm -rf VM/vm Disassembler/disassemble Assembler/assemble Compiler/compile

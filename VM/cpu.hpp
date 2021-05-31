@@ -193,6 +193,22 @@ class CPU {
 			}
 		}
 
+		void step()
+		{
+			uint16_t instruction = fetch<uint16_t>();
+
+			#ifdef CPU_DUMP_DEBUG
+			printf("now executing opcode = %hu\n", instruction);
+			#endif
+
+			execute(instruction);
+
+			#ifdef CPU_DUMP_DEBUG
+			dump_stack();
+			dump_registers();
+			#endif
+		}
+
 		void run()
 		{
 			#ifdef CPU_DUMP_DEBUG
@@ -202,18 +218,7 @@ class CPU {
 			#endif
 
 			while (r_instruction_p < stack_top()) {
-				uint16_t instruction = fetch<uint16_t>();
-
-				#ifdef CPU_DUMP_DEBUG
-				printf("now executing opcode = %hu\n", instruction);
-				#endif
-
-				execute(instruction);
-
-				#ifdef CPU_DUMP_DEBUG
-				dump_stack();
-				dump_registers();
-				#endif
+				step();
 			}
 		}
 
