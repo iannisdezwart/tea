@@ -116,6 +116,102 @@ enum Operator {
 	UNDEFINED
 };
 
+const char *op_to_str(enum Operator op)
+{
+	switch (op) {
+		case POSTFIX_INCREMENT: return "POSTFIX_INCREMENT";
+		case POSTFIX_DECREMENT: return "POSTFIX_DECREMENT";
+		case PREFIX_INCREMENT: return "PREFIX_INCREMENT";
+		case PREFIX_DECREMENT: return "PREFIX_DECREMENT";
+		case UNARY_PLUS: return "UNARY_PLUS";
+		case UNARY_MINUS: return "UNARY_MINUS";
+		case BITWISE_NOT: return "BITWISE_NOT";
+		case LOGICAL_NOT: return "LOGICAL_NOT";
+		case DEREFERENCE: return "DEREFERENCE";
+		case ADDRESS_OF: return "ADDRESS_OF";
+		case POINTER_TO_MEMBER: return "POINTER_TO_MEMBER";
+		case DEREFERENCED_POINTER_TO_MEMBER: return "DEREFERENCED_POINTER_TO_MEMBER";
+		case DIVISION: return "DIVISION";
+		case REMAINDER: return "REMAINDER";
+		case MULTIPLICATION: return "MULTIPLICATION";
+		case ADDITION: return "ADDITION";
+		case SUBTRACTION: return "SUBTRACTION";
+		case LEFT_SHIFT: return "LEFT_SHIFT";
+		case RIGHT_SHIFT: return "RIGHT_SHIFT";
+		case LESS: return "LESS";
+		case LESS_OR_EQUAL: return "LESS_OR_EQUAL";
+		case GREATER: return "GREATER";
+		case GREATER_OR_EQUAL: return "GREATER_OR_EQUAL";
+		case EQUAL: return "EQUAL";
+		case NOT_EQUAL: return "NOT_EQUAL";
+		case BITWISE_AND: return "BITWISE_AND";
+		case BITWISE_XOR: return "BITWISE_XOR";
+		case BITWISE_OR: return "BITWISE_OR";
+		case LOGICAL_AND: return "LOGICAL_AND";
+		case LOGICAL_OR: return "LOGICAL_OR";
+		case ASSIGNMENT: return "ASSIGNMENT";
+		case SUM_ASSIGNMENT: return "SUM_ASSIGNMENT";
+		case DIFFERENCE_ASSIGNMENT: return "DIFFERENCE_ASSIGNMENT";
+		case QUOTIENT_ASSIGNMENT: return "QUOTIENT_ASSIGNMENT";
+		case REMAINDER_ASSIGNMENT: return "REMAINDER_ASSIGNMENT";
+		case PRODUCT_ASSIGNMENT: return "PRODUCT_ASSIGNMENT";
+		case LEFT_SHIFT_ASSIGNMENT: return "LEFT_SHIFT_ASSIGNMENT";
+		case RIGHT_SHIFT_ASSIGNMENT: return "RIGHT_SHIFT_ASSIGNMENT";
+		case BITWISE_AND_ASSIGNMENT: return "BITWISE_AND_ASSIGNMENT";
+		case BITWISE_XOR_ASSIGNMENT: return "BITWISE_XOR_ASSIGNMENT";
+		case BITWISE_OR_ASSIGNMENT: return "BITWISE_OR_ASSIGNMENT";
+		default: return "UNDEFINED";
+	}
+}
+
+const char *op_to_example_str(enum Operator op)
+{
+	switch (op) {
+		case POSTFIX_INCREMENT: return "x++";
+		case POSTFIX_DECREMENT: return "x--";
+		case PREFIX_INCREMENT: return "++x";
+		case PREFIX_DECREMENT: return "--x";
+		case UNARY_PLUS: return "+x";
+		case UNARY_MINUS: return "-x";
+		case BITWISE_NOT: return "~x";
+		case LOGICAL_NOT: return "!x";
+		case DEREFERENCE: return "*x";
+		case ADDRESS_OF: return "&x";
+		case POINTER_TO_MEMBER: return "x.y";
+		case DEREFERENCED_POINTER_TO_MEMBER: return "x->y";
+		case DIVISION: return "x / y";
+		case REMAINDER: return "x % y";
+		case MULTIPLICATION: return "x * y";
+		case ADDITION: return "x + y";
+		case SUBTRACTION: return "x - y";
+		case LEFT_SHIFT: return "x << y";
+		case RIGHT_SHIFT: return "x >> y";
+		case LESS: return "x < y";
+		case LESS_OR_EQUAL: return "x <= y";
+		case GREATER: return "x > y";
+		case GREATER_OR_EQUAL: return "x >= y";
+		case EQUAL: return "x == y";
+		case NOT_EQUAL: return "x != y";
+		case BITWISE_AND: return "x & y";
+		case BITWISE_XOR: return "x ^ y";
+		case BITWISE_OR: return "x | y";
+		case LOGICAL_AND: return "x && y";
+		case LOGICAL_OR: return "x || y";
+		case ASSIGNMENT: return "x = y";
+		case SUM_ASSIGNMENT: return "x += y";
+		case DIFFERENCE_ASSIGNMENT: return "x -= y";
+		case QUOTIENT_ASSIGNMENT: return "x /= y";
+		case REMAINDER_ASSIGNMENT: return "x &= y";
+		case PRODUCT_ASSIGNMENT: return "x *= y";
+		case LEFT_SHIFT_ASSIGNMENT: return "x <<= y";
+		case RIGHT_SHIFT_ASSIGNMENT: return "x >>= y";
+		case BITWISE_AND_ASSIGNMENT: return "x &= y";
+		case BITWISE_XOR_ASSIGNMENT: return "x ^= y";
+		case BITWISE_OR_ASSIGNMENT: return "x |= y";
+		default: return "undefined";
+	}
+}
+
 bool is_prefix_unary_operator(enum Operator op)
 {
 	switch (op) {
