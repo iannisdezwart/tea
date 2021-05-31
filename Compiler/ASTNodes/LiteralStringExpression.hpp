@@ -44,7 +44,7 @@ class LiteralStringExpression : public ASTNode {
 
 		Type get_type(CompilerState& compiler_state)
 		{
-			Type type(Type::UNSIGNED_INTEGER, 8, 1);
+			Type type(Type::UNSIGNED_INTEGER, 1, 1);
 			return type;
 		}
 

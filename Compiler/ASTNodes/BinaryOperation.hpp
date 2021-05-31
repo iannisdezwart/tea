@@ -20,6 +20,8 @@ class BinaryOperation : public ASTNode {
 		Token op_token;
 		enum Operator op;
 
+		bool warned = false;
+
 		BinaryOperation(ASTNode *left, ASTNode *right, Token op_token)
 			: left(left), right(right), op_token(op_token), ASTNode(op_token)
 		{
@@ -55,14 +57,119 @@ class BinaryOperation : public ASTNode {
 			Type left_type = left->get_type(compiler_state);
 			Type right_type = right->get_type(compiler_state);
 
-			printf("left_type = %s, right_type = %s\n",
-				left_type.to_str().c_str(), right_type.to_str().c_str());
+			size_t left_size = left_type.byte_size();
+			size_t right_size = right_type.byte_size();
 
-			if (left_type != right_type) {
-				printf("types don't match!!!\n");
+			#define not_implemented_warning(op) do { \
+				if (!warned) { \
+					warned = true; \
+					warn( \
+						"operator %s (%s) is not implemented for types x = %s and y = %s " \
+						"and might cause undefined behaviour\n" \
+						"At %ld:%ld\n", \
+						op_to_str(op), op_to_example_str(op), left_type.to_str().c_str(), \
+						right_type.to_str().c_str(), op_token.line, op_token.col); \
+				} \
+			} while (0)
+
+			switch (op) {
+				case ADDITION:
+				case SUBTRACTION:
+				{
+					// intX + intY -> max(intX, intY)
+
+					if (left_type.pointer_depth == 0 && right_type.pointer_depth == 0) {
+						if (left_size > right_size) {
+							return left_type;
+						}
+
+						return right_type;
+					}
+
+					// pointer + int -> pointer
+
+					if (left_type.pointer_depth > 0 && right_type.pointer_depth == 0) {
+						return left_type;
+					}
+
+					// int + pointer -> pointer
+
+					if (right_type.pointer_depth > 0 && left_type.pointer_depth == 0) {
+						return right_type;
+					}
+
+					break;
+				}
+
+				case MULTIPLICATION:
+				{
+					// intX * intY -> max(intX, intY)
+
+					if (left_type.pointer_depth == 0 && right_type.pointer_depth == 0) {
+						if (left_size > right_size) {
+							return left_type;
+						}
+
+						return right_type;
+					}
+
+					break;
+				}
+
+				case DIVISION:
+				{
+					// intX / intY -> intX
+
+					if (left_type.pointer_depth == 0 && right_type.pointer_depth == 0) {
+						return left_type;
+					}
+
+					break;
+				}
+
+				case REMAINDER:
+				{
+					// intX % intY -> intX
+
+					if (left_type.pointer_depth == 0 && right_type.pointer_depth == 0) {
+						return left_type;
+					}
+				}
+
+				case BITWISE_AND:
+				case BITWISE_XOR:
+				case BITWISE_OR:
+				{
+					// intX & intX
+
+					if (
+						left_type.pointer_depth == 0 && right_type.pointer_depth == 0
+						&& left_size == right_size
+					) {
+						return left_type;
+					}
+				}
+
+				case LESS:
+				case LESS_OR_EQUAL:
+				case GREATER:
+				case GREATER_OR_EQUAL:
+				case EQUAL:
+				case NOT_EQUAL:
+				{
+					return Type(Type::SIGNED_INTEGER, 1, 0);
+				}
+
+				default:
+					printf("operator %d in BinaryOperation not implemented\n", op);
+					abort();
+					break;
 			}
 
+			not_implemented_warning(op);
 			return left_type;
+
+			#undef not_implemented_warning
 		}
 
 		void compile(Assembler& assembler, CompilerState& compiler_state) {

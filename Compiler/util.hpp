@@ -15,6 +15,10 @@
 	abort(); \
 } while (0)
 
+#define warn(message, ...) do { \
+	fprintf(stderr, "[ warning ]: " message "\n", ##__VA_ARGS__); \
+} while (0)
+
 #define is_alpha(c) (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' \
 	|| c == '$' || c == '_')
 

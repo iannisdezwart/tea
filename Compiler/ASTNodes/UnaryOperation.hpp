@@ -22,6 +22,8 @@ class UnaryOperation : public ASTNode {
 		bool prefix;
 		enum Operator op;
 
+		bool warned = false;
+
 		UnaryOperation(ASTNode *expression, Token op_token, bool prefix)
 			: expression(expression), op_token(op_token),
 				prefix(prefix), ASTNode(op_token)
@@ -54,6 +56,8 @@ class UnaryOperation : public ASTNode {
 
 		Type get_type(CompilerState& compiler_state)
 		{
+			Type type = expression->get_type(compiler_state);
+
 			switch (op) {
 				case POSTFIX_INCREMENT:
 				case POSTFIX_DECREMENT:
@@ -69,8 +73,6 @@ class UnaryOperation : public ASTNode {
 
 				case DEREFERENCE:
 				{
-					Type type = expression->get_type(compiler_state);
-
 					if (type.pointer_depth == 0)
 						err_at_token(op_token, "Cannot dereference a non-pointer",
 							"type %s cannot be dereferenced", type.to_str().c_str());
@@ -401,7 +403,6 @@ class UnaryOperation : public ASTNode {
 					expression->compile(assembler, compiler_state);
 					Type type = expression->get_type(compiler_state);
 					type.pointer_depth--;
-					printf("dereference of %s type, byte_size = %lu\n", type.to_str().c_str(), type.byte_size());
 
 					// Move the dereferenced value into R_ACCUMULATOR_0
 
