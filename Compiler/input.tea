@@ -1,42 +1,32 @@
 #include "trick-the-vscode-c-syntax-highlighter.h"
 
-u8 *in = 0x10; // Input device
-u8 *out = 0x11; // Output device
+// u8 *in = 0x10; // Input device
+// u8 *out = 0x11; // Output device
 
-void putc(u8 c)
-{
-	*out = c;
-}
+// void putc(u8 c)
+// {
+// 	*out = c;
+// }
 
-u8 getc()
-{
-	return *in;
-}
+// u8 getc()
+// {
+// 	return *in;
+// }
 
-void puts(u8 *str, u64 len)
+// void puts(u8 *str, u64 len)
+// {
+// 	while (len--)
+// 	{
+// 		putc(*str++);
+// 	}
+// }
+
+u64 recursion(u64 a, u64 b)
 {
-	while (len--)
-	{
-		putc(*str++);
-	}
+	recursion(b, a + b);
 }
 
 u64 main()
 {
-	u8 *str_1 = "Hello, World!\n";
-	u8 *str_2 = "Test 123\n";
-	u8 *str_3 = "Another string\n";
-	u8 *err_str = "That choice does not exist\n";
-
-	u8 c = getc();
-
-	if (c == '1') {
-		puts(str_1, 14);
-	} else if (c == '2') {
-		puts(str_2, 9);
-	} else if (c == '3') {
-		puts(str_3, 15);
-	} else {
-		puts(err_str, 27);
-	}
+	recursion(0, 1);
 }

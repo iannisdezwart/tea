@@ -6,6 +6,7 @@
 #include "util.hpp"
 #include "../Assembler/assembler.hpp"
 #include "../VM/cpu.hpp"
+#include "debugger-symbols.hpp"
 
 using namespace std;
 
@@ -131,6 +132,29 @@ class Type {
 			return s;
 		}
 
+		enum FunctionArgTypes to_debug_type()
+		{
+			if (pointer_depth > 0) return FunctionArgTypes::POINTER;
+
+			if (value == Type::UNSIGNED_INTEGER) {
+				switch (size) {
+					case 1: return FunctionArgTypes::U8;
+					case 2: return FunctionArgTypes::U16;
+					case 4: return FunctionArgTypes::U32;
+					case 8: return FunctionArgTypes::U64;
+					default: return FunctionArgTypes::UNDEFINED;
+				}
+			} else {
+				switch (size) {
+					case 1: return FunctionArgTypes::I8;
+					case 2: return FunctionArgTypes::I16;
+					case 4: return FunctionArgTypes::I32;
+					case 8: return FunctionArgTypes::I64;
+					default: return FunctionArgTypes::UNDEFINED;
+				}
+			}
+		}
+
 	private:
 		enum Value value;
 		size_t size;
@@ -155,11 +179,13 @@ struct Function {
 class CompilerState {
 	public:
 		unordered_map<string, Function> functions;
+		string current_function_name;
 
 		unordered_map<string, Variable> globals;
 		uint64_t globals_size = 0;
 
 		unordered_map<string, Variable> parameters;
+		vector<string> parameter_names_in_order;
 		uint64_t parameters_size = 0;
 
 		unordered_map<string, Variable> locals;
@@ -169,6 +195,11 @@ class CompilerState {
 		bool root_of_operation_tree = true;
 
 		uint64_t label_id = 0;
+
+		const bool debug;
+		DebuggerSymbols debugger_symbols;
+
+		CompilerState(bool debug) : debug(debug) {}
 
 		enum IdentifierKind get_identifier_kind(string id_name)
 		{
@@ -194,6 +225,7 @@ class CompilerState {
 			if (functions.count(function_name) || globals.count(function_name))
 				return false;
 
+			current_function_name = function_name;
 			functions[function_name] = function_type;
 			return true;
 		}
@@ -203,6 +235,7 @@ class CompilerState {
 			if (parameters.count(param_name)) return false;
 
 			parameters[param_name] = Variable(param_type, parameters_size);
+			parameter_names_in_order.push_back(param_name);
 			parameters_size += param_type.byte_size();
 			return true;
 		}
@@ -218,10 +251,24 @@ class CompilerState {
 
 		void end_function_scope()
 		{
+			if (debug) {
+				// Add the function to the debugger symbols
+
+				vector<FunctionArg> args;
+
+				for (const string& param_name : parameter_names_in_order) {
+					FunctionArgTypes fn_arg_type = parameters[param_name].type.to_debug_type();
+					args.push_back(FunctionArg(param_name, fn_arg_type));
+				}
+
+				debugger_symbols.add_function(current_function_name, args);
+			}
+
 			locals.clear();
 			locals_size = 0;
 
 			parameters.clear();
+			parameter_names_in_order.clear();
 			parameters_size = 0;
 		}
 

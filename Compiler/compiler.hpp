@@ -7,6 +7,7 @@
 #include "tokeniser.hpp"
 #include "parser.hpp"
 #include "compiler-state.hpp"
+#include "debugger-symbols.hpp"
 #include "../Assembler/assembler.hpp"
 #include "../Assembler/buffer.hpp"
 #include "ASTNodes/VariableDeclaration.hpp"
@@ -22,8 +23,8 @@ class Compiler {
 		Assembler assembler;
 		CompilerState compiler_state;
 
-		Compiler(char *input_file_name, char *output_file_name)
-			: output_file_name(output_file_name)
+		Compiler(char *input_file_name, char *output_file_name, bool debug)
+			: output_file_name(output_file_name), compiler_state(debug)
 		{
 			input_file = fopen(input_file_name, "r");
 
@@ -111,6 +112,12 @@ class Compiler {
 
 			Buffer executable = assembler.assemble();
 			executable.write_to_file(output_file_name);
+
+			// Create debugger symbols
+
+			if (compiler_state.debug) {
+				compiler_state.debugger_symbols.build(output_file_name);
+			}
 		}
 };
 

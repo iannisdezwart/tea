@@ -99,6 +99,7 @@ class FunctionDeclaration : public ASTNode {
 					fn_name.c_str());
 
 			assembler.add_label(fn_name);
+			if (compiler_state.debug) assembler.label(fn_name);
 
 			// Gather parameters
 

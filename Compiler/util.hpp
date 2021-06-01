@@ -1,5 +1,5 @@
-#ifndef TEA_UTIL_HEADER
-#define TEA_UTIL_HEADER
+#ifndef TEA_COMPILER_UTIL_HEADER
+#define TEA_COMPILER_UTIL_HEADER
 
 #include <bits/stdc++.h>
 
