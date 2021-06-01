@@ -1460,6 +1460,13 @@ class CPU {
 					printf(">>> REG_%hhu = 0x%016lx = %020lu\n", reg_id, value, value);
 					break;
 				}
+
+				case COMMENT:
+				case LABEL:
+				{
+					while (fetch<uint8_t>() != '\0');
+					break;
+				}
 			}
 		}
 };

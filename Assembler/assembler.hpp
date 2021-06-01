@@ -928,6 +928,18 @@ class Assembler : public BufferBuilder {
 			push(reg_id);
 		}
 
+		void comment(const string& str)
+		{
+			push_instruction(COMMENT);
+			push_null_terminated_string(str);
+		}
+
+		void label(const string& str)
+		{
+			push_instruction(LABEL);
+			push_null_terminated_string(str);
+		}
+
 		void add_label(const string& id)
 		{
 			if (labels.count(id)) {

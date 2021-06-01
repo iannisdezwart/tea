@@ -217,7 +217,9 @@ enum Instruction : uint16_t {
 	// For debugging purposes
 
 
-	LOG_REG
+	LOG_REG,
+	COMMENT,
+	LABEL
 };
 
 const char *instruction_to_str(Instruction instruction)
@@ -350,13 +352,16 @@ const char *instruction_to_str(Instruction instruction)
 		case ALLOCATE_STACK: return "ALLOCATE_STACK";
 		case DEALLOCATE_STACK: return "DEALLOCATE_STACK";
 		case LOG_REG: return "LOG_REG";
+		case COMMENT: return "COMMENT";
+		case LABEL: return "LABEL";
 		default: return "UNDEFINED";
 	}
 }
 
 enum ArgumentType : uint8_t {
 	REG, ADDR,
-	LIT_8, LIT_16, LIT_32, LIT_64
+	LIT_8, LIT_16, LIT_32, LIT_64,
+	NULL_TERMINATED_STRING
 };
 
 vector<ArgumentType> instruction_arg_types(Instruction instruction)
@@ -489,6 +494,8 @@ vector<ArgumentType> instruction_arg_types(Instruction instruction)
 		case ALLOCATE_STACK: return { LIT_64 };
 		case DEALLOCATE_STACK: return { LIT_64 };
 		case LOG_REG: return { REG };
+		case COMMENT: return { NULL_TERMINATED_STRING };
+		case LABEL: return { NULL_TERMINATED_STRING };
 		default: return {};
 	}
 }

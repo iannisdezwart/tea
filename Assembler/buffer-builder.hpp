@@ -67,6 +67,13 @@ class BufferBuilder {
 			return prev_offset;
 		}
 
+		void push_null_terminated_string(const string& str)
+		{
+			reserve(str.size() + 1);
+			for (char c : str) push(c);
+			push('\0');
+		}
+
 		// const uint8_t& operator[](size_t index) const
 		// {
 		// 	return buffer[index];

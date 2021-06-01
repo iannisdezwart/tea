@@ -60,6 +60,12 @@ class Disassembler {
 			fprintf(file_out, ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%lx" ANSI_RESET, address);
 		}
 
+		void print_arg_null_terminated_string(char *str)
+		{
+			print_arg();
+			fprintf(file_out, ANSI_BRIGHT_BLACK "/* %s */", str);
+		}
+
 		void end_args()
 		{
 			fprintf(file_out, "\n");
@@ -122,6 +128,20 @@ class Disassembler {
 						case LIT_64:
 							print_arg_literal_number(file_reader.read<uint64_t>());
 							break;
+
+						case NULL_TERMINATED_STRING:
+						{
+							vector<char> str;
+							char c;
+
+							do {
+								c = file_reader.read<char>();
+								str.push_back(c);
+							} while (c != '\0');
+
+							print_arg_null_terminated_string(str.data());
+							break;
+						}
 
 						default:
 							fprintf(stderr, "I think I messed up the code again ;-;");
