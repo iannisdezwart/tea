@@ -2,6 +2,7 @@
 Assembler/assemble
 Compiler/compile
 Compiler/output.teax
+Compiler/output.teax.debug
 Disassembler/disassemble
 VM/vm
 VM/program.teax
