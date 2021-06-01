@@ -23,7 +23,10 @@
 
 u64 recursion(u64 a, u64 b)
 {
-	recursion(b, a + b);
+	u64 new_a = b;
+	u64 new_b = a + b;
+
+	recursion(new_a, new_b);
 }
 
 u64 main()

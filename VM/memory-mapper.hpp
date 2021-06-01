@@ -39,11 +39,14 @@ class MemoryMapper {
 			pair<size_t, size_t> device_index = find_device_index(offset);
 
 			if (device_index.first != device_index.second) {
-				printf("Segmentation Fault\n");
-				printf("VM prevented access to memory at %ld (0x%lx)\n",
-					offset, offset);
-				printf("No MemoryDevice is registered in this region\n");
-				abort();
+					stringstream err_message;
+
+					err_message << "Segmentation Fault\n";
+					err_message << "VM prevented access to memory at 0x";
+					err_message << hex << offset << '\n';
+					err_message << "No MemoryDevice is registered in this region\n";
+
+					throw err_message.str();
 			}
 
 			return devices[device_index.first];
@@ -89,7 +92,8 @@ class MemoryMapper {
 				return io_device->get<intx_t>(mapped_offset);
 			}
 
-			printf("Wasn't able to cast the MemoryDevice (get)\n");
+			printf("Wasn't able to cast the MemoryDevice (get)\n"
+				"I probably screwed up some code again ;-;\n");
 			abort();
 		}
 
@@ -109,7 +113,8 @@ class MemoryMapper {
 				return;
 			}
 
-			printf("Wasn't able to cast the MemoryDevice (set)\n");
+			printf("Wasn't able to cast the MemoryDevice (set)\n"
+				"I probably screwed up some code again ;-;\n");
 			abort();
 		}
 

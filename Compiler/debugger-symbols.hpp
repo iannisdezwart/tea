@@ -110,79 +110,102 @@ class IndentFileParser {
 		}
 };
 
-enum class FunctionArgTypes : uint8_t {
+enum class DebuggerSymbolTypes : uint8_t {
 	POINTER, U8, I8, U16, I16, U32, I32, U64, I64, UNDEFINED
 };
 
-const char *function_arg_type_to_str(enum FunctionArgTypes type)
+const char *debugger_symbol_type_to_str(enum DebuggerSymbolTypes type)
 {
 	switch (type) {
-		case FunctionArgTypes::POINTER: return "POINTER";
-		case FunctionArgTypes::U8: return "U8";
-		case FunctionArgTypes::I8: return "I8";
-		case FunctionArgTypes::U16: return "U16";
-		case FunctionArgTypes::I16: return "I16";
-		case FunctionArgTypes::U32: return "U32";
-		case FunctionArgTypes::I32: return "I32";
-		case FunctionArgTypes::U64: return "U64";
-		case FunctionArgTypes::I64: return "I64";
+		case DebuggerSymbolTypes::POINTER: return "POINTER";
+		case DebuggerSymbolTypes::U8: return "U8";
+		case DebuggerSymbolTypes::I8: return "I8";
+		case DebuggerSymbolTypes::U16: return "U16";
+		case DebuggerSymbolTypes::I16: return "I16";
+		case DebuggerSymbolTypes::U32: return "U32";
+		case DebuggerSymbolTypes::I32: return "I32";
+		case DebuggerSymbolTypes::U64: return "U64";
+		case DebuggerSymbolTypes::I64: return "I64";
 		default: return "UNDEFINED";
 	}
 }
 
-enum FunctionArgTypes str_to_function_arg_type(const string& str)
+enum DebuggerSymbolTypes str_to_debugger_symbol_type(const string& str)
 {
-	if (str == "POINTER") return FunctionArgTypes::POINTER;
-	if (str == "U8") return FunctionArgTypes::U8;
-	if (str == "I8") return FunctionArgTypes::I8;
-	if (str == "U16") return FunctionArgTypes::U16;
-	if (str == "I16") return FunctionArgTypes::I16;
-	if (str == "U32") return FunctionArgTypes::U32;
-	if (str == "I32") return FunctionArgTypes::I32;
-	if (str == "U64") return FunctionArgTypes::U64;
-	if (str == "I64") return FunctionArgTypes::I64;
-	return FunctionArgTypes::UNDEFINED;
+	if (str == "POINTER") return DebuggerSymbolTypes::POINTER;
+	if (str == "U8") return DebuggerSymbolTypes::U8;
+	if (str == "I8") return DebuggerSymbolTypes::I8;
+	if (str == "U16") return DebuggerSymbolTypes::U16;
+	if (str == "I16") return DebuggerSymbolTypes::I16;
+	if (str == "U32") return DebuggerSymbolTypes::U32;
+	if (str == "I32") return DebuggerSymbolTypes::I32;
+	if (str == "U64") return DebuggerSymbolTypes::U64;
+	if (str == "I64") return DebuggerSymbolTypes::I64;
+	return DebuggerSymbolTypes::UNDEFINED;
 }
 
-struct FunctionArg {
+struct DebuggerSymbol {
 	string name;
-	enum FunctionArgTypes type;
+	enum DebuggerSymbolTypes type;
 
-	FunctionArg(const string& name, enum FunctionArgTypes type)
+	DebuggerSymbol(const string& name, enum DebuggerSymbolTypes type)
 		: name(name), type(type) {}
 
 	size_t byte_size() const
 	{
 		switch (type) {
-			case FunctionArgTypes::POINTER: return 8;
-			case FunctionArgTypes::U8: return 1;
-			case FunctionArgTypes::I8: return 1;
-			case FunctionArgTypes::U16: return 2;
-			case FunctionArgTypes::I16: return 2;
-			case FunctionArgTypes::U32: return 4;
-			case FunctionArgTypes::I32: return 4;
-			case FunctionArgTypes::U64: return 8;
-			case FunctionArgTypes::I64: return 8;
+			case DebuggerSymbolTypes::POINTER: return 8;
+			case DebuggerSymbolTypes::U8: return 1;
+			case DebuggerSymbolTypes::I8: return 1;
+			case DebuggerSymbolTypes::U16: return 2;
+			case DebuggerSymbolTypes::I16: return 2;
+			case DebuggerSymbolTypes::U32: return 4;
+			case DebuggerSymbolTypes::I32: return 4;
+			case DebuggerSymbolTypes::U64: return 8;
+			case DebuggerSymbolTypes::I64: return 8;
 			default: return 0;
 		}
 	}
 
-	static FunctionArg from_str(const string& str)
+	string to_str() const
+	{
+		string str;
+
+		str += debugger_symbol_type_to_str(type);
+		str += ' ';
+		str += name;
+
+		return str;
+	}
+
+	static DebuggerSymbol from_str(const string& str)
 	{
 		size_t space_index = str.find_first_of(' ');
 
-		return FunctionArg(str.substr(space_index + 1),
-			str_to_function_arg_type(str.substr(0, space_index)));
+		return DebuggerSymbol(str.substr(space_index + 1),
+			str_to_debugger_symbol_type(str.substr(0, space_index)));
 	}
+};
+
+struct DebuggerFunction {
+	vector<DebuggerSymbol> params;
+	vector<DebuggerSymbol> locals;
+	vector<DebuggerSymbol> globals;
 };
 
 class DebuggerSymbols {
 	public:
-		map<string, vector<FunctionArg>> functions;
+		map<string, DebuggerFunction> functions;
+		vector<DebuggerSymbol> globals;
 
-		void add_function(const string& fn_name, const vector<FunctionArg>& args)
+		void add_function(const string& name, const DebuggerFunction& symbols)
 		{
-			functions[fn_name] = args;
+			functions[name] = symbols;
+		}
+
+		void add_global(const DebuggerSymbol& symbol)
+		{
+			globals.push_back(symbol);
 		}
 
 		void build(const string& exec_file_name)
@@ -191,18 +214,50 @@ class DebuggerSymbols {
 
 			// Functions
 
-			stream << "functions\n";
+			if (functions.size()) {
+				stream << "functions\n";
+			}
 
-			for (const pair<string, vector<FunctionArg>>& function : functions) {
+			for (const pair<string, DebuggerFunction>& function : functions) {
 				const string& fn_name = function.first;
-				const vector<FunctionArg>& args = function.second;
+				const DebuggerFunction& fn_symbols = function.second;
+				const vector<DebuggerSymbol>& params = fn_symbols.params;
+				const vector<DebuggerSymbol>& locals = fn_symbols.locals;
 
-				stream << "\t" << fn_name << "\n";
+				// Function
 
-				for (const FunctionArg& arg : args) {
-					const char *arg_type = function_arg_type_to_str(arg.type);
-					stream << "\t\t" << arg_type << " " << arg.name << "\n";
+				stream << '\t' << fn_name << '\n';
+
+				// Parameters
+
+				if (params.size()) {
+					stream << "\t\tparameters\n";
 				}
+
+				for (const DebuggerSymbol& param : params) {
+					stream << "\t\t\t" << param.to_str() << '\n';
+				}
+
+				// Locals
+
+				if (locals.size()) {
+					stream << "\t\tlocals\n";
+				}
+
+				for (const DebuggerSymbol& local : locals) {
+					stream << "\t\t\t" << local.to_str() << '\n';
+				}
+
+			}
+
+			// Globals
+
+			if (globals.size()) {
+				stream << "globals\n";
+			}
+
+			for (const DebuggerSymbol& global : globals) {
+				stream << '\t' << global.to_str() << '\n';
 			}
 
 			stream.close();
@@ -214,24 +269,50 @@ class DebuggerSymbols {
 			IndentFileNode file = parser.parse();
 			DebuggerSymbols debugger_symbols;
 
-			for (IndentFileNode *child : file.children) {
-				if (child->line == "functions") {
-					// Scan function symbols
+			for (IndentFileNode *section : file.children) {
+				// Scan function symbols
 
-					for (IndentFileNode *function_child : child->children) {
-						const string& fn_name = function_child->line;
-						vector<FunctionArg> args;
+				if (section->line == "functions") {
+					for (IndentFileNode *fn_node : section->children) {
+						const string& fn_name = fn_node->line;
+						DebuggerFunction fn_symbols;
+						vector<DebuggerSymbol>& params = fn_symbols.params;
+						vector<DebuggerSymbol>& locals = fn_symbols.locals;
 
-						// Scan function arguments
+						for (IndentFileNode *fn_section: fn_node->children) {
+							// Scan function params
 
-						for (IndentFileNode *function_arg : function_child->children) {
-							const string& arg_str = function_arg->line;
-							args.push_back(FunctionArg::from_str(arg_str));
+							if (fn_section->line == "parameters") {
+								for (IndentFileNode *fn_param_node : fn_section->children) {
+									const string& param_str = fn_param_node->line;
+									params.push_back(DebuggerSymbol::from_str(param_str));
+								}
+							}
+
+							// Scan function locals
+
+							else if (fn_section->line == "locals") {
+
+								for (IndentFileNode *fn_local_node : fn_section->children) {
+									const string& local_str = fn_local_node->line;
+									locals.push_back(DebuggerSymbol::from_str(local_str));
+								}
+							}
 						}
 
 						// Add the function to the debugger symbols
 
-						debugger_symbols.add_function(fn_name, args);
+						debugger_symbols.add_function(fn_name, fn_symbols);
+					}
+				}
+
+				// Scan global variables
+
+				else if (section->line == "globals") {
+					for (IndentFileNode *global : section->children) {
+						const string& global_str = global->line;
+						DebuggerSymbol global_sym = DebuggerSymbol::from_str(global_str);
+						debugger_symbols.add_global(global_sym);
 					}
 				}
 			}

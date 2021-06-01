@@ -132,25 +132,25 @@ class Type {
 			return s;
 		}
 
-		enum FunctionArgTypes to_debug_type()
+		enum DebuggerSymbolTypes to_debug_type()
 		{
-			if (pointer_depth > 0) return FunctionArgTypes::POINTER;
+			if (pointer_depth > 0) return DebuggerSymbolTypes::POINTER;
 
 			if (value == Type::UNSIGNED_INTEGER) {
 				switch (size) {
-					case 1: return FunctionArgTypes::U8;
-					case 2: return FunctionArgTypes::U16;
-					case 4: return FunctionArgTypes::U32;
-					case 8: return FunctionArgTypes::U64;
-					default: return FunctionArgTypes::UNDEFINED;
+					case 1: return DebuggerSymbolTypes::U8;
+					case 2: return DebuggerSymbolTypes::U16;
+					case 4: return DebuggerSymbolTypes::U32;
+					case 8: return DebuggerSymbolTypes::U64;
+					default: return DebuggerSymbolTypes::UNDEFINED;
 				}
 			} else {
 				switch (size) {
-					case 1: return FunctionArgTypes::I8;
-					case 2: return FunctionArgTypes::I16;
-					case 4: return FunctionArgTypes::I32;
-					case 8: return FunctionArgTypes::I64;
-					default: return FunctionArgTypes::UNDEFINED;
+					case 1: return DebuggerSymbolTypes::I8;
+					case 2: return DebuggerSymbolTypes::I16;
+					case 4: return DebuggerSymbolTypes::I32;
+					case 8: return DebuggerSymbolTypes::I64;
+					default: return DebuggerSymbolTypes::UNDEFINED;
 				}
 			}
 		}
@@ -189,6 +189,7 @@ class CompilerState {
 		uint64_t parameters_size = 0;
 
 		unordered_map<string, Variable> locals;
+		vector<string> local_names_in_order;
 		uint64_t locals_size = 0;
 
 		size_t scope_depth = 0;
@@ -217,6 +218,13 @@ class CompilerState {
 
 			globals[global_name] = Variable(global_type, globals_size);
 			globals_size += global_type.byte_size();
+
+			// Add the global to the debugger symbols
+
+			if (debug) {
+				debugger_symbols.add_global(DebuggerSymbol(global_name, global_type.to_debug_type()));
+			}
+
 			return true;
 		}
 
@@ -245,26 +253,37 @@ class CompilerState {
 			if (locals.count(local_name)) return false;
 
 			locals[local_name] = Variable(local_type, locals_size);
+			local_names_in_order.push_back(local_name);
 			locals_size += local_type.byte_size();
 			return true;
 		}
 
 		void end_function_scope()
 		{
-			if (debug) {
-				// Add the function to the debugger symbols
+			// Add the function to the debugger symbols
 
-				vector<FunctionArg> args;
+			if (debug) {
+				DebuggerFunction fn_symbols;
+
+				// Add params
 
 				for (const string& param_name : parameter_names_in_order) {
-					FunctionArgTypes fn_arg_type = parameters[param_name].type.to_debug_type();
-					args.push_back(FunctionArg(param_name, fn_arg_type));
+					DebuggerSymbolTypes fn_param_type = parameters[param_name].type.to_debug_type();
+					fn_symbols.params.push_back(DebuggerSymbol(param_name, fn_param_type));
 				}
 
-				debugger_symbols.add_function(current_function_name, args);
+				// Add locals
+
+				for (const string& local_name : local_names_in_order) {
+					DebuggerSymbolTypes local_type = locals[local_name].type.to_debug_type();
+					fn_symbols.locals.push_back(DebuggerSymbol(local_name, local_type));
+				}
+
+				debugger_symbols.add_function(current_function_name, fn_symbols);
 			}
 
 			locals.clear();
+			local_names_in_order.clear();
 			locals_size = 0;
 
 			parameters.clear();

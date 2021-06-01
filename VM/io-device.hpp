@@ -29,10 +29,15 @@ class IODevice : public MemoryDevice {
 					return fgetc(stdin);
 
 				default:
-					printf("Write-only memory access violation\n");
-					printf("VM prevented reading from memory at %ld (0%lx)\n",
-						offset, offset);
-					abort();
+				{
+					stringstream err_message;
+
+					err_message << "Write-only memory access violation\n";
+					err_message << "VM prevented reading from memory at 0x";
+					err_message << hex << offset << '\n';
+
+					throw err_message.str();
+				}
 			}
 		}
 
@@ -49,10 +54,15 @@ class IODevice : public MemoryDevice {
 					return;
 
 				default:
-					printf("Read-only memory access violation\n");
-					printf("VM prevented writing to memory at %ld (0x%ld)\n",
-						offset, offset);
-					abort();
+				{
+					stringstream err_message;
+
+					err_message << "Read-only memory access violation\n";
+					err_message << "VM prevented writing to memory at 0x";
+					err_message << hex << offset << '\n';
+
+					throw err_message.str();
+				}
 			}
 		}
 };

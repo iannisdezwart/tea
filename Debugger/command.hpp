@@ -29,6 +29,15 @@ class CommandHistory {
 	public:
 		void push(const string& line)
 		{
+			// Remove trailing empty lines
+
+			for (size_t i = history.size(); i != 0; i--) {
+				if (history[i - 1] == "") history.pop_back();
+				else break;
+			}
+
+			// Push the new line
+
 			history.push_back(line);
 		}
 

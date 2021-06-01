@@ -18,7 +18,6 @@ class InstructionLister {
 
 		void print_instruction(const char *instruction, set<uint64_t> breakpoints)
 		{
-
 			uint64_t address = reader.offset - 2;
 
 			// Print the address in red if a breakpoint was set to it
@@ -80,68 +79,80 @@ class InstructionLister {
 			first_arg = true;
 		}
 
-		void disassemble(size_t num_of_instructions, set<uint64_t> breakpoints)
+		void disassemble_one(const set<uint64_t>& breakpoints)
+		{
+			// Read the next instruction and print it
+
+			Instruction instruction = (Instruction) reader.read<uint16_t>();
+			const char * instruction_str = instruction_to_str(instruction);
+			vector<ArgumentType> args = instruction_arg_types(instruction);
+
+			print_instruction(instruction_str, breakpoints);
+
+			// Print the arguments
+
+			for (ArgumentType arg : args) {
+				switch (arg) {
+					case REG:
+						print_arg_reg(reader.read<uint8_t>());
+						break;
+
+					case ADDR:
+						print_arg_address(reader.read<uint64_t>());
+						break;
+
+					case LIT_8:
+						print_arg_literal_number(reader.read<uint8_t>());
+						break;
+
+					case LIT_16:
+						print_arg_literal_number(reader.read<uint16_t>());
+						break;
+
+					case LIT_32:
+						print_arg_literal_number(reader.read<uint32_t>());
+						break;
+
+					case LIT_64:
+						print_arg_literal_number(reader.read<uint64_t>());
+						break;
+
+					case NULL_TERMINATED_STRING:
+					{
+						vector<char> str;
+						char c;
+
+						do {
+							c = reader.read<char>();
+							str.push_back(c);
+						} while (c != '\0');
+
+						print_arg_null_terminated_string(str.data());
+						break;
+					}
+
+					default:
+						fprintf(stderr, "I think I messed up the code again ;-;");
+						abort();
+				}
+			}
+
+			end_args();
+		}
+
+		void disassemble(size_t num_of_instructions, const set<uint64_t>& breakpoints)
 		{
 			for (size_t i = 0; i < num_of_instructions; i++) {
 				if (!reader.is_safe()) break;
+				disassemble_one(breakpoints);
+			}
+		}
 
-				// Read the next instruction and print it
-
-				Instruction instruction = (Instruction) reader.read<uint16_t>();
-				const char * instruction_str = instruction_to_str(instruction);
-				vector<ArgumentType> args = instruction_arg_types(instruction);
-
-				print_instruction(instruction_str, breakpoints);
-
-				// Print the arguments
-
-				for (ArgumentType arg : args) {
-					switch (arg) {
-						case REG:
-							print_arg_reg(reader.read<uint8_t>());
-							break;
-
-						case ADDR:
-							print_arg_address(reader.read<uint64_t>());
-							break;
-
-						case LIT_8:
-							print_arg_literal_number(reader.read<uint8_t>());
-							break;
-
-						case LIT_16:
-							print_arg_literal_number(reader.read<uint16_t>());
-							break;
-
-						case LIT_32:
-							print_arg_literal_number(reader.read<uint32_t>());
-							break;
-
-						case LIT_64:
-							print_arg_literal_number(reader.read<uint64_t>());
-							break;
-
-						case NULL_TERMINATED_STRING:
-						{
-							vector<char> str;
-							char c;
-
-							do {
-								c = reader.read<char>();
-								str.push_back(c);
-							} while (c != '\0');
-
-							print_arg_null_terminated_string(str.data());
-							break;
-						}
-
-						default:
-							fprintf(stderr, "I think I messed up the code again ;-;");
-							abort();
-					}
-				}
-
-				end_args();
+		void disassemble_all(size_t top, const set<uint64_t>& breakpoints)
+		{
+			while (reader.offset < top) {
+				if (!reader.is_safe()) break;
+				disassemble_one(breakpoints);
 			}
 		}
 };

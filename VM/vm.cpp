@@ -1,7 +1,5 @@
 #include <bits/stdc++.h>
 
-// #define CPU_DUMP_DEBUG
-
 #include "cpu.hpp"
 #include "../Assembler/assembler.hpp"
 
@@ -19,7 +17,13 @@ int main(int argc, char **argv)
 	Executable executable = Executable::from_file(file_path);
 	CPU cpu(executable, 2000);
 	cpu.memory_mapper.print();
-	cpu.run();
+
+	try {
+		cpu.run();
+	} catch (const string& err_message) {
+		cout << err_message;
+		abort();
+	}
 
 	printf("VM exited with exit code %lu\n", cpu.r_accumulator_0);
 }

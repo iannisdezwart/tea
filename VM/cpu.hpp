@@ -113,6 +113,8 @@ class CPU {
 			r_frame_p = r_stack_p;
 		}
 
+		static constexpr const ssize_t stack_frame_size = 48;
+
 		uint64_t static_data_location()
 		{
 			return PROGRAM_START;
@@ -155,8 +157,7 @@ class CPU {
 				case R_ACCUMULATOR_1_ID:
 					return r_accumulator_1;
 				default:
-					printf("Unknown register with id %hhu\n", id);
-					abort();
+					throw "Unknown register with id " + to_string(id);
 			}
 		}
 
@@ -193,61 +194,36 @@ class CPU {
 			}
 		}
 
-		void step()
+		Instruction step()
 		{
-			uint16_t instruction = fetch<uint16_t>();
-
-			#ifdef CPU_DUMP_DEBUG
-			printf("now executing opcode = %hu\n", instruction);
+			#ifdef RESTORE_INSTRUCTION_POINTER_ON_THROW
+			uint64_t prev_r_instruction_p = r_instruction_p;
 			#endif
 
+			Instruction instruction = (Instruction) fetch<uint16_t>();
+
+			#ifdef RESTORE_INSTRUCTION_POINTER_ON_THROW
+			try {
+				execute(instruction);
+			} catch (const string& err_message) {
+				r_instruction_p = prev_r_instruction_p;
+				throw err_message;
+			}
+			#else
 			execute(instruction);
-
-			#ifdef CPU_DUMP_DEBUG
-			dump_stack();
-			dump_registers();
 			#endif
+
+			return instruction;
 		}
 
 		void run()
 		{
-			#ifdef CPU_DUMP_DEBUG
-			dump_program();
-			dump_stack();
-			dump_registers();
-			#endif
-
 			while (r_instruction_p < stack_top()) {
 				step();
 			}
 		}
 
-		void dump_stack()
-		{
-			printf("Stack dump:\n");
-			program_ram_device.dump(stack_top(), stack_bottom(), r_stack_p, r_frame_p);
-		}
-
-		void dump_program()
-		{
-			printf("Program dump:\n");
-			program_ram_device.dump(static_data_location(), stack_top());
-		}
-
-		void dump_registers()
-		{
-			printf("r_instruction_p = 0x%016lx = %020lu\n", r_instruction_p, r_instruction_p);
-			printf("r_stack_p       = 0x%016lx = %020lu\n", r_stack_p, r_stack_p);
-			printf("r_frame_p       = 0x%016lx = %020lu\n", r_frame_p, r_frame_p);
-			printf("r_accumulator_0 = 0x%016lx = %020lu\n", r_accumulator_0, r_accumulator_0);
-			printf("r_accumulator_1 = 0x%016lx = %020lu\n", r_accumulator_1, r_accumulator_1);
-			printf("r_0             = 0x%016lx = %020lu\n", r_0, r_0);
-			printf("r_1             = 0x%016lx = %020lu\n", r_1, r_1);
-			printf("r_2             = 0x%016lx = %020lu\n", r_2, r_2);
-			printf("r_3             = 0x%016lx = %020lu\n", r_3, r_3);
-			printf("greater_flag = %hhu, equal_flag = %hhu\n", greater_flag, equal_flag);
-		}
-
+	private:
 		template <typename intx_t>
 		intx_t fetch()
 		{
@@ -272,8 +248,6 @@ class CPU {
 			current_stack_frame_size -= sizeof(intx_t);
 			return value;
 		}
-
-		static constexpr const ssize_t stack_frame_size = 48;
 
 		void push_stack_frame()
 		{
