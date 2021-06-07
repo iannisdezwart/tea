@@ -139,7 +139,7 @@ class Parser {
 				case KEYWORD:
 					if (token.value == "return") {
 						node = scan_return_statement();
-						expect_semicolon();
+						expect_statement_terminator();
 						return node;
 					}
 
@@ -179,11 +179,11 @@ class Parser {
 				// 		maybe_left_bracket.value == "("
 				// 	) {
 				// 		node = scan_function_call();
-				// 		expect_semicolon();
+				// 		expect_statement_terminator();
 				// 		return node;
 				// 	} else {
 				// 		node = scan_expression();
-				// 		expect_semicolon();
+				// 		expect_statement_terminator();
 				// 		return node;
 				// 	}
 				// }
@@ -196,16 +196,28 @@ class Parser {
 				default:
 					// unexpected_token_syntax_err(token);
 					node = scan_expression();
-					expect_semicolon();
+					expect_statement_terminator();
 					return node;
 			}
 		}
 
-		void expect_semicolon()
+		void expect_statement_terminator()
 		{
-			Token semicolon = next_token();
-			assert_token_type(semicolon, SPECIAL_CHARACTER);
-			assert_token_value(semicolon, ";");
+			Token terminator = get_token();
+
+			if (terminator.type == SPECIAL_CHARACTER && terminator.value == ";") {
+				i++;
+				return;
+			}
+
+			if (terminator.whitespace_before) return;
+
+			fprintf(stderr,
+				"[ Syntax Error ]: Unexpected token with value \"%s\", "
+				"expected a terminator token (newline or semicolon).\n",
+				terminator.value.c_str());
+			fprintf(stderr, "At %ld:%ld\n", terminator.line, terminator.col);
+			abort();
 		}
 
 		TypeIdentifierPair *scan_type_identifier_pair()
@@ -654,7 +666,7 @@ class Parser {
 				i--;
 				declaration = scan_variable_declaration(type_id_pair);
 
-				expect_semicolon();
+				expect_statement_terminator();
 			}
 
 			return declaration;

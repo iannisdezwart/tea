@@ -18,17 +18,24 @@ enum TokenType {
 	SPECIAL_CHARACTER
 };
 
+const char *to_string(bool b)
+{
+	if (b) return "true";
+	else return "false";
+}
+
 struct Token {
 	TokenType type;
 	string value;
 	size_t line;
 	size_t col;
+	bool whitespace_before;
 
 	string to_str()
 	{
 		string s = "Token { type = " + to_string(type) + ", value = \"" + value +
 			"\" , line = " + to_string(line) + " , col = " + to_string(col)
-			+ " } @ " + to_hex(this);
+			+ ", whitespace_before = " + to_string(whitespace_before) + " } @ " + to_hex(this);
 		return s;
 	}
 };
@@ -201,7 +208,7 @@ const char *op_to_example_str(enum Operator op)
 		case SUM_ASSIGNMENT: return "x += y";
 		case DIFFERENCE_ASSIGNMENT: return "x -= y";
 		case QUOTIENT_ASSIGNMENT: return "x /= y";
-		case REMAINDER_ASSIGNMENT: return "x &= y";
+		case REMAINDER_ASSIGNMENT: return "x %= y";
 		case PRODUCT_ASSIGNMENT: return "x *= y";
 		case LEFT_SHIFT_ASSIGNMENT: return "x <<= y";
 		case RIGHT_SHIFT_ASSIGNMENT: return "x >>= y";
@@ -367,6 +374,7 @@ class Tokeniser {
 		FILE *file;
 		size_t line = 1;
 		size_t col = 1;
+		bool whitespace_before = false;
 
 		char get_char()
 		{
@@ -400,10 +408,12 @@ class Tokeniser {
 				.type = type,
 				.value = value,
 				.line = line,
-				.col = col
+				.col = col,
+				.whitespace_before = whitespace_before
 			};
 
 			tokens.push_back(token);
+			whitespace_before = false;
 		}
 
 		#define throw_err(message, ...) do { \
@@ -431,15 +441,17 @@ class Tokeniser {
 
 		vector<Token> tokenise()
 		{
-			size_t line = 1;
-			size_t col = 1;
 			char c;
 
 			while (true) {
 				c = get_char();
 
 				if (c == EOF) break;
-				if (whitespace_chars.count(c)) continue;
+
+				if (whitespace_chars.count(c)) {
+					whitespace_before = true;
+					continue;
+				}
 
 				// Handle comments
 

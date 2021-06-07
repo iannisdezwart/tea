@@ -1,35 +1,12 @@
-#include "trick-the-vscode-c-syntax-highlighter.h"
-
-// u8 *in = 0x10; // Input device
-// u8 *out = 0x11; // Output device
-
-// void putc(u8 c)
-// {
-// 	*out = c;
-// }
-
-// u8 getc()
-// {
-// 	return *in;
-// }
-
-// void puts(u8 *str, u64 len)
-// {
-// 	while (len--)
-// 	{
-// 		putc(*str++);
-// 	}
-// }
-
-u64 recursion(u64 a, u64 b)
+u64 fibonacci(u64 a, u64 b)
 {
-	u64 new_a = b;
-	u64 new_b = a + b;
+	u64 new_a = b
+	u64 new_b = a + b
 
-	recursion(new_a, new_b);
+	fibonacci(new_a, new_b)
 }
 
 u64 main()
 {
-	recursion(0, 1);
+	fibonacci(0, 1)
 }
