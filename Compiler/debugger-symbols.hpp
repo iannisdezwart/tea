@@ -111,7 +111,7 @@ class IndentFileParser {
 };
 
 enum class DebuggerSymbolTypes : uint8_t {
-	POINTER, U8, I8, U16, I16, U32, I32, U64, I64, UNDEFINED
+	POINTER, U8, I8, U16, I16, U32, I32, U64, I64, USER_DEFINED_CLASS, UNDEFINED
 };
 
 const char *debugger_symbol_type_to_str(enum DebuggerSymbolTypes type)
@@ -126,6 +126,7 @@ const char *debugger_symbol_type_to_str(enum DebuggerSymbolTypes type)
 		case DebuggerSymbolTypes::I32: return "I32";
 		case DebuggerSymbolTypes::U64: return "U64";
 		case DebuggerSymbolTypes::I64: return "I64";
+		case DebuggerSymbolTypes::USER_DEFINED_CLASS: return "class";
 		default: return "UNDEFINED";
 	}
 }
@@ -141,6 +142,7 @@ enum DebuggerSymbolTypes str_to_debugger_symbol_type(const string& str)
 	if (str == "I32") return DebuggerSymbolTypes::I32;
 	if (str == "U64") return DebuggerSymbolTypes::U64;
 	if (str == "I64") return DebuggerSymbolTypes::I64;
+	if (str == "class") return DebuggerSymbolTypes::USER_DEFINED_CLASS;
 	return DebuggerSymbolTypes::UNDEFINED;
 }
 

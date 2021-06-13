@@ -1,12 +1,16 @@
-u64 fibonacci(u64 a, u64 b)
+class Complex
 {
-	u64 new_a = b
-	u64 new_b = a + b
+	i64 re
+	i64 im
 
-	fibonacci(new_a, new_b)
+	Complex make(i64 r, i64 i)
+	{
+		re = r
+		im = i
+	}
 }
 
 u64 main()
 {
-	fibonacci(0, 1)
+	// Complex c = Complex::make(1, 2)
 }

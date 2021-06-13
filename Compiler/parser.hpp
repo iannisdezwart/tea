@@ -23,6 +23,7 @@
 #include "ASTNodes/AssignmentExpression.hpp"
 #include "ASTNodes/IfStatement.hpp"
 #include "ASTNodes/WhileStatement.hpp"
+#include "ASTNodes/ClassDeclaration.hpp"
 
 using namespace std;
 
@@ -31,6 +32,7 @@ class Parser {
 		vector<Token>& tokens;
 		vector<ASTNode *> statements;
 		size_t i = 0;
+		unordered_set<string> class_names;
 
 		#define syntax_err(token, message, ...) do { \
 			fprintf(stderr, "[ Syntax Error ]: " message "\n", ##__VA_ARGS__); \
@@ -39,15 +41,15 @@ class Parser {
 		} while (0)
 
 		#define unexpected_token_syntax_err(token) \
-			syntax_err(token, "Unexpected token %s of type %d", \
-				token.value.c_str(), token.type);
+			syntax_err(token, "Unexpected token %s of type %s", \
+				token.value.c_str(), token_type_to_str(token.type));
 
 		#define assert_token_type(token, token_type) do { \
 			if (token.type != token_type) { \
 				fprintf(stderr, \
-					"[ Syntax Error ]: Unexpected token of type %d, " \
-					"expected a %d token.\n", \
-					token.type, token_type); \
+					"[ Syntax Error ]: Unexpected token of type %s, " \
+					"expected a %s token.\n", \
+					token_type_to_str(token.type), token_type_to_str(token_type)); \
 				fprintf(stderr, "At %ld:%ld\n", token.line, token.col); \
 				abort(); \
 			} \
@@ -118,19 +120,30 @@ class Parser {
 		Token get_token(size_t offset = 0)
 		{
 			if (i + offset >= tokens.size()) abort();
-			return tokens[i + offset];
+			Token token = tokens[i + offset];
+
+			// User defined class
+
+			if (token.type == IDENTIFIER && class_names.count(token.value)) {
+				token.type = TYPE;
+			}
+
+			return token;
 		}
 
 		Token next_token()
 		{
-			if (i >= tokens.size()) abort();
-			return tokens[i++];
+			Token token = get_token();
+			i++;
+			return token;
 		}
 
 		ASTNode *next_statement()
 		{
 			Token token = get_token();
 			ASTNode *node;
+
+			printf("%s\n", token.to_str().c_str());
 
 			switch (token.type) {
 				case TYPE:
@@ -149,6 +162,10 @@ class Parser {
 
 					if (token.value == "while") {
 						return scan_while_statement();
+					}
+
+					if (token.value == "class") {
+						return scan_class_declaration();
 					}
 
 					// if (token.value == "if")
@@ -749,22 +766,34 @@ class Parser {
 		VariableDeclaration *scan_variable_declaration(
 			TypeIdentifierPair *type_id_pair
 		) {
-			Token next = next_token();
+			Token next = get_token();
 
 			// Todo: add "," syntax
-			// Only declaration
-
-			if (next.type == SPECIAL_CHARACTER && next.value == ";") {
-				i--;
-				return new VariableDeclaration(type_id_pair, NULL);
-			}
-
 			// Declaration + assignment
 
-			assert_token_type(next, OPERATOR);
-			assert_token_value(next, "=");
+			if (next.type == OPERATOR && next.value == "=") {
+				i++;
+				return new VariableDeclaration(type_id_pair, scan_expression());
+			}
 
-			return new VariableDeclaration(type_id_pair, scan_expression());
+			// Only declaration
+
+			expect_statement_terminator();
+			return new VariableDeclaration(type_id_pair, NULL);
+		}
+
+		ClassDeclaration *scan_class_declaration()
+		{
+			Token class_token = next_token();
+			assert_token_type(class_token, KEYWORD);
+			assert_token_value(class_token, "class");
+
+			Token class_name_token = next_token();
+			assert_token_type(class_name_token, IDENTIFIER);
+			class_names.insert(class_name_token.value);
+
+			CodeBlock *body = scan_code_block();
+			return new ClassDeclaration(class_token, class_name_token.value, body);
 		}
 
 		ReturnStatement *scan_return_statement()

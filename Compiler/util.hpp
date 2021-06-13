@@ -38,7 +38,7 @@ template <typename intx_t>
 string to_hex(intx_t num)
 {
 	stringstream stream;
-	stream << "0x" << setfill('0') << setw(8) << hex << num;
+	stream << setfill('0') << setw(8) << hex << num;
 	return stream.str();
 }
 
@@ -52,6 +52,18 @@ uint8_t hex_char_to_num(char x)
 char hex_chars_to_byte(char upper, char lower)
 {
 	return hex_char_to_num(upper) << 4 | hex_char_to_num(lower);
+}
+
+template <typename From, typename To>
+vector<To> map_vector(const vector<From> vec, function<To (const From&)> map_fn)
+{
+	vector<To> new_vec;
+
+	for (size_t i = 0; i < vec.size(); i++) {
+		new_vec.push(map_fn(vec[i]));
+	}
+
+	return new_vec;
 }
 
 #endif

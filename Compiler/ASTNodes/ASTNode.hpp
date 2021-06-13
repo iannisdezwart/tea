@@ -13,6 +13,7 @@ enum ASTNodeType {
 	TYPE_IDENTIFIER_PAIR,
 	FUNCTION_DECLARATION,
 	VARIABLE_DECLARATION,
+	CLASS_DECLARATION,
 	RETURN_STATEMENT,
 	CODE_BLOCK,
 	LITERAL_STRING_EXPRESSION,
@@ -26,6 +27,29 @@ enum ASTNodeType {
 	IF_STATEMENT,
 	WHILE_STATEMENT
 };
+
+const char *ast_node_type_to_str(enum ASTNodeType type)
+{
+	switch (type) {
+		case TYPE_IDENTIFIER_PAIR: return "TypeIdentifierPair";
+		case FUNCTION_DECLARATION: return "FunctionDeclaration";
+		case VARIABLE_DECLARATION: return "VariableDeclaration";
+		case CLASS_DECLARATION: return "ClassDeclaration";
+		case RETURN_STATEMENT: return "ReturnStatement";
+		case CODE_BLOCK: return "CodeBlock";
+		case LITERAL_STRING_EXPRESSION: return "LiteralStringExpression";
+		case LITERAL_CHAR_EXPRESSION: return "LiteralCharExpression";
+		case LITERAL_NUMBER_EXPRESSION: return "LiteralNumberExpression";
+		case IDENTIFIER_EXPRESSION: return "IdentifierExpression";
+		case FUNCTION_CALL: return "FunctionCall";
+		case BINARY_OPERATION: return "Binary Operation";
+		case UNARY_OPERATION: return "UnaryOperation";
+		case ASSIGNMENT_EXPRESSION: return "AssignmentExpression";
+		case IF_STATEMENT: return "IfStatement";
+		case WHILE_STATEMENT: return "WhileStatement";
+		default: return "Undefined";
+	}
+}
 
 class ASTNode {
 	public:

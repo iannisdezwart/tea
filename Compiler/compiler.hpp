@@ -51,6 +51,7 @@ class Compiler {
 
 			vector<VariableDeclaration *> global_var_decls;
 			vector<FunctionDeclaration *> fn_decls;
+			vector<ClassDeclaration *> class_decls;
 
 			for (size_t i = 0; i < statements.size(); i++) {
 				ASTNode *statement = statements[i];
@@ -64,12 +65,34 @@ class Compiler {
 						fn_decls.push_back((FunctionDeclaration *) statement);
 						break;
 
+					case CLASS_DECLARATION:
+					{
+						ClassDeclaration *class_decl = (ClassDeclaration *) statement;
+						class_decls.push_back(class_decl);
+						break;
+					}
+
 					default:
 						err_at_token(statement->accountable_token, "Unexpected statement",
 							"Unexpected statement of type %d",
 							statement->type);
 						break;
 				}
+			}
+
+			// Add classes
+
+			for (size_t i = 0; i < class_decls.size(); i++) {
+				ClassDeclaration *class_decl = class_decls[i];
+				size_t byte_size = class_decl->byte_size(compiler_state);
+				Class cl(byte_size);
+
+				for (TypeIdentifierPair *field : class_decl->fields) {
+					Type type = field->get_type(compiler_state);
+					cl.fields.push_back(type);
+				}
+
+				compiler_state.add_class(class_decl->class_name, cl);
 			}
 
 			// Add global variables
@@ -105,6 +128,13 @@ class Compiler {
 
 			for (size_t i = 0; i < fn_decls.size(); i++) {
 				FunctionDeclaration *decl = fn_decls[i];
+				decl->compile(assembler, compiler_state);
+			}
+
+			// Compile class method declarations
+
+			for (size_t i = 0; i < class_decls.size(); i++) {
+				ClassDeclaration *decl = class_decls[i];
 				decl->compile(assembler, compiler_state);
 			}
 

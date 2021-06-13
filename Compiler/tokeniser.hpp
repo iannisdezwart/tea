@@ -18,6 +18,21 @@ enum TokenType {
 	SPECIAL_CHARACTER
 };
 
+const char *token_type_to_str(enum TokenType type)
+{
+	switch (type) {
+		case TYPE: return "TYPE";
+		case LITERAL_STRING: return "LITERAL_STRING";
+		case LITERAL_CHAR: return "LITERAL_CHAR";
+		case LITERAL_NUMBER: return "LITERAL_NUMBER";
+		case IDENTIFIER: return "IDENTIFIER";
+		case KEYWORD: return "KEYWORD";
+		case OPERATOR: return "OPERATOR";
+		case SPECIAL_CHARACTER: return "SPECIAL_CHARACTER";
+		default: return "UNDEFINED";
+	}
+}
+
 const char *to_string(bool b)
 {
 	if (b) return "true";
@@ -33,9 +48,11 @@ struct Token {
 
 	string to_str()
 	{
-		string s = "Token { type = " + to_string(type) + ", value = \"" + value +
-			"\" , line = " + to_string(line) + " , col = " + to_string(col)
-			+ ", whitespace_before = " + to_string(whitespace_before) + " } @ " + to_hex(this);
+		string s = "Token { type = ";
+		s += token_type_to_str(type);
+		s += ", value = \"" + value +"\" , line = " + to_string(line) +
+			" , col = " + to_string(col) + ", whitespace_before = "
+			+ to_string(whitespace_before) + " } @ " + to_hex(this);
 		return s;
 	}
 };
@@ -57,7 +74,7 @@ unordered_set<string> types = {
 };
 
 unordered_set<string> keywords = {
-	"if", "else", "return", "loop", "while", "for", "break", "continue", "goto"
+	"if", "else", "return", "while", "for", "break", "continue", "goto", "class"
 };
 
 enum Operator {
@@ -120,7 +137,7 @@ enum Operator {
 	BITWISE_XOR_ASSIGNMENT,
 	BITWISE_OR_ASSIGNMENT,
 
-	UNDEFINED
+	UNDEFINED_OPERATOR
 };
 
 const char *op_to_str(enum Operator op)
@@ -323,7 +340,7 @@ vector<OperatorPrecedencePair> operator_precedence = {
 
 enum Operator str_to_operator(string& str, bool prefix = false)
 {
-	if (str.size() > 3) return UNDEFINED;
+	if (str.size() > 3) return UNDEFINED_OPERATOR;
 
 	if (str == "++" && prefix) return PREFIX_INCREMENT;
 	if (str == "--" && prefix) return PREFIX_DECREMENT;
@@ -366,7 +383,7 @@ enum Operator str_to_operator(string& str, bool prefix = false)
 	if (str == "&=") return BITWISE_AND_ASSIGNMENT;
 	if (str == "^=") return BITWISE_XOR_ASSIGNMENT;
 	if (str == "|=") return BITWISE_OR_ASSIGNMENT;
-	return UNDEFINED;
+	return UNDEFINED_OPERATOR;
 }
 
 class Tokeniser {
@@ -734,7 +751,7 @@ class Tokeniser {
 					op += op_char_2;
 					op += op_char_3;
 
-					if (str_to_operator(op) != UNDEFINED) return op;
+					if (str_to_operator(op) != UNDEFINED_OPERATOR) return op;
 					else unget_char(op_char_3);
 				}
 
@@ -744,7 +761,7 @@ class Tokeniser {
 				op += first_char;
 				op += op_char_2;
 
-				if (str_to_operator(op) != UNDEFINED) return op;
+				if (str_to_operator(op) != UNDEFINED_OPERATOR) return op;
 				else unget_char(op_char_2);
 			}
 

@@ -53,6 +53,12 @@ class TypeIdentifierPair : public ASTNode {
 
 		Type get_type(CompilerState& compiler_state)
 		{
+			if (compiler_state.classes.count(type_token.value)) {
+				Class class_decl = compiler_state.classes[type_token.value];
+				size_t byte_size = class_decl.byte_size;
+				return Type(Type::USER_DEFINED_CLASS, byte_size, pointer_depth);
+			}
+
 			return Type::from_string(type_token.value, pointer_depth);
 		}
 

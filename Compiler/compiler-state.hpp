@@ -28,6 +28,8 @@ class Type {
 		};
 
 		size_t pointer_depth;
+		string class_name;
+		vector<Type> fields;
 
 		Type() : value(UNDEFINED) {}
 		Type(enum Value value, size_t size, size_t pointer_depth = 0)
@@ -120,7 +122,7 @@ class Type {
 					break;
 
 				case Type::USER_DEFINED_CLASS:
-					s += "user_defined_class";
+					s += class_name;
 					break;
 			}
 
@@ -144,7 +146,7 @@ class Type {
 					case 8: return DebuggerSymbolTypes::U64;
 					default: return DebuggerSymbolTypes::UNDEFINED;
 				}
-			} else {
+			} else if (value == Type::SIGNED_INTEGER) {
 				switch (size) {
 					case 1: return DebuggerSymbolTypes::I8;
 					case 2: return DebuggerSymbolTypes::I16;
@@ -152,7 +154,11 @@ class Type {
 					case 8: return DebuggerSymbolTypes::I64;
 					default: return DebuggerSymbolTypes::UNDEFINED;
 				}
+			} else if (value == Type::USER_DEFINED_CLASS) {
+				return DebuggerSymbolTypes::USER_DEFINED_CLASS;
 			}
+
+			return DebuggerSymbolTypes::UNDEFINED;
 		}
 
 	private:
@@ -176,10 +182,20 @@ struct Function {
 	Function(Type& return_type) : return_type(return_type) {}
 };
 
+struct Class {
+	size_t byte_size;
+	vector<Type> fields;
+
+	Class() {}
+	Class(size_t byte_size): byte_size(byte_size) {}
+};
+
 class CompilerState {
 	public:
 		unordered_map<string, Function> functions;
 		string current_function_name;
+
+		unordered_map<string, Class> classes;
 
 		unordered_map<string, Variable> globals;
 		uint64_t globals_size = 0;
@@ -209,6 +225,21 @@ class CompilerState {
 			if (functions.count(id_name)) return IdentifierKind::FUNCTION;
 			if (globals.count(id_name)) return IdentifierKind::GLOBAL;
 			return IdentifierKind::UNDEFINED;
+		}
+
+		bool add_class(string class_name, Class cl)
+		{
+			if (classes.count(class_name)) return false;
+
+			classes[class_name] = cl;
+
+			// Add the class to the debugger symbols
+
+			if (debug) {
+				// Todo: create
+			}
+
+			return true;
 		}
 
 		bool add_global(string global_name, Type global_type)
