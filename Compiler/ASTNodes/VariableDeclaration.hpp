@@ -8,6 +8,7 @@
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 #include "TypeIdentifierPair.hpp"
+#include "InitList.hpp"
 
 using namespace std;
 
@@ -56,86 +57,143 @@ class VariableDeclaration : public ASTNode {
 
 		void compile(Assembler& assembler, CompilerState& compiler_state) {
 			if (expression != NULL) {
-				// Moves result into R_ACCUMULATOR
-
-				expression->compile(assembler, compiler_state);
-
-				// Move R_ACCUMULATOR into the address of the variable
-
 				string id_name = type_and_id_pair->get_identifier_name();
 				IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
 
+				Variable var;
+
 				switch (id_kind) {
 					case IdentifierKind::LOCAL:
-					{
-						Variable& var = compiler_state.locals[id_name];
-						Type& type = var.type;
-						uint64_t offset = var.offset;
-						uint64_t var_size = type.byte_size();
-
-						switch (var_size) {
-							case 1:
-								assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_0_ID, offset);
-								break;
-
-							case 2:
-								assembler.move_reg_into_frame_offset_16(R_ACCUMULATOR_0_ID, offset);
-								break;
-
-							case 4:
-								assembler.move_reg_into_frame_offset_32(R_ACCUMULATOR_0_ID, offset);
-								break;
-
-							case 8:
-								assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_0_ID, offset);
-								break;
-
-							default:
-								err_at_token(accountable_token, "Invalid VariableDeclaration",
-									"Cannot declare a variable of with size %lu\n"
-									"This behaviour is not implemented yet", var_size);
-						}
-
+						var = compiler_state.locals[id_name];
 						break;
-					}
 
 					case IdentifierKind::GLOBAL:
-					{
-						Variable& var = compiler_state.globals[id_name];
-						Type& type = var.type;
-						uint64_t offset = var.offset;
-						uint64_t var_size = type.byte_size();
-
-						switch (var_size) {
-							case 1:
-								assembler.move_reg_into_stack_top_offset_8(R_ACCUMULATOR_0_ID, offset);
-								break;
-
-							case 2:
-								assembler.move_reg_into_stack_top_offset_16(R_ACCUMULATOR_0_ID, offset);
-								break;
-
-							case 4:
-								assembler.move_reg_into_stack_top_offset_32(R_ACCUMULATOR_0_ID, offset);
-								break;
-
-							case 8:
-								assembler.move_reg_into_stack_top_offset_64(R_ACCUMULATOR_0_ID, offset);
-								break;
-
-							default:
-								err_at_token(accountable_token, "Invalid VariableDeclaration",
-									"Cannot declare a variable of with size %lu\n"
-									"This behaviour is not implemented yet", var_size);
-						}
-
+						var = compiler_state.globals[id_name];
 						break;
-					}
 
 					default:
 						err_at_token(accountable_token, "Invalid VariableDeclaration",
 							"Cannot declare a variable of this type\n"
 							"Only locals and globals can be declared");
+				}
+
+				Type& type = var.type;
+				uint64_t offset = var.offset;
+				uint64_t var_size = type.byte_size();
+
+				// Class instance declaration
+
+				if (type == Type::USER_DEFINED_CLASS) {
+					// Expect an init list or a constructor call
+
+					if (expression->type == INIT_LIST) {
+						InitList *init_list = (InitList *) expression;
+						Class& cl = compiler_state.classes[type.class_name];
+
+						// Check type compatibility
+
+						if (init_list->items.size() > cl.fields.size()) {
+							err_at_token(init_list->accountable_token, "Type Error",
+								"InitList for %s class instance holds %lu members, "
+								"but %s has only %lu fields\n",
+								type.class_name.c_str(), init_list->items.size(),
+								type.class_name.c_str(), cl.fields.size());
+						}
+
+						for (size_t i = 0; i < init_list->items.size(); i++) {
+							ASTNode *item = init_list->items[i];
+							Type item_type = item->get_type(compiler_state);
+							Type& field_type = cl.fields[i];
+
+							// Type compatibility
+
+							if (!item_type.fits(field_type)) {
+								// Todo: elaborate
+
+								err_at_token(item->accountable_token, "Type Error",
+									"Item %lu of InitList does not fit the corresponding field "
+									"of class \"%s\"\n",
+									i, type.class_name.c_str());
+							}
+
+							// 
+						}
+					} else {
+						err_at_token(expression->accountable_token, "Semantic Error",
+							"Unexpected expression of type \"%s\" at the right hand "
+							"side of a class instance declaration\n"
+							"Expected an initialiser list or a constructor call\n",
+							ast_node_type_to_str(expression->type));
+					}
+				}
+
+				// Built-in type declaration
+
+				else {
+					// Moves result into R_ACCUMULATOR
+
+					expression->compile(assembler, compiler_state);
+
+					// Move R_ACCUMULATOR into the address of the variable
+
+					switch (id_kind) {
+						case IdentifierKind::LOCAL:
+							switch (var_size) {
+								case 1:
+									assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_0_ID, offset);
+									break;
+
+								case 2:
+									assembler.move_reg_into_frame_offset_16(R_ACCUMULATOR_0_ID, offset);
+									break;
+
+								case 4:
+									assembler.move_reg_into_frame_offset_32(R_ACCUMULATOR_0_ID, offset);
+									break;
+
+								case 8:
+									assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_0_ID, offset);
+									break;
+
+								default:
+									err_at_token(accountable_token, "Invalid VariableDeclaration",
+										"Cannot declare a variable with size %lu\n"
+										"This behaviour is not implemented yet", var_size);
+							}
+
+							break;
+
+						case IdentifierKind::GLOBAL:
+							switch (var_size) {
+								case 1:
+									assembler.move_reg_into_stack_top_offset_8(R_ACCUMULATOR_0_ID, offset);
+									break;
+
+								case 2:
+									assembler.move_reg_into_stack_top_offset_16(R_ACCUMULATOR_0_ID, offset);
+									break;
+
+								case 4:
+									assembler.move_reg_into_stack_top_offset_32(R_ACCUMULATOR_0_ID, offset);
+									break;
+
+								case 8:
+									assembler.move_reg_into_stack_top_offset_64(R_ACCUMULATOR_0_ID, offset);
+									break;
+
+								default:
+									err_at_token(accountable_token, "Invalid VariableDeclaration",
+										"Cannot declare a variable of with size %lu\n"
+										"This behaviour is not implemented yet", var_size);
+							}
+
+							break;
+
+						default:
+							err_at_token(accountable_token, "Invalid VariableDeclaration",
+								"Cannot declare a variable of this type\n"
+								"Only locals and globals can be declared");
+					}
 				}
 			}
 		}

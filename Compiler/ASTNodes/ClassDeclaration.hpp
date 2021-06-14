@@ -109,7 +109,7 @@ class ClassDeclaration : public ASTNode {
 				string method_name = id_token.value;
 				id_token.value = class_name + "::" + method_name;
 
-				// Add pointer to class as first parameter
+				// Add pointer to class as first parameter (this)
 
 				Token pointer_param_type_token;
 				pointer_param_type_token.type = TYPE;

@@ -24,6 +24,7 @@
 #include "ASTNodes/IfStatement.hpp"
 #include "ASTNodes/WhileStatement.hpp"
 #include "ASTNodes/ClassDeclaration.hpp"
+#include "ASTNodes/InitList.hpp"
 
 using namespace std;
 
@@ -527,6 +528,35 @@ class Parser {
 				Token right_parenthesis = next_token();
 				assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
 				assert_token_value(right_parenthesis, ")");
+			}
+
+			// Init list
+
+			else if (expr_token.type == SPECIAL_CHARACTER && expr_token.value == "{") {
+				vector<ASTNode *> items;
+
+				next_init_list_item:
+
+				ASTNode *item = scan_expression();
+				items.push_back(item);
+
+				Token seperator = next_token();
+
+				if (seperator.type != SPECIAL_CHARACTER || seperator.value != "}"
+					&& seperator.value != ",")
+				{
+					err_at_token(seperator, "Syntax Error",
+						"Unexpected token \"%s\" of type %s\n"
+						"Expected a \",\" or a \"}\" token instead\n"
+						"At %lu:%lu\n", seperator.value.c_str(),
+						token_type_to_str(seperator.type), seperator.line, seperator.col);
+				}
+
+				if (seperator.value == ",") {
+					goto next_init_list_item;
+				}
+
+				expression = new InitList(expr_token, std::move(items));
 			}
 
 			// Literal string

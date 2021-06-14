@@ -55,12 +55,12 @@ class Type {
 				|| pointer_depth != other.pointer_depth;
 		}
 
-		constexpr size_t byte_size()
+		constexpr size_t byte_size() const
 		{
 			return (pointer_depth > 0) ? 8 : size;
 		}
 
-		constexpr size_t pointed_byte_size()
+		constexpr size_t pointed_byte_size() const
 		{
 			return size;
 		}
@@ -101,6 +101,35 @@ class Type {
 		{
 			return (value == Type::SIGNED_INTEGER || value == Type::UNSIGNED_INTEGER)
 				&& size <= 8;
+		}
+
+		bool fits(const Type& type)
+		{
+			if (value == Type::UNSIGNED_INTEGER || value == Type::SIGNED_INTEGER) {
+				if (type.value != Type::UNSIGNED_INTEGER &&
+					type.value != Type::SIGNED_INTEGER)
+				{
+					return false;
+				}
+
+				if (byte_size() > type.byte_size()) {
+					return false;
+				}
+
+				return true;
+			}
+
+			if (value == Type::USER_DEFINED_CLASS) {
+				if (type.value != Type::USER_DEFINED_CLASS) {
+					return false;
+				}
+
+				if (class_name != type.class_name) {
+					return false;
+				}
+
+				return true;
+			}
 		}
 
 		string to_str()
