@@ -1,10 +1,38 @@
-class Complex
+u8 *in = 0x10 // Input device
+u8 *out = 0x11 // Output device
+
+void putc(u8 c)
 {
-	i64 re
-	i64 im
+	*out = c
+}
+
+void puts(u8 *str, u64 len)
+{
+	while (len--)
+	{
+		putc(*str++)
+	}
+}
+
+class TwoChars
+{
+	u8 a
+	u8 b
+}
+
+void TwoChars_print(TwoChars *self)
+{
+	puts("a = ", 4)
+	putc(self->a)
+	putc('\n')
+
+	puts("b = ", 4)
+	putc(self->b)
+	putc('\n')
 }
 
 u64 main()
 {
-	Complex c = { 2, 4 }
+	TwoChars chars = { 2, 4 }
+	TwoChars_print(&chars)
 }

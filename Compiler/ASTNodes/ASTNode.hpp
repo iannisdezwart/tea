@@ -24,6 +24,7 @@ enum ASTNodeType {
 	FUNCTION_CALL,
 	BINARY_OPERATION,
 	UNARY_OPERATION,
+	MEMBER_EXPRESSION,
 	ASSIGNMENT_EXPRESSION,
 	IF_STATEMENT,
 	WHILE_STATEMENT
@@ -55,7 +56,7 @@ const char *ast_node_type_to_str(enum ASTNodeType type)
 class ASTNode {
 	public:
 		ASTNodeType type;
-		const Token& accountable_token;
+		Token accountable_token;
 
 		ASTNode(const Token& accountable_token)
 			: accountable_token(accountable_token) {}

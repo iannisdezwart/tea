@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "util.hpp"
+#include "../ansi.hpp"
 
 using namespace std;
 
@@ -46,13 +47,42 @@ struct Token {
 	size_t col;
 	bool whitespace_before;
 
-	string to_str()
+	string to_str() const
 	{
-		string s = "Token { type = ";
+		string s;
+
+		s += "Token { ";
+
+		s += ANSI_CYAN ANSI_ITALIC "type";
+		s += ANSI_RESET ANSI_CYAN " = ";
+		s += ANSI_BOLD;
 		s += token_type_to_str(type);
-		s += ", value = \"" + value +"\" , line = " + to_string(line) +
-			" , col = " + to_string(col) + ", whitespace_before = "
-			+ to_string(whitespace_before) + " } @ " + to_hex(this);
+		s += ANSI_RESET ", ";
+
+		s += ANSI_YELLOW ANSI_ITALIC "value";
+		s += ANSI_RESET ANSI_YELLOW " = \"";
+		s += ANSI_BOLD;
+		s += value;
+		s += ANSI_RESET ANSI_YELLOW "\"";
+		s += ANSI_RESET ", ";
+
+		s += ANSI_GREEN ANSI_ITALIC "line:col";
+		s += ANSI_RESET ANSI_GREEN " = ";
+		s += ANSI_BOLD;
+		s += to_string(line);
+		s += ":";
+		s += to_string(col);
+		s += ANSI_RESET ", ";
+
+		s += ANSI_BRIGHT_RED ANSI_ITALIC "whitespace_before";
+		s += ANSI_RESET ANSI_BRIGHT_RED " = ";
+		s += ANSI_BOLD;
+		s += to_string(whitespace_before);
+
+		s += ANSI_RESET;
+		s += " } @ ";
+		s += to_hex(this);
+
 		return s;
 	}
 };
@@ -338,7 +368,7 @@ vector<OperatorPrecedencePair> operator_precedence = {
 
 #undef mp
 
-enum Operator str_to_operator(string& str, bool prefix = false)
+enum Operator str_to_operator(const string& str, bool prefix = false)
 {
 	if (str.size() > 3) return UNDEFINED_OPERATOR;
 
@@ -399,7 +429,7 @@ class Tokeniser {
 
 			if (c == '\n') {
 				line++;
-				col = 0;
+				col = 1;
 			} else {
 				col++;
 			}
@@ -448,9 +478,8 @@ class Tokeniser {
 		{
 			printf("\\\\\\ Tokens (%ld) \\\\\\\n\n", tokens.size());
 
-			for (Token token : tokens) {
-				printf("{ type: %d, value: \"%s\", line: %ld, col: %ld }\n",
-					token.type, token.value.c_str(), token.line, token.col);
+			for (const Token& token : tokens) {
+				cout << token.to_str() << '\n';
 			}
 
 			printf("\n/// Tokens ///\n");

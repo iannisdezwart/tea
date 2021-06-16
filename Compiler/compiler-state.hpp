@@ -55,6 +55,16 @@ class Type {
 				|| pointer_depth != other.pointer_depth;
 		}
 
+		constexpr bool operator==(Type::Value other_value) const
+		{
+			return value == other_value;
+		}
+
+		constexpr bool operator!=(Type::Value other_value) const
+		{
+			return value != other_value;
+		}
+
 		constexpr size_t byte_size() const
 		{
 			return (pointer_depth > 0) ? 8 : size;
@@ -130,9 +140,11 @@ class Type {
 
 				return true;
 			}
+
+			return false;
 		}
 
-		string to_str()
+		string to_str() const
 		{
 			string s;
 
@@ -195,28 +207,58 @@ class Type {
 		size_t size;
 };
 
-struct Variable {
-	size_t offset;
+struct Identifier
+{
+	string name;
 	Type type;
 
+	Identifier() {}
+	Identifier(const string& name, const Type& type) : name(name), type(type) {}
+};
+
+struct Variable {
+	size_t offset;
+	Identifier id;
+
 	Variable() {}
-	Variable(Type& type, size_t offset) : type(type), offset(offset) {}
+	Variable(const string& name, Type& type, size_t offset)
+		: id(name, type), offset(offset) {}
 };
 
 struct Function {
-	Type return_type;
-	vector<Type> parameter_types;
+	Identifier id;
+	vector<Identifier> parameters;
 
 	Function() {}
-	Function(Type& return_type) : return_type(return_type) {}
+	Function(const string& fn_name, Type& return_type)
+		: id(fn_name, return_type) {}
+
+	void add_parameter(const string& param_name, const Type& param_type)
+	{
+		parameters.push_back(Identifier(param_name, param_type));
+	}
 };
 
 struct Class {
 	size_t byte_size;
-	vector<Type> fields;
+	vector<Identifier> fields;
 
 	Class() {}
 	Class(size_t byte_size): byte_size(byte_size) {}
+
+	void add_field(const string& field_name, const Type& field_type)
+	{
+		fields.push_back(Identifier(field_name, field_type));
+	}
+
+	bool contains_field(const string& field_name) const
+	{
+		for (const Identifier& field : fields) {
+			if (field.name == field_name) return true;
+		}
+
+		return false;
+	}
 };
 
 class CompilerState {
@@ -276,7 +318,7 @@ class CompilerState {
 			if (globals.count(global_name) || functions.count(global_name))
 				return false;
 
-			globals[global_name] = Variable(global_type, globals_size);
+			globals[global_name] = Variable(global_name, global_type, globals_size);
 			globals_size += global_type.byte_size();
 
 			// Add the global to the debugger symbols
@@ -302,7 +344,7 @@ class CompilerState {
 		{
 			if (parameters.count(param_name)) return false;
 
-			parameters[param_name] = Variable(param_type, parameters_size);
+			parameters[param_name] = Variable(param_name, param_type, parameters_size);
 			parameter_names_in_order.push_back(param_name);
 			parameters_size += param_type.byte_size();
 			return true;
@@ -312,7 +354,7 @@ class CompilerState {
 		{
 			if (locals.count(local_name)) return false;
 
-			locals[local_name] = Variable(local_type, locals_size);
+			locals[local_name] = Variable(local_name, local_type, locals_size);
 			local_names_in_order.push_back(local_name);
 			locals_size += local_type.byte_size();
 			return true;
@@ -328,14 +370,14 @@ class CompilerState {
 				// Add params
 
 				for (const string& param_name : parameter_names_in_order) {
-					DebuggerSymbolTypes fn_param_type = parameters[param_name].type.to_debug_type();
+					DebuggerSymbolTypes fn_param_type = parameters[param_name].id.type.to_debug_type();
 					fn_symbols.params.push_back(DebuggerSymbol(param_name, fn_param_type));
 				}
 
 				// Add locals
 
 				for (const string& local_name : local_names_in_order) {
-					DebuggerSymbolTypes local_type = locals[local_name].type.to_debug_type();
+					DebuggerSymbolTypes local_type = locals[local_name].id.type.to_debug_type();
 					fn_symbols.locals.push_back(DebuggerSymbol(local_name, local_type));
 				}
 
@@ -357,13 +399,13 @@ class CompilerState {
 
 			switch (id_kind) {
 				case IdentifierKind::LOCAL:
-					return locals[id_name].type;
+					return locals[id_name].id.type;
 
 				case IdentifierKind::PARAMETER:
-					return parameters[id_name].type;
+					return parameters[id_name].id.type;
 
 				case IdentifierKind::GLOBAL:
-					return globals[id_name].type;
+					return globals[id_name].id.type;
 
 				default:
 					return Type();

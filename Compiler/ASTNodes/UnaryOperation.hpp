@@ -83,7 +83,8 @@ class UnaryOperation : public ASTNode {
 
 				case ADDRESS_OF:
 				{
-					return Type(Type::UNSIGNED_INTEGER, 8, 0);
+					type.pointer_depth++;
+					return type;
 				}
 
 				default:
@@ -114,7 +115,7 @@ class UnaryOperation : public ASTNode {
 				case IdentifierKind::LOCAL:
 				{
 					Variable& var = compiler_state.locals[id_name];
-					Type& type = var.type;
+					Type& type = var.id.type;
 					offset = var.offset;
 					var_size = type.byte_size();
 					goto store_at_frame_offset;
@@ -123,7 +124,7 @@ class UnaryOperation : public ASTNode {
 				case IdentifierKind::PARAMETER:
 				{
 					Variable& var = compiler_state.parameters[id_name];
-					Type& type = var.type;
+					Type& type = var.id.type;
 					offset = -compiler_state.parameters_size + var.offset
 						- 8 - CPU::stack_frame_size;
 					var_size = type.byte_size();
@@ -133,7 +134,7 @@ class UnaryOperation : public ASTNode {
 				case IdentifierKind::GLOBAL:
 				{
 					Variable& var = compiler_state.globals[id_name];
-					Type& type = var.type;
+					Type& type = var.id.type;
 					offset = var.offset;
 					var_size = type.byte_size();
 					goto store_at_stack_top_offset;
@@ -450,7 +451,7 @@ class UnaryOperation : public ASTNode {
 						case IdentifierKind::LOCAL:
 						{
 							Variable& var = compiler_state.locals[id_name];
-							Type& type = var.type;
+							Type& type = var.id.type;
 							uint64_t offset = var.offset;
 
 							assembler.move_reg_into_reg(R_FRAME_P_ID, R_ACCUMULATOR_0_ID);
@@ -461,7 +462,7 @@ class UnaryOperation : public ASTNode {
 						case IdentifierKind::PARAMETER:
 						{
 							Variable& var = compiler_state.parameters[id_name];
-							Type& type = var.type;
+							Type& type = var.id.type;
 							uint64_t offset = compiler_state.parameters_size - var.offset
 								+ 8 + CPU::stack_frame_size;
 
@@ -473,7 +474,7 @@ class UnaryOperation : public ASTNode {
 						case IdentifierKind::GLOBAL:
 						{
 							Variable& var = compiler_state.globals[id_name];
-							Type& type = var.type;
+							Type& type = var.id.type;
 							printf("address of global is not implemented yet\n");
 							abort();
 							break;

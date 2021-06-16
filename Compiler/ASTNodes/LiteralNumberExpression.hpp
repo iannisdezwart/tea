@@ -58,7 +58,8 @@ class LiteralNumberExpression : public ASTNode {
 			return Type(Type::UNSIGNED_INTEGER, 8);
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state) {
+		void compile(Assembler& assembler, CompilerState& compiler_state)
+		{
 			assembler.move_64_into_reg(to_num(), R_ACCUMULATOR_0_ID);
 		}
 };

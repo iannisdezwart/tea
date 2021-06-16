@@ -20,6 +20,7 @@
 #include "ASTNodes/FunctionCall.hpp"
 #include "ASTNodes/BinaryOperation.hpp"
 #include "ASTNodes/UnaryOperation.hpp"
+#include "ASTNodes/MemberExpression.hpp"
 #include "ASTNodes/AssignmentExpression.hpp"
 #include "ASTNodes/IfStatement.hpp"
 #include "ASTNodes/WhileStatement.hpp"
@@ -143,8 +144,6 @@ class Parser {
 		{
 			Token token = get_token();
 			ASTNode *node;
-
-			printf("%s\n", token.to_str().c_str());
 
 			switch (token.type) {
 				case TYPE:
@@ -369,13 +368,14 @@ class Parser {
 
 						merge_op:
 
-						ASTNode *left = expressions[j];
-						ASTNode *right = expressions[j + 1];
+						ASTNode *left_expr = expressions[j];
+						ASTNode *right_expr = expressions[j + 1];
 						ASTNode *new_expr;
 
 						switch (op) {
 							default:
-								printf("Operator %d isn't yet implemented by the parser\n", op);
+								printf("Operator %s isn't yet implemented by the parser\n",
+									op_to_str(op));
 								abort();
 
 							case MULTIPLICATION:
@@ -394,8 +394,30 @@ class Parser {
 							case GREATER_OR_EQUAL:
 							case EQUAL:
 							case NOT_EQUAL:
-								new_expr = new BinaryOperation(left, right, op_token);
+							{
+								new_expr = new BinaryOperation(left_expr, right_expr, op_token);
 								break;
+							}
+
+							case POINTER_TO_MEMBER:
+							case DEREFERENCED_POINTER_TO_MEMBER:
+							{
+								if (left_expr->type != IDENTIFIER_EXPRESSION) {
+									err_at_token(left_expr->accountable_token, "Type Error",
+										"Cannot use pointer to member operator on a non-identifier");
+								}
+
+								if (right_expr->type != IDENTIFIER_EXPRESSION) {
+									err_at_token(right_expr->accountable_token, "Type Error",
+										"A member of a class instance must be an identifier");
+								}
+
+								IdentifierExpression *object = (IdentifierExpression *) left_expr;
+								IdentifierExpression *member = (IdentifierExpression *) right_expr;
+
+								new_expr = new MemberExpression(object, member, op_token);
+								break;
+							}
 						}
 
 						expressions[j] = new_expr;
@@ -435,7 +457,8 @@ class Parser {
 
 						switch (op) {
 							default:
-								printf("Operator %d isn't yet implemented by the parser\n", op);
+								printf("Operator %s isn't yet implemented by the parser\n",
+									op_to_str(op));
 								abort();
 
 							case ASSIGNMENT:

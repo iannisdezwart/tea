@@ -49,7 +49,8 @@ class ReturnStatement : public ASTNode {
 			return expression->get_type(compiler_state);
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state) {
+		void compile(Assembler& assembler, CompilerState& compiler_state)
+		{
 			// Moves the return value into R_ACCUMULATOR_0
 
 			if (expression != NULL) expression->compile(assembler, compiler_state);

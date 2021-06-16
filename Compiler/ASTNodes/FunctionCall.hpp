@@ -60,7 +60,7 @@ class FunctionCall : public ASTNode {
 					"Identifier %s was called, but not declared",
 					fn_name.c_str());
 
-			return compiler_state.functions[fn_name].return_type;
+			return compiler_state.functions[fn_name].id.type;
 		}
 
 		void compile(Assembler& assembler, CompilerState& compiler_state)
@@ -73,18 +73,18 @@ class FunctionCall : public ASTNode {
 					fn_name.c_str());
 
 			Function& fn = compiler_state.functions[fn_name];
-			vector<Type>& param_types = fn.parameter_types;
+			vector<Identifier>& params = fn.parameters;
 
-			if (arguments.size() != param_types.size())
+			if (arguments.size() != params.size())
 				err_at_token(fn_token,
 					"Argument count does not equal parameter count",
 					"Function %s expects %ld arguments, got %ld",
-					fn_name.c_str(), param_types.size(), arguments.size());
+					fn_name.c_str(), params.size(), arguments.size());
 
 			size_t args_size = 0;
 
 			for (size_t i = 0; i < arguments.size(); i++) {
-				Type& param_type = param_types[i];
+				Type& param_type = params[i].type;
 				Type arg_type = arguments[i]->get_type(compiler_state);
 
 				string param = param_type.to_str();

@@ -48,7 +48,8 @@ class LiteralStringExpression : public ASTNode {
 			return type;
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state) {
+		void compile(Assembler& assembler, CompilerState& compiler_state)
+		{
 			StaticData static_data = assembler.add_static_data(
 				(uint8_t *) value.data(), value.size());
 

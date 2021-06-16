@@ -56,7 +56,8 @@ class IdentifierExpression : public ASTNode {
 			return type;
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state) {
+		void compile(Assembler& assembler, CompilerState& compiler_state)
+		{
 			string id_name = identifier_token.value;
 			IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
 
@@ -73,7 +74,7 @@ class IdentifierExpression : public ASTNode {
 				case IdentifierKind::LOCAL:
 				{
 					Variable& var = compiler_state.locals[id_name];
-					Type& type = var.type;
+					Type& type = var.id.type;
 					offset = var.offset;
 					var_size = type.byte_size();
 					goto get_id_at_frame_offset;
@@ -82,7 +83,7 @@ class IdentifierExpression : public ASTNode {
 				case IdentifierKind::PARAMETER:
 				{
 					Variable& var = compiler_state.parameters[id_name];
-					Type& type = var.type;
+					Type& type = var.id.type;
 					offset = -compiler_state.parameters_size + var.offset
 						- 8 - CPU::stack_frame_size;
 					var_size = type.byte_size();
@@ -92,7 +93,7 @@ class IdentifierExpression : public ASTNode {
 				case IdentifierKind::GLOBAL:
 				{
 					Variable& var = compiler_state.globals[id_name];
-					Type& type = var.type;
+					Type& type = var.id.type;
 					offset = var.offset;
 					var_size = type.byte_size();
 					goto get_id_at_stack_top_offset;

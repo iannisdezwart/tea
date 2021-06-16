@@ -72,7 +72,8 @@ class AssignmentExpression : public ASTNode {
 			return id_type;
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state) {
+		void compile(Assembler& assembler, CompilerState& compiler_state)
+		{
 			size_t deref_dep = dereference_depth;
 
 			if (deref_dep > 0) {
@@ -166,7 +167,7 @@ class AssignmentExpression : public ASTNode {
 				case IdentifierKind::LOCAL:
 				{
 					Variable& var = compiler_state.locals[id_name];
-					Type& type = var.type;
+					Type& type = var.id.type;
 					offset = var.offset;
 					var_size = type.byte_size();
 					break;
@@ -175,7 +176,7 @@ class AssignmentExpression : public ASTNode {
 				case IdentifierKind::PARAMETER:
 				{
 					Variable& var = compiler_state.parameters[id_name];
-					Type& type = var.type;
+					Type& type = var.id.type;
 					offset = -compiler_state.parameters_size + var.offset
 						- 8 - CPU::stack_frame_size;
 					var_size = type.byte_size();
@@ -185,7 +186,7 @@ class AssignmentExpression : public ASTNode {
 				case IdentifierKind::GLOBAL:
 				{
 					Variable& var = compiler_state.globals[id_name];
-					Type& type = var.type;
+					Type& type = var.id.type;
 					offset = var.offset;
 					var_size = type.byte_size();
 					break;

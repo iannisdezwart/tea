@@ -161,7 +161,7 @@ class BinaryOperation : public ASTNode {
 				}
 
 				default:
-					printf("operator %d in BinaryOperation not implemented\n", op);
+					printf("operator %s in BinaryOperation not implemented\n", op_to_str(op));
 					abort();
 					break;
 			}
@@ -172,7 +172,8 @@ class BinaryOperation : public ASTNode {
 			#undef not_implemented_warning
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state) {
+		void compile(Assembler& assembler, CompilerState& compiler_state)
+		{
 			bool is_root = compiler_state.root_of_operation_tree;
 			compiler_state.root_of_operation_tree = false;
 

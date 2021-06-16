@@ -99,7 +99,8 @@ class ClassDeclaration : public ASTNode {
 			return type;
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state) {
+		void compile(Assembler& assembler, CompilerState& compiler_state)
+		{
 			// Compile methods
 
 			for (FunctionDeclaration *method : methods) {

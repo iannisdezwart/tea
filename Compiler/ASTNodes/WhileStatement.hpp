@@ -51,7 +51,8 @@ class WhileStatement : public ASTNode {
 			return Type();
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state) {
+		void compile(Assembler& assembler, CompilerState& compiler_state)
+		{
 			// Create labels
 
 			string loop_label = compiler_state.generate_label("while-loop");

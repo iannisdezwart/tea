@@ -15,7 +15,7 @@ class InitList : public ASTNode {
 	public:
 		vector<ASTNode *> items;
 
-		InitList(Token start_token, vector<ASTNode *>&& items)
+		InitList(const Token& start_token, vector<ASTNode *>&& items)
 			: ASTNode(start_token), items(std::move(items))
 		{
 			type = INIT_LIST;
@@ -46,11 +46,6 @@ class InitList : public ASTNode {
 		Type get_type(CompilerState& compiler_state)
 		{
 			return Type();
-		}
-
-		bool is_compatible_as_class_initialiser(const Class& cl)
-		{
-			// ...
 		}
 
 		void compile(Assembler& assembler, CompilerState& compiler_state)

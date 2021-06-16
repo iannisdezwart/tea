@@ -57,7 +57,8 @@ class IfStatement : public ASTNode {
 			return Type();
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state) {
+		void compile(Assembler& assembler, CompilerState& compiler_state)
+		{
 			// Create labels
 
 			string else_label = compiler_state.generate_label("else-block");

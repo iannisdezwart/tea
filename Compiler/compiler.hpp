@@ -88,8 +88,9 @@ class Compiler {
 				Class cl(byte_size);
 
 				for (TypeIdentifierPair *field : class_decl->fields) {
+					string name = field->identifier_token.value;
 					Type type = field->get_type(compiler_state);
-					cl.fields.push_back(type);
+					cl.add_field(name, type);
 				}
 
 				compiler_state.add_class(class_decl->class_name, cl);

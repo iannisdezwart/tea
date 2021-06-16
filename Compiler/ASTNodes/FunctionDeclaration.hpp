@@ -65,14 +65,14 @@ class FunctionDeclaration : public ASTNode {
 		Function get_fn_type(CompilerState& compiler_state)
 		{
 			Type return_type = type_and_id_pair->get_type(compiler_state);
-			Function fn_type(return_type);
+			Function fn_type(type_and_id_pair->get_identifier_name(), return_type);
 
 			// Add parameters
 
 			for (TypeIdentifierPair *param : params) {
 				string param_name = param->get_identifier_name();
 				Type param_type = param->get_type(compiler_state);
-				fn_type.parameter_types.push_back(param_type);
+				fn_type.parameters.push_back(Identifier(param_name, param_type));
 			}
 
 			return fn_type;
@@ -83,7 +83,8 @@ class FunctionDeclaration : public ASTNode {
 			return Type();
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state) {
+		void compile(Assembler& assembler, CompilerState& compiler_state)
+		{
 			if (compiler_state.scope_depth > 0)
 				err_at_token(type_and_id_pair->identifier_token,
 					"Nested functions are not allowed",
