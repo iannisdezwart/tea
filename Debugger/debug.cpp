@@ -672,6 +672,26 @@ class Shell {
 									local.name.c_str(), to_hex_str(val).c_str());
 								break;
 							}
+
+							case DebuggerSymbolTypes::USER_DEFINED_CLASS:
+							{
+								// Todo: create
+
+								printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD
+									"    - " ANSI_BLUE "%s" ANSI_RESET ANSI_BRIGHT_BLACK " = "
+									ANSI_YELLOW "... (not implemented)" ANSI_RESET "\n",
+									local.name.c_str());
+								break;
+							}
+
+							default:
+							{
+								printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD
+									"    - " ANSI_BLUE "???" ANSI_RESET ANSI_BRIGHT_BLACK " = "
+									ANSI_YELLOW "???" ANSI_RESET "\n",
+									local.name.c_str());
+								break;
+							}
 						}
 
 						#undef PRINT_VAR

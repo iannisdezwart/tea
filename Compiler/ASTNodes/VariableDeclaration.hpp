@@ -89,7 +89,7 @@ class VariableDeclaration : public ASTNode {
 
 					if (expression->type == INIT_LIST) {
 						InitList *init_list = (InitList *) expression;
-						Class& cl = compiler_state.classes[type.class_name];
+						const Class& cl = compiler_state.classes[type.class_name];
 
 						// Check type compatibility
 
@@ -97,7 +97,7 @@ class VariableDeclaration : public ASTNode {
 							cout << init_list->accountable_token.to_str() << '\n';
 							err_at_token(init_list->accountable_token, "Type Error",
 								"InitList for %s class instance holds %lu members, "
-								"but %s has only %lu fields\n",
+								"but %s has only %lu fields",
 								type.class_name.c_str(), init_list->items.size(),
 								type.class_name.c_str(), cl.fields.size());
 						}
@@ -106,8 +106,8 @@ class VariableDeclaration : public ASTNode {
 
 						for (size_t i = 0; i < init_list->items.size(); i++) {
 							ASTNode *item = init_list->items[i];
-							Type item_type = item->get_type(compiler_state);
-							Type& field_type = cl.fields[i].type;
+							const Type item_type = item->get_type(compiler_state);
+							const Type& field_type = cl.fields[i].type;
 
 							// Type compatibility
 
@@ -116,7 +116,7 @@ class VariableDeclaration : public ASTNode {
 
 								err_at_token(item->accountable_token, "Type Error",
 									"Item %lu of InitList does not fit the corresponding field "
-									"of class \"%s\"\n",
+									"of class \"%s\"",
 									i, type.class_name.c_str());
 							}
 
@@ -124,39 +124,80 @@ class VariableDeclaration : public ASTNode {
 
 							item->compile(assembler, compiler_state);
 
-							switch (field_type.byte_size()) {
-								case 1:
-									assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_0_ID, offset + sub_offset);
-									sub_offset += 1;
-									break;
+							switch (id_kind) {
+								case IdentifierKind::LOCAL:
+								{
+									switch (field_type.byte_size()) {
+										case 1:
+											assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_0_ID, offset + sub_offset);
+											sub_offset += 1;
+											break;
 
-								case 2:
-									assembler.move_reg_into_frame_offset_16(R_ACCUMULATOR_0_ID, offset + sub_offset);
-									sub_offset += 2;
-									break;
+										case 2:
+											assembler.move_reg_into_frame_offset_16(R_ACCUMULATOR_0_ID, offset + sub_offset);
+											sub_offset += 2;
+											break;
 
-								case 4:
-									assembler.move_reg_into_frame_offset_32(R_ACCUMULATOR_0_ID, offset + sub_offset);
-									sub_offset += 4;
-									break;
+										case 4:
+											assembler.move_reg_into_frame_offset_32(R_ACCUMULATOR_0_ID, offset + sub_offset);
+											sub_offset += 4;
+											break;
 
-								case 8:
-									assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_0_ID, offset + sub_offset);
-									sub_offset += 8;
-									break;
+										case 8:
+											assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_0_ID, offset + sub_offset);
+											sub_offset += 8;
+											break;
 
-								default:
-									err_at_token(item->accountable_token, "Type Error",
-										"Cannot put an item of %lu bytes into a class instance\n"
-										"This behaviour is not implemented yet\n",
-										field_type.byte_size());
+										default:
+											err_at_token(item->accountable_token, "Type Error",
+												"Cannot put an item of %lu bytes into a class instance\n"
+												"This behaviour is not implemented yet",
+												field_type.byte_size());
+									}
+
+									break;
+								}
+
+								case IdentifierKind::GLOBAL:
+								{
+									switch (field_type.byte_size()) {
+										case 1:
+											assembler.move_reg_into_stack_top_offset_8(R_ACCUMULATOR_0_ID, offset + sub_offset);
+											sub_offset += 1;
+											break;
+
+										case 2:
+											assembler.move_reg_into_stack_top_offset_16(R_ACCUMULATOR_0_ID, offset + sub_offset);
+											sub_offset += 2;
+											break;
+
+										case 4:
+											assembler.move_reg_into_stack_top_offset_32(R_ACCUMULATOR_0_ID, offset + sub_offset);
+											sub_offset += 4;
+											break;
+
+										case 8:
+											assembler.move_reg_into_stack_top_offset_64(R_ACCUMULATOR_0_ID, offset + sub_offset);
+											sub_offset += 8;
+											break;
+
+										default:
+											err_at_token(item->accountable_token, "Type Error",
+												"Cannot put an item of %lu bytes into a class instance\n"
+												"This behaviour is not implemented yet",
+												field_type.byte_size());
+									}
+
+									break;
+								}
 							}
+
 						}
 					} else {
 						err_at_token(expression->accountable_token, "Semantic Error",
 							"Unexpected expression of type \"%s\" at the right hand "
 							"side of a class instance declaration\n"
-							"Expected an initialiser list or a constructor call\n",
+							"Expected an initialiser list or a constructor call",
 							ast_node_type_to_str(expression->type));
 					}
 				}
@@ -172,6 +213,7 @@ class VariableDeclaration : public ASTNode {
 
 					switch (id_kind) {
 						case IdentifierKind::LOCAL:
+						{
 							switch (var_size) {
 								case 1:
 									assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_0_ID, offset);
@@ -196,8 +238,10 @@ class VariableDeclaration : public ASTNode {
 							}
 
 							break;
+						}
 
 						case IdentifierKind::GLOBAL:
+						{
 							switch (var_size) {
 								case 1:
 									assembler.move_reg_into_stack_top_offset_8(R_ACCUMULATOR_0_ID, offset);
@@ -222,11 +266,7 @@ class VariableDeclaration : public ASTNode {
 							}
 
 							break;
-
-						default:
-							err_at_token(accountable_token, "Invalid VariableDeclaration",
-								"Cannot declare a variable of this type\n"
-								"Only locals and globals can be declared");
+						}
 					}
 				}
 			}

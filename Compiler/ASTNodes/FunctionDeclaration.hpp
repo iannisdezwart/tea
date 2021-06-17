@@ -83,14 +83,9 @@ class FunctionDeclaration : public ASTNode {
 			return Type();
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state)
+		void define(CompilerState& compiler_state)
 		{
-			if (compiler_state.scope_depth > 0)
-				err_at_token(type_and_id_pair->identifier_token,
-					"Nested functions are not allowed",
-					"Functions cannot be declared within other functions");
-
-			string fn_name = type_and_id_pair->get_identifier_name();
+			const string& fn_name = type_and_id_pair->get_identifier_name();
 			Function fn_type = get_fn_type(compiler_state);
 
 			if (!compiler_state.add_function(fn_name, fn_type))
@@ -98,6 +93,17 @@ class FunctionDeclaration : public ASTNode {
 					"Duplicate identifier name",
 					"Identifier %s is already declared",
 					fn_name.c_str());
+		}
+
+		void compile(Assembler& assembler, CompilerState& compiler_state)
+		{
+			if (compiler_state.scope_depth > 0)
+				err_at_token(type_and_id_pair->identifier_token,
+					"Nested function error",
+					"Functions cannot be declared within other functions");
+
+			const string& fn_name = type_and_id_pair->get_identifier_name();
+			compiler_state.current_function_name = fn_name;
 
 			assembler.add_label(fn_name);
 			if (compiler_state.debug) assembler.label(fn_name);

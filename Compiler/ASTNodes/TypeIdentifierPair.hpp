@@ -37,7 +37,7 @@ class TypeIdentifierPair : public ASTNode {
 			callback(this, depth);
 		}
 
-		string get_identifier_name()
+		const string& get_identifier_name() const
 		{
 			return identifier_token.value;
 		}

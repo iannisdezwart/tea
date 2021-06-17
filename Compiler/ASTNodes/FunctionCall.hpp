@@ -57,7 +57,7 @@ class FunctionCall : public ASTNode {
 
 			if (!compiler_state.functions.count(fn_name))
 				err_at_token(fn_token, "Call to undeclared function",
-					"Identifier %s was called, but not declared",
+					"Function %s was called, but not declared",
 					fn_name.c_str());
 
 			return compiler_state.functions[fn_name].id.type;
@@ -69,15 +69,18 @@ class FunctionCall : public ASTNode {
 
 			if (!compiler_state.functions.count(fn_name))
 				err_at_token(fn_token, "Call to undeclared function",
-					"Identifier %s was called, but not declared",
+					"Function %s was called, but not declared",
 					fn_name.c_str());
 
 			Function& fn = compiler_state.functions[fn_name];
 			vector<Identifier>& params = fn.parameters;
 
+			// Validate arguments
+
 			if (arguments.size() != params.size())
 				err_at_token(fn_token,
-					"Argument count does not equal parameter count",
+					"Type Error",
+					"Argument count does not equal parameter count"
 					"Function %s expects %ld arguments, got %ld",
 					fn_name.c_str(), params.size(), arguments.size());
 
@@ -92,8 +95,9 @@ class FunctionCall : public ASTNode {
 
 				if (param_type != arg_type)
 					err_at_token(fn_token,
+						"Type Error",
 						"Function call arguments list does not match "
-						"function parameter type template",
+						"function parameter type template\n"
 						"argument[%lu] is of type %s. Expected type %s",
 						i, arg.c_str(), param.c_str());
 
@@ -122,7 +126,8 @@ class FunctionCall : public ASTNode {
 
 					default:
 						err_at_token(fn_token,
-							"Function call argument does not fit in a register",
+							"Type Error",
+							"Function call argument does not fit in a register\n"
 							"Behaviour is not implemented yet\n"
 							"argument[%lu] is of type %s (width = %lu)",
 							i, arg.c_str(), arg_type.byte_size());

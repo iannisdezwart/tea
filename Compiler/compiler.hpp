@@ -67,8 +67,7 @@ class Compiler {
 
 					case CLASS_DECLARATION:
 					{
-						ClassDeclaration *class_decl = (ClassDeclaration *) statement;
-						class_decls.push_back(class_decl);
+						class_decls.push_back((ClassDeclaration *) statement);
 						break;
 					}
 
@@ -88,9 +87,15 @@ class Compiler {
 				Class cl(byte_size);
 
 				for (TypeIdentifierPair *field : class_decl->fields) {
-					string name = field->identifier_token.value;
+					const string& name = field->identifier_token.value;
 					Type type = field->get_type(compiler_state);
 					cl.add_field(name, type);
+				}
+
+				for (FunctionDeclaration *method : class_decl->methods) {
+					const string& name = method->type_and_id_pair->identifier_token.value;
+					Function method_type = method->get_fn_type(compiler_state);
+					cl.add_method(name, method_type);
 				}
 
 				compiler_state.add_class(class_decl->class_name, cl);
@@ -124,6 +129,20 @@ class Compiler {
 			assembler.push_64(0);
 			assembler.call("main");
 			assembler.jump("exit");
+
+			// Define functions
+
+			for (size_t i = 0; i < fn_decls.size(); i++) {
+				FunctionDeclaration *decl = fn_decls[i];
+				decl->define(compiler_state);
+			}
+
+			// Define class methods
+
+			for (size_t i = 0; i < class_decls.size(); i++) {
+				ClassDeclaration *decl = class_decls[i];
+				decl->define(compiler_state);
+			}
 
 			// Compile function declarations
 

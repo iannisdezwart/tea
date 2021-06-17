@@ -92,11 +92,11 @@ unordered_set<char> whitespace_chars = {
 };
 
 unordered_set<char> special_chars = {
-	'(', ')', '{', '}', '[', ']', ',', '.', ';', '"', '\'', '\\'
+	'(', ')', '{', '}', '[', ']', ',', ';', '"', '\'', '\\'
 };
 
 unordered_set<char> operator_chars = {
-	'+', '-', '*', '/', '%', '=', '<', '>', '&', '^', '|', '!', '~'
+	'+', '-', '*', '/', '%', '=', '<', '>', '&', '^', '|', '!', '~', '.', ':'
 };
 
 unordered_set<string> types = {
@@ -108,6 +108,8 @@ unordered_set<string> keywords = {
 };
 
 enum Operator {
+	SCOPE_RESOLUTION,
+
 	POSTFIX_INCREMENT,
 	POSTFIX_DECREMENT,
 
@@ -173,6 +175,7 @@ enum Operator {
 const char *op_to_str(enum Operator op)
 {
 	switch (op) {
+		case SCOPE_RESOLUTION: return "SCOPE_RESOLUTION";
 		case POSTFIX_INCREMENT: return "POSTFIX_INCREMENT";
 		case POSTFIX_DECREMENT: return "POSTFIX_DECREMENT";
 		case PREFIX_INCREMENT: return "PREFIX_INCREMENT";
@@ -221,6 +224,7 @@ const char *op_to_str(enum Operator op)
 const char *op_to_example_str(enum Operator op)
 {
 	switch (op) {
+		case SCOPE_RESOLUTION: return "x::y";
 		case POSTFIX_INCREMENT: return "x++";
 		case POSTFIX_DECREMENT: return "x--";
 		case PREFIX_INCREMENT: return "++x";
@@ -299,6 +303,7 @@ bool is_postfix_unary_operator(enum Operator op)
 bool is_binary_operator(enum Operator op)
 {
 	switch (op) {
+		case SCOPE_RESOLUTION:
 		case POINTER_TO_MEMBER:
 		case DEREFERENCED_POINTER_TO_MEMBER:
 		case DIVISION:
@@ -346,6 +351,7 @@ typedef pair<vector<Operator>, enum Associativity> OperatorPrecedencePair;
 #define mp make_pair<vector<Operator>, enum Associativity>
 
 vector<OperatorPrecedencePair> operator_precedence = {
+	mp({ SCOPE_RESOLUTION }, LEFT_TO_RIGHT),
 	mp({ POSTFIX_INCREMENT, POSTFIX_DECREMENT }, LEFT_TO_RIGHT),
 	mp({ PREFIX_INCREMENT, PREFIX_DECREMENT, UNARY_PLUS, UNARY_MINUS,
 		BITWISE_NOT, LOGICAL_NOT, DEREFERENCE, ADDRESS_OF }, RIGHT_TO_LEFT),
@@ -372,6 +378,7 @@ enum Operator str_to_operator(const string& str, bool prefix = false)
 {
 	if (str.size() > 3) return UNDEFINED_OPERATOR;
 
+	if (str == "::") return SCOPE_RESOLUTION;
 	if (str == "++" && prefix) return PREFIX_INCREMENT;
 	if (str == "--" && prefix) return PREFIX_DECREMENT;
 	if (str == "++") return POSTFIX_INCREMENT;

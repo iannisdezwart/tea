@@ -21,6 +21,7 @@
 #include "ASTNodes/BinaryOperation.hpp"
 #include "ASTNodes/UnaryOperation.hpp"
 #include "ASTNodes/MemberExpression.hpp"
+#include "ASTNodes/MethodCall.hpp"
 #include "ASTNodes/AssignmentExpression.hpp"
 #include "ASTNodes/IfStatement.hpp"
 #include "ASTNodes/WhileStatement.hpp"
@@ -407,16 +408,26 @@ class Parser {
 										"Cannot use pointer to member operator on a non-identifier");
 								}
 
-								if (right_expr->type != IDENTIFIER_EXPRESSION) {
-									err_at_token(right_expr->accountable_token, "Type Error",
-										"A member of a class instance must be an identifier");
+								if (right_expr->type == IDENTIFIER_EXPRESSION) {
+									IdentifierExpression *object = (IdentifierExpression *) left_expr;
+									IdentifierExpression *member = (IdentifierExpression *) right_expr;
+
+									new_expr = new MemberExpression(object, member, op_token);
+									break;
 								}
 
-								IdentifierExpression *object = (IdentifierExpression *) left_expr;
-								IdentifierExpression *member = (IdentifierExpression *) right_expr;
+								if (right_expr->type == FUNCTION_CALL) {
+									IdentifierExpression *object = (IdentifierExpression *) left_expr;
+									FunctionCall *method = (FunctionCall *) right_expr;
 
-								new_expr = new MemberExpression(object, member, op_token);
-								break;
+									new_expr = new MethodCall(object, method, op_token);
+									break;
+								}
+
+								err_at_token(right_expr->accountable_token, "Type Error",
+									"A member of a class instance must be an IdentifierExpression "
+									"or a FunctionCall\n"
+									"Found a %s", ast_node_type_to_str(right_expr->type));
 							}
 						}
 

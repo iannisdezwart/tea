@@ -65,7 +65,8 @@ class AssignmentExpression : public ASTNode {
 
 			if (id_type != value_type)
 				err_at_token(identifier_token,
-					"Type of identifier doesn't match type of its value",
+					"Type Error",
+					"Type of identifier doesn't match type of its value\n"
 					"id_type = %s, value_type = %s",
 					id_type.to_str().c_str(), value_type.to_str().c_str());
 

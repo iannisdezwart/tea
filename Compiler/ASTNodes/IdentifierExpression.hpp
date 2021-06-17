@@ -15,6 +15,8 @@ using namespace std;
 class IdentifierExpression : public ASTNode {
 	public:
 		Token identifier_token;
+		ASTNode *replacement = NULL;
+		Type replacement_type;
 
 		IdentifierExpression(Token identifier_token)
 			: identifier_token(identifier_token), ASTNode(identifier_token)
@@ -32,6 +34,10 @@ class IdentifierExpression : public ASTNode {
 			print("dfs");
 			#endif
 
+			if (replacement != NULL) {
+				replacement->dfs(callback, depth + 1);
+			}
+
 			callback(this, depth);
 		}
 
@@ -44,7 +50,12 @@ class IdentifierExpression : public ASTNode {
 
 		Type get_type(CompilerState& compiler_state)
 		{
+			if (replacement != NULL) {
+				return replacement_type;
+			}
+
 			string id_name = identifier_token.value;
+
 			Type type = compiler_state.get_type_of_identifier(id_name);
 
 			if (type == Type::UNDEFINED)
@@ -58,6 +69,11 @@ class IdentifierExpression : public ASTNode {
 
 		void compile(Assembler& assembler, CompilerState& compiler_state)
 		{
+			if (replacement != NULL) {
+				replacement->compile(assembler, compiler_state);
+				return;
+			}
+
 			string id_name = identifier_token.value;
 			IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
 
@@ -127,8 +143,9 @@ class IdentifierExpression : public ASTNode {
 
 				default:
 					err_at_token(identifier_token,
-					"Variable doesn't fit in register",
-					"Support for this is not implemented yet");
+						"Type Error",
+						"Variable doesn't fit in register\n"
+						"Support for this is not implemented yet");
 			}
 
 			return;
@@ -154,8 +171,9 @@ class IdentifierExpression : public ASTNode {
 
 				default:
 					err_at_token(identifier_token,
-					"Variable doesn't fit in register",
-					"Support for this is not implemented yet");
+						"Type Error",
+						"Variable doesn't fit in register\n"
+						"Support for this is not implemented yet");
 			}
 		}
 };

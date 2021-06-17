@@ -6,33 +6,22 @@ void putc(u8 c)
 	*out = c
 }
 
-void puts(u8 *str, u64 len)
-{
-	while (len--)
-	{
-		putc(*str++)
-	}
-}
-
 class TwoChars
 {
 	u8 a
 	u8 b
-}
 
-void TwoChars_print(TwoChars *self)
-{
-	puts("a = ", 4)
-	putc(self->a)
-	putc('\n')
-
-	puts("b = ", 4)
-	putc(self->b)
-	putc('\n')
+	void print()
+	{
+		putc(a)
+		putc(' ')
+		putc(b)
+		putc('\n')
+	}
 }
 
 u64 main()
 {
-	TwoChars chars = { 2, 4 }
-	TwoChars_print(&chars)
+	TwoChars chars = { 'a', 'b' }
+	chars.print()
 }

@@ -113,7 +113,7 @@ class Type {
 				&& size <= 8;
 		}
 
-		bool fits(const Type& type)
+		bool fits(const Type& type) const
 		{
 			if (value == Type::UNSIGNED_INTEGER || value == Type::SIGNED_INTEGER) {
 				if (type.value != Type::UNSIGNED_INTEGER &&
@@ -242,6 +242,7 @@ struct Function {
 struct Class {
 	size_t byte_size;
 	vector<Identifier> fields;
+	vector<Function> methods;
 
 	Class() {}
 	Class(size_t byte_size): byte_size(byte_size) {}
@@ -251,13 +252,45 @@ struct Class {
 		fields.push_back(Identifier(field_name, field_type));
 	}
 
-	bool contains_field(const string& field_name) const
+	bool has_field(const string& field_name) const
 	{
 		for (const Identifier& field : fields) {
 			if (field.name == field_name) return true;
 		}
 
 		return false;
+	}
+
+	const Type& get_field_type(const string& field_name) const
+	{
+		for (const Identifier& field : fields) {
+			if (field.name == field_name) return field.type;
+		}
+
+		err("Class field \"%s\" not found", field_name.c_str());
+	}
+
+	void add_method(const string& method_name, const Function& method)
+	{
+		methods.push_back(method);
+	}
+
+	bool has_method(const string& method_name) const
+	{
+		for (const Function& method : methods) {
+			if (method.id.name == method_name) return true;
+		}
+
+		return false;
+	}
+
+	const Function& get_method(const string& method_name) const
+	{
+		for (const Function& method : methods) {
+			if (method.id.name == method_name) return method;
+		}
+
+		err("Class method \"%s\" not found", method_name.c_str());
 	}
 };
 
@@ -335,7 +368,6 @@ class CompilerState {
 			if (functions.count(function_name) || globals.count(function_name))
 				return false;
 
-			current_function_name = function_name;
 			functions[function_name] = function_type;
 			return true;
 		}
@@ -365,6 +397,7 @@ class CompilerState {
 			// Add the function to the debugger symbols
 
 			if (debug) {
+				printf("added debug %s\n", current_function_name.c_str());
 				DebuggerFunction fn_symbols;
 
 				// Add params

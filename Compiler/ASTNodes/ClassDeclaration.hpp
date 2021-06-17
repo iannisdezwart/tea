@@ -99,9 +99,20 @@ class ClassDeclaration : public ASTNode {
 			return type;
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state)
+		bool has_field(const string& field_name)
 		{
-			// Compile methods
+			for (size_t i = 0; i < fields.size(); i++) {
+				if (fields[i]->identifier_token.value == field_name) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		void define(CompilerState& compiler_state)
+		{
+			// Define methods
 
 			for (FunctionDeclaration *method : methods) {
 				// Add double colons to indicate scope
@@ -110,6 +121,7 @@ class ClassDeclaration : public ASTNode {
 				string method_name = id_token.value;
 				id_token.value = class_name + "::" + method_name;
 
+				// Todo: check if the parameter list does not include a field name
 				// Add pointer to class as first parameter (this)
 
 				Token pointer_param_type_token;
@@ -124,6 +136,42 @@ class ClassDeclaration : public ASTNode {
 						pointer_param_type_token, 1, pointer_param_id_token);
 
 				method->params.insert(method->params.begin(), 1, class_pointer);
+				method->define(compiler_state);
+
+				// Dereference field references
+
+				method->dfs([this, method_name, &compiler_state](ASTNode *node, size_t depth) {
+					if (node->type == IDENTIFIER_EXPRESSION) {
+						IdentifierExpression *id_expr = (IdentifierExpression *) node;
+
+						if (has_field(id_expr->identifier_token.value)) {
+							Token this_token;
+							this_token.type = IDENTIFIER;
+							this_token.value = "this";
+
+							Token op_token;
+							op_token.type = OPERATOR;
+							op_token.value = "->";
+
+							IdentifierExpression *this_expr = new IdentifierExpression(this_token);
+							IdentifierExpression *field_expr = new IdentifierExpression(*id_expr);
+							MemberExpression *mem_expr = new MemberExpression(
+								this_expr, field_expr, op_token);
+
+							id_expr->replacement = mem_expr;
+							id_expr->replacement_type = compiler_state.classes[class_name]
+								.get_field_type(id_expr->identifier_token.value);
+						}
+					}
+				}, 0);
+			}
+		}
+
+		void compile(Assembler& assembler, CompilerState& compiler_state)
+		{
+			// Compile methods
+
+			for (FunctionDeclaration *method : methods) {
 				method->compile(assembler, compiler_state);
 			}
 		}

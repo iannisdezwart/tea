@@ -24,7 +24,7 @@ class UnaryOperation : public ASTNode {
 
 		bool warned = false;
 
-		UnaryOperation(ASTNode *expression, Token op_token, bool prefix)
+		UnaryOperation(ASTNode *expression, const Token& op_token, bool prefix)
 			: expression(expression), op_token(op_token),
 				prefix(prefix), ASTNode(op_token)
 		{
