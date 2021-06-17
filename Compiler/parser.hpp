@@ -568,13 +568,18 @@ class Parser {
 
 			else if (expr_token.type == SPECIAL_CHARACTER && expr_token.value == "{") {
 				vector<ASTNode *> items;
+				Token maybe_end_token = get_token();
+				Token seperator;
+
+				if (maybe_end_token.type == SPECIAL_CHARACTER && maybe_end_token.value == "}") {
+					i++;
+					goto end_init_list;
+				}
 
 				next_init_list_item:
+				items.push_back(scan_expression());
 
-				ASTNode *item = scan_expression();
-				items.push_back(item);
-
-				Token seperator = next_token();
+				seperator = next_token();
 
 				if (seperator.type != SPECIAL_CHARACTER || seperator.value != "}"
 					&& seperator.value != ",")
@@ -590,6 +595,7 @@ class Parser {
 					goto next_init_list_item;
 				}
 
+				end_init_list:
 				expression = new InitList(expr_token, std::move(items));
 			}
 
