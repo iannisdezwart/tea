@@ -33,22 +33,34 @@ class MemberExpression : public ASTNode {
 			#endif
 		}
 
+		~MemberExpression()
+		{
+			delete object;
+			delete member;
+		}
+
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			#ifdef PARSER_VERBOSE
 			print("dfs");
 			#endif
 
-			object->dfs(callback, depth + 1);
-			member->dfs(callback, depth + 1);
-
 			callback(this, depth);
 		}
 
 		string to_str()
 		{
-			string s = "MemberExpression { op = \"" + to_string(op)
-				+ "\" } @ " + to_hex((size_t) this);
+			string s;
+
+			s += "MemberExpression { op = \"";
+			s += op_to_str(op);
+			s += "\", object = \"";
+			s += object->identifier_token.value;
+			s += "\", member = \"";
+			s += member->identifier_token.value;
+			s += "\" } @ ";
+			s += to_hex((size_t) this);
+
 			return s;
 		}
 
@@ -115,7 +127,7 @@ class MemberExpression : public ASTNode {
 					break;
 
 				default:
-					err_at_token(accountable_token, "Invalid MemberExpression",
+					err_at_token(op_token, "Invalid MemberExpression",
 						"Cannot access a member of this type\n"
 						"Only members of locals and globals can be accessed");
 			}
@@ -127,6 +139,14 @@ class MemberExpression : public ASTNode {
 			// Get the offset to the member
 
 			if (op == POINTER_TO_MEMBER) {
+				if (object_type.pointer_depth != 0) {
+					err_at_token(op_token, "Invalid MemberExpression",
+						"Cannot use %s.%s syntax on a pointer\n"
+						"Use %s->%s instead",
+						instance_name.c_str(), member_name.c_str(),
+						instance_name.c_str(), member_name.c_str());
+				}
+
 				uint64_t offset;
 
 				if (id_kind == IdentifierKind::PARAMETER) {
@@ -197,6 +217,20 @@ class MemberExpression : public ASTNode {
 			}
 
 			else if (op == DEREFERENCED_POINTER_TO_MEMBER) {
+				if (object_type.pointer_depth == 0) {
+					err_at_token(op_token, "Invalid MemberExpression",
+						"Cannot use %s->%s syntax on an instance\n"
+						"Use %s.%s instead",
+						instance_name.c_str(), member_name.c_str(),
+						instance_name.c_str(), member_name.c_str());
+				}
+
+				if (object_type.pointer_depth != 1) {
+					err_at_token(op_token, "Invalid MemberExpression",
+						"Cannot use %s->%s syntax on a pointer of depth %lu\n",
+						instance_name.c_str(), member_name.c_str(), object_type.pointer_depth);
+				}
+
 				// Moves the pointer to the class into R_ACCUMULATOR_0_ID
 
 				object->compile(assembler, compiler_state);

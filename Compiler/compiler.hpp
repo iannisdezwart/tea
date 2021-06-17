@@ -144,6 +144,8 @@ class Compiler {
 				decl->define(compiler_state);
 			}
 
+			parser.print_ast();
+
 			// Compile function declarations
 
 			for (size_t i = 0; i < fn_decls.size(); i++) {

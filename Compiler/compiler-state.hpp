@@ -397,7 +397,6 @@ class CompilerState {
 			// Add the function to the debugger symbols
 
 			if (debug) {
-				printf("added debug %s\n", current_function_name.c_str());
 				DebuggerFunction fn_symbols;
 
 				// Add params

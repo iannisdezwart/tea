@@ -5,6 +5,8 @@
 
 #include "../util.hpp"
 #include "ASTNode.hpp"
+#include "IdentifierExpression.hpp"
+#include "MemberExpression.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../../Assembler/assembler.hpp"
 #include "../compiler-state.hpp"
@@ -15,18 +17,18 @@ using namespace std;
 
 class AssignmentExpression : public ASTNode {
 	public:
-		Token identifier_token;
+		ASTNode *lhs_expr;
 		ASTNode *value;
 		size_t dereference_depth;
 		Token op_token;
 		enum Operator op;
 
 		AssignmentExpression(
-			Token identifier_token,
+			ASTNode *lhs_expr,
 			ASTNode *value,
 			Token op_token,
 			size_t dereference_depth = 0
-		) : identifier_token(identifier_token), value(value), op_token(op_token),
+		) : lhs_expr(lhs_expr), value(value), op_token(op_token),
 				dereference_depth(dereference_depth), ASTNode(op_token)
 		{
 			type = ASSIGNMENT_EXPRESSION;
@@ -43,6 +45,7 @@ class AssignmentExpression : public ASTNode {
 			print("dfs");
 			#endif
 
+			lhs_expr->dfs(callback, depth + 1);
 			value->dfs(callback, depth + 1);
 
 			callback(this, depth);
@@ -50,64 +53,86 @@ class AssignmentExpression : public ASTNode {
 
 		string to_str()
 		{
-			string s = "AssignmentExpression { op = \"" + to_string(op)
-				+ "\", dereference_depth = " + to_string(dereference_depth)
-				+ " } @ " + to_hex((size_t) this);
+			string s;
+
+			s += "AssignmentExpression { op = \"";
+			s += op_to_str(op);
+			s += "\", dereference_depth = ";
+			s += to_string(dereference_depth);
+			s += " } @ ";
+			s += to_hex((size_t) this);
+
 			return s;
 		}
 
 		Type get_type(CompilerState& compiler_state)
 		{
-			string id_name = identifier_token.value;
-			Type id_type = compiler_state.get_type_of_identifier(id_name);
-			id_type.pointer_depth -= dereference_depth;
+			Type lhs_type;
+
+			if (lhs_expr->type == IDENTIFIER_EXPRESSION) {
+				IdentifierExpression *id_expr = (IdentifierExpression *) lhs_expr;
+				lhs_type = id_expr->get_type(compiler_state);
+			}
+
+			else if (lhs_expr->type == MEMBER_EXPRESSION) {
+				MemberExpression *mem_expr = (MemberExpression *) lhs_expr;
+				lhs_type = mem_expr->get_type(compiler_state);
+			}
+
+			else {
+				err_at_token(lhs_expr->accountable_token,
+					"Syntax Error",
+					"Unexpected %s at the left hand side of an AssignmentExpression\n"
+					"Expected an IdentifierExpression or a MemberExpression",
+					ast_node_type_to_str(lhs_expr->type));
+			}
+
+			lhs_type.pointer_depth -= dereference_depth;
 			Type value_type = value->get_type(compiler_state);
 
-			if (id_type != value_type)
-				err_at_token(identifier_token,
+			if (!value_type.fits(lhs_type))
+				err_at_token(lhs_expr->accountable_token,
 					"Type Error",
-					"Type of identifier doesn't match type of its value\n"
-					"id_type = %s, value_type = %s",
-					id_type.to_str().c_str(), value_type.to_str().c_str());
+					"Right hand side value of AssignmentExpression does not fit into "
+					"left hand side value\n"
+					"lhs_type = %s, rhs_type = %s",
+					lhs_type.to_str().c_str(), value_type.to_str().c_str());
 
-			return id_type;
+			return lhs_type;
+		}
+
+		bool lhs_is_id_expr()
+		{
+			if (lhs_expr->type == IDENTIFIER_EXPRESSION) {
+				IdentifierExpression *id_expr = (IdentifierExpression *) lhs_expr;
+				if (id_expr->replacement != NULL) return false;
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		MemberExpression *get_mem_expr()
+		{
+			if (lhs_expr->type == IDENTIFIER_EXPRESSION) {
+				IdentifierExpression *id_expr = (IdentifierExpression *) lhs_expr;
+				return (MemberExpression *) id_expr->replacement;
+			} else {
+				return (MemberExpression *) lhs_expr;
+			}
 		}
 
 		void compile(Assembler& assembler, CompilerState& compiler_state)
 		{
 			size_t deref_dep = dereference_depth;
+			Type var_type = get_type(compiler_state);
 
 			if (deref_dep > 0) {
-				IdentifierExpression id_expr(identifier_token);
-				Type var_type = get_type(compiler_state);
-
 				// Moves the address of what to dereference into R_ACCUMULATOR_1
 
-				id_expr.compile(assembler, compiler_state);
+				lhs_expr->compile(assembler, compiler_state);
 
 				while (--deref_dep) {
-					// switch (var_type.byte_size()) {
-					// 	case 1:
-					// 		assembler.move_reg_pointer_8_into_reg(
-					// 			R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
-					// 		break;
-
-					// 	case 2:
-					// 		assembler.move_reg_pointer_16_into_reg(
-					// 			R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
-					// 		break;
-
-					// 	case 4:
-					// 		assembler.move_reg_pointer_32_into_reg(
-					// 			R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
-					// 		break;
-
-					// 	case 8:
-					// 		assembler.move_reg_pointer_64_into_reg(
-					// 			R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
-					// 		break;
-					// }
-
 					assembler.move_reg_pointer_64_into_reg(
 						R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
 				}
@@ -140,7 +165,7 @@ class AssignmentExpression : public ASTNode {
 						break;
 
 					default:
-						printf("Dereference assignments for "
+						printf("Dereference assignment for "
 							"	byte size %lu is not implemented\n", var_type.byte_size());
 						abort();
 				}
@@ -152,17 +177,26 @@ class AssignmentExpression : public ASTNode {
 
 			value->compile(assembler, compiler_state);
 
-			string id_name = identifier_token.value;
-			IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
+			int64_t offset;
+			uint64_t var_size;
+			IdentifierKind id_kind;
+			string id_name;
+
+			if (lhs_is_id_expr()) {
+				IdentifierExpression *id_expr = (IdentifierExpression *) lhs_expr;
+				id_name = id_expr->identifier_token.value;
+				id_kind = compiler_state.get_identifier_kind(id_name);
+			} else {
+				MemberExpression *mem_expr = get_mem_expr();
+				id_name = mem_expr->object->identifier_token.value;
+				id_kind = compiler_state.get_identifier_kind(id_name);
+			}
 
 			if (id_kind == IdentifierKind::UNDEFINED)
-				err_at_token(identifier_token,
+				err_at_token(lhs_expr->accountable_token,
 					"Reference to undeclared variable",
 					"Identifier %s was referenced, but not declared",
 					id_name.c_str());
-
-			int64_t offset;
-			uint64_t var_size;
 
 			switch (id_kind) {
 				case IdentifierKind::LOCAL:
@@ -194,10 +228,28 @@ class AssignmentExpression : public ASTNode {
 				}
 
 				default:
-					err_at_token(identifier_token,
+					err_at_token(lhs_expr->accountable_token,
 						"Identifier has unknown kind",
 						"Identifier: %s. this might be a bug in the compiler",
 						id_name.c_str());
+			}
+
+			// Get the offset to the member
+
+			if (!lhs_is_id_expr()) {
+				MemberExpression *mem_expr = get_mem_expr();
+				Type object_type = mem_expr->object->get_type(compiler_state);
+				string class_name = object_type.class_name;
+				string member_name = mem_expr->member->identifier_token.value;
+				const Class& cl = compiler_state.classes[class_name];
+
+				for (size_t i = 0; i < cl.fields.size(); i++) {
+					if (cl.fields[i].name == member_name) {
+						break;
+					}
+
+					offset += cl.fields[i].type.byte_size();
+				}
 			}
 
 			// If we're doing direct assignment,

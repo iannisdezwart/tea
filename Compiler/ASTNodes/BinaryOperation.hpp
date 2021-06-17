@@ -47,8 +47,13 @@ class BinaryOperation : public ASTNode {
 
 		string to_str()
 		{
-			string s = "BinaryOperation { op = \"" + to_string(op)
-				+ "\" } @ " + to_hex((size_t) this);
+			string s;
+
+			s += "BinaryOperation { op = \"";
+			s += op_to_str(op);
+			s += "\" } @ ";
+			s += to_hex((size_t) this);
+
 			return s;
 		}
 

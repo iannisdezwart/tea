@@ -11,6 +11,12 @@ class TwoChars
 	u8 a
 	u8 b
 
+	void make()
+	{
+		a = 'a'
+		b = 'b'
+	}
+
 	void print()
 	{
 		putc(a)
@@ -22,6 +28,7 @@ class TwoChars
 
 u64 main()
 {
-	TwoChars chars = { 'a', 'b' }
+	TwoChars chars = { 'A', 'B' }
+	chars.make()
 	chars.print()
 }

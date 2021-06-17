@@ -49,8 +49,13 @@ class UnaryOperation : public ASTNode {
 
 		string to_str()
 		{
-			string s = "UnaryOperation { op = \"" + to_string(op)
-				+ "\" } @ " + to_hex((size_t) this);
+			string s;
+
+			s += "UnaryOperation { op = \"";
+			s += op_to_str(op);
+			s += "\" } @ ";
+			s += to_hex((size_t) this);
+
 			return s;
 		}
 

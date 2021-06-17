@@ -508,9 +508,7 @@ class Parser {
 								IdentifierExpression *id_expr = (IdentifierExpression *) left;
 
 								new_expr = new AssignmentExpression(
-									id_expr->identifier_token, right, op_token, dereference_depth);
-
-								delete id_expr;
+									id_expr, right, op_token, dereference_depth);
 								break;
 							}
 						}
