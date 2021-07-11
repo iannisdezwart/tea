@@ -17,14 +17,8 @@ class CodeBlock : public ASTNode {
 		vector<ASTNode *> statements;
 		Token start_token;
 
-		CodeBlock(Token start_token) : start_token(start_token), ASTNode(start_token)
-		{
-			type = CODE_BLOCK;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+		CodeBlock(Token start_token) : start_token(start_token),
+			ASTNode(start_token, CODE_BLOCK) {}
 
 		~CodeBlock() {}
 
@@ -35,13 +29,8 @@ class CodeBlock : public ASTNode {
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			for (ASTNode *statement : statements) {
-				if (statement != NULL)
-					statement->dfs(callback, depth + 1);
+				if (statement != NULL) statement->dfs(callback, depth + 1);
 			}
 
 			callback(this, depth);

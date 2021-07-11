@@ -16,21 +16,11 @@ class ReturnStatement : public ASTNode {
 		ASTNode *expression;
 
 		ReturnStatement(Token return_token, ASTNode *expression)
-			: expression(expression), return_token(return_token), ASTNode(return_token)
-		{
-			type = RETURN_STATEMENT;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+			: expression(expression), return_token(return_token),
+				ASTNode(return_token, RETURN_STATEMENT) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			if (expression != NULL)
 				expression->dfs(callback, depth + 1);
 

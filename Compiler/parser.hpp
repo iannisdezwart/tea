@@ -5,8 +5,6 @@
 
 #include "tokeniser.hpp"
 
-// #define PARSER_VERBOSE
-
 #include "ASTNodes/ASTNode.hpp"
 #include "ASTNodes/TypeIdentifierPair.hpp"
 #include "ASTNodes/VariableDeclaration.hpp"
@@ -77,10 +75,6 @@ class Parser {
 			for (ASTNode *statement : statements) {
 				statement->dfs([](ASTNode *node, size_t depth) {
 					if (node != NULL) {
-						#ifdef PARSER_VERBOSE
-						printf("Deleted: %s\n", node->to_str().c_str());
-						#endif
-
 						// Weird hack that fixes memory leak
 
 						if (node->type == CODE_BLOCK) {

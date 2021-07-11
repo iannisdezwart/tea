@@ -18,23 +18,12 @@ class WhileStatement : public ASTNode {
 		CodeBlock *body;
 
 		WhileStatement(ASTNode *test, Token while_token, CodeBlock *body)
-			: test(test), body(body), while_token(while_token), ASTNode(while_token)
-		{
-			type = WHILE_STATEMENT;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+			: test(test), body(body), while_token(while_token),
+				ASTNode(while_token, WHILE_STATEMENT) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			test->dfs(callback, depth + 1);
-
 			body->dfs(callback, depth + 1);
 
 			callback(this, depth);

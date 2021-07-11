@@ -16,22 +16,11 @@ class LiteralNumberExpression : public ASTNode {
 		string value;
 
 		LiteralNumberExpression(Token literal_number_token, string value)
-			: literal_number_token(literal_number_token),
-				ASTNode(literal_number_token), value(value)
-		{
-			type = LITERAL_NUMBER_EXPRESSION;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+			: literal_number_token(literal_number_token), value(value),
+				ASTNode(literal_number_token, LITERAL_NUMBER_EXPRESSION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			callback(this, depth);
 		}
 

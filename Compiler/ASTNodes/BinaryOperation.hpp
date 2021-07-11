@@ -23,22 +23,12 @@ class BinaryOperation : public ASTNode {
 		bool warned = false;
 
 		BinaryOperation(ASTNode *left, ASTNode *right, Token op_token)
-			: left(left), right(right), op_token(op_token), ASTNode(op_token)
-		{
-			type = BINARY_OPERATION;
-			op = str_to_operator(op_token.value);
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+			: left(left), right(right), op_token(op_token),
+				op(str_to_operator(op_token.value)),
+				ASTNode(op_token, BINARY_OPERATION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			left->dfs(callback, depth + 1);
 			right->dfs(callback, depth + 1);
 

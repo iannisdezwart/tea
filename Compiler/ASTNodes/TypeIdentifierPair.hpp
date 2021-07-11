@@ -20,20 +20,10 @@ class TypeIdentifierPair : public ASTNode {
 		TypeIdentifierPair(Token type_token, uint8_t pointer_depth,
 			Token identifier_token)
 				: type_token(type_token), pointer_depth(pointer_depth),
-					identifier_token(identifier_token), ASTNode(identifier_token)
-		{
-			type = TYPE_IDENTIFIER_PAIR;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+					identifier_token(identifier_token),
+					ASTNode(identifier_token, TYPE_IDENTIFIER_PAIR) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth) {
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			callback(this, depth);
 		}
 

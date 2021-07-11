@@ -1,7 +1,5 @@
 #include <bits/stdc++.h>
 
-// #define PARSER_VERBOSE
-
 #include "compiler.hpp"
 #include "util.hpp"
 

@@ -19,17 +19,12 @@ class IdentifierExpression : public ASTNode {
 		Type replacement_type;
 
 		IdentifierExpression(Token identifier_token)
-			: identifier_token(identifier_token), ASTNode(identifier_token)
-		{
-			type = IDENTIFIER_EXPRESSION;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+			: identifier_token(identifier_token),
+				ASTNode(identifier_token, IDENTIFIER_EXPRESSION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
+<<<<<<< HEAD
 			#ifdef PARSER_VERBOSE
 			print("dfs");
 			#endif
@@ -38,6 +33,8 @@ class IdentifierExpression : public ASTNode {
 				replacement->dfs(callback, depth + 1);
 			}
 
+=======
+>>>>>>> 🧹 Refactored And Removed Unnecessary Code
 			callback(this, depth);
 		}
 

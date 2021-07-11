@@ -16,20 +16,9 @@ class InitList : public ASTNode {
 		vector<ASTNode *> items;
 
 		InitList(const Token& start_token, vector<ASTNode *>&& items)
-			: ASTNode(start_token), items(std::move(items))
-		{
-			type = INIT_LIST;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+			: ASTNode(start_token, INIT_LIST), items(std::move(items)) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth) {
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			for (ASTNode *item : items) {
 				item->dfs(callback, depth + 1);
 			}

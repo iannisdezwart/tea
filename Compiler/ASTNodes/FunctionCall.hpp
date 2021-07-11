@@ -17,14 +17,8 @@ class FunctionCall : public ASTNode {
 		vector<ASTNode *> arguments;
 
 		FunctionCall(Token& fn_token, vector<ASTNode *>& arguments)
-			: fn_token(fn_token), arguments(arguments), ASTNode(fn_token)
-		{
-			type = FUNCTION_CALL;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+			: fn_token(fn_token), arguments(arguments),
+				ASTNode(fn_token, FUNCTION_CALL) {}
 
 		string& get_name()
 		{
@@ -33,10 +27,6 @@ class FunctionCall : public ASTNode {
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			for (size_t i = 0; i < arguments.size(); i++) {
 				arguments[i]->dfs(callback, depth + 1);
 			}

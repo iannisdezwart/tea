@@ -23,15 +23,9 @@ class MemberExpression : public ASTNode {
 
 		MemberExpression(IdentifierExpression *object, IdentifierExpression *member,
 			const Token& op_token)
-				: object(object), member(member), op_token(op_token), ASTNode(op_token)
-		{
-			type = MEMBER_EXPRESSION;
-			op = str_to_operator(op_token.value);
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+				: object(object), member(member), op_token(op_token),
+					op(str_to_operator(op_token.value)),
+					ASTNode(op_token, MEMBER_EXPRESSION) {}
 
 		~MemberExpression()
 		{
@@ -41,9 +35,14 @@ class MemberExpression : public ASTNode {
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
+<<<<<<< HEAD
 			#ifdef PARSER_VERBOSE
 			print("dfs");
 			#endif
+=======
+			object->dfs(callback, depth + 1);
+			member->dfs(callback, depth + 1);
+>>>>>>> 🧹 Refactored And Removed Unnecessary Code
 
 			callback(this, depth);
 		}

@@ -20,26 +20,12 @@ class VariableDeclaration : public ASTNode {
 		VariableDeclaration(TypeIdentifierPair *type_and_id_pair,
 			ASTNode *expression)
 		: type_and_id_pair(type_and_id_pair), expression(expression),
-			ASTNode(type_and_id_pair->identifier_token)
-		{
-			type = VARIABLE_DECLARATION;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+			ASTNode(type_and_id_pair->identifier_token, VARIABLE_DECLARATION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
-			if (type_and_id_pair != NULL)
-				type_and_id_pair->dfs(callback, depth + 1);
-
-			if (expression != NULL)
-				expression->dfs(callback, depth + 1);
+			if (type_and_id_pair != NULL) type_and_id_pair->dfs(callback, depth + 1);
+			if (expression != NULL) expression->dfs(callback, depth + 1);
 
 			callback(this, depth);
 		}

@@ -26,7 +26,7 @@ class ClassDeclaration : public ASTNode {
 			const Token& class_token,
 			const string& class_name,
 			CodeBlock *body
-		) : ASTNode(class_token), class_name(class_name)
+		) : ASTNode(class_token, CLASS_DECLARATION), class_name(class_name)
 		{
 			for (ASTNode *node : body->statements) {
 				if (node->type == FUNCTION_DECLARATION) {
@@ -44,20 +44,10 @@ class ClassDeclaration : public ASTNode {
 						ast_node_type_to_str(node->type));
 				}
 			}
-
-			type = CLASS_DECLARATION;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
 		}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			for (TypeIdentifierPair *field : fields) {
 				field->dfs(callback, depth + 1);
 			}

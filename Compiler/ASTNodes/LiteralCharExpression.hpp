@@ -16,22 +16,12 @@ class LiteralCharExpression : public ASTNode {
 		uint8_t value;
 
 		LiteralCharExpression(Token literal_char_token)
-			: literal_char_token(literal_char_token), ASTNode(literal_char_token)
-		{
-			type = LITERAL_CHAR_EXPRESSION;
-			value = literal_char_token.value[0];
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+			: literal_char_token(literal_char_token),
+				value(literal_char_token.value[0]),
+				ASTNode(literal_char_token, LITERAL_CHAR_EXPRESSION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			callback(this, depth);
 		}
 

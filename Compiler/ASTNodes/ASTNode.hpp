@@ -59,8 +59,8 @@ class ASTNode {
 		ASTNodeType type;
 		Token accountable_token;
 
-		ASTNode(const Token& accountable_token)
-			: accountable_token(accountable_token) {}
+		ASTNode(const Token& accountable_token, ASTNodeType type)
+			: accountable_token(accountable_token), type(type) {}
 
 		virtual string to_str() = 0;
 		virtual void dfs(function<void(ASTNode *, size_t)>, size_t depth = 0) = 0;

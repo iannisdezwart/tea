@@ -25,23 +25,11 @@ class FunctionDeclaration : public ASTNode {
 			TypeIdentifierPair *type_and_id_pair,
 			vector<TypeIdentifierPair *>& params,
 			CodeBlock *body
-		) : params(params), ASTNode(type_and_id_pair->identifier_token)
-		{
-			this->type_and_id_pair = type_and_id_pair;
-			this->body = body;
-			type = FUNCTION_DECLARATION;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+		) : params(params), type_and_id_pair(type_and_id_pair), body(body),
+			ASTNode(type_and_id_pair->identifier_token, FUNCTION_DECLARATION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			if (type_and_id_pair != NULL)
 				type_and_id_pair->dfs(callback, depth + 1);
 

@@ -26,24 +26,12 @@ class UnaryOperation : public ASTNode {
 
 		UnaryOperation(ASTNode *expression, const Token& op_token, bool prefix)
 			: expression(expression), op_token(op_token),
-				prefix(prefix), ASTNode(op_token)
-		{
-			type = UNARY_OPERATION;
-			op = str_to_operator(op_token.value, prefix);
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+				op(str_to_operator(op_token.value, prefix)),
+				prefix(prefix), ASTNode(op_token, UNARY_OPERATION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			expression->dfs(callback, depth + 1);
-
 			callback(this, depth);
 		}
 

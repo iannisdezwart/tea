@@ -21,27 +21,13 @@ class IfStatement : public ASTNode {
 		IfStatement(ASTNode *test, Token if_token, CodeBlock *then_block,
 			CodeBlock *else_block)
 				: test(test), then_block(then_block), else_block(else_block),
-					if_token(if_token), ASTNode(if_token)
-		{
-			type = IF_STATEMENT;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+					if_token(if_token), ASTNode(if_token, IF_STATEMENT) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			test->dfs(callback, depth + 1);
-
 			then_block->dfs(callback, depth + 1);
-
-			if (else_block != NULL)
-				else_block->dfs(callback, depth + 1);
+			if (else_block != NULL) else_block->dfs(callback, depth + 1);
 
 			callback(this, depth);
 		}

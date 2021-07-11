@@ -29,25 +29,13 @@ class AssignmentExpression : public ASTNode {
 			Token op_token,
 			size_t dereference_depth = 0
 		) : lhs_expr(lhs_expr), value(value), op_token(op_token),
-				dereference_depth(dereference_depth), ASTNode(op_token)
-		{
-			type = ASSIGNMENT_EXPRESSION;
-			op = str_to_operator(op_token.value);
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+				op(str_to_operator(op_token.value)),
+				dereference_depth(dereference_depth),
+				ASTNode(op_token, ASSIGNMENT_EXPRESSION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
-			lhs_expr->dfs(callback, depth + 1);
 			value->dfs(callback, depth + 1);
-
 			callback(this, depth);
 		}
 

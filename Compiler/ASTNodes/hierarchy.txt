@@ -1,0 +1,35 @@
+Statements:
+	ControlStatements:
+		IfStatement
+		ReturnStatement
+		WhileStatement
+		(ContinueStatement)
+		(BreakStatement)
+
+	Declarations:
+		FunctionDeclaration
+		ClassDeclaration
+		VariableDeclaration
+
+	Miscellaneous:
+		CodeBlock
+
+Expressions:
+	ReadValues:
+		Operations:
+			BinaryOperation
+			UnaryOperation
+
+		Literals:
+			LiteralCharExpression
+			LiteralNumberExpression
+			LiteralStringExpression
+			InitList
+
+		Special:
+			AssignmentExpression
+			FunctionCall
+
+	ReadWriteValues:
+		IdentifierExpression
+		MemberExpression
