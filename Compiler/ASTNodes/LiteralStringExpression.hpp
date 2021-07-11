@@ -4,20 +4,21 @@
 #include <bits/stdc++.h>
 
 #include "ASTNode.hpp"
+#include "ReadValue.hpp"
 #include "../tokeniser.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
 using namespace std;
 
-class LiteralStringExpression : public ASTNode {
+class LiteralStringExpression : public ReadValue {
 	public:
 		Token literal_string_token;
 		string value;
 
 		LiteralStringExpression(Token literal_string_token, string value)
 			: literal_string_token(literal_string_token), value(value),
-				ASTNode(literal_string_token, LITERAL_STRING_EXPRESSION) {}
+				ReadValue(literal_string_token, LITERAL_STRING_EXPRESSION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
@@ -37,7 +38,7 @@ class LiteralStringExpression : public ASTNode {
 			return type;
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state)
 		{
 			StaticData static_data = assembler.add_static_data(
 				(uint8_t *) value.data(), value.size());

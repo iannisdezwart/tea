@@ -5,20 +5,21 @@
 
 #include "../util.hpp"
 #include "ASTNode.hpp"
+#include "ReadValue.hpp"
 #include "../../Assembler/assembler.hpp"
 #include "../compiler-state.hpp"
 #include "../tokeniser.hpp"
 
 using namespace std;
 
-class FunctionCall : public ASTNode {
+class FunctionCall : public ReadValue {
 	public:
 		Token fn_token;
-		vector<ASTNode *> arguments;
+		vector<ReadValue *> arguments;
 
-		FunctionCall(Token& fn_token, vector<ASTNode *>& arguments)
+		FunctionCall(Token& fn_token, vector<ReadValue *>& arguments)
 			: fn_token(fn_token), arguments(arguments),
-				ASTNode(fn_token, FUNCTION_CALL) {}
+				ReadValue(fn_token, FUNCTION_CALL) {}
 
 		string& get_name()
 		{
@@ -53,7 +54,7 @@ class FunctionCall : public ASTNode {
 			return compiler_state.functions[fn_name].id.type;
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state)
 		{
 			string& fn_name = get_name();
 
@@ -93,9 +94,9 @@ class FunctionCall : public ASTNode {
 
 				size_t byte_size = param_type.byte_size();
 
-				// Stores result into R_ACCUMULATOR_0_ID
+				// Put value into R_ACCUMULATOR_0_ID
 
-				arguments[i]->compile(assembler, compiler_state);
+				arguments[i]->get_value(assembler, compiler_state);
 
 				switch (byte_size) {
 					case 1:

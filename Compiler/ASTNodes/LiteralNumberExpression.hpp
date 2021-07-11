@@ -4,20 +4,21 @@
 #include <bits/stdc++.h>
 
 #include "ASTNode.hpp"
+#include "ReadValue.hpp"
 #include "../tokeniser.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
 using namespace std;
 
-class LiteralNumberExpression : public ASTNode {
+class LiteralNumberExpression : public ReadValue {
 	public:
 		Token literal_number_token;
 		string value;
 
 		LiteralNumberExpression(Token literal_number_token, string value)
 			: literal_number_token(literal_number_token), value(value),
-				ASTNode(literal_number_token, LITERAL_NUMBER_EXPRESSION) {}
+				ReadValue(literal_number_token, LITERAL_NUMBER_EXPRESSION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
@@ -47,7 +48,7 @@ class LiteralNumberExpression : public ASTNode {
 			return Type(Type::UNSIGNED_INTEGER, 8);
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state)
 		{
 			assembler.move_64_into_reg(to_num(), R_ACCUMULATOR_0_ID);
 		}

@@ -294,6 +294,25 @@ struct Class {
 	}
 };
 
+struct LocationData {
+	IdentifierKind id_kind;
+	int64_t offset;
+	uint64_t var_size;
+
+	LocationData(IdentifierKind id_kind, int64_t offset, uint64_t var_size)
+		: id_kind(id_kind), offset(offset), var_size(var_size) {}
+
+	bool is_at_stack_top()
+	{
+		return id_kind == IdentifierKind::GLOBAL;
+	}
+
+	bool is_at_frame_top()
+	{
+		return id_kind == IdentifierKind::LOCAL || id_kind == IdentifierKind::PARAMETER;
+	}
+};
+
 class CompilerState {
 	public:
 		unordered_map<string, Function> functions;

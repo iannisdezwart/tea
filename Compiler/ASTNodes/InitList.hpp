@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "ASTNode.hpp"
+#include "ReadValue.hpp"
 #include "../tokeniser.hpp"
 #include "../compiler-state.hpp"
 #include "../../Assembler/byte_code.hpp"
@@ -11,12 +12,12 @@
 
 using namespace std;
 
-class InitList : public ASTNode {
+class InitList : public ReadValue {
 	public:
-		vector<ASTNode *> items;
+		vector<ReadValue *> items;
 
-		InitList(const Token& start_token, vector<ASTNode *>&& items)
-			: ASTNode(start_token, INIT_LIST), items(std::move(items)) {}
+		InitList(const Token& start_token, vector<ReadValue *>&& items)
+			: ReadValue(start_token, INIT_LIST), items(std::move(items)) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth) {
 			for (ASTNode *item : items) {
@@ -37,9 +38,9 @@ class InitList : public ASTNode {
 			return Type();
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state)
 		{
-			// ...
+			// Todo: create
 		}
 };
 

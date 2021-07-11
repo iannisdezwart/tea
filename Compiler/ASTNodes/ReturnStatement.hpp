@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "ASTNode.hpp"
+#include "ReadValue.hpp"
 #include "../tokeniser.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
@@ -13,9 +14,9 @@ using namespace std;
 class ReturnStatement : public ASTNode {
 	public:
 		Token return_token;
-		ASTNode *expression;
+		ReadValue *expression;
 
-		ReturnStatement(Token return_token, ASTNode *expression)
+		ReturnStatement(Token return_token, ReadValue *expression)
 			: expression(expression), return_token(return_token),
 				ASTNode(return_token, RETURN_STATEMENT) {}
 
@@ -43,7 +44,7 @@ class ReturnStatement : public ASTNode {
 		{
 			// Moves the return value into R_ACCUMULATOR_0
 
-			if (expression != NULL) expression->compile(assembler, compiler_state);
+			if (expression != NULL) expression->get_value(assembler, compiler_state);
 
 			assembler.return_();
 		}

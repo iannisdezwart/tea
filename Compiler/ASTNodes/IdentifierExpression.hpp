@@ -5,6 +5,7 @@
 
 #include "../util.hpp"
 #include "ASTNode.hpp"
+#include "WriteValue.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../../Assembler/assembler.hpp"
 #include "../compiler-state.hpp"
@@ -12,15 +13,15 @@
 
 using namespace std;
 
-class IdentifierExpression : public ASTNode {
+class IdentifierExpression : public WriteValue {
 	public:
 		Token identifier_token;
-		ASTNode *replacement = NULL;
+		WriteValue *replacement = NULL;
 		Type replacement_type;
 
 		IdentifierExpression(Token identifier_token)
 			: identifier_token(identifier_token),
-				ASTNode(identifier_token, IDENTIFIER_EXPRESSION) {}
+				WriteValue(identifier_token, IDENTIFIER_EXPRESSION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
@@ -53,13 +54,8 @@ class IdentifierExpression : public ASTNode {
 			return type;
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state)
+		LocationData get_location_data(CompilerState& compiler_state)
 		{
-			if (replacement != NULL) {
-				replacement->compile(assembler, compiler_state);
-				return;
-			}
-
 			string id_name = identifier_token.value;
 			IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
 
@@ -79,7 +75,7 @@ class IdentifierExpression : public ASTNode {
 					Type& type = var.id.type;
 					offset = var.offset;
 					var_size = type.byte_size();
-					goto get_id_at_frame_offset;
+					break;
 				}
 
 				case IdentifierKind::PARAMETER:
@@ -89,7 +85,7 @@ class IdentifierExpression : public ASTNode {
 					offset = -compiler_state.parameters_size + var.offset
 						- 8 - CPU::stack_frame_size;
 					var_size = type.byte_size();
-					goto get_id_at_frame_offset;
+					break;
 				}
 
 				case IdentifierKind::GLOBAL:
@@ -98,7 +94,7 @@ class IdentifierExpression : public ASTNode {
 					Type& type = var.id.type;
 					offset = var.offset;
 					var_size = type.byte_size();
-					goto get_id_at_stack_top_offset;
+					break;
 				}
 
 				default:
@@ -108,23 +104,73 @@ class IdentifierExpression : public ASTNode {
 						id_name.c_str());
 			}
 
-			get_id_at_frame_offset:
+			return LocationData(id_kind, offset, var_size);
+		}
 
-			switch (var_size) {
+		void get_value(Assembler& assembler, CompilerState& compiler_state)
+		{
+			if (replacement != NULL) {
+				replacement->get_value(assembler, compiler_state);
+				return;
+			}
+
+			LocationData location_data = get_location_data(compiler_state);
+
+			// Local variable or parameter
+
+			if (location_data.is_at_frame_top()) {
+				switch (location_data.var_size) {
+					case 1:
+						assembler.move_frame_offset_8_into_reg(
+							location_data.offset, R_ACCUMULATOR_0_ID);
+						break;
+
+					case 2:
+						assembler.move_frame_offset_16_into_reg(
+							location_data.offset, R_ACCUMULATOR_0_ID);
+						break;
+
+					case 4:
+						assembler.move_frame_offset_32_into_reg(
+							location_data.offset, R_ACCUMULATOR_0_ID);
+						break;
+
+					case 8:
+						assembler.move_frame_offset_64_into_reg(
+							location_data.offset, R_ACCUMULATOR_0_ID);
+						break;
+
+					default:
+						err_at_token(identifier_token,
+							"Type Error",
+							"Variable doesn't fit in register\n"
+							"Support for this is not implemented yet");
+				}
+
+				return;
+			}
+
+			// Global variable
+
+			switch (location_data.var_size) {
 				case 1:
-					assembler.move_frame_offset_8_into_reg(offset, R_ACCUMULATOR_0_ID);
+					assembler.move_stack_top_offset_8_into_reg(
+						location_data.offset, R_ACCUMULATOR_0_ID);
 					break;
 
 				case 2:
-					assembler.move_frame_offset_16_into_reg(offset, R_ACCUMULATOR_0_ID);
+					assembler.move_stack_top_offset_16_into_reg(
+						location_data.offset, R_ACCUMULATOR_0_ID);
 					break;
 
 				case 4:
-					assembler.move_frame_offset_32_into_reg(offset, R_ACCUMULATOR_0_ID);
+					assembler.move_stack_top_offset_32_into_reg(
+						location_data.offset, R_ACCUMULATOR_0_ID);
 					break;
 
 				case 8:
-					assembler.move_frame_offset_64_into_reg(offset, R_ACCUMULATOR_0_ID);
+					assembler.move_stack_top_offset_64_into_reg(
+						location_data.offset, R_ACCUMULATOR_0_ID);
 					break;
 
 				default:
@@ -133,26 +179,72 @@ class IdentifierExpression : public ASTNode {
 						"Variable doesn't fit in register\n"
 						"Support for this is not implemented yet");
 			}
+		}
 
-			return;
+		void store(Assembler& assembler, CompilerState& compiler_state)
+		{
+			if (replacement != NULL) {
+				replacement->store(assembler, compiler_state);
+				return;
+			}
 
-			get_id_at_stack_top_offset:
+			LocationData location_data = get_location_data(compiler_state);
 
-			switch (var_size) {
+			// Local variable or parameter
+
+			if (location_data.is_at_frame_top()) {
+				switch (location_data.var_size) {
+					case 1:
+						assembler.move_reg_into_frame_offset_8(
+							R_ACCUMULATOR_0_ID, location_data.offset);
+						break;
+
+					case 2:
+						assembler.move_reg_into_frame_offset_16(
+							R_ACCUMULATOR_0_ID, location_data.offset);
+						break;
+
+					case 4:
+						assembler.move_reg_into_frame_offset_32(
+							R_ACCUMULATOR_0_ID, location_data.offset);
+						break;
+
+					case 8:
+						assembler.move_reg_into_frame_offset_64(
+							R_ACCUMULATOR_0_ID, location_data.offset);
+						break;
+
+					default:
+						err_at_token(identifier_token,
+							"Type Error",
+							"Variable doesn't fit in register\n"
+							"Support for this is not implemented yet");
+				}
+
+				return;
+			}
+
+			// Global variable
+
+			switch (location_data.var_size) {
 				case 1:
-					assembler.move_stack_top_offset_8_into_reg(offset, R_ACCUMULATOR_0_ID);
+					assembler.move_reg_into_stack_top_offset_8(
+						R_ACCUMULATOR_0_ID, location_data.offset);
 					break;
 
 				case 2:
-					assembler.move_stack_top_offset_16_into_reg(offset, R_ACCUMULATOR_0_ID);
+					assembler.move_reg_into_stack_top_offset_16(
+						R_ACCUMULATOR_0_ID, location_data.offset);
 					break;
 
 				case 4:
-					assembler.move_stack_top_offset_32_into_reg(offset, R_ACCUMULATOR_0_ID);
+					assembler.move_reg_into_stack_top_offset_32(
+						R_ACCUMULATOR_0_ID, location_data.offset);
 					break;
 
 				case 8:
-					assembler.move_stack_top_offset_64_into_reg(offset, R_ACCUMULATOR_0_ID);
+					assembler.move_reg_into_stack_top_offset_64(
+						R_ACCUMULATOR_0_ID, location_data.offset);
 					break;
 
 				default:

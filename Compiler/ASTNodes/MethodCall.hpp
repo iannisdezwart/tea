@@ -5,6 +5,7 @@
 
 #include "../util.hpp"
 #include "ASTNode.hpp"
+#include "ReadValue.hpp"
 #include "IdentifierExpression.hpp"
 #include "FunctionCall.hpp"
 #include "UnaryOperation.hpp"
@@ -14,7 +15,7 @@
 
 using namespace std;
 
-class MethodCall : public ASTNode {
+class MethodCall : public ReadValue {
 	public:
 		IdentifierExpression *object;
 		FunctionCall *method;
@@ -24,7 +25,7 @@ class MethodCall : public ASTNode {
 		MethodCall(IdentifierExpression *object, FunctionCall *method,
 			const Token& op_token)
 				: object(object), method(method), op_token(op_token),
-					ASTNode(op_token, METHOD_CALL) {}
+					ReadValue(op_token, METHOD_CALL) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
@@ -70,7 +71,7 @@ class MethodCall : public ASTNode {
 			return cl.get_method(method_name).id.type;
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state)
 		{
 			string fn_name = get_object_class_name(compiler_state) + "::" + method->get_name();
 
@@ -122,7 +123,7 @@ class MethodCall : public ASTNode {
 
 				// Stores result into R_ACCUMULATOR_0_ID
 
-				method->arguments[i]->compile(assembler, compiler_state);
+				method->arguments[i]->get_value(assembler, compiler_state);
 
 				switch (byte_size) {
 					case 1:

@@ -5,6 +5,7 @@
 
 #include "../util.hpp"
 #include "ASTNode.hpp"
+#include "ReadValue.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../../Assembler/assembler.hpp"
 #include "../compiler-state.hpp"
@@ -13,19 +14,19 @@
 
 using namespace std;
 
-class BinaryOperation : public ASTNode {
+class BinaryOperation : public ReadValue {
 	public:
-		ASTNode *left;
-		ASTNode *right;
+		ReadValue *left;
+		ReadValue *right;
 		Token op_token;
 		enum Operator op;
 
 		bool warned = false;
 
-		BinaryOperation(ASTNode *left, ASTNode *right, Token op_token)
+		BinaryOperation(ReadValue *left, ReadValue *right, Token op_token)
 			: left(left), right(right), op_token(op_token),
 				op(str_to_operator(op_token.value)),
-				ASTNode(op_token, BINARY_OPERATION) {}
+				ReadValue(op_token, BINARY_OPERATION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
@@ -167,22 +168,22 @@ class BinaryOperation : public ASTNode {
 			#undef not_implemented_warning
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state)
 		{
 			bool is_root = compiler_state.root_of_operation_tree;
 			compiler_state.root_of_operation_tree = false;
 
-			// Compile the left
+			// Get the left hand side value
 
-			left->compile(assembler, compiler_state);
+			left->get_value(assembler, compiler_state);
 
 			if (!left->is_operation()) {
 				assembler.push_reg_64(R_ACCUMULATOR_0_ID);
 			}
 
-			// Compile the right
+			// Get the right hand side value
 
-			right->compile(assembler, compiler_state);
+			right->get_value(assembler, compiler_state);
 
 			if (!right->is_operation()) {
 				assembler.push_reg_64(R_ACCUMULATOR_0_ID);

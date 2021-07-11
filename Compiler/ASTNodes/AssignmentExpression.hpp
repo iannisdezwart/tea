@@ -5,6 +5,8 @@
 
 #include "../util.hpp"
 #include "ASTNode.hpp"
+#include "ReadValue.hpp"
+#include "WriteValue.hpp"
 #include "IdentifierExpression.hpp"
 #include "MemberExpression.hpp"
 #include "../../Assembler/byte_code.hpp"
@@ -15,23 +17,23 @@
 
 using namespace std;
 
-class AssignmentExpression : public ASTNode {
+class AssignmentExpression : public ReadValue {
 	public:
-		ASTNode *lhs_expr;
-		ASTNode *value;
+		WriteValue *lhs_expr;
+		ReadValue *value;
 		size_t dereference_depth;
 		Token op_token;
 		enum Operator op;
 
 		AssignmentExpression(
-			ASTNode *lhs_expr,
-			ASTNode *value,
+			WriteValue *lhs_expr,
+			ReadValue *value,
 			Token op_token,
 			size_t dereference_depth = 0
 		) : lhs_expr(lhs_expr), value(value), op_token(op_token),
 				op(str_to_operator(op_token.value)),
 				dereference_depth(dereference_depth),
-				ASTNode(op_token, ASSIGNMENT_EXPRESSION) {}
+				ReadValue(op_token, ASSIGNMENT_EXPRESSION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
@@ -110,7 +112,10 @@ class AssignmentExpression : public ASTNode {
 			}
 		}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state)
+		/**
+		 *  Performs the assignment.
+		 */
+		void get_value(Assembler& assembler, CompilerState& compiler_state)
 		{
 			size_t deref_dep = dereference_depth;
 			Type var_type = get_type(compiler_state);
@@ -118,7 +123,7 @@ class AssignmentExpression : public ASTNode {
 			if (deref_dep > 0) {
 				// Moves the address of what to dereference into R_ACCUMULATOR_1
 
-				lhs_expr->compile(assembler, compiler_state);
+				lhs_expr->get_value(assembler, compiler_state);
 
 				while (--deref_dep) {
 					assembler.move_reg_pointer_64_into_reg(
@@ -129,7 +134,7 @@ class AssignmentExpression : public ASTNode {
 
 				// Moves the value to R_ACCUMULATOR_0
 
-				value->compile(assembler, compiler_state);
+				value->get_value(assembler, compiler_state);
 
 				switch (var_type.byte_size()) {
 					case 1:
@@ -161,84 +166,10 @@ class AssignmentExpression : public ASTNode {
 				return;
 			}
 
+			// Left hand side is not a pointer
 			// Moves result into R_ACCUMULATOR_0
 
-			value->compile(assembler, compiler_state);
-
-			int64_t offset;
-			uint64_t var_size;
-			IdentifierKind id_kind;
-			string id_name;
-
-			if (lhs_is_id_expr()) {
-				IdentifierExpression *id_expr = (IdentifierExpression *) lhs_expr;
-				id_name = id_expr->identifier_token.value;
-				id_kind = compiler_state.get_identifier_kind(id_name);
-			} else {
-				MemberExpression *mem_expr = get_mem_expr();
-				id_name = mem_expr->object->identifier_token.value;
-				id_kind = compiler_state.get_identifier_kind(id_name);
-			}
-
-			if (id_kind == IdentifierKind::UNDEFINED)
-				err_at_token(lhs_expr->accountable_token,
-					"Reference to undeclared variable",
-					"Identifier %s was referenced, but not declared",
-					id_name.c_str());
-
-			switch (id_kind) {
-				case IdentifierKind::LOCAL:
-				{
-					Variable& var = compiler_state.locals[id_name];
-					Type& type = var.id.type;
-					offset = var.offset;
-					var_size = type.byte_size();
-					break;
-				}
-
-				case IdentifierKind::PARAMETER:
-				{
-					Variable& var = compiler_state.parameters[id_name];
-					Type& type = var.id.type;
-					offset = -compiler_state.parameters_size + var.offset
-						- 8 - CPU::stack_frame_size;
-					var_size = type.byte_size();
-					break;
-				}
-
-				case IdentifierKind::GLOBAL:
-				{
-					Variable& var = compiler_state.globals[id_name];
-					Type& type = var.id.type;
-					offset = var.offset;
-					var_size = type.byte_size();
-					break;
-				}
-
-				default:
-					err_at_token(lhs_expr->accountable_token,
-						"Identifier has unknown kind",
-						"Identifier: %s. this might be a bug in the compiler",
-						id_name.c_str());
-			}
-
-			// Get the offset to the member
-
-			if (!lhs_is_id_expr()) {
-				MemberExpression *mem_expr = get_mem_expr();
-				Type object_type = mem_expr->object->get_type(compiler_state);
-				string class_name = object_type.class_name;
-				string member_name = mem_expr->member->identifier_token.value;
-				const Class& cl = compiler_state.classes[class_name];
-
-				for (size_t i = 0; i < cl.fields.size(); i++) {
-					if (cl.fields[i].name == member_name) {
-						break;
-					}
-
-					offset += cl.fields[i].type.byte_size();
-				}
-			}
+			value->get_value(assembler, compiler_state);
 
 			// If we're doing direct assignment,
 			// directly set the variable to the new value
@@ -252,54 +183,7 @@ class AssignmentExpression : public ASTNode {
 
 			// Move the previous value into R_ACUMMULATOR_0_ID
 
-			switch (id_kind) {
-				case IdentifierKind::LOCAL:
-				case IdentifierKind::PARAMETER:
-				{
-					switch (var_size) {
-						case 1:
-							assembler.move_frame_offset_8_into_reg(offset, R_ACCUMULATOR_0_ID);
-							break;
-
-						case 2:
-							assembler.move_frame_offset_16_into_reg(offset, R_ACCUMULATOR_0_ID);
-							break;
-
-						case 4:
-							assembler.move_frame_offset_32_into_reg(offset, R_ACCUMULATOR_0_ID);
-							break;
-
-						case 8:
-							assembler.move_frame_offset_64_into_reg(offset, R_ACCUMULATOR_0_ID);
-							break;
-					}
-
-					break;
-				}
-
-				case IdentifierKind::GLOBAL:
-				{
-					switch (var_size) {
-						case 1:
-							assembler.move_stack_top_offset_8_into_reg(offset, R_ACCUMULATOR_0_ID);
-							break;
-
-						case 2:
-							assembler.move_stack_top_offset_16_into_reg(offset, R_ACCUMULATOR_0_ID);
-							break;
-
-						case 4:
-							assembler.move_stack_top_offset_32_into_reg(offset, R_ACCUMULATOR_0_ID);
-							break;
-
-						case 8:
-							assembler.move_stack_top_offset_64_into_reg(offset, R_ACCUMULATOR_0_ID);
-							break;
-					}
-
-					break;
-				}
-			}
+			lhs_expr->get_value(assembler, compiler_state);
 
 			// Perform the correct operation
 
@@ -347,56 +231,7 @@ class AssignmentExpression : public ASTNode {
 
 			move_into_var:
 
-			// Move R_ACCUMULATOR_0 into the offset for the variable
-
-			switch (id_kind) {
-				case IdentifierKind::LOCAL:
-				case IdentifierKind::PARAMETER:
-				{
-					switch (var_size) {
-						case 1:
-							assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_0_ID, offset);
-							break;
-
-						case 2:
-							assembler.move_reg_into_frame_offset_16(R_ACCUMULATOR_0_ID, offset);
-							break;
-
-						case 4:
-							assembler.move_reg_into_frame_offset_32(R_ACCUMULATOR_0_ID, offset);
-							break;
-
-						case 8:
-							assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_0_ID, offset);
-							break;
-					}
-
-					break;
-				}
-
-				case IdentifierKind::GLOBAL:
-				{
-					switch (var_size) {
-						case 1:
-							assembler.move_reg_into_stack_top_offset_8(R_ACCUMULATOR_0_ID, offset);
-							break;
-
-						case 2:
-							assembler.move_reg_into_stack_top_offset_16( R_ACCUMULATOR_0_ID, offset);
-							break;
-
-						case 4:
-							assembler.move_reg_into_stack_top_offset_32(R_ACCUMULATOR_0_ID, offset);
-							break;
-
-						case 8:
-							assembler.move_reg_into_stack_top_offset_64(R_ACCUMULATOR_0_ID, offset);
-							break;
-					}
-
-					break;
-				}
-			}
+			lhs_expr->store(assembler, compiler_state);
 		}
 };
 
