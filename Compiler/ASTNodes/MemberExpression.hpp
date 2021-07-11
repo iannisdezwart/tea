@@ -269,9 +269,9 @@ class MemberExpression : public ASTNode {
 
 			else {
 				err_at_token(op_token, "Syntax Error",
-					"Unexpected token \"%s\" of type %s\n",
+					"Unexpected token \"%s\" of type %s\n"
 					"MemberExpressions only work with \".\" or \"->\" operators.",
-					op_token.value, op_token.type);
+					op_token.value.c_str(), token_type_to_str(op_token.type));
 			}
 		}
 };

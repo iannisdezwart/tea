@@ -688,8 +688,7 @@ class Shell {
 							{
 								printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD
 									"    - " ANSI_BLUE "???" ANSI_RESET ANSI_BRIGHT_BLACK " = "
-									ANSI_YELLOW "???" ANSI_RESET "\n",
-									local.name.c_str());
+									ANSI_YELLOW "???" ANSI_RESET "\n");
 								break;
 							}
 						}

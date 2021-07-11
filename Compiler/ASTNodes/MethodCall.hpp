@@ -23,21 +23,11 @@ class MethodCall : public ASTNode {
 
 		MethodCall(IdentifierExpression *object, FunctionCall *method,
 			const Token& op_token)
-				: object(object), method(method), op_token(op_token), ASTNode(op_token)
-		{
-			type = METHOD_CALL;
-
-			#ifdef PARSER_VERBOSE
-			print("Created");
-			#endif
-		}
+				: object(object), method(method), op_token(op_token),
+					ASTNode(op_token, METHOD_CALL) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
 			object->dfs(callback, depth + 1);
 			method->dfs(callback, depth + 1);
 
