@@ -654,6 +654,12 @@ class CPU {
 					break;
 				}
 
+				case MOVE_STACK_TOP_ADDRESS_INTO_REG:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					set_reg_by_id(reg_id, stack_top());
+				}
+
 				case ADD_8_INTO_REG:
 				{
 					uint64_t lit = fetch<uint8_t>();

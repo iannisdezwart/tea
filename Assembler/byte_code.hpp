@@ -63,6 +63,8 @@ enum Instruction : uint16_t {
 	MOVE_REG_INTO_STACK_TOP_OFFSET_32,
 	MOVE_REG_INTO_STACK_TOP_OFFSET_64,
 
+	MOVE_STACK_TOP_ADDRESS_INTO_REG,
+
 
 	// Mathematical operations
 
@@ -266,6 +268,7 @@ const char *instruction_to_str(Instruction instruction)
 		case MOVE_REG_INTO_STACK_TOP_OFFSET_16: return "MOVE_REG_INTO_STACK_TOP_OFFSET_16";
 		case MOVE_REG_INTO_STACK_TOP_OFFSET_32: return "MOVE_REG_INTO_STACK_TOP_OFFSET_32";
 		case MOVE_REG_INTO_STACK_TOP_OFFSET_64: return "MOVE_REG_INTO_STACK_TOP_OFFSET_64";
+		case MOVE_STACK_TOP_ADDRESS_INTO_REG: return "MOVE_STACK_TOP_ADDRESS_INTO_REG";
 		case ADD_8_INTO_REG: return "ADD_8_INTO_REG";
 		case ADD_16_INTO_REG: return "ADD_16_INTO_REG";
 		case ADD_32_INTO_REG: return "ADD_32_INTO_REG";
@@ -408,6 +411,7 @@ vector<ArgumentType> instruction_arg_types(Instruction instruction)
 		case MOVE_REG_INTO_STACK_TOP_OFFSET_16: return { REG, LIT_64 };
 		case MOVE_REG_INTO_STACK_TOP_OFFSET_32: return { REG, LIT_64 };
 		case MOVE_REG_INTO_STACK_TOP_OFFSET_64: return { REG, LIT_64 };
+		case MOVE_STACK_TOP_ADDRESS_INTO_REG: return { REG };
 		case ADD_8_INTO_REG: return { LIT_8, REG };
 		case ADD_16_INTO_REG: return { LIT_16, REG };
 		case ADD_32_INTO_REG: return { LIT_32, REG };

@@ -352,6 +352,12 @@ class Assembler : public BufferBuilder {
 			push(offset);
 		}
 
+		void move_stack_top_address_into_reg(uint8_t reg_id)
+		{
+			push_instruction(MOVE_STACK_TOP_ADDRESS_INTO_REG);
+			push(reg_id);
+		}
+
 		void add_8_into_reg(uint8_t lit, uint8_t reg_id)
 		{
 			push_instruction(ADD_8_INTO_REG);
