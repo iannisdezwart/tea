@@ -8,3 +8,5 @@ VM/vm
 VM/program.teax
 Debugger/debug
 *.dSYM
+html/
+latex/

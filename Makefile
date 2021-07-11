@@ -2,6 +2,10 @@ CXX = g++
 
 all: VM/vm Assembler/assemble Disassembler/disassemble Compiler/compile Debugger/debug
 
+doxygen: Doxyfile
+	mkdir -p doxygen
+	doxygen Doxyfile
+
 debug:
 	$(CXX) VM/vm.cpp -o VM/vm -g
 	$(CXX) Assembler/assemble.cpp -o Assembler/assemble -g
