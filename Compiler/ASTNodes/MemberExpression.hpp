@@ -35,14 +35,8 @@ class MemberExpression : public ASTNode {
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-<<<<<<< HEAD
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-=======
 			object->dfs(callback, depth + 1);
 			member->dfs(callback, depth + 1);
->>>>>>> 🧹 Refactored And Removed Unnecessary Code
 
 			callback(this, depth);
 		}
@@ -276,7 +270,8 @@ class MemberExpression : public ASTNode {
 			else {
 				err_at_token(op_token, "Syntax Error",
 					"Unexpected token \"%s\" of type %s\n",
-					"MemberExpressions can only");
+					"MemberExpressions only work with \".\" or \"->\" operators.",
+					op_token.value, op_token.type);
 			}
 		}
 };

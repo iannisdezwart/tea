@@ -24,17 +24,6 @@ class IdentifierExpression : public ASTNode {
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
-<<<<<<< HEAD
-			#ifdef PARSER_VERBOSE
-			print("dfs");
-			#endif
-
-			if (replacement != NULL) {
-				replacement->dfs(callback, depth + 1);
-			}
-
-=======
->>>>>>> 🧹 Refactored And Removed Unnecessary Code
 			callback(this, depth);
 		}
 
