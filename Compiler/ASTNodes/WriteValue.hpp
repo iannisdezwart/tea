@@ -13,6 +13,7 @@ bool is_write_value(ASTNode *node)
 	switch (node->type) {
 		case IDENTIFIER_EXPRESSION:
 		case MEMBER_EXPRESSION:
+		case UNARY_OPERATION:
 			return true;
 
 		default:

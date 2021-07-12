@@ -80,7 +80,6 @@ class VariableDeclaration : public ASTNode {
 						// Check type compatibility
 
 						if (init_list->items.size() > cl.fields.size()) {
-							cout << init_list->accountable_token.to_str() << '\n';
 							err_at_token(init_list->accountable_token, "Type Error",
 								"InitList for %s class instance holds %lu members, "
 								"but %s has only %lu fields",

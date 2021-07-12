@@ -21,18 +21,15 @@ class AssignmentExpression : public ReadValue {
 	public:
 		WriteValue *lhs_expr;
 		ReadValue *value;
-		size_t dereference_depth;
 		Token op_token;
 		enum Operator op;
 
 		AssignmentExpression(
 			WriteValue *lhs_expr,
 			ReadValue *value,
-			Token op_token,
-			size_t dereference_depth = 0
+			Token op_token
 		) : lhs_expr(lhs_expr), value(value), op_token(op_token),
 				op(str_to_operator(op_token.value)),
-				dereference_depth(dereference_depth),
 				ReadValue(op_token, ASSIGNMENT_EXPRESSION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
@@ -47,9 +44,7 @@ class AssignmentExpression : public ReadValue {
 
 			s += "AssignmentExpression { op = \"";
 			s += op_to_str(op);
-			s += "\", dereference_depth = ";
-			s += to_string(dereference_depth);
-			s += " } @ ";
+			s += "\" } @ ";
 			s += to_hex((size_t) this);
 
 			return s;
@@ -57,27 +52,7 @@ class AssignmentExpression : public ReadValue {
 
 		Type get_type(CompilerState& compiler_state)
 		{
-			Type lhs_type;
-
-			if (lhs_expr->type == IDENTIFIER_EXPRESSION) {
-				IdentifierExpression *id_expr = (IdentifierExpression *) lhs_expr;
-				lhs_type = id_expr->get_type(compiler_state);
-			}
-
-			else if (lhs_expr->type == MEMBER_EXPRESSION) {
-				MemberExpression *mem_expr = (MemberExpression *) lhs_expr;
-				lhs_type = mem_expr->get_type(compiler_state);
-			}
-
-			else {
-				err_at_token(lhs_expr->accountable_token,
-					"Syntax Error",
-					"Unexpected %s at the left hand side of an AssignmentExpression\n"
-					"Expected an IdentifierExpression or a MemberExpression",
-					ast_node_type_to_str(lhs_expr->type));
-			}
-
-			lhs_type.pointer_depth -= dereference_depth;
+			Type lhs_type = lhs_expr->get_type(compiler_state);
 			Type value_type = value->get_type(compiler_state);
 
 			if (!value_type.fits(lhs_type))
@@ -117,54 +92,54 @@ class AssignmentExpression : public ReadValue {
 		 */
 		void get_value(Assembler& assembler, CompilerState& compiler_state)
 		{
-			size_t deref_dep = dereference_depth;
-			Type var_type = get_type(compiler_state);
+			// size_t deref_dep = dereference_depth;
+			// Type var_type = get_type(compiler_state);
 
-			if (deref_dep > 0) {
-				// Moves the address of what to dereference into R_ACCUMULATOR_1
+			// if (deref_dep > 0) {
+			// 	// Moves the address of what to dereference into R_ACCUMULATOR_1
 
-				lhs_expr->get_value(assembler, compiler_state);
+			// 	lhs_expr->get_value(assembler, compiler_state);
 
-				while (--deref_dep) {
-					assembler.move_reg_pointer_64_into_reg(
-						R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
-				}
+			// 	while (--deref_dep) {
+			// 		assembler.move_reg_pointer_64_into_reg(
+			// 			R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+			// 	}
 
-				assembler.move_reg_into_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+			// 	assembler.move_reg_into_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
 
-				// Moves the value to R_ACCUMULATOR_0
+			// 	// Moves the value to R_ACCUMULATOR_0
 
-				value->get_value(assembler, compiler_state);
+			// 	value->get_value(assembler, compiler_state);
 
-				switch (var_type.byte_size()) {
-					case 1:
-						assembler.move_reg_into_reg_pointer_8(
-							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-						break;
+			// 	switch (var_type.byte_size()) {
+			// 		case 1:
+			// 			assembler.move_reg_into_reg_pointer_8(
+			// 				R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+			// 			break;
 
-					case 2:
-						assembler.move_reg_into_reg_pointer_16(
-							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-						break;
+			// 		case 2:
+			// 			assembler.move_reg_into_reg_pointer_16(
+			// 				R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+			// 			break;
 
-					case 4:
-						assembler.move_reg_into_reg_pointer_32(
-							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-						break;
+			// 		case 4:
+			// 			assembler.move_reg_into_reg_pointer_32(
+			// 				R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+			// 			break;
 
-					case 8:
-						assembler.move_reg_into_reg_pointer_64(
-							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-						break;
+			// 		case 8:
+			// 			assembler.move_reg_into_reg_pointer_64(
+			// 				R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+			// 			break;
 
-					default:
-						printf("Dereference assignment for "
-							"	byte size %lu is not implemented\n", var_type.byte_size());
-						abort();
-				}
+			// 		default:
+			// 			printf("Dereference assignment for "
+			// 				"	byte size %lu is not implemented\n", var_type.byte_size());
+			// 			abort();
+			// 	}
 
-				return;
-			}
+			// 	return;
+			// }
 
 			// Left hand side is not a pointer
 			// Moves result into R_ACCUMULATOR_0

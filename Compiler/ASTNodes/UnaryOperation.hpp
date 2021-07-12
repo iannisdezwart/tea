@@ -17,7 +17,7 @@
 
 using namespace std;
 
-class UnaryOperation : public ReadValue {
+class UnaryOperation : public WriteValue {
 	public:
 		ReadValue *expression;
 		Token op_token;
@@ -29,7 +29,7 @@ class UnaryOperation : public ReadValue {
 		UnaryOperation(ReadValue *expression, const Token& op_token, bool prefix)
 			: expression(expression), op_token(op_token),
 				op(str_to_operator(op_token.value, prefix)),
-				prefix(prefix), ReadValue(op_token, UNARY_OPERATION) {}
+				prefix(prefix), WriteValue(op_token, UNARY_OPERATION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
@@ -88,6 +88,96 @@ class UnaryOperation : public ReadValue {
 						"didn't find an operation to perform with operator %s",
 						op_token.value.c_str());
 				}
+			}
+		}
+
+		LocationData get_location_data(CompilerState& compiler_state)
+		{
+			// Todo: create
+		}
+
+		void store(Assembler& assembler, CompilerState& compiler_state)
+		{
+			switch (op) {
+				case PREFIX_INCREMENT:
+				{
+					WriteValue *wr_expression = WriteValue::cast(expression);
+					wr_expression->store(assembler, compiler_state);
+					break;
+				}
+
+				case PREFIX_DECREMENT:
+				{
+					WriteValue *wr_expression = WriteValue::cast(expression);
+					wr_expression->store(assembler, compiler_state);
+					break;
+				}
+
+				case DEREFERENCE:
+				{
+					size_t deref_dep = 0;
+					ReadValue *expr = this;
+
+					while (
+						expr->type == UNARY_OPERATION
+						&& ((UnaryOperation *) expr)->op == DEREFERENCE
+					) {
+						expr = ((UnaryOperation *) expr)->expression;
+						deref_dep++;
+					}
+
+					// Move the value to store into R_ACCUMULATOR_1
+
+					assembler.move_reg_into_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+
+					// Move the address of what to dereference into R_ACCUMULATOR_0
+
+					Type expr_type = expr->get_type(compiler_state);
+					expr_type.pointer_depth -= deref_dep;
+
+					// Dereference
+
+					while (--deref_dep) {
+						assembler.move_reg_pointer_64_into_reg(
+							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+					}
+
+					switch (expr_type.byte_size()) {
+						case 1:
+							assembler.move_reg_into_reg_pointer_8(
+								R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+							break;
+
+						case 2:
+							assembler.move_reg_into_reg_pointer_16(
+								R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+							break;
+
+						case 4:
+							assembler.move_reg_into_reg_pointer_32(
+							R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+							break;
+
+						case 8:
+							assembler.move_reg_into_reg_pointer_64(
+								R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+							break;
+
+						default:
+							printf("Dereference assignment for "
+								"	byte size %lu is not implemented\n", 
+								expr->get_type(compiler_state).byte_size());
+							abort();
+					}
+
+					break;
+				}
+
+				default:
+					err_at_token(op_token,
+						"Value Type Error",
+						"Expected a WriteValue\n"
+						"This value is not writable");
 			}
 		}
 

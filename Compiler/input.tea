@@ -6,19 +6,13 @@ void putc(u8 c)
 	*out = c
 }
 
-void puts(u8 *c, u64 len)
-{
-	u64 i = 0
-
-	while (i < len)
-	{
-		putc(*c++)
-		i++
-	}
-}
-
 u64 main()
 {
-	u8 *str = "Hello, World!"
-	puts(str, 13)
+	u8 c = 'A'
+	u8 *p = &c
+	u8 **pp = &p
+	;**pp = 'B'
+	putc(*p)
+	;*p = 'C'
+	putc(**pp)
 }

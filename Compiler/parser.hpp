@@ -481,29 +481,29 @@ class Parser {
 							case BITWISE_XOR_ASSIGNMENT:
 							case BITWISE_OR_ASSIGNMENT:
 							{
-								size_t dereference_depth = 0;
-								Token id_token;
+								// size_t dereference_depth = 0;
+								// Token id_token;
 
-								while (left->type != IDENTIFIER_EXPRESSION) {
-									if (left->type != UNARY_OPERATION)
-										err_at_token(left->accountable_token,
-											"Syntax Error",
-											"Unexpected operator of type %d", op_token.type);
+								// while (left->type != IDENTIFIER_EXPRESSION) {
+								// 	if (left->type != UNARY_OPERATION)
+								// 		err_at_token(left->accountable_token,
+								// 			"Syntax Error",
+								// 			"Unexpected operator of type %d", op_token.type);
 
-									UnaryOperation *unary_op = (UnaryOperation *) left;
+								// 	UnaryOperation *unary_op = (UnaryOperation *) left;
 
-									if (unary_op->op != DEREFERENCE)
-										err_at_token(left->accountable_token,
-											"Syntax Error",
-											"Unexpected operator of type %d", op_token.type);
+								// 	if (unary_op->op != DEREFERENCE)
+								// 		err_at_token(left->accountable_token,
+								// 			"Syntax Error",
+								// 			"Unexpected operator of type %d", op_token.type);
 
-									left = unary_op->expression;
-									delete unary_op;
-									dereference_depth++;
-								}
+								// 	left = unary_op->expression;
+								// 	delete unary_op;
+								// 	dereference_depth++;
+								// }
 
 								new_expr = new AssignmentExpression(WriteValue::cast(left),
-									ReadValue::cast(right), op_token, dereference_depth);
+									ReadValue::cast(right), op_token);
 
 								break;
 							}
@@ -538,7 +538,6 @@ class Parser {
 
 				// It is a prefix unary operator, push its token to the operator vector
 
-				printf("prefix unary op: %s\n", maybe_operator_token.to_str().c_str());
 				i++;
 				operators.push_back(make_pair(maybe_operator_token, true));
 			}
@@ -649,7 +648,6 @@ class Parser {
 
 				// It is a postfix unary operator, push its token to the operator vector
 
-				printf("postfix unary op: %s\n", maybe_operator_token.to_str().c_str());
 				i++;
 				operators.push_back(make_pair(maybe_operator_token, false));
 			}
