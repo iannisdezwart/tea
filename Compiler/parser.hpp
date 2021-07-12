@@ -665,7 +665,7 @@ class Parser {
 					for (size_t j = 0; j < operators.size(); j++) {
 						Token& op_token = operators[j].first;
 						bool prefix = operators[j].second;
-						enum Operator op = str_to_operator(op_token.value);
+						enum Operator op = str_to_operator(op_token.value, prefix);
 
 						// Check if this operator is mergeable
 
@@ -699,7 +699,7 @@ class Parser {
 					for (size_t j = operators.size(); j != 0; j--) {
 						Token& op_token = operators[j - 1].first;
 						bool prefix = operators[j - 1].second;
-						enum Operator op = str_to_operator(op_token.value);
+						enum Operator op = str_to_operator(op_token.value, prefix);
 
 						// Check if this operator is mergeable
 
