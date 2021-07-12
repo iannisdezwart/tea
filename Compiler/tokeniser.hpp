@@ -713,14 +713,38 @@ class Tokeniser {
 			if (first_char == '0') {
 				// We could have to deal with 0x or 0b prefix, or a decimal seperator
 
-				if (c == 'x' || c == 'b' || c == '.') {
+				if (c == '.') {
 					do {
-						s += c;
+						s += '.';
 						c = get_char();
-					} while (c >= '0' && c <= '9');
+					} while (is_decimal(c));
 
 					unget_char(c);
 					return s;
+				}
+
+				if (c == 'x') {
+					s.clear();
+
+					while (c = get_char(), is_hex(c)) {
+						s += c;
+					}
+
+					unget_char(c);
+
+					return to_string(stoull(s, NULL, 16));
+				}
+
+				if (c == 'b') {
+					s.clear();
+
+					while (c = get_char(), is_binary(c)) {
+						s += c;
+					}
+
+					unget_char(c);
+
+					return to_string(stoull(s, NULL, 2));
 				}
 
 				if (c < '0' && c > '9' && c != '.')

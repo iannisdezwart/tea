@@ -32,6 +32,8 @@
 #define is_hex(c) (c >= 'A' && c <= 'F' || c >= 'a' && c <= 'f' \
 	|| c >= '0' && c <= '9')
 
+#define is_binary(c) (c == '0' || c == '1')
+
 using namespace std;
 
 template <typename intx_t>
