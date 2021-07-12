@@ -35,6 +35,7 @@ class AssignmentExpression : public ReadValue {
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			value->dfs(callback, depth + 1);
+			lhs_expr->dfs(callback, depth + 1);
 			callback(this, depth);
 		}
 
@@ -92,56 +93,6 @@ class AssignmentExpression : public ReadValue {
 		 */
 		void get_value(Assembler& assembler, CompilerState& compiler_state)
 		{
-			// size_t deref_dep = dereference_depth;
-			// Type var_type = get_type(compiler_state);
-
-			// if (deref_dep > 0) {
-			// 	// Moves the address of what to dereference into R_ACCUMULATOR_1
-
-			// 	lhs_expr->get_value(assembler, compiler_state);
-
-			// 	while (--deref_dep) {
-			// 		assembler.move_reg_pointer_64_into_reg(
-			// 			R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
-			// 	}
-
-			// 	assembler.move_reg_into_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-
-			// 	// Moves the value to R_ACCUMULATOR_0
-
-			// 	value->get_value(assembler, compiler_state);
-
-			// 	switch (var_type.byte_size()) {
-			// 		case 1:
-			// 			assembler.move_reg_into_reg_pointer_8(
-			// 				R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-			// 			break;
-
-			// 		case 2:
-			// 			assembler.move_reg_into_reg_pointer_16(
-			// 				R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-			// 			break;
-
-			// 		case 4:
-			// 			assembler.move_reg_into_reg_pointer_32(
-			// 				R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-			// 			break;
-
-			// 		case 8:
-			// 			assembler.move_reg_into_reg_pointer_64(
-			// 				R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-			// 			break;
-
-			// 		default:
-			// 			printf("Dereference assignment for "
-			// 				"	byte size %lu is not implemented\n", var_type.byte_size());
-			// 			abort();
-			// 	}
-
-			// 	return;
-			// }
-
-			// Left hand side is not a pointer
 			// Moves result into R_ACCUMULATOR_0
 
 			value->get_value(assembler, compiler_state);

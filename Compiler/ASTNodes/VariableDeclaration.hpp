@@ -4,6 +4,8 @@
 #include <bits/stdc++.h>
 
 #include "ASTNode.hpp"
+#include "ReadValue.hpp"
+#include "IdentifierExpression.hpp"
 #include "../tokeniser.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
@@ -15,11 +17,13 @@ using namespace std;
 class VariableDeclaration : public ASTNode {
 	public:
 		TypeIdentifierPair *type_and_id_pair;
-		ASTNode *expression;
+		IdentifierExpression id_expr;
+		ReadValue *expression;
 
 		VariableDeclaration(TypeIdentifierPair *type_and_id_pair,
-			ASTNode *expression)
-		: type_and_id_pair(type_and_id_pair), expression(expression),
+			ReadValue *expression)
+		: type_and_id_pair(type_and_id_pair),
+			id_expr(type_and_id_pair->identifier_token), expression(expression),
 			ASTNode(type_and_id_pair->identifier_token, VARIABLE_DECLARATION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
@@ -44,6 +48,20 @@ class VariableDeclaration : public ASTNode {
 		void compile(Assembler& assembler, CompilerState& compiler_state)
 		{
 			if (expression != NULL) {
+				// Match types
+
+				Type specified_type = get_type(compiler_state);
+				Type assignment_type = expression->get_type(compiler_state);
+
+				if (!assignment_type.fits(specified_type)) {
+					err_at_token(expression->accountable_token,
+						"Type Error",
+						"Initial value of VariableDeclaration does not fit into "
+						"specified type\n"
+						"specified_type = %s, assignment_value = %s",
+						specified_type.to_str().c_str(), assignment_type.to_str().c_str());
+				}
+
 				string id_name = type_and_id_pair->get_identifier_name();
 				IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
 
@@ -185,75 +203,19 @@ class VariableDeclaration : public ASTNode {
 							"Expected an initialiser list or a constructor call",
 							ast_node_type_to_str(expression->type));
 					}
+
+					return;
 				}
 
 				// Built-in type declaration
 
-				else {
-					// Moves result into R_ACCUMULATOR
+				// Moves result into R_ACCUMULATOR_0
 
-					expression->compile(assembler, compiler_state);
+				expression->get_value(assembler, compiler_state);
 
-					// Move R_ACCUMULATOR into the address of the variable
+				// Move R_ACCUMULATOR into the address of the variable
 
-					switch (id_kind) {
-						case IdentifierKind::LOCAL:
-						{
-							switch (var_size) {
-								case 1:
-									assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_0_ID, offset);
-									break;
-
-								case 2:
-									assembler.move_reg_into_frame_offset_16(R_ACCUMULATOR_0_ID, offset);
-									break;
-
-								case 4:
-									assembler.move_reg_into_frame_offset_32(R_ACCUMULATOR_0_ID, offset);
-									break;
-
-								case 8:
-									assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_0_ID, offset);
-									break;
-
-								default:
-									err_at_token(accountable_token, "Invalid VariableDeclaration",
-										"Cannot declare a variable with size %lu\n"
-										"This behaviour is not implemented yet", var_size);
-							}
-
-							break;
-						}
-
-						case IdentifierKind::GLOBAL:
-						{
-							switch (var_size) {
-								case 1:
-									assembler.move_reg_into_stack_top_offset_8(R_ACCUMULATOR_0_ID, offset);
-									break;
-
-								case 2:
-									assembler.move_reg_into_stack_top_offset_16(R_ACCUMULATOR_0_ID, offset);
-									break;
-
-								case 4:
-									assembler.move_reg_into_stack_top_offset_32(R_ACCUMULATOR_0_ID, offset);
-									break;
-
-								case 8:
-									assembler.move_reg_into_stack_top_offset_64(R_ACCUMULATOR_0_ID, offset);
-									break;
-
-								default:
-									err_at_token(accountable_token, "Invalid VariableDeclaration",
-										"Cannot declare a variable of with size %lu\n"
-										"This behaviour is not implemented yet", var_size);
-							}
-
-							break;
-						}
-					}
-				}
+				id_expr.store(assembler, compiler_state);
 			}
 		}
 };

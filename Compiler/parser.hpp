@@ -839,7 +839,7 @@ class Parser {
 
 			if (next.type == OPERATOR && next.value == "=") {
 				i++;
-				return new VariableDeclaration(type_id_pair, scan_expression());
+				return new VariableDeclaration(type_id_pair, ReadValue::cast(scan_expression()));
 			}
 
 			// Only declaration

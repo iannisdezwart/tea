@@ -132,6 +132,8 @@ class UnaryOperation : public WriteValue {
 
 					// Move the address of what to dereference into R_ACCUMULATOR_0
 
+					expr->get_value(assembler, compiler_state);
+
 					Type expr_type = expr->get_type(compiler_state);
 					expr_type.pointer_depth -= deref_dep;
 

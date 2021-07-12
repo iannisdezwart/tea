@@ -8,11 +8,9 @@ void putc(u8 c)
 
 u64 main()
 {
-	u8 c = 'A'
-	u8 *p = &c
-	u8 **pp = &p
-	;**pp = 'B'
-	putc(*p)
-	;*p = 'C'
-	putc(**pp)
+	u8 a = 'A'
+	u8 b = 'B'
+	u8 c = 'C'
+	u8 c_a_diff = c - a
+	putc(c_a_diff + '0')
 }
