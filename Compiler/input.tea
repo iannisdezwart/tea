@@ -6,29 +6,19 @@ void putc(u8 c)
 	*out = c
 }
 
-class TwoChars
+void puts(u8 *c, u64 len)
 {
-	u8 a
-	u8 b
+	u64 i = 0
 
-	void make()
+	while (i < len)
 	{
-		a = 'a'
-		b = 'b'
-	}
-
-	void print()
-	{
-		putc(a)
-		putc(' ')
-		putc(b)
-		putc('\n')
+		putc(*c++)
+		i++
 	}
 }
 
 u64 main()
 {
-	TwoChars chars = { 'A', 'B' }
-	chars.make()
-	chars.print()
+	u8 *str = "Hello, World!"
+	puts(str, 13)
 }

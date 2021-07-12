@@ -96,117 +96,110 @@ class UnaryOperation : public ReadValue {
 			switch (op) {
 				case POSTFIX_INCREMENT:
 				{
-					WriteValue *expression = WriteValue::cast(expression);
-					Type type = expression->get_type(compiler_state);
+					WriteValue *wr_expression = WriteValue::cast(expression);
+					Type type = wr_expression->get_type(compiler_state);
 
 					// Move result into R_ACCUMULATOR_0 and increment it
 
-					expression->get_value(assembler, compiler_state);
-
-					size_t increment;
+					wr_expression->get_value(assembler, compiler_state);
 
 					if (type.pointer_depth > 0) {
-						increment = type.pointed_byte_size();
+						assembler.add_64_into_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
 					} else {
 						assembler.increment_reg(R_ACCUMULATOR_0_ID);
 					}
 
-					assembler.add_64_into_reg(increment, R_ACCUMULATOR_0_ID);
-
 					// Store the value back into memory
 
-					expression->store(assembler, compiler_state);
+					wr_expression->store(assembler, compiler_state);
 
 					// Decrement R_ACCUMULATOR_0
 
-					assembler.subtract_64_from_reg(increment, R_ACCUMULATOR_0_ID);
+					if (type.pointer_depth > 0) {
+						assembler.subtract_64_from_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
+					} else {
+						assembler.decrement_reg(R_ACCUMULATOR_0_ID);
+					}
+
 					break;
 				}
 
 				case POSTFIX_DECREMENT:
 				{
-					WriteValue *expression = WriteValue::cast(expression);
-					Type type = expression->get_type(compiler_state);
+					WriteValue *wr_expression = WriteValue::cast(expression);
+					Type type = wr_expression->get_type(compiler_state);
 
 					// Move result into R_ACCUMULATOR_0 and decrement it
 
-					expression->get_value(assembler, compiler_state);
-
-					size_t increment;
+					wr_expression->get_value(assembler, compiler_state);
 
 					if (type.pointer_depth > 0) {
-						increment = type.pointed_byte_size();
+						assembler.subtract_64_from_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
 					} else {
-						increment = 1;
+						assembler.decrement_reg(R_ACCUMULATOR_0_ID);
 					}
-
-					assembler.subtract_64_from_reg(increment, R_ACCUMULATOR_0_ID);
 
 					// Store the value back into memory
 
-					expression->store(assembler, compiler_state);
+					wr_expression->store(assembler, compiler_state);
 
 					// Increment R_ACCUMULATOR_0
 
-					assembler.increment_reg(R_ACCUMULATOR_0_ID);
+					if (type.pointer_depth > 0) {
+						assembler.add_64_into_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
+					} else {
+						assembler.increment_reg(R_ACCUMULATOR_0_ID);
+					}
+
 					break;
 				}
 
 				case PREFIX_INCREMENT:
 				{
-					WriteValue *expression = WriteValue::cast(expression);
-					Type type = expression->get_type(compiler_state);
+					WriteValue *wr_expression = WriteValue::cast(expression);
+					Type type = wr_expression->get_type(compiler_state);
 
 					// Move result into R_ACCUMULATOR_0 and increment it
 
-					expression->get_value(assembler, compiler_state);
+					wr_expression->get_value(assembler, compiler_state);
 
-					size_t increment;
+					wr_expression->get_value(assembler, compiler_state);
 
 					if (type.pointer_depth > 0) {
-						increment = type.pointed_byte_size();
+						assembler.add_64_into_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
 					} else {
-						increment = 1;
+						assembler.increment_reg(R_ACCUMULATOR_0_ID);
 					}
-
-					assembler.add_64_into_reg(increment, R_ACCUMULATOR_0_ID);
 
 					// Store the value back into memory
 
-					expression->store(assembler, compiler_state);
+					wr_expression->store(assembler, compiler_state);
 					break;
 				}
 
 				case PREFIX_DECREMENT:
 				{
-					WriteValue *expression = WriteValue::cast(expression);
-					Type type = expression->get_type(compiler_state);
-
+					WriteValue *wr_expression = WriteValue::cast(expression);
+					Type type = wr_expression->get_type(compiler_state);
 
 					// Move result into R_ACCUMULATOR_0 and decrement it
 
-					expression->get_value(assembler, compiler_state);
-
-					size_t increment;
+					wr_expression->get_value(assembler, compiler_state);
 
 					if (type.pointer_depth > 0) {
-						increment = type.pointed_byte_size();
+						assembler.subtract_64_from_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
 					} else {
-						increment = 1;
+						assembler.decrement_reg(R_ACCUMULATOR_0_ID);
 					}
-
-					assembler.subtract_64_from_reg(increment, R_ACCUMULATOR_0_ID);
 
 					// Store the value back into memory
 
-					expression->store(assembler, compiler_state);
+					wr_expression->store(assembler, compiler_state);
 					break;
 				}
 
 				case UNARY_PLUS:
 				{
-					ReadValue *expression = ReadValue::cast(expression);
-
 					// Todo: look up if this operator does anything interesting
 
 					expression->get_value(assembler, compiler_state);
@@ -215,8 +208,6 @@ class UnaryOperation : public ReadValue {
 
 				case UNARY_MINUS:
 				{
-					ReadValue *expression = ReadValue::cast(expression);
-
 					expression->get_value(assembler, compiler_state);
 
 					// Invert the bits and add one
@@ -228,8 +219,6 @@ class UnaryOperation : public ReadValue {
 
 				case BITWISE_NOT:
 				{
-					ReadValue *expression = ReadValue::cast(expression);
-
 					expression->get_value(assembler, compiler_state);
 
 					// Invert the bits
@@ -240,8 +229,6 @@ class UnaryOperation : public ReadValue {
 
 				case LOGICAL_NOT:
 				{
-					ReadValue *expression = ReadValue::cast(expression);
-
 					expression->get_value(assembler, compiler_state);
 
 					// Invert the bits and mask
@@ -253,8 +240,6 @@ class UnaryOperation : public ReadValue {
 
 				case DEREFERENCE:
 				{
-					WriteValue *expression = WriteValue::cast(expression);
-
 					// Moves the address of what to dereference into R_ACCUMULATOR_0
 
 					expression->get_value(assembler, compiler_state);
@@ -290,8 +275,8 @@ class UnaryOperation : public ReadValue {
 
 				case ADDRESS_OF:
 				{
-					WriteValue *expression = WriteValue::cast(expression);
-					LocationData location_data = expression->get_location_data(compiler_state);
+					WriteValue *wr_expression = WriteValue::cast(expression);
+					LocationData location_data = wr_expression->get_location_data(compiler_state);
 
 					if (location_data.is_at_frame_top()) {
 						assembler.move_reg_into_reg(R_FRAME_P_ID, R_ACCUMULATOR_0_ID);
