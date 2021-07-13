@@ -779,7 +779,7 @@ class Assembler : public BufferBuilder {
 
 		void set_reg_if_not_equal(uint8_t reg_id)
 		{
-			push_instruction(SET_REG_IF_EQUAL);
+			push_instruction(SET_REG_IF_NOT_EQUAL);
 			push(reg_id);
 		}
 
