@@ -24,10 +24,11 @@ class Type {
 			UNDEFINED,
 			UNSIGNED_INTEGER,
 			SIGNED_INTEGER,
-			USER_DEFINED_CLASS
+			USER_DEFINED_CLASS,
+			INIT_LIST
 		};
 
-		size_t pointer_depth;
+		size_t pointer_depth = 0;
 		string class_name;
 		vector<Type> fields;
 
@@ -179,6 +180,17 @@ class Type {
 				return true;
 			}
 
+			if (value == Type::INIT_LIST) {
+				if (type.value != Type::USER_DEFINED_CLASS) return false;
+				if (fields.size() != type.fields.size()) return false;
+
+				for (size_t i = 0; i < fields.size(); i++) {
+					if (!fields[i].fits(type.fields[i])) return false;
+				}
+
+				return true;
+			}
+
 			return false;
 		}
 
@@ -202,6 +214,23 @@ class Type {
 
 				case Type::USER_DEFINED_CLASS:
 					s += class_name;
+					break;
+
+				case Type::INIT_LIST:
+					if (fields.size() == 0) {
+						s += "{}";
+						break;
+					}
+
+					s += "{ ";
+
+					for (size_t i = 0; i < fields.size(); i++) {
+						s += fields[i].to_str();
+						if (i != fields.size() - 1) s += ", ";
+					}
+
+					s += " }";
+
 					break;
 			}
 

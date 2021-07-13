@@ -50,6 +50,10 @@ class TypeIdentifierPair : public ASTNode {
 				Type type(Type::USER_DEFINED_CLASS, byte_size, pointer_depth);
 				type.class_name = type_token.value;
 
+				for (const Identifier& field : class_decl.fields) {
+					type.fields.push_back(field.type);
+				}
+
 				return type;
 			}
 

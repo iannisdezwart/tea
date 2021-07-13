@@ -6,11 +6,29 @@ void putc(u8 c)
 	*out = c
 }
 
+class TwoChars
+{
+	u8 a
+	u8 b
+
+	void make()
+	{
+		a = 'a'
+		b = 'b'
+	}
+
+	void print()
+	{
+		putc(a)
+		putc(' ')
+		putc(b)
+		putc('\n')
+	}
+}
+
 u64 main()
 {
-	u8 a = 'A'
-	u8 b = 'B'
-	u8 c = 'C'
-	u8 c_a_diff = c - a
-	putc(c_a_diff + '0')
+	TwoChars chars = { 'A', 'B' }
+	chars.make()
+	chars.print()
 }

@@ -35,7 +35,18 @@ class InitList : public ReadValue {
 
 		Type get_type(CompilerState& compiler_state)
 		{
-			return Type();
+			vector<Type> fields;
+			size_t total_size;
+
+			for (ReadValue *item : items) {
+				Type item_type = item->get_type(compiler_state);
+				total_size += item_type.byte_size();
+				fields.push_back(std::move(item_type));
+			}
+
+			Type type(Type::INIT_LIST, total_size);
+			type.fields = std::move(fields);
+			return type;
 		}
 
 		void get_value(Assembler& assembler, CompilerState& compiler_state)
