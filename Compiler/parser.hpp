@@ -27,6 +27,7 @@
 #include "ASTNodes/WhileStatement.hpp"
 #include "ASTNodes/ClassDeclaration.hpp"
 #include "ASTNodes/InitList.hpp"
+#include "ASTNodes/CastExpression.hpp"
 
 using namespace std;
 
@@ -144,6 +145,8 @@ class Parser {
 
 			switch (token.type) {
 				case TYPE:
+					// Todo: consider what should happen when casting here
+
 					return scan_declaration();
 
 				case KEYWORD:
@@ -165,50 +168,10 @@ class Parser {
 						return scan_class_declaration();
 					}
 
-					// if (token.value == "if")
-					// 	return scan_if_statement();
-					// if (token.value == "loop")
-					// 	return scan_loop_statement();
-					// if (token.value == "while")
-					// 	return scan_while_statement();
-					// if (token.value == "break")
-					// 	return scan_break_statement();
-					// if (token.value == "for")
-					// 	return scan_for_statement();
-					// if (token.value == "continue")
-					// 	return scan_continue_statement();
-					// if (token.value == "goto")
-					// 	return scan_goto_statement();
 					else err("[ Parser Error ]: Keyword %s not handled.\n",
 						token.value.c_str());
 
-				// case IDENTIFIER:
-				// {
-				// 	// Could be a function call or an assignment
-
-				// 	Token maybe_left_bracket = get_token(1);
-
-				// 	if (
-				// 		maybe_left_bracket.type == SPECIAL_CHARACTER &&
-				// 		maybe_left_bracket.value == "("
-				// 	) {
-				// 		node = scan_function_call();
-				// 		expect_statement_terminator();
-				// 		return node;
-				// 	} else {
-				// 		node = scan_expression();
-				// 		expect_statement_terminator();
-				// 		return node;
-				// 	}
-				// }
-
-				// case OPERATOR:
-				// 	// Prefix unary assignments
-
-				// 	scan_prefix_unary_assignment();
-
 				default:
-					// unexpected_token_syntax_err(token);
 					node = scan_expression();
 					expect_statement_terminator();
 					return node;
@@ -544,10 +507,64 @@ class Parser {
 
 			Token expr_token = next_token();
 
-			// Parenthesised Expression
-			// Todo: make casting work
+			// Casting
+			// <type>(<expr>)
 
-			if (expr_token.type == SPECIAL_CHARACTER && expr_token.value == "(") {
+			if (expr_token.type == TYPE) {
+				Token left_parenthesis = next_token();
+				assert_token_type(left_parenthesis, SPECIAL_CHARACTER);
+				assert_token_value(left_parenthesis, "(");
+
+				expression = new CastExpression(ReadValue::cast(scan_expression()),
+					expr_token, 0);
+
+				Token right_parenthesis = next_token();
+				assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
+				assert_token_value(right_parenthesis, ")");
+			}
+
+			// Casting
+			// [<type> <*>](<expr>)
+
+			else if (expr_token.type == SPECIAL_CHARACTER && expr_token.value == "[") {
+				Token type_token = next_token();
+				assert_token_type(type_token, TYPE);
+
+				size_t pointer_depth = 0;
+
+				while (true) {
+					Token pointer_or_end_token = next_token();
+
+					if (
+						pointer_or_end_token.type == OPERATOR
+						&& pointer_or_end_token.value == "*"
+					) {
+						pointer_depth++;
+					}
+
+					else if (
+						pointer_or_end_token.type == SPECIAL_CHARACTER
+						&& pointer_or_end_token.value == "]"
+					) break;
+
+					else unexpected_token_syntax_err(pointer_or_end_token);
+				}
+
+				Token left_parenthesis = next_token();
+				assert_token_type(left_parenthesis, SPECIAL_CHARACTER);
+				assert_token_value(left_parenthesis, "(");
+
+				expression = new CastExpression(ReadValue::cast(scan_expression()),
+					type_token, pointer_depth);
+
+				Token right_parenthesis = next_token();
+				assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
+				assert_token_value(right_parenthesis, ")");
+			}
+
+			// Parenthesised Expression
+
+			else if (expr_token.type == SPECIAL_CHARACTER && expr_token.value == "(") {
 				expression = scan_expression();
 
 				// Expect right parenthesis

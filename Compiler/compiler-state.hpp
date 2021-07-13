@@ -182,7 +182,7 @@ class Type {
 
 			if (value == Type::INIT_LIST) {
 				if (type.value != Type::USER_DEFINED_CLASS) return false;
-				if (fields.size() != type.fields.size()) return false;
+				if (fields.size() > type.fields.size()) return false;
 
 				for (size_t i = 0; i < fields.size(); i++) {
 					if (!fields[i].fits(type.fields[i])) return false;
