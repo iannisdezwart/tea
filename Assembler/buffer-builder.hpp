@@ -12,11 +12,14 @@ class BufferBuilder {
 		uint8_t *buffer;
 		size_t capacity;
 
+		/**
+		 *  Returns the smallest power of two that is bigger than el_count.
+		 */
 		size_t fits(size_t el_count)
 		{
 			for (uint8_t i = sizeof(size_t) * 8; i != 1; i--) {
 				size_t size = 1 << (i - 1);
-				if (size != 0) return size;
+				if (size < el_count) return 1 << i;
 			}
 
 			return 1;
@@ -51,6 +54,7 @@ class BufferBuilder {
 
 				delete[] buffer;
 				buffer = new_buffer;
+				capacity = new_capacity;
 			}
 		}
 
@@ -73,11 +77,6 @@ class BufferBuilder {
 			for (char c : str) push(c);
 			push('\0');
 		}
-
-		// const uint8_t& operator[](size_t index) const
-		// {
-		// 	return buffer[index];
-		// }
 
 		uint8_t operator[](size_t index) const
 		{
