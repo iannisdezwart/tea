@@ -45,7 +45,12 @@ class LiteralNumberExpression : public ReadValue {
 
 		Type get_type(CompilerState& compiler_state)
 		{
-			return Type(Type::UNSIGNED_INTEGER, 8);
+			Type type(Type::UNSIGNED_INTEGER, 8);
+
+			type.is_literal = true;
+			type.literal_value = &value;
+
+			return type;
 		}
 
 		void get_value(Assembler& assembler, CompilerState& compiler_state)

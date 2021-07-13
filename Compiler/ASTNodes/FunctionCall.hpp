@@ -84,10 +84,10 @@ class FunctionCall : public ReadValue {
 				string param = param_type.to_str();
 				string arg = arg_type.to_str();
 
-				if (param_type != arg_type)
+				if (!arg_type.fits(param_type))
 					err_at_token(fn_token,
 						"Type Error",
-						"Function call arguments list does not match "
+						"Function call arguments list don't fit "
 						"function parameter type template\n"
 						"argument[%lu] is of type %s. Expected type %s",
 						i, arg.c_str(), param.c_str());

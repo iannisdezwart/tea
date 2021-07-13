@@ -31,7 +31,11 @@ class Type {
 		string class_name;
 		vector<Type> fields;
 
+		bool is_literal = false;
+		string *literal_value;
+
 		Type() : value(UNDEFINED) {}
+
 		Type(enum Value value, size_t size, size_t pointer_depth = 0)
 			: value(value), size(size), pointer_depth(pointer_depth) {}
 
@@ -122,6 +126,40 @@ class Type {
 					return false;
 				}
 
+				if (is_literal) {
+					if (type.value == Type::UNSIGNED_INTEGER && type.size == 1) {
+						return fits_uint8(*literal_value);
+					}
+
+					if (type.value == Type::SIGNED_INTEGER && type.size == 1) {
+						return fits_int8(*literal_value);
+					}
+
+					if (type.value == Type::UNSIGNED_INTEGER && type.size == 2) {
+						return fits_uint16(*literal_value);
+					}
+
+					if (type.value == Type::SIGNED_INTEGER && type.size == 2) {
+						return fits_int16(*literal_value);
+					}
+
+					if (type.value == Type::UNSIGNED_INTEGER && type.size == 4) {
+						return fits_uint32(*literal_value);
+					}
+
+					if (type.value == Type::SIGNED_INTEGER && type.size == 4) {
+						return fits_int32(*literal_value);
+					}
+
+					if (type.value == Type::UNSIGNED_INTEGER && type.size == 8) {
+						return fits_uint64(*literal_value);
+					}
+
+					if (type.value == Type::SIGNED_INTEGER && type.size == 8) {
+						return fits_int64(*literal_value);
+					}
+				}
+
 				if (byte_size() > type.byte_size()) {
 					return false;
 				}
@@ -170,6 +208,12 @@ class Type {
 			if (pointer_depth) {
 				s += ' ';
 				s += string(pointer_depth, '*');
+			}
+
+			if (is_literal) {
+				s += " (";
+				s += *literal_value;
+				s += ")";
 			}
 
 			return s;

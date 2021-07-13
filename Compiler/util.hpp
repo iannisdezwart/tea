@@ -56,16 +56,108 @@ char hex_chars_to_byte(char upper, char lower)
 	return hex_char_to_num(upper) << 4 | hex_char_to_num(lower);
 }
 
-template <typename From, typename To>
-vector<To> map_vector(const vector<From> vec, function<To (const From&)> map_fn)
-{
-	vector<To> new_vec;
+const char *abs_max_uint8 = "255";
 
-	for (size_t i = 0; i < vec.size(); i++) {
-		new_vec.push(map_fn(vec[i]));
+const char *abs_max_int8 = "127";
+const char *abs_min_int8 = "128";
+
+const char *abs_max_uint16 = "65535";
+
+const char *abs_max_int16 = "32767";
+const char *abs_min_int16 = "32768";
+
+const char *abs_max_uint32 = "4294967295";
+
+const char *abs_max_int32 = "2147483647";
+const char *abs_min_int32 = "2147483648";
+
+const char *abs_max_uint64 = "18446744073709551615";
+
+const char *abs_max_int64 = "9223372036854775807";
+const char *abs_min_int64 = "9223372036854775808";
+
+string pad_start(const string& str, size_t len, char c)
+{
+	if (str.length() >= len) return str;
+	return string(c, len - str.length()) + str;
+}
+
+bool compare_str(const string& str, const char *test)
+{
+	if (str.length() > strlen(test)) return true;
+	return pad_start(str, strlen(test), '0') > test;
+}
+
+bool fits_uint8(const string& str)
+{
+	if (str[0] == '-') return false;
+	if (compare_str(str, abs_max_uint8)) return false;
+	return true;
+}
+
+bool fits_int8(const string& str)
+{
+	if (str[0] == '-') {
+		if (compare_str(str.substr(1), abs_min_int8)) return false;
+		return true;
 	}
 
-	return new_vec;
+	if (compare_str(str, abs_max_int8)) return false;
+	return true;
+}
+
+bool fits_uint16(const string& str)
+{
+	if (str[0] == '-') return false;
+	if (compare_str(str, abs_max_uint16)) return false;
+	return true;
+}
+
+bool fits_int16(const string& str)
+{
+	if (str[0] == '-') {
+		if (compare_str(str.substr(1), abs_min_int16)) return false;
+		return true;
+	}
+
+	if (compare_str(str, abs_max_int16)) return false;
+	return true;
+}
+
+bool fits_uint32(const string& str)
+{
+	if (str[0] == '-') return false;
+	if (compare_str(str, abs_max_uint32)) return false;
+	return true;
+}
+
+bool fits_int32(const string& str)
+{
+	if (str[0] == '-') {
+		if (compare_str(str.substr(1), abs_min_int32)) return false;
+		return true;
+	}
+
+	if (compare_str(str, abs_max_int32)) return false;
+	return true;
+}
+
+bool fits_uint64(const string& str)
+{
+	if (str[0] == '-') return false;
+	if (compare_str(str, abs_max_uint64)) return false;
+	return true;
+}
+
+bool fits_int64(const string& str)
+{
+	if (str[0] == '-') {
+		if (compare_str(str.substr(1), abs_min_int64)) return false;
+		return true;
+	}
+
+	if (compare_str(str, abs_max_int64)) return false;
+	return true;
 }
 
 #endif
