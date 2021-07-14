@@ -165,7 +165,7 @@ class MemberExpression : public WriteValue {
 			LocationData location_data = get_location_data(compiler_state);
 
 			if (op == POINTER_TO_MEMBER) {
-				if (object_type.pointer_depth != 0) {
+				if (object_type.pointer_depth() != 0) {
 					err_at_token(op_token, "Invalid MemberExpression",
 						"Cannot use %s.%s syntax on a pointer\n"
 						"Use %s->%s instead",
@@ -241,7 +241,7 @@ class MemberExpression : public WriteValue {
 			}
 
 			else if (op == DEREFERENCED_POINTER_TO_MEMBER) {
-				if (object_type.pointer_depth == 0) {
+				if (object_type.pointer_depth() == 0) {
 					err_at_token(op_token, "Invalid MemberExpression",
 						"Cannot use %s->%s syntax on an instance\n"
 						"Use %s.%s instead",
@@ -249,10 +249,10 @@ class MemberExpression : public WriteValue {
 						instance_name.c_str(), member_name.c_str());
 				}
 
-				if (object_type.pointer_depth != 1) {
+				if (object_type.pointer_depth() != 1) {
 					err_at_token(op_token, "Invalid MemberExpression",
 						"Cannot use %s->%s syntax on a pointer of depth %lu\n",
-						instance_name.c_str(), member_name.c_str(), object_type.pointer_depth);
+						instance_name.c_str(), member_name.c_str(), object_type.pointer_depth());
 				}
 
 				// Moves the pointer to the class into R_ACCUMULATOR_0_ID
@@ -326,7 +326,7 @@ class MemberExpression : public WriteValue {
 			LocationData location_data = get_location_data(compiler_state);
 
 			if (op == POINTER_TO_MEMBER) {
-				if (object_type.pointer_depth != 0) {
+				if (object_type.pointer_depth() != 0) {
 					err_at_token(op_token, "Invalid MemberExpression",
 						"Cannot use %s.%s syntax on a pointer\n"
 						"Use %s->%s instead",
@@ -402,7 +402,7 @@ class MemberExpression : public WriteValue {
 			}
 
 			else if (op == DEREFERENCED_POINTER_TO_MEMBER) {
-				if (object_type.pointer_depth == 0) {
+				if (object_type.pointer_depth() == 0) {
 					err_at_token(op_token, "Invalid MemberExpression",
 						"Cannot use %s->%s syntax on an instance\n"
 						"Use %s.%s instead",
@@ -410,10 +410,10 @@ class MemberExpression : public WriteValue {
 						instance_name.c_str(), member_name.c_str());
 				}
 
-				if (object_type.pointer_depth != 1) {
+				if (object_type.pointer_depth() != 1) {
 					err_at_token(op_token, "Invalid MemberExpression",
 						"Cannot use %s->%s syntax on a pointer of depth %lu\n",
-						instance_name.c_str(), member_name.c_str(), object_type.pointer_depth);
+						instance_name.c_str(), member_name.c_str(), object_type.pointer_depth());
 				}
 
 				// Moves the value to store into R_ACCUMULATOR_1_ID

@@ -8,56 +8,40 @@
 #include "../compiler-state.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
+#include "TypeName.hpp"
 
 using namespace std;
 
 class TypeIdentifierPair : public ASTNode {
 	public:
-		Token type_token;
-		uint8_t pointer_depth;
 		Token identifier_token;
+		TypeName *type_name;
 
-		TypeIdentifierPair(Token type_token, uint8_t pointer_depth,
-			Token identifier_token)
-				: type_token(type_token), pointer_depth(pointer_depth),
-					identifier_token(identifier_token),
-					ASTNode(identifier_token, TYPE_IDENTIFIER_PAIR) {}
-
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth) {
-			callback(this, depth);
-		}
+		TypeIdentifierPair(TypeName *type_name, const Token& identifier_token)
+				: identifier_token(identifier_token), type_name(type_name),
+					ASTNode(type_name->type_token, TYPE_IDENTIFIER_PAIR) {}
 
 		const string& get_identifier_name() const
 		{
 			return identifier_token.value;
 		}
 
+		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		{
+			type_name->dfs(callback, depth + 1);
+			callback(this, depth);
+		}
+
 		string to_str()
 		{
-			string s = "TypeIdentifierPair { type = \"" + type_token.value + "\", "
-				"identifier = \"" + identifier_token.value +
-				"\", pointer_depth = \"" + to_string(pointer_depth) + "\" } @ "
-				+ to_hex((size_t) this);
+			string s = "TypeIdentifierPair { identifier = \"" +
+				identifier_token.value + "\" } @ " + to_hex((size_t) this);
 			return s;
 		}
 
 		Type get_type(CompilerState& compiler_state)
 		{
-			if (compiler_state.classes.count(type_token.value)) {
-				Class class_decl = compiler_state.classes[type_token.value];
-				size_t byte_size = class_decl.byte_size;
-
-				Type type(Type::USER_DEFINED_CLASS, byte_size, pointer_depth);
-				type.class_name = type_token.value;
-
-				for (const Identifier& field : class_decl.fields) {
-					type.fields.push_back(field.type);
-				}
-
-				return type;
-			}
-
-			return Type::from_string(type_token.value, pointer_depth);
+			return type_name->get_type(compiler_state);
 		}
 
 		void compile(Assembler& assembler, CompilerState& compiler_state) {}

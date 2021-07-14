@@ -28,7 +28,8 @@ class Type {
 			INIT_LIST
 		};
 
-		size_t pointer_depth = 0;
+		vector<size_t> array_sizes;
+
 		string class_name;
 		vector<Type> fields;
 
@@ -37,8 +38,15 @@ class Type {
 
 		Type() : value(UNDEFINED) {}
 
-		Type(enum Value value, size_t size, size_t pointer_depth = 0)
-			: value(value), size(size), pointer_depth(pointer_depth) {}
+		Type(enum Value value, size_t size) : value(value), size(size) {}
+
+		Type(enum Value value, size_t size, const vector<size_t>& array_sizes)
+			: value(value), size(size), array_sizes(array_sizes) {}
+
+		size_t pointer_depth() const
+		{
+			return array_sizes.size();
+		}
 
 		// Allow switch comparisons
 
@@ -51,13 +59,13 @@ class Type {
 		constexpr bool operator==(const Type& other) const
 		{
 			return value == other.value && size == other.size
-				&& pointer_depth == other.pointer_depth;
+				&& pointer_depth() == other.pointer_depth();
 		}
 
 		constexpr bool operator!=(const Type& other) const
 		{
 			return value != other.value || size != other.size
-				|| pointer_depth != other.pointer_depth;
+				|| pointer_depth() != other.pointer_depth();
 		}
 
 		constexpr bool operator==(Type::Value other_value) const
@@ -70,44 +78,60 @@ class Type {
 			return value != other_value;
 		}
 
-		constexpr size_t byte_size() const
+		size_t byte_size(size_t deref_dep = 0) const
 		{
-			return (pointer_depth > 0) ? 8 : size;
+			return (pointer_depth() - deref_dep > 0) ? 8 : size;
 		}
 
-		constexpr size_t pointed_byte_size() const
+		size_t pointed_byte_size() const
 		{
 			return size;
 		}
 
-		static Type from_string(string str, size_t pointer_depth = 0)
+		size_t storage_size() const
+		{
+			if (pointer_depth() == 0) return byte_size();
+
+			size_t n_members = 1;
+			size_t dim = 0;
+
+			for (size_t i = pointer_depth(); i != 0; i--) {
+				if (array_sizes[i - 1] == 0) break;
+				n_members *= array_sizes[i - 1];
+				dim++;
+			}
+
+			return n_members * byte_size(dim);
+		}
+
+		static Type from_string(string str, const vector<size_t>& array_sizes)
 		{
 			if (str == "u8")
-				return Type(Type::UNSIGNED_INTEGER, 1, pointer_depth);
+				return Type(Type::UNSIGNED_INTEGER, 1, array_sizes);
 
 			if (str == "i8")
-				return Type(Type::SIGNED_INTEGER, 1, pointer_depth);
+				return Type(Type::SIGNED_INTEGER, 1, array_sizes);
 
 			if (str == "u16")
-				return Type(Type::UNSIGNED_INTEGER, 2, pointer_depth);
+				return Type(Type::UNSIGNED_INTEGER, 2, array_sizes);
 
 			if (str == "i16")
-				return Type(Type::SIGNED_INTEGER, 2, pointer_depth);
+				return Type(Type::SIGNED_INTEGER, 2, array_sizes);
 
 			if (str == "u32")
-				return Type(Type::UNSIGNED_INTEGER, 4, pointer_depth);
+				return Type(Type::UNSIGNED_INTEGER, 4, array_sizes);
 
 			if (str == "i32")
-				return Type(Type::SIGNED_INTEGER, 4, pointer_depth);
+				return Type(Type::SIGNED_INTEGER, 4, array_sizes);
 
 			if (str == "u64")
-				return Type(Type::UNSIGNED_INTEGER, 8, pointer_depth);
+				return Type(Type::UNSIGNED_INTEGER, 8, array_sizes);
 
 			if (str == "i64")
-				return Type(Type::SIGNED_INTEGER, 8, pointer_depth);
+				return Type(Type::SIGNED_INTEGER, 8, array_sizes);
 
 			if (str == "void")
-				return Type(Type::UNSIGNED_INTEGER, 0, pointer_depth);
+				return Type(Type::UNSIGNED_INTEGER, 0, array_sizes);
 
 			err("Wasn't able to convert \"%s\" to a Type", str.c_str());
 		}
@@ -234,9 +258,14 @@ class Type {
 					break;
 			}
 
-			if (pointer_depth) {
-				s += ' ';
-				s += string(pointer_depth, '*');
+			if (pointer_depth()) {
+				for (size_t i = 0; i < array_sizes.size(); i++) {
+					if (array_sizes[i] == 0) {
+						s += '*';
+					} else {
+						s += '[' + to_string(array_sizes[i]) + ']';
+					}
+				}
 			}
 
 			if (is_literal) {
@@ -250,7 +279,7 @@ class Type {
 
 		enum DebuggerSymbolTypes to_debug_type()
 		{
-			if (pointer_depth > 0) return DebuggerSymbolTypes::POINTER;
+			if (pointer_depth() > 0) return DebuggerSymbolTypes::POINTER;
 
 			if (value == Type::UNSIGNED_INTEGER) {
 				switch (size) {
@@ -444,7 +473,7 @@ class CompilerState {
 				return false;
 
 			globals[global_name] = Variable(global_name, global_type, globals_size);
-			globals_size += global_type.byte_size();
+			globals_size += global_type.storage_size();
 
 			// Add the global to the debugger symbols
 
@@ -480,7 +509,7 @@ class CompilerState {
 
 			locals[local_name] = Variable(local_name, local_type, locals_size);
 			local_names_in_order.push_back(local_name);
-			locals_size += local_type.byte_size();
+			locals_size += local_type.storage_size();
 			return true;
 		}
 

@@ -10,6 +10,7 @@
 using namespace std;
 
 enum ASTNodeType {
+	TYPE_NAME,
 	TYPE_IDENTIFIER_PAIR,
 	FUNCTION_DECLARATION,
 	VARIABLE_DECLARATION,
@@ -35,6 +36,7 @@ enum ASTNodeType {
 const char *ast_node_type_to_str(enum ASTNodeType type)
 {
 	switch (type) {
+		case TYPE_NAME: return "TYPE_NAME";
 		case TYPE_IDENTIFIER_PAIR: return "TypeIdentifierPair";
 		case FUNCTION_DECLARATION: return "FunctionDeclaration";
 		case VARIABLE_DECLARATION: return "VariableDeclaration";

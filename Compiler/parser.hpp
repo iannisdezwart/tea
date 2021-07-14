@@ -8,6 +8,7 @@
 #include "ASTNodes/ASTNode.hpp"
 #include "ASTNodes/WriteValue.hpp"
 #include "ASTNodes/ReadValue.hpp"
+#include "ASTNodes/TypeName.hpp"
 #include "ASTNodes/TypeIdentifierPair.hpp"
 #include "ASTNodes/VariableDeclaration.hpp"
 #include "ASTNodes/FunctionDeclaration.hpp"
@@ -197,34 +198,51 @@ class Parser {
 			abort();
 		}
 
-		TypeIdentifierPair *scan_type_identifier_pair()
+		TypeName *scan_type_name()
 		{
 			Token type_name_token = next_token();
 			assert_token_type(type_name_token, TYPE);
 
-			// Todo: add generics, &, * etc
+			// Todo: add generics, &, etc
 
-			Token pointer_token = next_token();
-			uint8_t pointer_depth = 0;
+			vector<size_t> array_sizes;
+			Token token;
 
-			while (pointer_token.type == OPERATOR) {
-				for (size_t i = 0; i < pointer_token.value.size(); i++) {
-					if (pointer_token.value[i] != '*') goto end_pointer;
+			while (true) {
+				token = get_token();
+
+				if (token.type == SPECIAL_CHARACTER && token.value == "[") {
+					i++;
+
+					Token size_token = next_token();
+					assert_token_type(size_token, LITERAL_NUMBER);
+					array_sizes.push_back(stoull(size_token.value));
+
+					Token array_size_end_token = next_token();
+					assert_token_type(array_size_end_token, SPECIAL_CHARACTER);
+					assert_token_value(array_size_end_token, "]");
 				}
 
-				pointer_depth += pointer_token.value.size();
-				pointer_token = next_token();
+				else if (token.type == OPERATOR && token.value == "*") {
+					i++;
+
+					array_sizes.push_back(0);
+				}
+
+				else break;
 			}
 
-			end_pointer:
+			return new TypeName(type_name_token, std::move(array_sizes));
+		}
 
-			Token& identifier_token = pointer_token;
+		TypeIdentifierPair *scan_type_identifier_pair()
+		{
+			TypeName *type_name = scan_type_name();
+
+			Token identifier_token = next_token();
 			assert_token_type(identifier_token, IDENTIFIER);
 
-			// Todo: add [] etc.
-
-			return new TypeIdentifierPair(type_name_token, pointer_depth,
-				identifier_token);
+			return new TypeIdentifierPair(type_name, identifier_token);
 		}
 
 		CodeBlock *scan_code_block()
@@ -515,8 +533,8 @@ class Parser {
 				assert_token_type(left_parenthesis, SPECIAL_CHARACTER);
 				assert_token_value(left_parenthesis, "(");
 
-				expression = new CastExpression(ReadValue::cast(scan_expression()),
-					expr_token, 0);
+				expression = new CastExpression(new TypeName(expr_token, {}),
+					ReadValue::cast(scan_expression()));
 
 				Token right_parenthesis = next_token();
 				assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
@@ -527,35 +545,18 @@ class Parser {
 			// [<type> <*>](<expr>)
 
 			else if (expr_token.type == SPECIAL_CHARACTER && expr_token.value == "[") {
-				Token type_token = next_token();
-				assert_token_type(type_token, TYPE);
+				TypeName *type_name = scan_type_name();
 
-				size_t pointer_depth = 0;
-
-				while (true) {
-					Token pointer_or_end_token = next_token();
-
-					if (
-						pointer_or_end_token.type == OPERATOR
-						&& pointer_or_end_token.value == "*"
-					) {
-						pointer_depth++;
-					}
-
-					else if (
-						pointer_or_end_token.type == SPECIAL_CHARACTER
-						&& pointer_or_end_token.value == "]"
-					) break;
-
-					else unexpected_token_syntax_err(pointer_or_end_token);
-				}
+				Token right_square_bracket = next_token();
+				assert_token_type(right_square_bracket, SPECIAL_CHARACTER);
+				assert_token_value(right_square_bracket, "]");
 
 				Token left_parenthesis = next_token();
 				assert_token_type(left_parenthesis, SPECIAL_CHARACTER);
 				assert_token_value(left_parenthesis, "(");
 
-				expression = new CastExpression(ReadValue::cast(scan_expression()),
-					type_token, pointer_depth);
+				expression = new CastExpression(type_name,
+					ReadValue::cast(scan_expression()));
 
 				Token right_parenthesis = next_token();
 				assert_token_type(right_parenthesis, SPECIAL_CHARACTER);

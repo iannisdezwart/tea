@@ -9,6 +9,7 @@
 #include "../../Assembler/byte_code.hpp"
 #include "../../Assembler/assembler.hpp"
 #include "../compiler-state.hpp"
+#include "TypeName.hpp"
 #include "TypeIdentifierPair.hpp"
 #include "FunctionDeclaration.hpp"
 #include "VariableDeclaration.hpp"
@@ -79,7 +80,7 @@ class ClassDeclaration : public ASTNode {
 
 		Type get_type(CompilerState& compiler_state)
 		{
-			Type type(Type::USER_DEFINED_CLASS, byte_size(compiler_state), 0);
+			Type type(Type::USER_DEFINED_CLASS, byte_size(compiler_state));
 			type.class_name = class_name;
 
 			for (TypeIdentifierPair *field : fields) {
@@ -123,7 +124,8 @@ class ClassDeclaration : public ASTNode {
 				pointer_param_id_token.value = "this";
 
 				TypeIdentifierPair *class_pointer = new TypeIdentifierPair(
-						pointer_param_type_token, 1, pointer_param_id_token);
+						new TypeName(pointer_param_type_token, { 0 }),
+						pointer_param_id_token);
 
 				method->params.insert(method->params.begin(), 1, class_pointer);
 				method->define(compiler_state);

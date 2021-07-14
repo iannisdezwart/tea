@@ -74,7 +74,7 @@ class BinaryOperation : public ReadValue {
 				{
 					// intX + intY -> max(intX, intY)
 
-					if (left_type.pointer_depth == 0 && right_type.pointer_depth == 0) {
+					if (left_type.pointer_depth() == 0 && right_type.pointer_depth() == 0) {
 						if (left_size > right_size) {
 							return left_type;
 						}
@@ -84,13 +84,13 @@ class BinaryOperation : public ReadValue {
 
 					// pointer + int -> pointer
 
-					if (left_type.pointer_depth > 0 && right_type.pointer_depth == 0) {
+					if (left_type.pointer_depth() > 0 && right_type.pointer_depth() == 0) {
 						return left_type;
 					}
 
 					// int + pointer -> pointer
 
-					if (right_type.pointer_depth > 0 && left_type.pointer_depth == 0) {
+					if (right_type.pointer_depth() > 0 && left_type.pointer_depth() == 0) {
 						return right_type;
 					}
 
@@ -101,7 +101,7 @@ class BinaryOperation : public ReadValue {
 				{
 					// intX * intY -> max(intX, intY)
 
-					if (left_type.pointer_depth == 0 && right_type.pointer_depth == 0) {
+					if (left_type.pointer_depth() == 0 && right_type.pointer_depth() == 0) {
 						if (left_size > right_size) {
 							return left_type;
 						}
@@ -116,7 +116,7 @@ class BinaryOperation : public ReadValue {
 				{
 					// intX / intY -> intX
 
-					if (left_type.pointer_depth == 0 && right_type.pointer_depth == 0) {
+					if (left_type.pointer_depth() == 0 && right_type.pointer_depth() == 0) {
 						return left_type;
 					}
 
@@ -127,7 +127,7 @@ class BinaryOperation : public ReadValue {
 				{
 					// intX % intY -> intX
 
-					if (left_type.pointer_depth == 0 && right_type.pointer_depth == 0) {
+					if (left_type.pointer_depth() == 0 && right_type.pointer_depth() == 0) {
 						return left_type;
 					}
 				}
@@ -139,7 +139,7 @@ class BinaryOperation : public ReadValue {
 					// intX & intX
 
 					if (
-						left_type.pointer_depth == 0 && right_type.pointer_depth == 0
+						left_type.pointer_depth() == 0 && right_type.pointer_depth() == 0
 						&& left_size == right_size
 					) {
 						return left_type;
@@ -153,7 +153,7 @@ class BinaryOperation : public ReadValue {
 				case EQUAL:
 				case NOT_EQUAL:
 				{
-					return Type(Type::SIGNED_INTEGER, 1, 0);
+					return Type(Type::SIGNED_INTEGER, 1);
 				}
 
 				default:

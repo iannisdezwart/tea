@@ -45,6 +45,17 @@ class VariableDeclaration : public ASTNode {
 			return type_and_id_pair->get_type(compiler_state);
 		}
 
+		size_t arr_size()
+		{
+			size_t size = 0;
+
+			for (size_t n : type_and_id_pair->type_name->array_sizes) {
+				size += n;
+			}
+
+			return size;
+		}
+
 		void compile(Assembler& assembler, CompilerState& compiler_state)
 		{
 			if (expression != NULL) {

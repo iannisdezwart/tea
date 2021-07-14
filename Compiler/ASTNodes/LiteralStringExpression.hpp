@@ -34,7 +34,7 @@ class LiteralStringExpression : public ReadValue {
 
 		Type get_type(CompilerState& compiler_state)
 		{
-			Type type(Type::UNSIGNED_INTEGER, 1, 1);
+			Type type(Type::UNSIGNED_INTEGER, 1, { 0 });
 			return type;
 		}
 

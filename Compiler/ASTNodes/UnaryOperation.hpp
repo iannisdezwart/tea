@@ -68,17 +68,17 @@ class UnaryOperation : public WriteValue {
 
 				case DEREFERENCE:
 				{
-					if (type.pointer_depth == 0)
+					if (type.pointer_depth() == 0)
 						err_at_token(op_token, "Cannot dereference a non-pointer",
 							"type %s cannot be dereferenced", type.to_str().c_str());
 
-					type.pointer_depth--;
+					type.array_sizes.pop_back();
 					return type;
 				}
 
 				case ADDRESS_OF:
 				{
-					type.pointer_depth++;
+					type.array_sizes.pop_back();
 					return type;
 				}
 
@@ -135,11 +135,12 @@ class UnaryOperation : public WriteValue {
 					expr->get_value(assembler, compiler_state);
 
 					Type expr_type = expr->get_type(compiler_state);
-					expr_type.pointer_depth -= deref_dep;
 
 					// Dereference
 
 					while (--deref_dep) {
+						expr_type.array_sizes.pop_back();
+
 						assembler.move_reg_pointer_64_into_reg(
 							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
 					}
@@ -195,7 +196,7 @@ class UnaryOperation : public WriteValue {
 
 					wr_expression->get_value(assembler, compiler_state);
 
-					if (type.pointer_depth > 0) {
+					if (type.pointer_depth() > 0) {
 						assembler.add_64_into_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
 					} else {
 						assembler.increment_reg(R_ACCUMULATOR_0_ID);
@@ -207,7 +208,7 @@ class UnaryOperation : public WriteValue {
 
 					// Decrement R_ACCUMULATOR_0
 
-					if (type.pointer_depth > 0) {
+					if (type.pointer_depth() > 0) {
 						assembler.subtract_64_from_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
 					} else {
 						assembler.decrement_reg(R_ACCUMULATOR_0_ID);
@@ -225,7 +226,7 @@ class UnaryOperation : public WriteValue {
 
 					wr_expression->get_value(assembler, compiler_state);
 
-					if (type.pointer_depth > 0) {
+					if (type.pointer_depth() > 0) {
 						assembler.subtract_64_from_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
 					} else {
 						assembler.decrement_reg(R_ACCUMULATOR_0_ID);
@@ -237,7 +238,7 @@ class UnaryOperation : public WriteValue {
 
 					// Increment R_ACCUMULATOR_0
 
-					if (type.pointer_depth > 0) {
+					if (type.pointer_depth() > 0) {
 						assembler.add_64_into_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
 					} else {
 						assembler.increment_reg(R_ACCUMULATOR_0_ID);
@@ -257,7 +258,7 @@ class UnaryOperation : public WriteValue {
 
 					wr_expression->get_value(assembler, compiler_state);
 
-					if (type.pointer_depth > 0) {
+					if (type.pointer_depth() > 0) {
 						assembler.add_64_into_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
 					} else {
 						assembler.increment_reg(R_ACCUMULATOR_0_ID);
@@ -278,7 +279,7 @@ class UnaryOperation : public WriteValue {
 
 					wr_expression->get_value(assembler, compiler_state);
 
-					if (type.pointer_depth > 0) {
+					if (type.pointer_depth() > 0) {
 						assembler.subtract_64_from_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
 					} else {
 						assembler.decrement_reg(R_ACCUMULATOR_0_ID);
@@ -336,7 +337,7 @@ class UnaryOperation : public WriteValue {
 
 					expression->get_value(assembler, compiler_state);
 					Type type = expression->get_type(compiler_state);
-					type.pointer_depth--;
+					type.array_sizes.pop_back();
 
 					// Move the dereferenced value into R_ACCUMULATOR_0
 
