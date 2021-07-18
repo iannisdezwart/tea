@@ -91,11 +91,13 @@ class AssignmentExpression : public ReadValue {
 		/**
 		 *  Performs the assignment.
 		 */
-		void get_value(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
 		{
-			// Moves result into R_ACCUMULATOR_0
+			uint8_t prev_val_reg;
 
-			value->get_value(assembler, compiler_state);
+			// Moves result into its register
+
+			value->get_value(assembler, compiler_state, result_reg);
 
 			// If we're doing direct assignment,
 			// directly set the variable to the new value
@@ -103,61 +105,60 @@ class AssignmentExpression : public ReadValue {
 			if (op == ASSIGNMENT) goto move_into_var;
 
 			// We're doing some cool assignment,
-			// move the result of the expression into R_ACCUMULATOR_1_ID
+			// move the previous value into its register
 
-			assembler.move_reg_into_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-
-			// Move the previous value into R_ACUMMULATOR_0_ID
-
-			lhs_expr->get_value(assembler, compiler_state);
+			prev_val_reg = assembler.get_register();
+			lhs_expr->get_value(assembler, compiler_state, prev_val_reg);
 
 			// Perform the correct operation
 
 			switch (op) {
 				case SUM_ASSIGNMENT:
-					assembler.add_reg_into_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.add_reg_into_reg(result_reg, prev_val_reg);
 					break;
 
 				case DIFFERENCE_ASSIGNMENT:
-					assembler.subtract_reg_from_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.subtract_reg_from_reg(result_reg, prev_val_reg);
 					break;
 
 				case QUOTIENT_ASSIGNMENT:
-					assembler.divide_reg_from_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.divide_reg_from_reg(result_reg, prev_val_reg);
 					break;
 
 				case REMAINDER_ASSIGNMENT:
-					assembler.take_modulo_reg_of_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.take_modulo_reg_of_reg(result_reg, prev_val_reg);
 					break;
 
 				case PRODUCT_ASSIGNMENT:
-					assembler.multiply_reg_into_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.multiply_reg_into_reg(result_reg, prev_val_reg);
 					break;
 
 				case LEFT_SHIFT_ASSIGNMENT:
-					assembler.left_shift_reg_by_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+					assembler.left_shift_reg_by_reg(prev_val_reg, result_reg);
 					break;
 
 				case RIGHT_SHIFT_ASSIGNMENT:
-					assembler.right_shift_reg_by_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
+					assembler.right_shift_reg_by_reg(prev_val_reg, result_reg);
 					break;
 
 				case BITWISE_AND_ASSIGNMENT:
-					assembler.and_reg_into_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.and_reg_into_reg(result_reg, prev_val_reg);
 					break;
 
 				case BITWISE_XOR_ASSIGNMENT:
-					assembler.xor_reg_into_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.xor_reg_into_reg(result_reg, prev_val_reg);
 					break;
 
 				case BITWISE_OR_ASSIGNMENT:
-					assembler.or_reg_into_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.or_reg_into_reg(result_reg, prev_val_reg);
 					break;
 			}
 
+			assembler.free_register(prev_val_reg);
+
 			move_into_var:
 
-			lhs_expr->store(assembler, compiler_state);
+			lhs_expr->store(assembler, compiler_state, result_reg);
 		}
 };
 

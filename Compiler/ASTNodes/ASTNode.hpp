@@ -75,11 +75,6 @@ class ASTNode {
 		{
 			printf("%s: %s\n", prefix, to_str().c_str());
 		}
-
-		bool is_operation()
-		{
-			return type == BINARY_OPERATION;
-		}
 };
 
 #endif

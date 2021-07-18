@@ -71,8 +71,10 @@ class MethodCall : public ReadValue {
 			return cl.get_method(method_name).id.type;
 		}
 
-		void get_value(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t res_reg)
 		{
+			uint8_t arg_reg;
+
 			string fn_name = get_object_class_name(compiler_state) + "::" + method->get_name();
 
 			if (!compiler_state.functions.count(fn_name))
@@ -104,6 +106,8 @@ class MethodCall : public ReadValue {
 
 			size_t args_size = 0;
 
+			if (method->arguments.size()) arg_reg = assembler.get_register();
+
 			for (size_t i = 0; i < method->arguments.size(); i++) {
 				Type& param_type = params[i].type;
 				Type arg_type = method->arguments[i]->get_type(compiler_state);
@@ -121,25 +125,25 @@ class MethodCall : public ReadValue {
 
 				size_t byte_size = param_type.byte_size();
 
-				// Stores result into R_ACCUMULATOR_0_ID
+				// Stores result into the argument register
 
-				method->arguments[i]->get_value(assembler, compiler_state);
+				method->arguments[i]->get_value(assembler, compiler_state, arg_reg);
 
 				switch (byte_size) {
 					case 1:
-						assembler.push_reg_8(R_ACCUMULATOR_0_ID);
+						assembler.push_reg_8(arg_reg);
 						break;
 
 					case 2:
-						assembler.push_reg_16(R_ACCUMULATOR_0_ID);
+						assembler.push_reg_16(arg_reg);
 						break;
 
 					case 4:
-						assembler.push_reg_32(R_ACCUMULATOR_0_ID);
+						assembler.push_reg_32(arg_reg);
 						break;
 
 					case 8:
-						assembler.push_reg_64(R_ACCUMULATOR_0_ID);
+						assembler.push_reg_64(arg_reg);
 						break;
 
 					default:
@@ -153,6 +157,8 @@ class MethodCall : public ReadValue {
 
 				args_size += byte_size;
 			}
+
+			if (method->arguments.size()) assembler.free_register(arg_reg);
 
 			assembler.push_64(args_size);
 			assembler.call(fn_name);

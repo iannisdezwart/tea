@@ -25,5 +25,5 @@ int main(int argc, char **argv)
 		abort();
 	}
 
-	printf("VM exited with exit code %lu\n", cpu.r_accumulator_0);
+	printf("VM exited with exit code %lu\n", cpu.r_ret);
 }

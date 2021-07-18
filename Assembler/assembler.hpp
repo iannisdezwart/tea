@@ -25,13 +25,35 @@ class Assembler : public BufferBuilder {
 	public:
 		unordered_map<string /* id */, uint64_t /* position */> labels;
 		unordered_map<string /* id */, vector<uint64_t>> label_references;
-
+		vector<bool> free_registers;
 		BufferBuilder static_data;
+
+		Assembler() : free_registers(CPU::general_purpose_register_count, true) {}
 
 		~Assembler()
 		{
 			free_buffer();
 			static_data.free_buffer();
+		}
+
+		uint8_t get_register()
+		{
+			for (uint8_t i = 0; i < CPU::general_purpose_register_count; i++) {
+				if (free_registers[i]) {
+					free_registers[i] = false;
+					return i;
+				}
+			}
+
+			// Todo: create
+
+			fprintf(stderr, "No free registers found. Spilling registers is not implemented yet.");
+			abort();
+		}
+
+		void free_register(uint8_t reg_id)
+		{
+			free_registers[reg_id] = true;
 		}
 
 		Buffer assemble()

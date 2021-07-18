@@ -254,8 +254,7 @@ class Shell {
 
 			// Print the exit code
 
-			printf(ANSI_CYAN "VM exited with exit code " ANSI_YELLOW "%lu\n",
-				cpu->r_accumulator_0);
+			printf(ANSI_CYAN "VM exited with exit code " ANSI_YELLOW "%lu\n", cpu->r_ret);
 		}
 
 	public:
@@ -384,10 +383,8 @@ class Shell {
 					cpu->r_stack_p, cpu->r_stack_p);
 				printf(REG_FMT_STR(ANSI_BRIGHT_RED    "r_frame_p      "),
 					cpu->r_frame_p, cpu->r_frame_p);
-				printf(REG_FMT_STR(ANSI_BRIGHT_CYAN   "r_accumulator_0"),
-					cpu->r_accumulator_0, cpu->r_accumulator_0);
-				printf(REG_FMT_STR(ANSI_BRIGHT_CYAN   "r_accumulator_1"),
-					cpu->r_accumulator_1,cpu-> r_accumulator_1);
+				printf(REG_FMT_STR(ANSI_BRIGHT_CYAN   "r_ret          "),
+					cpu->r_ret, cpu->r_ret);
 				printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_0            "),
 					cpu->r_0, cpu->r_0);
 				printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_1            "),

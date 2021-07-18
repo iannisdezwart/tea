@@ -6,7 +6,6 @@
 #include "memory-mapper.hpp"
 #include "ram-device.hpp"
 #include "io-device.hpp"
-#include "../Assembler/assembler.hpp"
 #include "../Assembler/executable.hpp"
 #include "../Assembler/byte_code.hpp"
 
@@ -29,6 +28,8 @@ class CPU {
 
 		// General purpose registers
 
+		static constexpr size_t general_purpose_register_count = 4;
+
 		uint64_t r_0 = 0;
 		#define R_0_ID 0
 		uint64_t r_1 = 0;
@@ -46,11 +47,8 @@ class CPU {
 		#define R_STACK_P_ID 5
 		uint64_t r_frame_p;
 		#define R_FRAME_P_ID 6
-
-		uint64_t r_accumulator_0 = 0;
-		#define R_ACCUMULATOR_0_ID 7
-		uint64_t r_accumulator_1 = 0;
-		#define R_ACCUMULATOR_1_ID 8
+		uint64_t r_ret = 0;
+		#define R_RET_ID 7
 
 		uint64_t current_stack_frame_size = 0;
 
@@ -81,11 +79,8 @@ class CPU {
 				case R_FRAME_P_ID:
 					return "R_FRAME_P";
 
-				case R_ACCUMULATOR_0_ID:
-					return "R_ACC_0";
-
-				case R_ACCUMULATOR_1_ID:
-					return "R_ACC_1";
+				case R_RET_ID:
+					return "R_RET";
 			}
 		}
 
@@ -152,10 +147,8 @@ class CPU {
 					return r_stack_p;
 				case R_FRAME_P_ID:
 					return r_frame_p;
-				case R_ACCUMULATOR_0_ID:
-					return r_accumulator_0;
-				case R_ACCUMULATOR_1_ID:
-					return r_accumulator_1;
+				case R_RET_ID:
+					return r_ret;
 				default:
 					throw "Unknown register with id " + to_string(id);
 			}
@@ -185,12 +178,11 @@ class CPU {
 				case R_FRAME_P_ID:
 					r_frame_p = value;
 					break;
-				case R_ACCUMULATOR_0_ID:
-					r_accumulator_0 = value;
+				case R_RET_ID:
+					r_ret = value;
 					break;
-				case R_ACCUMULATOR_1_ID:
-					r_accumulator_1 = value;
-					break;
+				default:
+					throw "Unknown register with id " + to_string(id);
 			}
 		}
 

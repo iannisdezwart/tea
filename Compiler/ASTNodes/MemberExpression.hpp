@@ -153,7 +153,7 @@ class MemberExpression : public WriteValue {
 			return LocationData(id_kind, offset, member_type.byte_size());
 		}
 
-		void get_value(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
 		{
 			Type object_type = object->get_type(compiler_state);
 			string instance_name = object->identifier_token.value;
@@ -179,22 +179,22 @@ class MemberExpression : public WriteValue {
 					switch (location_data.var_size) {
 						case 1:
 							assembler.move_frame_offset_8_into_reg(
-								location_data.offset, R_ACCUMULATOR_0_ID);
+								location_data.offset, result_reg);
 							break;
 
 						case 2:
 							assembler.move_frame_offset_16_into_reg(
-								location_data.offset, R_ACCUMULATOR_0_ID);
+								location_data.offset, result_reg);
 							break;
 
 						case 4:
 							assembler.move_frame_offset_32_into_reg(
-								location_data.offset, R_ACCUMULATOR_0_ID);
+								location_data.offset, result_reg);
 							break;
 
 						case 8:
 							assembler.move_frame_offset_64_into_reg(
-								location_data.offset, R_ACCUMULATOR_0_ID);
+								location_data.offset, result_reg);
 							break;
 
 						default:
@@ -212,22 +212,22 @@ class MemberExpression : public WriteValue {
 				switch (location_data.var_size) {
 					case 1:
 						assembler.move_stack_top_offset_8_into_reg(
-							location_data.offset, R_ACCUMULATOR_0_ID);
+							location_data.offset, result_reg);
 						break;
 
 					case 2:
 						assembler.move_stack_top_offset_8_into_reg(
-							location_data.offset, R_ACCUMULATOR_0_ID);
+							location_data.offset, result_reg);
 						break;
 
 					case 4:
 						assembler.move_stack_top_offset_8_into_reg(
-							location_data.offset, R_ACCUMULATOR_0_ID);
+							location_data.offset, result_reg);
 						break;
 
 					case 8:
 						assembler.move_stack_top_offset_8_into_reg(
-							location_data.offset, R_ACCUMULATOR_0_ID);
+							location_data.offset, result_reg);
 						break;
 
 					default:
@@ -255,9 +255,9 @@ class MemberExpression : public WriteValue {
 						instance_name.c_str(), member_name.c_str(), object_type.pointer_depth());
 				}
 
-				// Moves the pointer to the class into R_ACCUMULATOR_0_ID
+				// Moves the pointer to the class into the result register
 
-				object->get_value(assembler, compiler_state);
+				object->get_value(assembler, compiler_state, result_reg);
 
 				uint64_t offset = 0;
 
@@ -271,29 +271,25 @@ class MemberExpression : public WriteValue {
 
 				// Adds the correct offset to the field to the pointer
 
-				assembler.add_64_into_reg(offset, R_ACCUMULATOR_0_ID);
+				assembler.add_64_into_reg(offset, result_reg);
 
-				// Dereference the value at the offset into R_ACCUMULATOR_0
+				// Dereference the value at the offset into the result register
 
 				switch (member_type.byte_size()) {
 					case 1:
-						assembler.move_reg_pointer_8_into_reg(
-							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+						assembler.move_reg_pointer_8_into_reg(result_reg, result_reg);
 						break;
 
 					case 2:
-						assembler.move_reg_pointer_16_into_reg(
-							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+						assembler.move_reg_pointer_16_into_reg(result_reg, result_reg);
 						break;
 
 					case 4:
-						assembler.move_reg_pointer_32_into_reg(
-							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+						assembler.move_reg_pointer_32_into_reg(result_reg, result_reg);
 						break;
 
 					case 8:
-						assembler.move_reg_pointer_64_into_reg(
-							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+						assembler.move_reg_pointer_64_into_reg(result_reg, result_reg);
 						break;
 
 					default:
@@ -314,8 +310,10 @@ class MemberExpression : public WriteValue {
 			}
 		}
 
-		void store(Assembler& assembler, CompilerState& compiler_state)
+		void store(Assembler& assembler, CompilerState& compiler_state, uint8_t value_reg)
 		{
+			uint8_t this_ptr_reg;
+
 			Type object_type = object->get_type(compiler_state);
 			string instance_name = object->identifier_token.value;
 			string member_name = member->identifier_token.value;
@@ -340,22 +338,22 @@ class MemberExpression : public WriteValue {
 					switch (location_data.var_size) {
 						case 1:
 							assembler.move_reg_into_frame_offset_8(
-								R_ACCUMULATOR_0_ID, location_data.offset);
+								value_reg, location_data.offset);
 							break;
 
 						case 2:
 							assembler.move_reg_into_frame_offset_16(
-								R_ACCUMULATOR_0_ID, location_data.offset);
+								value_reg, location_data.offset);
 							break;
 
 						case 4:
 							assembler.move_reg_into_frame_offset_32(
-								R_ACCUMULATOR_0_ID, location_data.offset);
+								value_reg, location_data.offset);
 							break;
 
 						case 8:
 							assembler.move_reg_into_frame_offset_64(
-								R_ACCUMULATOR_0_ID, location_data.offset);
+								value_reg, location_data.offset);
 							break;
 
 						default:
@@ -373,22 +371,22 @@ class MemberExpression : public WriteValue {
 				switch (location_data.var_size) {
 					case 1:
 						assembler.move_reg_into_stack_top_offset_8(
-							R_ACCUMULATOR_0_ID, location_data.offset);
+							value_reg, location_data.offset);
 						break;
 
 					case 2:
 						assembler.move_reg_into_stack_top_offset_16(
-							R_ACCUMULATOR_0_ID, location_data.offset);
+							value_reg, location_data.offset);
 						break;
 
 					case 4:
 						assembler.move_reg_into_stack_top_offset_32(
-							R_ACCUMULATOR_0_ID, location_data.offset);
+							value_reg, location_data.offset);
 						break;
 
 					case 8:
 						assembler.move_reg_into_stack_top_offset_64(
-							R_ACCUMULATOR_0_ID, location_data.offset);
+							value_reg, location_data.offset);
 						break;
 
 					default:
@@ -416,13 +414,10 @@ class MemberExpression : public WriteValue {
 						instance_name.c_str(), member_name.c_str(), object_type.pointer_depth());
 				}
 
-				// Moves the value to store into R_ACCUMULATOR_1_ID
+				// Moves the pointer to the class into the this ptr register
 
-				assembler.move_reg_into_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-
-				// Moves the pointer to the class into R_ACCUMULATOR_0_ID
-
-				object->get_value(assembler, compiler_state);
+				this_ptr_reg = assembler.get_register();
+				object->get_value(assembler, compiler_state, this_ptr_reg);
 
 				uint64_t offset = 0;
 
@@ -436,29 +431,25 @@ class MemberExpression : public WriteValue {
 
 				// Adds the correct offset to the field to the pointer
 
-				assembler.add_64_into_reg(offset, R_ACCUMULATOR_0_ID);
+				assembler.add_64_into_reg(offset, this_ptr_reg);
 
-				// Dereference the value at the offset into R_ACCUMULATOR_0
+				// Dereference the value at the offset into the this pointer register
 
 				switch (member_type.byte_size()) {
 					case 1:
-						assembler.move_reg_into_reg_pointer_8(
-							R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+						assembler.move_reg_into_reg_pointer_8(value_reg, this_ptr_reg);
 						break;
 
 					case 2:
-						assembler.move_reg_into_reg_pointer_16(
-							R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+						assembler.move_reg_into_reg_pointer_16(value_reg, this_ptr_reg);
 						break;
 
 					case 4:
-						assembler.move_reg_into_reg_pointer_32(
-							R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+						assembler.move_reg_into_reg_pointer_32(value_reg, this_ptr_reg);
 						break;
 
 					case 8:
-						assembler.move_reg_into_reg_pointer_64(
-							R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+						assembler.move_reg_into_reg_pointer_64(value_reg, this_ptr_reg);
 						break;
 
 					default:
@@ -467,6 +458,8 @@ class MemberExpression : public WriteValue {
 							"Variable doesn't fit in register\n"
 							"Support for this is not implemented yet");
 				}
+
+				assembler.free_register(this_ptr_reg);
 			}
 
 			// Unknown operator

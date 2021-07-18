@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "ASTNode.hpp"
+#include "ReadValue.hpp"
 #include "../tokeniser.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
@@ -14,10 +15,10 @@ using namespace std;
 class WhileStatement : public ASTNode {
 	public:
 		Token while_token;
-		ASTNode *test;
+		ReadValue *test;
 		CodeBlock *body;
 
-		WhileStatement(ASTNode *test, Token while_token, CodeBlock *body)
+		WhileStatement(ReadValue *test, Token while_token, CodeBlock *body)
 			: test(test), body(body), while_token(while_token),
 				ASTNode(while_token, WHILE_STATEMENT) {}
 
@@ -42,6 +43,8 @@ class WhileStatement : public ASTNode {
 
 		void compile(Assembler& assembler, CompilerState& compiler_state)
 		{
+			uint8_t test_reg;
+
 			// Create labels
 
 			string loop_label = compiler_state.generate_label("while-loop");
@@ -51,14 +54,17 @@ class WhileStatement : public ASTNode {
 
 			assembler.add_label(loop_label);
 
-			// Perform the check, moves the result into R_ACCUMULATOR_0
+			// Perform the check and move the result into the test register
 
-			test->compile(assembler, compiler_state);
+			test_reg = assembler.get_register();
+			test->get_value(assembler, compiler_state, test_reg);
 
 			// Break the loop if false
 
-			assembler.compare_reg_to_8(R_ACCUMULATOR_0_ID, 0);
+			assembler.compare_reg_to_8(test_reg, 0);
 			assembler.jump_if_equal(end_label);
+
+			assembler.free_register(test_reg);
 
 			// Compile code for the body block
 

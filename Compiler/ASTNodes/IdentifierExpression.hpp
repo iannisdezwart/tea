@@ -107,10 +107,10 @@ class IdentifierExpression : public WriteValue {
 			return LocationData(id_kind, offset, var_size);
 		}
 
-		void get_value(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
 		{
 			if (replacement != NULL) {
-				replacement->get_value(assembler, compiler_state);
+				replacement->get_value(assembler, compiler_state, result_reg);
 				return;
 			}
 
@@ -122,22 +122,22 @@ class IdentifierExpression : public WriteValue {
 				switch (location_data.var_size) {
 					case 1:
 						assembler.move_frame_offset_8_into_reg(
-							location_data.offset, R_ACCUMULATOR_0_ID);
+							location_data.offset, result_reg);
 						break;
 
 					case 2:
 						assembler.move_frame_offset_16_into_reg(
-							location_data.offset, R_ACCUMULATOR_0_ID);
+							location_data.offset, result_reg);
 						break;
 
 					case 4:
 						assembler.move_frame_offset_32_into_reg(
-							location_data.offset, R_ACCUMULATOR_0_ID);
+							location_data.offset, result_reg);
 						break;
 
 					case 8:
 						assembler.move_frame_offset_64_into_reg(
-							location_data.offset, R_ACCUMULATOR_0_ID);
+							location_data.offset, result_reg);
 						break;
 
 					default:
@@ -155,22 +155,22 @@ class IdentifierExpression : public WriteValue {
 			switch (location_data.var_size) {
 				case 1:
 					assembler.move_stack_top_offset_8_into_reg(
-						location_data.offset, R_ACCUMULATOR_0_ID);
+						location_data.offset, result_reg);
 					break;
 
 				case 2:
 					assembler.move_stack_top_offset_16_into_reg(
-						location_data.offset, R_ACCUMULATOR_0_ID);
+						location_data.offset, result_reg);
 					break;
 
 				case 4:
 					assembler.move_stack_top_offset_32_into_reg(
-						location_data.offset, R_ACCUMULATOR_0_ID);
+						location_data.offset, result_reg);
 					break;
 
 				case 8:
 					assembler.move_stack_top_offset_64_into_reg(
-						location_data.offset, R_ACCUMULATOR_0_ID);
+						location_data.offset, result_reg);
 					break;
 
 				default:
@@ -181,10 +181,10 @@ class IdentifierExpression : public WriteValue {
 			}
 		}
 
-		void store(Assembler& assembler, CompilerState& compiler_state)
+		void store(Assembler& assembler, CompilerState& compiler_state, uint8_t value_reg)
 		{
 			if (replacement != NULL) {
-				replacement->store(assembler, compiler_state);
+				replacement->store(assembler, compiler_state, value_reg);
 				return;
 			}
 
@@ -196,22 +196,22 @@ class IdentifierExpression : public WriteValue {
 				switch (location_data.var_size) {
 					case 1:
 						assembler.move_reg_into_frame_offset_8(
-							R_ACCUMULATOR_0_ID, location_data.offset);
+							value_reg, location_data.offset);
 						break;
 
 					case 2:
 						assembler.move_reg_into_frame_offset_16(
-							R_ACCUMULATOR_0_ID, location_data.offset);
+							value_reg, location_data.offset);
 						break;
 
 					case 4:
 						assembler.move_reg_into_frame_offset_32(
-							R_ACCUMULATOR_0_ID, location_data.offset);
+							value_reg, location_data.offset);
 						break;
 
 					case 8:
 						assembler.move_reg_into_frame_offset_64(
-							R_ACCUMULATOR_0_ID, location_data.offset);
+							value_reg, location_data.offset);
 						break;
 
 					default:
@@ -229,22 +229,22 @@ class IdentifierExpression : public WriteValue {
 			switch (location_data.var_size) {
 				case 1:
 					assembler.move_reg_into_stack_top_offset_8(
-						R_ACCUMULATOR_0_ID, location_data.offset);
+						value_reg, location_data.offset);
 					break;
 
 				case 2:
 					assembler.move_reg_into_stack_top_offset_16(
-						R_ACCUMULATOR_0_ID, location_data.offset);
+						value_reg, location_data.offset);
 					break;
 
 				case 4:
 					assembler.move_reg_into_stack_top_offset_32(
-						R_ACCUMULATOR_0_ID, location_data.offset);
+						value_reg, location_data.offset);
 					break;
 
 				case 8:
 					assembler.move_reg_into_stack_top_offset_64(
-						R_ACCUMULATOR_0_ID, location_data.offset);
+						value_reg, location_data.offset);
 					break;
 
 				default:

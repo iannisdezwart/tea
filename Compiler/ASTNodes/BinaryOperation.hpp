@@ -1,5 +1,5 @@
-#ifndef TEA_AST_NODES_BINARY_OPERATION_HEADER
-#define TEA_AST_NODES_BINARY_OPERATION_HEADER
+#ifndef TEA_AST_NODE_BINARY_OPERATION_HEADER
+#define TEA_AST_NODE_BINARY_OPERATION_HEADER
 
 #include <bits/stdc++.h>
 
@@ -168,97 +168,88 @@ class BinaryOperation : public ReadValue {
 			#undef not_implemented_warning
 		}
 
-		void get_value(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
 		{
-			bool is_root = compiler_state.root_of_operation_tree;
-			compiler_state.root_of_operation_tree = false;
+			uint8_t rhs_reg;
+
+			get_type(compiler_state);
 
 			// Get the left hand side value
 
-			left->get_value(assembler, compiler_state);
-
-			if (!left->is_operation()) {
-				assembler.push_reg_64(R_ACCUMULATOR_0_ID);
-			}
+			left->get_value(assembler, compiler_state, result_reg);
 
 			// Get the right hand side value
 
-			right->get_value(assembler, compiler_state);
-
-			if (!right->is_operation()) {
-				assembler.push_reg_64(R_ACCUMULATOR_0_ID);
-			}
+			rhs_reg = assembler.get_register();
+			right->get_value(assembler, compiler_state, rhs_reg);
 
 			// Perform the operation
-
-			assembler.pop_64_into_reg(R_ACCUMULATOR_1_ID);
-			assembler.pop_64_into_reg(R_ACCUMULATOR_0_ID);
 
 			switch (op) {
 				// Mathematical binary operations
 
 				case DIVISION:
-					assembler.divide_reg_from_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.divide_reg_from_reg(rhs_reg, result_reg);
 					break;
 
 				case REMAINDER:
-					assembler.take_modulo_reg_of_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.take_modulo_reg_of_reg(rhs_reg, result_reg);
 					break;
 
 				case MULTIPLICATION:
-					assembler.multiply_reg_into_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.multiply_reg_into_reg(rhs_reg, result_reg);
 					break;
 
 				case ADDITION:
-					assembler.add_reg_into_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.add_reg_into_reg(rhs_reg, result_reg);
 					break;
 
 				case SUBTRACTION:
-					assembler.subtract_reg_from_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.subtract_reg_from_reg(rhs_reg, result_reg);
 					break;
 
 				case BITWISE_AND:
-					assembler.and_reg_into_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.and_reg_into_reg(rhs_reg, result_reg);
 					break;
 
 				case BITWISE_XOR:
-					assembler.xor_reg_into_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.xor_reg_into_reg(rhs_reg, result_reg);
 					break;
 
 				case BITWISE_OR:
-					assembler.or_reg_into_reg(R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+					assembler.or_reg_into_reg(rhs_reg, result_reg);
 					break;
 
 				// Logical binary operations
 
 				case LESS:
-					assembler.compare_reg_to_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-					assembler.set_reg_if_less(R_ACCUMULATOR_0_ID);
+					assembler.compare_reg_to_reg(result_reg, rhs_reg);
+					assembler.set_reg_if_less(result_reg);
 					break;
 
 				case LESS_OR_EQUAL:
-					assembler.compare_reg_to_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-					assembler.set_reg_if_less_or_equal(R_ACCUMULATOR_0_ID);
+					assembler.compare_reg_to_reg(result_reg, rhs_reg);
+					assembler.set_reg_if_less_or_equal(result_reg);
 					break;
 
 				case GREATER:
-					assembler.compare_reg_to_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-					assembler.set_reg_if_greater(R_ACCUMULATOR_0_ID);
+					assembler.compare_reg_to_reg(result_reg, rhs_reg);
+					assembler.set_reg_if_greater(result_reg);
 					break;
 
 				case GREATER_OR_EQUAL:
-					assembler.compare_reg_to_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-					assembler.set_reg_if_greater_or_equal(R_ACCUMULATOR_0_ID);
+					assembler.compare_reg_to_reg(result_reg, rhs_reg);
+					assembler.set_reg_if_greater_or_equal(result_reg);
 					break;
 
 				case EQUAL:
-					assembler.compare_reg_to_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-					assembler.set_reg_if_equal(R_ACCUMULATOR_0_ID);
+					assembler.compare_reg_to_reg(result_reg, rhs_reg);
+					assembler.set_reg_if_equal(result_reg);
 					break;
 
 				case NOT_EQUAL:
-					assembler.compare_reg_to_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-					assembler.set_reg_if_not_equal(R_ACCUMULATOR_0_ID);
+					assembler.compare_reg_to_reg(result_reg, rhs_reg);
+					assembler.set_reg_if_not_equal(result_reg);
 					break;
 
 				default:
@@ -267,15 +258,7 @@ class BinaryOperation : public ReadValue {
 					break;
 			}
 
-			// Push the result on the stack if this is not the root
-
-			if (is_root) {
-				compiler_state.root_of_operation_tree = true;
-			} else {
-				assembler.push_reg_64(R_ACCUMULATOR_0_ID);
-			}
-
-			get_type(compiler_state);
+			assembler.free_register(rhs_reg);
 		}
 };
 

@@ -434,7 +434,6 @@ class CompilerState {
 		uint64_t locals_size = 0;
 
 		size_t scope_depth = 0;
-		bool root_of_operation_tree = true;
 
 		uint64_t label_id = 0;
 

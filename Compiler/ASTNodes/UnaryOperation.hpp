@@ -96,25 +96,27 @@ class UnaryOperation : public WriteValue {
 			// Todo: create
 		}
 
-		void store(Assembler& assembler, CompilerState& compiler_state)
+		void store(Assembler& assembler, CompilerState& compiler_state, uint8_t value_reg)
 		{
 			switch (op) {
 				case PREFIX_INCREMENT:
 				{
 					WriteValue *wr_expression = WriteValue::cast(expression);
-					wr_expression->store(assembler, compiler_state);
+					wr_expression->store(assembler, compiler_state, value_reg);
 					break;
 				}
 
 				case PREFIX_DECREMENT:
 				{
 					WriteValue *wr_expression = WriteValue::cast(expression);
-					wr_expression->store(assembler, compiler_state);
+					wr_expression->store(assembler, compiler_state, value_reg);
 					break;
 				}
 
 				case DEREFERENCE:
 				{
+					uint8_t ptr_reg = assembler.get_register();
+
 					size_t deref_dep = 0;
 					ReadValue *expr = this;
 
@@ -126,13 +128,9 @@ class UnaryOperation : public WriteValue {
 						deref_dep++;
 					}
 
-					// Move the value to store into R_ACCUMULATOR_1
+					// Move the address of what to dereference into the pointer register
 
-					assembler.move_reg_into_reg(R_ACCUMULATOR_0_ID, R_ACCUMULATOR_1_ID);
-
-					// Move the address of what to dereference into R_ACCUMULATOR_0
-
-					expr->get_value(assembler, compiler_state);
+					expr->get_value(assembler, compiler_state, ptr_reg);
 
 					Type expr_type = expr->get_type(compiler_state);
 
@@ -140,30 +138,24 @@ class UnaryOperation : public WriteValue {
 
 					while (--deref_dep) {
 						expr_type.array_sizes.pop_back();
-
-						assembler.move_reg_pointer_64_into_reg(
-							R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+						assembler.move_reg_pointer_64_into_reg(ptr_reg, ptr_reg);
 					}
 
 					switch (expr_type.byte_size()) {
 						case 1:
-							assembler.move_reg_into_reg_pointer_8(
-								R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+							assembler.move_reg_into_reg_pointer_8(value_reg, ptr_reg);
 							break;
 
 						case 2:
-							assembler.move_reg_into_reg_pointer_16(
-								R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+							assembler.move_reg_into_reg_pointer_16(value_reg, ptr_reg);
 							break;
 
 						case 4:
-							assembler.move_reg_into_reg_pointer_32(
-							R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+							assembler.move_reg_into_reg_pointer_32(value_reg, ptr_reg);
 							break;
 
 						case 8:
-							assembler.move_reg_into_reg_pointer_64(
-								R_ACCUMULATOR_1_ID, R_ACCUMULATOR_0_ID);
+							assembler.move_reg_into_reg_pointer_64(value_reg, ptr_reg);
 							break;
 
 						default:
@@ -172,6 +164,8 @@ class UnaryOperation : public WriteValue {
 								expr->get_type(compiler_state).byte_size());
 							abort();
 					}
+
+					assembler.free_register(ptr_reg);
 
 					break;
 				}
@@ -184,7 +178,7 @@ class UnaryOperation : public WriteValue {
 			}
 		}
 
-		void get_value(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
 		{
 			switch (op) {
 				case POSTFIX_INCREMENT:
@@ -192,26 +186,26 @@ class UnaryOperation : public WriteValue {
 					WriteValue *wr_expression = WriteValue::cast(expression);
 					Type type = wr_expression->get_type(compiler_state);
 
-					// Move result into R_ACCUMULATOR_0 and increment it
+					// Move result into the result reg and increment it
 
-					wr_expression->get_value(assembler, compiler_state);
+					wr_expression->get_value(assembler, compiler_state, result_reg);
 
 					if (type.pointer_depth() > 0) {
-						assembler.add_64_into_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
+						assembler.add_64_into_reg(type.pointed_byte_size(), result_reg);
 					} else {
-						assembler.increment_reg(R_ACCUMULATOR_0_ID);
+						assembler.increment_reg(result_reg);
 					}
 
 					// Store the value back into memory
 
-					wr_expression->store(assembler, compiler_state);
+					wr_expression->store(assembler, compiler_state, result_reg);
 
-					// Decrement R_ACCUMULATOR_0
+					// Decrement the result reg
 
 					if (type.pointer_depth() > 0) {
-						assembler.subtract_64_from_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
+						assembler.subtract_64_from_reg(type.pointed_byte_size(), result_reg);
 					} else {
-						assembler.decrement_reg(R_ACCUMULATOR_0_ID);
+						assembler.decrement_reg(result_reg);
 					}
 
 					break;
@@ -222,26 +216,26 @@ class UnaryOperation : public WriteValue {
 					WriteValue *wr_expression = WriteValue::cast(expression);
 					Type type = wr_expression->get_type(compiler_state);
 
-					// Move result into R_ACCUMULATOR_0 and decrement it
+					// Move result into the result reg and decrement it
 
-					wr_expression->get_value(assembler, compiler_state);
+					wr_expression->get_value(assembler, compiler_state, result_reg);
 
 					if (type.pointer_depth() > 0) {
-						assembler.subtract_64_from_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
+						assembler.subtract_64_from_reg(type.pointed_byte_size(), result_reg);
 					} else {
-						assembler.decrement_reg(R_ACCUMULATOR_0_ID);
+						assembler.decrement_reg(result_reg);
 					}
 
 					// Store the value back into memory
 
-					wr_expression->store(assembler, compiler_state);
+					wr_expression->store(assembler, compiler_state, result_reg);
 
-					// Increment R_ACCUMULATOR_0
+					// Increment the result reg
 
 					if (type.pointer_depth() > 0) {
-						assembler.add_64_into_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
+						assembler.add_64_into_reg(type.pointed_byte_size(), result_reg);
 					} else {
-						assembler.increment_reg(R_ACCUMULATOR_0_ID);
+						assembler.increment_reg(result_reg);
 					}
 
 					break;
@@ -252,21 +246,19 @@ class UnaryOperation : public WriteValue {
 					WriteValue *wr_expression = WriteValue::cast(expression);
 					Type type = wr_expression->get_type(compiler_state);
 
-					// Move result into R_ACCUMULATOR_0 and increment it
+					// Move result into the result reg and increment it
 
-					wr_expression->get_value(assembler, compiler_state);
-
-					wr_expression->get_value(assembler, compiler_state);
+					wr_expression->get_value(assembler, compiler_state, result_reg);
 
 					if (type.pointer_depth() > 0) {
-						assembler.add_64_into_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
+						assembler.add_64_into_reg(type.pointed_byte_size(), result_reg);
 					} else {
-						assembler.increment_reg(R_ACCUMULATOR_0_ID);
+						assembler.increment_reg(result_reg);
 					}
 
 					// Store the value back into memory
 
-					wr_expression->store(assembler, compiler_state);
+					wr_expression->store(assembler, compiler_state, result_reg);
 					break;
 				}
 
@@ -275,19 +267,19 @@ class UnaryOperation : public WriteValue {
 					WriteValue *wr_expression = WriteValue::cast(expression);
 					Type type = wr_expression->get_type(compiler_state);
 
-					// Move result into R_ACCUMULATOR_0 and decrement it
+					// Move result into the result reg and decrement it
 
-					wr_expression->get_value(assembler, compiler_state);
+					wr_expression->get_value(assembler, compiler_state, result_reg);
 
 					if (type.pointer_depth() > 0) {
-						assembler.subtract_64_from_reg(type.pointed_byte_size(), R_ACCUMULATOR_0_ID);
+						assembler.subtract_64_from_reg(type.pointed_byte_size(), result_reg);
 					} else {
-						assembler.decrement_reg(R_ACCUMULATOR_0_ID);
+						assembler.decrement_reg(result_reg);
 					}
 
 					// Store the value back into memory
 
-					wr_expression->store(assembler, compiler_state);
+					wr_expression->store(assembler, compiler_state, result_reg);
 					break;
 				}
 
@@ -295,71 +287,67 @@ class UnaryOperation : public WriteValue {
 				{
 					// Todo: look up if this operator does anything interesting
 
-					expression->get_value(assembler, compiler_state);
+					expression->get_value(assembler, compiler_state, result_reg);
 					break;
 				}
 
 				case UNARY_MINUS:
 				{
-					expression->get_value(assembler, compiler_state);
+					expression->get_value(assembler, compiler_state, result_reg);
 
 					// Invert the bits and add one
 
-					assembler.not_reg(R_ACCUMULATOR_0_ID);
-					assembler.increment_reg(R_ACCUMULATOR_0_ID);
+					assembler.not_reg(result_reg);
+					assembler.increment_reg(result_reg);
 					break;
 				}
 
 				case BITWISE_NOT:
 				{
-					expression->get_value(assembler, compiler_state);
+					expression->get_value(assembler, compiler_state, result_reg);
 
 					// Invert the bits
 
-					assembler.not_reg(R_ACCUMULATOR_0_ID);
+					assembler.not_reg(result_reg);
 					break;
 				}
 
 				case LOGICAL_NOT:
 				{
-					expression->get_value(assembler, compiler_state);
+					expression->get_value(assembler, compiler_state, result_reg);
 
 					// Invert the bits and mask
 
-					assembler.not_reg(R_ACCUMULATOR_0_ID);
-					assembler.and_64_into_reg(1, R_ACCUMULATOR_0_ID);
+					assembler.not_reg(result_reg);
+					assembler.and_64_into_reg(1, result_reg);
 					break;
 				}
 
 				case DEREFERENCE:
 				{
-					// Moves the address of what to dereference into R_ACCUMULATOR_0
+					// Moves the address of what to dereference into the result reg
 
-					expression->get_value(assembler, compiler_state);
+					expression->get_value(assembler, compiler_state, result_reg);
 					Type type = expression->get_type(compiler_state);
 					type.array_sizes.pop_back();
 
-					// Move the dereferenced value into R_ACCUMULATOR_0
+					// Move the dereferenced value into the result reg
 
 					switch (type.byte_size()) {
 						case 1:
-							assembler.move_reg_pointer_8_into_reg(
-								R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+							assembler.move_reg_pointer_8_into_reg(result_reg, result_reg);
 							break;
 
 						case 2:
-							assembler.move_reg_pointer_16_into_reg(
-								R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+							assembler.move_reg_pointer_16_into_reg(result_reg, result_reg);
 							break;
 
 						case 4:
-							assembler.move_reg_pointer_32_into_reg(
-								R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+							assembler.move_reg_pointer_32_into_reg(result_reg, result_reg);
 							break;
 
 						case 8:
-							assembler.move_reg_pointer_64_into_reg(
-								R_ACCUMULATOR_0_ID, R_ACCUMULATOR_0_ID);
+							assembler.move_reg_pointer_64_into_reg(result_reg, result_reg);
 							break;
 					}
 
@@ -372,13 +360,13 @@ class UnaryOperation : public WriteValue {
 					LocationData location_data = wr_expression->get_location_data(compiler_state);
 
 					if (location_data.is_at_frame_top()) {
-						assembler.move_reg_into_reg(R_FRAME_P_ID, R_ACCUMULATOR_0_ID);
-						assembler.add_64_into_reg(location_data.offset, R_ACCUMULATOR_0_ID);
+						assembler.move_reg_into_reg(R_FRAME_P_ID, result_reg);
+						assembler.add_64_into_reg(location_data.offset, result_reg);
 					}
 
 					else {
-						assembler.move_stack_top_address_into_reg(R_ACCUMULATOR_0_ID);
-						assembler.add_64_into_reg(location_data.offset, R_ACCUMULATOR_0_ID);
+						assembler.move_stack_top_address_into_reg(result_reg);
+						assembler.add_64_into_reg(location_data.offset, result_reg);
 					}
 				}
 			}

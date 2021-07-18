@@ -28,9 +28,9 @@ class WriteValue : public ReadValue
 			: ReadValue(accountable_token, type) {}
 
 		/**
-		 *  Stores the value in R_ACCUMULATOR_0 into this value.
+		 *  Stores the value in value_reg into this value.
 		 */
-		virtual void store(Assembler& assembler, CompilerState& compiler_state) = 0;
+		virtual void store(Assembler& assembler, CompilerState& compiler_state, uint8_t value_reg) = 0;
 
 		/**
 		 *  Gets data about the location of the value.

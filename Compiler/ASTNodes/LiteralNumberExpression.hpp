@@ -53,9 +53,9 @@ class LiteralNumberExpression : public ReadValue {
 			return type;
 		}
 
-		void get_value(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
 		{
-			assembler.move_64_into_reg(to_num(), R_ACCUMULATOR_0_ID);
+			assembler.move_64_into_reg(to_num(), result_reg);
 		}
 };
 

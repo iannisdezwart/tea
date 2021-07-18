@@ -52,9 +52,9 @@ class CastExpression : public ReadValue {
 			return Type::from_string(type_name->type_token.value, type_name->array_sizes);
 		}
 
-		void get_value(Assembler &assembler, CompilerState &compiler_state)
+		void get_value(Assembler &assembler, CompilerState &compiler_state, uint8_t result_reg)
 		{
-			expression->get_value(assembler, compiler_state);
+			expression->get_value(assembler, compiler_state, result_reg);
 		}
 };
 

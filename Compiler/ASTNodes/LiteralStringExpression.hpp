@@ -38,12 +38,12 @@ class LiteralStringExpression : public ReadValue {
 			return type;
 		}
 
-		void get_value(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
 		{
 			StaticData static_data = assembler.add_static_data(
 				(uint8_t *) value.data(), value.size());
 
-			assembler.move_64_into_reg(static_data.offset, R_ACCUMULATOR_0_ID);
+			assembler.move_64_into_reg(static_data.offset, result_reg);
 		}
 };
 

@@ -42,9 +42,9 @@ class ReturnStatement : public ASTNode {
 
 		void compile(Assembler& assembler, CompilerState& compiler_state)
 		{
-			// Moves the return value into R_ACCUMULATOR_0
+			// Moves the return value into R_RET
 
-			if (expression != NULL) expression->get_value(assembler, compiler_state);
+			if (expression != NULL) expression->get_value(assembler, compiler_state, R_RET_ID);
 
 			assembler.return_();
 		}

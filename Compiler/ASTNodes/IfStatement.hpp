@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "ASTNode.hpp"
+#include "ReadValue.hpp"
 #include "../tokeniser.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
@@ -14,11 +15,11 @@ using namespace std;
 class IfStatement : public ASTNode {
 	public:
 		Token if_token;
-		ASTNode *test;
+		ReadValue *test;
 		CodeBlock *then_block;
 		CodeBlock *else_block;
 
-		IfStatement(ASTNode *test, Token if_token, CodeBlock *then_block,
+		IfStatement(ReadValue *test, Token if_token, CodeBlock *then_block,
 			CodeBlock *else_block)
 				: test(test), then_block(then_block), else_block(else_block),
 					if_token(if_token), ASTNode(if_token, IF_STATEMENT) {}
@@ -45,19 +46,24 @@ class IfStatement : public ASTNode {
 
 		void compile(Assembler& assembler, CompilerState& compiler_state)
 		{
+			uint8_t test_reg;
+
 			// Create labels
 
 			string else_label = compiler_state.generate_label("else-block");
 			string end_label = compiler_state.generate_label("end-if-statement");
 
-			// Perform the check, moves the result into R_ACCUMULATOR_0
+			// Perform the check and move the result into the test register
 
-			test->compile(assembler, compiler_state);
+			test_reg = assembler.get_register();
+			test->get_value(assembler, compiler_state, test_reg);
 
 			// Jump to the right label
 
-			assembler.compare_reg_to_8(R_ACCUMULATOR_0_ID, 0);
+			assembler.compare_reg_to_8(test_reg, 0);
 			assembler.jump_if_equal(else_label);
+
+			assembler.free_register(test_reg);
 
 			// Compile code for then block
 

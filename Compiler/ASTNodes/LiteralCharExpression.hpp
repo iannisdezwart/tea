@@ -38,9 +38,9 @@ class LiteralCharExpression : public ReadValue {
 			return Type(Type::UNSIGNED_INTEGER, 1);
 		}
 
-		void get_value(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
 		{
-			assembler.move_8_into_reg(value, R_ACCUMULATOR_0_ID);
+			assembler.move_8_into_reg(value, result_reg);
 		}
 };
 

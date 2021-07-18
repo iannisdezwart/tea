@@ -298,9 +298,9 @@ class Parser {
 			}
 		}
 
-		ASTNode *scan_expression()
+		ReadValue *scan_expression()
 		{
-			vector<ASTNode *> expressions;
+			vector<ReadValue *> expressions;
 			vector<Token> operators;
 
 			while (true) {
@@ -346,9 +346,9 @@ class Parser {
 
 						merge_op:
 
-						ASTNode *left_expr = expressions[j];
-						ASTNode *right_expr = expressions[j + 1];
-						ASTNode *new_expr;
+						ReadValue *left_expr = expressions[j];
+						ReadValue *right_expr = expressions[j + 1];
+						ReadValue *new_expr;
 
 						switch (op) {
 							default:
@@ -373,8 +373,7 @@ class Parser {
 							case EQUAL:
 							case NOT_EQUAL:
 							{
-								new_expr = new BinaryOperation(ReadValue::cast(left_expr),
-									ReadValue::cast(right_expr), op_token);
+								new_expr = new BinaryOperation(left_expr, right_expr, op_token);
 								break;
 							}
 
@@ -440,9 +439,9 @@ class Parser {
 
 						merge_op_1:
 
-						ASTNode *left = expressions[j - 1];
-						ASTNode *right = expressions[j];
-						ASTNode *new_expr;
+						ReadValue *left = expressions[j - 1];
+						ReadValue *right = expressions[j];
+						ReadValue *new_expr;
 
 						switch (op) {
 							default:
@@ -484,7 +483,7 @@ class Parser {
 								// }
 
 								new_expr = new AssignmentExpression(WriteValue::cast(left),
-									ReadValue::cast(right), op_token);
+									right, op_token);
 
 								break;
 							}
@@ -501,10 +500,10 @@ class Parser {
 			return expressions[0];
 		}
 
-		ASTNode *scan_sub_expression()
+		ReadValue *scan_sub_expression()
 		{
 			vector<pair<Token, bool>> operators; // bool => true = prefix
-			ASTNode *expression;
+			ReadValue *expression;
 
 			// Prefix unary operators
 
@@ -533,8 +532,7 @@ class Parser {
 				assert_token_type(left_parenthesis, SPECIAL_CHARACTER);
 				assert_token_value(left_parenthesis, "(");
 
-				expression = new CastExpression(new TypeName(expr_token, {}),
-					ReadValue::cast(scan_expression()));
+				expression = new CastExpression(new TypeName(expr_token, {}), scan_expression());
 
 				Token right_parenthesis = next_token();
 				assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
@@ -555,8 +553,7 @@ class Parser {
 				assert_token_type(left_parenthesis, SPECIAL_CHARACTER);
 				assert_token_value(left_parenthesis, "(");
 
-				expression = new CastExpression(type_name,
-					ReadValue::cast(scan_expression()));
+				expression = new CastExpression(type_name, scan_expression());
 
 				Token right_parenthesis = next_token();
 				assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
@@ -588,7 +585,7 @@ class Parser {
 				}
 
 				next_init_list_item:
-				items.push_back(ReadValue::cast(scan_expression()));
+				items.push_back(scan_expression());
 
 				seperator = next_token();
 
@@ -700,8 +697,7 @@ class Parser {
 
 						merge_op:
 
-						ASTNode *new_expr = new UnaryOperation(ReadValue::cast(expression),
-							op_token, prefix);
+						ReadValue *new_expr = new UnaryOperation(expression, op_token, prefix);
 
 						expression = new_expr;
 
@@ -734,8 +730,7 @@ class Parser {
 
 						merge_op_1:
 
-						ASTNode *new_expr = new UnaryOperation(ReadValue::cast(expression),
-							op_token, prefix);
+						ReadValue *new_expr = new UnaryOperation(expression, op_token, prefix);
 
 						expression = new_expr;
 
@@ -831,7 +826,7 @@ class Parser {
 
 			next_argument:
 
-			arguments.push_back(ReadValue::cast(scan_expression()));
+			arguments.push_back(scan_expression());
 			next = next_token();
 
 			if (next.type != SPECIAL_CHARACTER) goto argument_err;
@@ -857,7 +852,7 @@ class Parser {
 
 			if (next.type == OPERATOR && next.value == "=") {
 				i++;
-				return new VariableDeclaration(type_id_pair, ReadValue::cast(scan_expression()));
+				return new VariableDeclaration(type_id_pair, scan_expression());
 			}
 
 			// Only declaration
@@ -893,7 +888,7 @@ class Parser {
 			}
 
 			ReturnStatement *return_statement = new ReturnStatement(
-				return_token, ReadValue::cast(scan_expression()));
+				return_token, scan_expression());
 
 			return return_statement;
 		}
@@ -910,7 +905,7 @@ class Parser {
 			assert_token_type(left_parenthesis_token, SPECIAL_CHARACTER);
 			assert_token_value(left_parenthesis_token, "(");
 
-			ASTNode *test = scan_expression();
+			ReadValue *test = scan_expression();
 
 			Token right_parenthesis_token = next_token();
 			assert_token_type(right_parenthesis_token, SPECIAL_CHARACTER);
@@ -965,7 +960,7 @@ class Parser {
 			assert_token_type(left_parenthesis_token, SPECIAL_CHARACTER);
 			assert_token_value(left_parenthesis_token, "(");
 
-			ASTNode *test = scan_expression();
+			ReadValue *test = scan_expression();
 
 			Token right_parenthesis_token = next_token();
 			assert_token_type(right_parenthesis_token, SPECIAL_CHARACTER);

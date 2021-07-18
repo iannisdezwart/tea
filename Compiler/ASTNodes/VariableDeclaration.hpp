@@ -58,176 +58,180 @@ class VariableDeclaration : public ASTNode {
 
 		void compile(Assembler& assembler, CompilerState& compiler_state)
 		{
-			if (expression != NULL) {
-				// Match types
+			uint8_t init_list_item_reg;
+			uint8_t init_value_reg;
 
-				Type specified_type = get_type(compiler_state);
-				Type assignment_type = expression->get_type(compiler_state);
+			if (expression == NULL) return;
 
-				if (!assignment_type.fits(specified_type)) {
-					err_at_token(expression->accountable_token,
-						"Type Error",
-						"Initial value of VariableDeclaration does not fit into "
-						"specified type\n"
-						"specified_type = %s, assignment_value = %s",
-						specified_type.to_str().c_str(), assignment_type.to_str().c_str());
-				}
+			// Match types
 
-				string id_name = type_and_id_pair->get_identifier_name();
-				IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
+			Type specified_type = get_type(compiler_state);
+			Type assignment_type = expression->get_type(compiler_state);
 
-				Variable var;
+			if (!assignment_type.fits(specified_type)) {
+				err_at_token(expression->accountable_token,
+					"Type Error",
+					"Initial value of VariableDeclaration does not fit into "
+					"specified type\n"
+					"specified_type = %s, assignment_value = %s",
+					specified_type.to_str().c_str(), assignment_type.to_str().c_str());
+			}
 
-				switch (id_kind) {
-					case IdentifierKind::LOCAL:
-						var = compiler_state.locals[id_name];
-						break;
+			string id_name = type_and_id_pair->get_identifier_name();
+			IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
 
-					case IdentifierKind::GLOBAL:
-						var = compiler_state.globals[id_name];
-						break;
+			Variable var;
 
-					default:
-						err_at_token(accountable_token, "Invalid VariableDeclaration",
-							"Cannot declare a variable of this type\n"
-							"Only locals and globals can be declared");
-				}
+			switch (id_kind) {
+				case IdentifierKind::LOCAL:
+					var = compiler_state.locals[id_name];
+					break;
 
-				Type& type = var.id.type;
-				uint64_t offset = var.offset;
-				uint64_t var_size = type.byte_size();
+				case IdentifierKind::GLOBAL:
+					var = compiler_state.globals[id_name];
+					break;
 
-				// Class instance declaration
+				default:
+					err_at_token(accountable_token, "Invalid VariableDeclaration",
+						"Cannot declare a variable of this type\n"
+						"Only locals and globals can be declared");
+			}
 
-				if (type == Type::USER_DEFINED_CLASS) {
-					// Expect an init list or a constructor call
+			Type& type = var.id.type;
+			uint64_t offset = var.offset;
+			uint64_t var_size = type.byte_size();
 
-					if (expression->type == INIT_LIST) {
-						InitList *init_list = (InitList *) expression;
-						const Class& cl = compiler_state.classes[type.class_name];
+			// Class instance declaration
 
-						// Check type compatibility
+			if (type == Type::USER_DEFINED_CLASS) {
+				// Expect an init list or a constructor call
 
-						if (init_list->items.size() > cl.fields.size()) {
-							err_at_token(init_list->accountable_token, "Type Error",
-								"InitList for %s class instance holds %lu members, "
-								"but %s has only %lu fields",
-								type.class_name.c_str(), init_list->items.size(),
-								type.class_name.c_str(), cl.fields.size());
-						}
+				if (expression->type == INIT_LIST) {
+					InitList *init_list = (InitList *) expression;
+					const Class& cl = compiler_state.classes[type.class_name];
 
-						size_t sub_offset = 0;
+					// Check type compatibility
 
-						for (size_t i = 0; i < init_list->items.size(); i++) {
-							ASTNode *item = init_list->items[i];
-							const Type item_type = item->get_type(compiler_state);
-							const Type& field_type = cl.fields[i].type;
-
-							// Type compatibility
-
-							if (!item_type.fits(field_type)) {
-								// Todo: elaborate
-
-								err_at_token(item->accountable_token, "Type Error",
-									"Item %lu of InitList does not fit the corresponding field "
-									"of class \"%s\"",
-									i, type.class_name.c_str());
-							}
-
-							// Put item into class instance
-
-							item->compile(assembler, compiler_state);
-
-							switch (id_kind) {
-								case IdentifierKind::LOCAL:
-								{
-									switch (field_type.byte_size()) {
-										case 1:
-											assembler.move_reg_into_frame_offset_8(R_ACCUMULATOR_0_ID, offset + sub_offset);
-											sub_offset += 1;
-											break;
-
-										case 2:
-											assembler.move_reg_into_frame_offset_16(R_ACCUMULATOR_0_ID, offset + sub_offset);
-											sub_offset += 2;
-											break;
-
-										case 4:
-											assembler.move_reg_into_frame_offset_32(R_ACCUMULATOR_0_ID, offset + sub_offset);
-											sub_offset += 4;
-											break;
-
-										case 8:
-											assembler.move_reg_into_frame_offset_64(R_ACCUMULATOR_0_ID, offset + sub_offset);
-											sub_offset += 8;
-											break;
-
-										default:
-											err_at_token(item->accountable_token, "Type Error",
-												"Cannot put an item of %lu bytes into a class instance\n"
-												"This behaviour is not implemented yet",
-												field_type.byte_size());
-									}
-
-									break;
-								}
-
-								case IdentifierKind::GLOBAL:
-								{
-									switch (field_type.byte_size()) {
-										case 1:
-											assembler.move_reg_into_stack_top_offset_8(R_ACCUMULATOR_0_ID, offset + sub_offset);
-											sub_offset += 1;
-											break;
-
-										case 2:
-											assembler.move_reg_into_stack_top_offset_16(R_ACCUMULATOR_0_ID, offset + sub_offset);
-											sub_offset += 2;
-											break;
-
-										case 4:
-											assembler.move_reg_into_stack_top_offset_32(R_ACCUMULATOR_0_ID, offset + sub_offset);
-											sub_offset += 4;
-											break;
-
-										case 8:
-											assembler.move_reg_into_stack_top_offset_64(R_ACCUMULATOR_0_ID, offset + sub_offset);
-											sub_offset += 8;
-											break;
-
-										default:
-											err_at_token(item->accountable_token, "Type Error",
-												"Cannot put an item of %lu bytes into a class instance\n"
-												"This behaviour is not implemented yet",
-												field_type.byte_size());
-									}
-
-									break;
-								}
-							}
-
-						}
-					} else {
-						err_at_token(expression->accountable_token, "Semantic Error",
-							"Unexpected expression of type \"%s\" at the right hand "
-							"side of a class instance declaration\n"
-							"Expected an initialiser list or a constructor call",
-							ast_node_type_to_str(expression->type));
+					if (init_list->items.size() > cl.fields.size()) {
+						err_at_token(init_list->accountable_token, "Type Error",
+							"InitList for %s class instance holds %lu members, "
+							"but %s has only %lu fields",
+							type.class_name.c_str(), init_list->items.size(),
+							type.class_name.c_str(), cl.fields.size());
 					}
 
-					return;
+					size_t sub_offset = 0;
+
+					if (init_list->items.size()) init_list_item_reg = assembler.get_register();
+
+					for (size_t i = 0; i < init_list->items.size(); i++) {
+						ReadValue *item = init_list->items[i];
+						const Type item_type = item->get_type(compiler_state);
+						const Type& field_type = cl.fields[i].type;
+
+						// Type compatibility
+
+						if (!item_type.fits(field_type)) {
+							// Todo: elaborate
+
+							err_at_token(item->accountable_token, "Type Error",
+								"Item %lu of InitList does not fit the corresponding field "
+								"of class \"%s\"",
+								i, type.class_name.c_str());
+						}
+
+						// Put item into class instance
+
+						item->get_value(assembler, compiler_state, init_list_item_reg);
+
+						switch (id_kind) {
+							case IdentifierKind::LOCAL:
+							{
+								switch (field_type.byte_size()) {
+									case 1:
+										assembler.move_reg_into_frame_offset_8(init_list_item_reg, offset + sub_offset);
+										sub_offset += 1;
+										break;
+
+									case 2:
+										assembler.move_reg_into_frame_offset_16(init_list_item_reg, offset + sub_offset);
+										sub_offset += 2;
+										break;
+
+									case 4:
+										assembler.move_reg_into_frame_offset_32(init_list_item_reg, offset + sub_offset);
+										sub_offset += 4;
+										break;
+
+									case 8:
+										assembler.move_reg_into_frame_offset_64(init_list_item_reg, offset + sub_offset);
+										sub_offset += 8;
+										break;
+
+									default:
+										err_at_token(item->accountable_token, "Type Error",
+											"Cannot put an item of %lu bytes into a class instance\n"
+											"This behaviour is not implemented yet",
+											field_type.byte_size());
+								}
+
+								break;
+							}
+
+							case IdentifierKind::GLOBAL:
+							{
+								switch (field_type.byte_size()) {
+									case 1:
+										assembler.move_reg_into_stack_top_offset_8(init_list_item_reg, offset + sub_offset);
+										sub_offset += 1;
+										break;
+
+									case 2:
+										assembler.move_reg_into_stack_top_offset_16(init_list_item_reg, offset + sub_offset);
+										sub_offset += 2;
+										break;
+
+									case 4:
+										assembler.move_reg_into_stack_top_offset_32(init_list_item_reg, offset + sub_offset);
+										sub_offset += 4;
+										break;
+
+									case 8:
+										assembler.move_reg_into_stack_top_offset_64(init_list_item_reg, offset + sub_offset);
+										sub_offset += 8;
+										break;
+
+									default:
+										err_at_token(item->accountable_token, "Type Error",
+											"Cannot put an item of %lu bytes into a class instance\n"
+											"This behaviour is not implemented yet",
+											field_type.byte_size());
+								}
+
+								break;
+							}
+						}
+					}
+
+					if (init_list->items.size()) assembler.free_register(init_list_item_reg);
+				} else {
+					err_at_token(expression->accountable_token, "Semantic Error",
+						"Unexpected expression of type \"%s\" at the right hand "
+						"side of a class instance declaration\n"
+						"Expected an initialiser list or a constructor call",
+						ast_node_type_to_str(expression->type));
 				}
 
-				// Built-in type declaration
-
-				// Moves result into R_ACCUMULATOR_0
-
-				expression->get_value(assembler, compiler_state);
-
-				// Move R_ACCUMULATOR into the address of the variable
-
-				id_expr.store(assembler, compiler_state);
+				return;
 			}
+
+			// Built-in type declaration
+			// Get the expression value into a register and store it in memory
+
+			init_value_reg = assembler.get_register();
+			expression->get_value(assembler, compiler_state, init_value_reg);
+			id_expr.store(assembler, compiler_state, init_value_reg);
+			assembler.free_register(init_value_reg);
 		}
 };
 

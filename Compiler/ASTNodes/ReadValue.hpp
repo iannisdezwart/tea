@@ -36,17 +36,19 @@ class ReadValue : public ASTNode
 			: ASTNode(accountable_token, type) {}
 
 		/**
-		 *  Gets the value of this expression and puts it in R_ACCUMULATOR_0.
+		 *  Gets the value of this expression and ignores it.
 		 */
 		void compile(Assembler& assembler, CompilerState& compiler_state)
 		{
-			return get_value(assembler, compiler_state);
+			uint8_t result_reg = assembler.get_register();
+			get_value(assembler, compiler_state, result_reg);
+			assembler.free_register(result_reg);
 		}
 
 		/**
-		 *  Gets the value of this expression and puts it in R_ACCUMULATOR_0.
+		 *  Gets the value of this expression and puts it into result_reg.
 		 */
-		virtual void get_value(Assembler& assembler, CompilerState& compiler_state) = 0;
+		virtual void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg) = 0;
 
 		/**
 		 *  Casts an ASTNode into a ReadValue

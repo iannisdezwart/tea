@@ -49,7 +49,7 @@ class InitList : public ReadValue {
 			return type;
 		}
 
-		void get_value(Assembler& assembler, CompilerState& compiler_state)
+		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
 		{
 			// Todo: create
 		}
