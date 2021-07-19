@@ -104,6 +104,12 @@ class Type {
 			return n_members * byte_size(dim);
 		}
 
+		bool is_array() const
+		{
+			if (array_sizes.size() == 0) return false;
+			return array_sizes.back() != 0;
+		}
+
 		static Type from_string(string str, const vector<size_t>& array_sizes)
 		{
 			if (str == "u8")
@@ -205,14 +211,28 @@ class Type {
 			}
 
 			if (value == Type::INIT_LIST) {
-				if (type.value != Type::USER_DEFINED_CLASS) return false;
-				if (fields.size() > type.fields.size()) return false;
+				if (type.value == Type::USER_DEFINED_CLASS) {
+					if (fields.size() > type.fields.size()) return false;
 
-				for (size_t i = 0; i < fields.size(); i++) {
-					if (!fields[i].fits(type.fields[i])) return false;
+					for (size_t i = 0; i < fields.size(); i++) {
+						if (!fields[i].fits(type.fields[i])) return false;
+					}
+
+					return true;
 				}
 
-				return true;
+				if (type.is_array()) {
+					Type array_item_type = type;
+					array_item_type.array_sizes.pop_back();
+
+					if (fields.size() > type.array_sizes.back()) return false;
+
+					for (size_t i = 0; i < fields.size(); i++) {
+						if (!fields[i].fits(array_item_type)) return false;
+					}
+
+					return true;
+				}
 			}
 
 			return false;

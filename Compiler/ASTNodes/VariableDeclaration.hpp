@@ -225,6 +225,104 @@ class VariableDeclaration : public ASTNode {
 				return;
 			}
 
+			// Array declaration
+
+			else if (type.is_array()) {
+				// Expect an init list
+
+				if (expression->type != INIT_LIST) {
+					err_at_token(expression->accountable_token, "Semantic Error",
+						"Expected an initialiser list or nothing on the right hand side "
+						"of an array declaration\n"
+						"Found an expression of type \"%s\"",
+						ast_node_type_to_str(expression->type));
+				}
+
+				InitList *init_list = (InitList *) expression;
+
+				// Check type compatibility
+
+				if (init_list->items.size() > type.array_sizes.back()) {
+					err_at_token(init_list->accountable_token, "Type Error",
+						"InitList for %s array holds %lu members, "
+						"but the array only fits %lu elements",
+						type.class_name.c_str(), init_list->items.size(),
+						type.array_sizes.back());
+				}
+
+				Type array_item_type = type;
+				array_item_type.array_sizes.pop_back();
+				size_t sub_offset = 0;
+
+				if (init_list->items.size()) init_list_item_reg = assembler.get_register();
+
+				for (size_t i = 0; i < init_list->items.size(); i++) {
+					// Put item into array
+
+					init_list->items[i]->get_value(assembler, compiler_state, init_list_item_reg);
+
+					switch (id_kind) {
+						case IdentifierKind::LOCAL:
+						{
+							switch (array_item_type.byte_size()) {
+								case 1:
+									assembler.move_reg_into_frame_offset_8(init_list_item_reg, offset + sub_offset);
+									sub_offset += 1;
+									break;
+
+								case 2:
+									assembler.move_reg_into_frame_offset_16(init_list_item_reg, offset + sub_offset);
+									sub_offset += 2;
+									break;
+
+								case 4:
+									assembler.move_reg_into_frame_offset_32(init_list_item_reg, offset + sub_offset);
+									sub_offset += 4;
+									break;
+
+								case 8:
+									assembler.move_reg_into_frame_offset_64(init_list_item_reg, offset + sub_offset);
+									sub_offset += 8;
+									break;
+							}
+
+							break;
+						}
+
+						case IdentifierKind::GLOBAL:
+						{
+							switch (array_item_type.byte_size()) {
+								case 1:
+									assembler.move_reg_into_stack_top_offset_8(init_list_item_reg, offset + sub_offset);
+									sub_offset += 1;
+									break;
+
+								case 2:
+									assembler.move_reg_into_stack_top_offset_16(init_list_item_reg, offset + sub_offset);
+									sub_offset += 2;
+									break;
+
+								case 4:
+									assembler.move_reg_into_stack_top_offset_32(init_list_item_reg, offset + sub_offset);
+									sub_offset += 4;
+									break;
+
+								case 8:
+									assembler.move_reg_into_stack_top_offset_64(init_list_item_reg, offset + sub_offset);
+									sub_offset += 8;
+									break;
+							}
+
+							break;
+						}
+					}
+				}
+
+				if (init_list->items.size()) assembler.free_register(init_list_item_reg);
+
+				return;
+			}
+
 			// Built-in type declaration
 			// Get the expression value into a register and store it in memory
 

@@ -1,34 +1,23 @@
-u8 *in = 0x10 // Input device
-u8 *out = 0x11 // Output device
+u8* in = 0x10 // Input device
+u8* out = 0x11 // Output device
 
 void putc(u8 c)
 {
 	*out = c
 }
 
-class TwoChars
+void putu(u64 n)
 {
-	u8 a
-	u8 b
-
-	void make()
-	{
-		a = 'a'
-		b = 'b'
-	}
-
-	void print()
-	{
-		putc(a)
-		putc(' ')
-		putc(b)
-		putc('\n')
+	if (n < 10) {
+		putc(u8(n + '0'))
+	} else {
+		putu(n / 10)
+		putc(u8(n % 10 + '0'))
 	}
 }
 
 u64 main()
 {
-	TwoChars chars = { 'A', 'B' }
-	chars.make()
-	chars.print()
+	i8[5] arr = { 1, 2, 3, 4, 5 }
+	putu(*(arr + 1))
 }

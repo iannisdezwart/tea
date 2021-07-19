@@ -115,10 +115,18 @@ class IdentifierExpression : public WriteValue {
 			}
 
 			LocationData location_data = get_location_data(compiler_state);
+			Type type = get_type(compiler_state);
 
 			// Local variable or parameter
 
 			if (location_data.is_at_frame_top()) {
+				if (type.is_array()) {
+					assembler.move_reg_into_reg(R_FRAME_P_ID, result_reg);
+					assembler.add_64_into_reg(location_data.offset, result_reg);
+
+					return;
+				}
+
 				switch (location_data.var_size) {
 					case 1:
 						assembler.move_frame_offset_8_into_reg(
@@ -151,6 +159,13 @@ class IdentifierExpression : public WriteValue {
 			}
 
 			// Global variable
+
+			if (type.is_array()) {
+				assembler.move_stack_top_address_into_reg(result_reg);
+				assembler.add_64_into_reg(location_data.offset, result_reg);
+
+				return;
+			}
 
 			switch (location_data.var_size) {
 				case 1:
