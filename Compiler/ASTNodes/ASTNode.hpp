@@ -30,7 +30,8 @@ enum ASTNodeType {
 	ASSIGNMENT_EXPRESSION,
 	IF_STATEMENT,
 	WHILE_STATEMENT,
-	CAST_EXPRESSION
+	CAST_EXPRESSION,
+	OFFSET_EXPRESSION
 };
 
 const char *ast_node_type_to_str(enum ASTNodeType type)

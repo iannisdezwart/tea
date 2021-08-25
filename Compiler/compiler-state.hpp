@@ -88,6 +88,13 @@ class Type {
 			return size;
 		}
 
+		Type pointed_type() const
+		{
+			Type type = *this;
+			type.array_sizes.erase(type.array_sizes.begin());
+			return type;
+		}
+
 		size_t storage_size() const
 		{
 			if (pointer_depth() == 0) return byte_size();

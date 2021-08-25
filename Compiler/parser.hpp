@@ -29,6 +29,7 @@
 #include "ASTNodes/ClassDeclaration.hpp"
 #include "ASTNodes/InitList.hpp"
 #include "ASTNodes/CastExpression.hpp"
+#include "ASTNodes/OffsetExpression.hpp"
 
 using namespace std;
 
@@ -629,7 +630,7 @@ class Parser {
 				expression = new LiteralNumberExpression(expr_token, expr_token.value);
 			}
 
-			// Identifier or FunctionCall
+			// IdentifierExpression, OffsetExpression or FunctionCall
 
 			else if (expr_token.type == IDENTIFIER) {
 				Token next = get_token();
@@ -639,6 +640,13 @@ class Parser {
 				if (next.type == SPECIAL_CHARACTER && next.value == "(") {
 					i--;
 					expression = scan_function_call();
+				}
+
+				// OffsetExpression
+
+				else if (next.type == SPECIAL_CHARACTER && next.value == "[") {
+					i--;
+					expression = scan_offset_expression();
 				}
 
 				// IdentifierExpression
@@ -840,6 +848,25 @@ class Parser {
 			end_arguments:
 
 			return new FunctionCall(identifier_token, arguments);
+		}
+
+		OffsetExpression *scan_offset_expression()
+		{
+			Token identifier_token = next_token();
+			assert_token_type(identifier_token, IDENTIFIER);
+
+			Token left_bracket_token = next_token();
+			assert_token_type(left_bracket_token, SPECIAL_CHARACTER);
+			assert_token_value(left_bracket_token, "[");
+
+			ReadValue *offset = scan_expression();
+
+			Token right_bracket_token = next_token();
+			assert_token_type(right_bracket_token, SPECIAL_CHARACTER);
+			assert_token_value(right_bracket_token, "]");
+
+			return new OffsetExpression(new IdentifierExpression(identifier_token),
+				offset, left_bracket_token);
 		}
 
 		VariableDeclaration *scan_variable_declaration(
