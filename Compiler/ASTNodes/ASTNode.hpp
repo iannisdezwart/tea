@@ -30,6 +30,7 @@ enum ASTNodeType {
 	ASSIGNMENT_EXPRESSION,
 	IF_STATEMENT,
 	WHILE_STATEMENT,
+	FOR_STATEMENT,
 	CAST_EXPRESSION,
 	OFFSET_EXPRESSION
 };
@@ -54,7 +55,9 @@ const char *ast_node_type_to_str(enum ASTNodeType type)
 		case ASSIGNMENT_EXPRESSION: return "AssignmentExpression";
 		case IF_STATEMENT: return "IfStatement";
 		case WHILE_STATEMENT: return "WhileStatement";
+		case FOR_STATEMENT: return "ForStatement";
 		case CAST_EXPRESSION: return "CastExpression";
+		case OFFSET_EXPRESSION: return "OffsetExpression";
 		default: return "Undefined";
 	}
 }

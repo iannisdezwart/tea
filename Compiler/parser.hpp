@@ -26,6 +26,7 @@
 #include "ASTNodes/AssignmentExpression.hpp"
 #include "ASTNodes/IfStatement.hpp"
 #include "ASTNodes/WhileStatement.hpp"
+#include "ASTNodes/ForStatement.hpp"
 #include "ASTNodes/ClassDeclaration.hpp"
 #include "ASTNodes/InitList.hpp"
 #include "ASTNodes/CastExpression.hpp"
@@ -164,6 +165,10 @@ class Parser {
 
 					if (token.value == "while") {
 						return scan_while_statement();
+					}
+
+					if (token.value == "for") {
+						return scan_for_statement();
 					}
 
 					if (token.value == "class") {
@@ -998,6 +1003,40 @@ class Parser {
 			CodeBlock *body = scan_code_block_or_statement();
 
 			return new WhileStatement(test, while_token, body);
+		}
+
+		ForStatement *scan_for_statement()
+		{
+			Token for_token = next_token();
+			assert_token_type(for_token, KEYWORD);
+			assert_token_value(for_token, "for");
+
+			// Scan init
+
+			Token left_parenthesis_token = next_token();
+			assert_token_type(left_parenthesis_token, SPECIAL_CHARACTER);
+			assert_token_value(left_parenthesis_token, "(");
+
+			ASTNode *init = next_statement();
+
+			// Scan test
+
+			ReadValue *test = scan_expression();
+			expect_statement_terminator();
+
+			// Scan update
+
+			ReadValue *update = scan_expression();
+
+			Token right_parenthesis_token = next_token();
+			assert_token_type(right_parenthesis_token, SPECIAL_CHARACTER);
+			assert_token_value(right_parenthesis_token, ")");
+
+			// Scan body block
+
+			CodeBlock *body = scan_code_block_or_statement();
+
+			return new ForStatement(init, test, update, for_token, body);
 		}
 };
 
