@@ -102,7 +102,10 @@ class AssignmentExpression : public ReadValue {
 			// If we're doing direct assignment,
 			// directly set the variable to the new value
 
-			if (op == ASSIGNMENT) goto move_into_var;
+			if (op == ASSIGNMENT) {
+				lhs_expr->store(assembler, compiler_state, result_reg);
+				return;
+			}
 
 			// We're doing some cool assignment,
 			// move the previous value into its register
@@ -155,10 +158,7 @@ class AssignmentExpression : public ReadValue {
 			}
 
 			assembler.free_register(prev_val_reg);
-
-			move_into_var:
-
-			lhs_expr->store(assembler, compiler_state, result_reg);
+			lhs_expr->store(assembler, compiler_state, prev_val_reg);
 		}
 };
 

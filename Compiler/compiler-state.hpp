@@ -90,6 +90,12 @@ class Type {
 
 		Type pointed_type() const
 		{
+			if (array_sizes.size() == 0)
+			{
+				err("Compiler error: tried dereferencing non-pointer Type %s",
+					to_str().c_str());
+			}
+
 			Type type = *this;
 			type.array_sizes.erase(type.array_sizes.begin());
 			return type;

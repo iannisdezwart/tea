@@ -46,15 +46,14 @@ class OffsetExpression : public ReadValue {
 					offset_type.to_str().c_str());
 			}
 
-			return pointer->get_type(compiler_state);
+			return pointer->get_type(compiler_state).pointed_type();
 		}
 
 		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
 		{
 			uint8_t offset_reg;
 
-			Type pointer_type = get_type(compiler_state);
-			Type pointed_type = pointer_type.pointed_type();
+			Type pointed_type = get_type(compiler_state);
 
 			// Multiply the offset by the byte size
 
