@@ -54,12 +54,13 @@ class OffsetExpression : public ReadValue {
 			uint8_t offset_reg;
 
 			Type pointer_type = get_type(compiler_state);
+			Type pointed_type = pointer_type.pointed_type();
 
 			// Multiply the offset by the byte size
 
 			offset_reg = assembler.get_register();
 			offset->get_value(assembler, compiler_state, offset_reg);
-			assembler.multiply_8_into_reg(pointer_type.byte_size(), offset_reg);
+			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 
 			// Add the offset into the pointer
 
@@ -69,8 +70,6 @@ class OffsetExpression : public ReadValue {
 			assembler.free_register(offset_reg);
 
 			// Dereference the pointer
-
-			Type pointed_type = pointer_type.pointed_type();
 
 			switch (pointed_type.byte_size()) {
 				case 1:
