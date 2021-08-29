@@ -4,7 +4,6 @@
 #include <bits/stdc++.h>
 
 #include "../VM/cpu.hpp"
-#include "../VM/memory-device.hpp"
 #include "byte_code.hpp"
 #include "buffer-builder.hpp"
 #include "buffer.hpp"
@@ -950,12 +949,6 @@ class Assembler : public BufferBuilder {
 			push(size);
 		}
 
-		void log_reg(uint8_t reg_id)
-		{
-			push_instruction(LOG_REG);
-			push(reg_id);
-		}
-
 		void comment(const string& str)
 		{
 			push_instruction(COMMENT);
@@ -1003,7 +996,7 @@ class Assembler : public BufferBuilder {
 					abort();
 				}
 
-				uint64_t label_location = PROGRAM_START + static_data.offset + labels[label];
+				uint64_t label_location = static_data.offset + labels[label];
 
 				// Update all label references
 
@@ -1016,7 +1009,7 @@ class Assembler : public BufferBuilder {
 
 		struct StaticData add_static_data(const uint8_t *data, size_t size)
 		{
-			size_t offset = PROGRAM_START + static_data.offset;
+			size_t offset = static_data.offset;
 
 			for (size_t i = 0; i < size; i++) {
 				static_data.push(data[i]);

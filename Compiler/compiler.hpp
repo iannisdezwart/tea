@@ -114,8 +114,8 @@ class Compiler {
 			// Allocate space for globals & update stack and frame pointer
 
 			assembler.allocate_stack(compiler_state.globals_size);
-			assembler.add_64_into_reg(compiler_state.globals_size, R_STACK_P_ID);
-			assembler.add_64_into_reg(compiler_state.globals_size, R_FRAME_P_ID);
+			assembler.add_64_into_reg(compiler_state.globals_size, R_STACK_PTR);
+			assembler.add_64_into_reg(compiler_state.globals_size, R_FRAME_PTR);
 
 			// Compile intitialisation values for global variables
 

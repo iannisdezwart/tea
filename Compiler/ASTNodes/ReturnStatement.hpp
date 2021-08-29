@@ -44,7 +44,7 @@ class ReturnStatement : public ASTNode {
 		{
 			// Moves the return value into R_RET
 
-			if (expression != NULL) expression->get_value(assembler, compiler_state, R_RET_ID);
+			if (expression != NULL) expression->get_value(assembler, compiler_state, R_RET);
 
 			assembler.return_();
 		}

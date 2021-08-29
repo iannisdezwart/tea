@@ -5,6 +5,7 @@
 
 #include "../ansi.hpp"
 #include "../VM/cpu.hpp"
+#include "../VM/memory.hpp"
 #include "../Assembler/assembler.hpp"
 #include "util.hpp"
 #include "command.hpp"
@@ -34,9 +35,9 @@ struct CallStackEntry {
 };
 
 struct VarEntry : public DebuggerSymbol {
-	uint64_t addr;
+	uint8_t *addr;
 
-	VarEntry(const DebuggerSymbol& sym, uint64_t addr)
+	VarEntry(const DebuggerSymbol& sym, uint8_t *addr)
 		: DebuggerSymbol(sym), addr(addr) {}
 };
 
@@ -44,7 +45,7 @@ class Shell {
 	private:
 		const char *file_path;
 		CPU *cpu = NULL;
-		set<uint64_t> breakpoints;
+		set<uint8_t *> breakpoints;
 		vector<CallStackEntry> call_stack;
 		vector<vector<VarEntry>> locals;
 		vector<VarEntry> globals;
@@ -62,19 +63,19 @@ class Shell {
 				{
 					// Add this function call to call stack
 
-					Instruction next_instruction = (Instruction) cpu->memory_mapper
-						.get<uint16_t>(cpu->r_instruction_p);
+					Instruction next_instruction = (Instruction) memory::get<uint16_t>(
+						cpu->get_instr_ptr());
 
 					stringstream ss;
 
 					// If the function has a debug label, push its name
 
 					if (next_instruction == LABEL) {
-						uint64_t offset = cpu->r_instruction_p + 2;
+						uint8_t *label_offset = cpu->get_instr_ptr() + 2;
 						char c;
 
 						while (true) {
-							c = cpu->memory_mapper.get<char>(offset++);
+							c = memory::get<char>(label_offset++);
 							if (c == '\0') break;
 							ss << c;
 						}
@@ -83,7 +84,7 @@ class Shell {
 					// Else, push its address
 
 					else {
-						ss << "0x" << hex << cpu->r_instruction_p;
+						ss << "0x" << hex << cpu->get_instr_ptr();
 					}
 
 					// Create a call stack entry
@@ -108,68 +109,68 @@ class Shell {
 						for (const DebuggerSymbol& param : fn_symbols.params) {
 							CallStackEntryArg entry_arg;
 							entry_arg.arg_name = param.name;
-							size_t addr = cpu->r_frame_p - params_offset - 8 - CPU::stack_frame_size;
+							uint8_t *addr = cpu->get_frame_ptr() - params_offset - 8 - CPU::stack_frame_size;
 
 							switch (param.type) {
 								case DebuggerSymbolTypes::POINTER:
 								{
-									uint64_t val = cpu->memory_mapper.get<uint64_t>(addr);
+									uint64_t val = memory::get<uint64_t>(addr);
 									entry_arg.value = ANSI_GREEN "0x" ANSI_BRIGHT_GREEN + to_hex_str(addr);
 									break;
 								}
 
 								case DebuggerSymbolTypes::U8:
 								{
-									uint8_t val = cpu->memory_mapper.get<uint8_t>(addr);
+									uint8_t val = memory::get<uint8_t>(addr);
 									entry_arg.value = ANSI_YELLOW + to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::I8:
 								{
-									int8_t val = cpu->memory_mapper.get<int8_t>(addr);
+									int8_t val = memory::get<int8_t>(addr);
 									entry_arg.value = ANSI_YELLOW + to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::U16:
 								{
-									uint16_t val = cpu->memory_mapper.get<uint16_t>(addr);
+									uint16_t val = memory::get<uint16_t>(addr);
 									entry_arg.value = ANSI_YELLOW + to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::I16:
 								{
-									int16_t val = cpu->memory_mapper.get<int16_t>(addr);
+									int16_t val = memory::get<int16_t>(addr);
 									entry_arg.value = ANSI_YELLOW + to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::U32:
 								{
-									uint32_t val = cpu->memory_mapper.get<uint32_t>(addr);
+									uint32_t val = memory::get<uint32_t>(addr);
 									entry_arg.value = ANSI_YELLOW + to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::I32:
 								{
-									int32_t val = cpu->memory_mapper.get<int32_t>(addr);
+									int32_t val = memory::get<int32_t>(addr);
 									entry_arg.value = ANSI_YELLOW + to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::I64:
 								{
-									int64_t val = cpu->memory_mapper.get<int64_t>(addr);
+									int64_t val = memory::get<int64_t>(addr);
 									entry_arg.value = ANSI_YELLOW + to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::U64:
 								{
-									uint64_t val = cpu->memory_mapper.get<uint64_t>(addr);
+									uint64_t val = memory::get<uint64_t>(addr);
 									entry_arg.value = ANSI_YELLOW + to_string(val);
 									break;
 								}
@@ -182,7 +183,7 @@ class Shell {
 						// Store addresses of locals
 
 						vector<VarEntry> new_fn_locals;
-						size_t addr = cpu->r_stack_p;
+						uint8_t *addr = cpu->get_stack_ptr();
 
 						for (const DebuggerSymbol& local : fn_symbols.locals) {
 							new_fn_locals.push_back(VarEntry(local, addr));
@@ -212,7 +213,7 @@ class Shell {
 		{
 			// Execute the next instruction, if the program is still running
 
-			if (cpu->r_instruction_p < cpu->stack_top()) {
+			if (cpu->get_instr_ptr() < cpu->stack_top) {
 				try {
 					exec_instruction();
 				} catch (const string& err_message) {
@@ -228,7 +229,7 @@ class Shell {
 		{
 			// Execute the next instruction
 
-			if (cpu->r_instruction_p < cpu->stack_top()) {
+			if (cpu->get_instr_ptr() < cpu->stack_top) {
 				try {
 					exec_instruction();
 				} catch (const string& err_message) {
@@ -240,8 +241,8 @@ class Shell {
 
 			// And keep executing until a breakpoint is hit, or the program finishes
 
-			while (cpu->r_instruction_p < cpu->stack_top()) {
-				if (breakpoints.count(cpu->r_instruction_p)) return;
+			while (cpu->get_instr_ptr() < cpu->stack_top) {
+				if (breakpoints.count(cpu->get_instr_ptr())) return;
 
 				try {
 					exec_instruction();
@@ -254,7 +255,7 @@ class Shell {
 
 			// Print the exit code
 
-			printf(ANSI_CYAN "VM exited with exit code " ANSI_YELLOW "%lu\n", cpu->r_ret);
+			printf(ANSI_CYAN "VM exited with exit code " ANSI_YELLOW "%lu\n", cpu->regs[R_RET]);
 		}
 
 	public:
@@ -266,7 +267,7 @@ class Shell {
 
 			// Show the prompt and read the command from the user
 
-			Command command = Command::read(file_path, cpu == NULL ? -1 : cpu->r_instruction_p);
+			Command command = Command::read(file_path, cpu == NULL ? NULL : cpu->get_instr_ptr());
 
 			// If the command is empty, try again
 
@@ -304,7 +305,7 @@ class Shell {
 
 				// Store addresses of globals
 
-				size_t addr = cpu->stack_top();
+				uint8_t *addr = cpu->stack_top;
 
 				for (const DebuggerSymbol& sym : debugger_symbols.globals) {
 					globals.push_back(VarEntry(sym, addr));
@@ -345,17 +346,19 @@ class Shell {
 				string top_flag = command.get_flag_value("top").c_str();
 				size_t top;
 
-				MemoryMapperReader reader(cpu->memory_mapper, cpu->r_instruction_p);
+				memory::Reader reader(cpu->get_instr_ptr());
 				InstructionLister lister(reader);
 
 				// Get the top flag value
 
-				if (top_flag == "") top = DEFAULT_LIST_TOP;
-				else if (top_flag == "*") {
-					lister.disassemble_all(cpu->stack_top(), breakpoints);
+				if (top_flag == "") {
+					top = DEFAULT_LIST_TOP;
+				} else if (top_flag == "*") {
+					lister.disassemble_all(cpu->stack_top, breakpoints);
 					goto shell;
+				} else {
+					top = atoi(top_flag.c_str());
 				}
-				else top = atoi(top_flag.c_str());
 
 				// Dissassemble the program
 
@@ -377,22 +380,22 @@ class Shell {
 				#define FLAG_FMT_STR(flag) ANSI_BOLD ANSI_ITALIC flag ANSI_RESET " = " \
 					ANSI_YELLOW "%hhu" ANSI_RESET "\n"
 
-				printf(REG_FMT_STR(ANSI_BRIGHT_RED    "r_instruction_p"),
-					cpu->r_instruction_p, cpu->r_instruction_p);
-				printf(REG_FMT_STR(ANSI_BRIGHT_RED    "r_stack_p      "),
-					cpu->r_stack_p, cpu->r_stack_p);
-				printf(REG_FMT_STR(ANSI_BRIGHT_RED    "r_frame_p      "),
-					cpu->r_frame_p, cpu->r_frame_p);
-				printf(REG_FMT_STR(ANSI_BRIGHT_CYAN   "r_ret          "),
-					cpu->r_ret, cpu->r_ret);
-				printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_0            "),
-					cpu->r_0, cpu->r_0);
-				printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_1            "),
-					cpu->r_1, cpu->r_1);
-				printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_2            "),
-					cpu->r_2, cpu->r_2);
-				printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_3            "),
-					cpu->r_3, cpu->r_3);
+				printf(REG_FMT_STR(ANSI_BRIGHT_RED    "r_instr_ptr"),
+					(uint64_t) cpu->get_instr_ptr(), (uint64_t) cpu->get_instr_ptr());
+				printf(REG_FMT_STR(ANSI_BRIGHT_RED    "r_stack_ptr"),
+					(uint64_t) cpu->get_stack_ptr(), (uint64_t) cpu->get_stack_ptr());
+				printf(REG_FMT_STR(ANSI_BRIGHT_RED    "r_frame_ptr"),
+					(uint64_t) cpu->get_frame_ptr(), (uint64_t) cpu->get_frame_ptr());
+				printf(REG_FMT_STR(ANSI_BRIGHT_CYAN   "r_ret      "),
+					cpu->regs[R_RET], cpu->regs[R_RET]);
+				printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_0        "),
+					cpu->regs[R_0], cpu->regs[R_0]);
+				printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_1        "),
+					cpu->regs[R_1], cpu->regs[R_1]);
+				printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_2        "),
+					cpu->regs[R_2], cpu->regs[R_2]);
+				printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_3        "),
+					cpu->regs[R_3], cpu->regs[R_3]);
 				printf(FLAG_FMT_STR(ANSI_BRIGHT_GREEN "greater_flag"),
 					cpu->greater_flag);
 				printf(FLAG_FMT_STR(ANSI_BRIGHT_GREEN "equal_flag  "),
@@ -405,9 +408,9 @@ class Shell {
 			// Show a list of all breakpoints set
 
 			else if (command[0] == "lsbp") {
-				for (uint64_t bp : breakpoints) {
+				for (uint8_t *bp : breakpoints) {
 					printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD " - "
-						ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%lx\n", bp);
+						ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%lx\n", (uint64_t) bp);
 				}
 			}
 
@@ -418,7 +421,7 @@ class Shell {
 					printf(ANSI_RED "Expected address for breakpoint\n");
 				} else {
 					string addr_str = command[1];
-					uint64_t address;
+					uint8_t *address;
 					bool hexadecimal = false;
 
 					// If the address starts with "0x" or "x", use hex format
@@ -452,7 +455,7 @@ class Shell {
 
 			else if (command[0] == "rmbp") {
 				string addr_str = command[1];
-				uint64_t address;
+				uint8_t *address;
 				bool hexadecimal = false;
 
 				// If the argument is "all", remove all breakpoints
@@ -502,37 +505,37 @@ class Shell {
 				// Get the top flag value
 
 				if (top_flag == "") top = DEFAULT_DUMP_STACK_TOP;
-				else if (top_flag == "*") top = cpu->r_stack_p - cpu->stack_top();
+				else if (top_flag == "*") top = cpu->get_stack_ptr() - cpu->stack_top;
 				else top = atoi(top_flag.c_str());
 
 				// Calculate the begin and end from the `top` argument given
 
-				uint64_t begin = max(cpu->r_stack_p - top, cpu->stack_top());
-				uint64_t end = cpu->r_stack_p;
+				uint8_t *begin = max(cpu->get_stack_ptr() - top, cpu->stack_top);
+				uint8_t *end = cpu->get_stack_ptr();
 
-				MemoryMapperReader reader(cpu->memory_mapper, begin);
+				memory::Reader reader(begin);
 
 				// Read the stack and print each byte
 
-				while (reader.offset <= end && reader.is_safe()) {
-					uint64_t addr = reader.offset;
+				while (reader.addr <= end /* && reader.is_safe() */) {
+					uint8_t *addr = reader.addr;
 					uint8_t byte = reader.read<uint8_t>();
 
-					if (addr == cpu->r_frame_p) {
+					if (addr == cpu->get_frame_ptr()) {
 						printf(ANSI_RED ANSI_BOLD "0x" ANSI_BRIGHT_RED "%04lx" ANSI_RESET
 							"    " ANSI_YELLOW "%03hhu" ANSI_RESET "    "
 							ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%02hhx" ANSI_RESET "\n",
-							addr, byte, byte);
-					} else if (addr == cpu->r_stack_p) {
+							(uint64_t) addr, byte, byte);
+					} else if (addr == cpu->get_stack_ptr()) {
 						printf(ANSI_YELLOW ANSI_BOLD "0x" ANSI_BRIGHT_YELLOW "%04lx" ANSI_RESET
 							"    " ANSI_YELLOW "%03hhu" ANSI_RESET "    "
 							ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%02hhx" ANSI_RESET "\n",
-							addr, byte, byte);
+							(uint64_t) addr, byte, byte);
 					} else {
 						printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%04lx" ANSI_RESET
 							"    " ANSI_YELLOW "%03hhu" ANSI_RESET "    "
 							ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%02hhx" ANSI_RESET "\n",
-							addr, byte, byte);
+							(uint64_t) addr, byte, byte);
 					}
 				}
 			}
@@ -606,63 +609,63 @@ class Shell {
 						switch (local.type) {
 							case DebuggerSymbolTypes::U8:
 							{
-								uint8_t val = cpu->memory_mapper.get<uint8_t>(local.addr);
+								uint8_t val = memory::get<uint8_t>(local.addr);
 								PRINT_VAR("%hhu", val);
 								break;
 							}
 
 							case DebuggerSymbolTypes::I8:
 							{
-								int8_t val = cpu->memory_mapper.get<int8_t>(local.addr);
+								int8_t val = memory::get<int8_t>(local.addr);
 								PRINT_VAR("%hhd", val);
 								break;
 							}
 
 							case DebuggerSymbolTypes::U16:
 							{
-								uint16_t val = cpu->memory_mapper.get<uint16_t>(local.addr);
+								uint16_t val = memory::get<uint16_t>(local.addr);
 								PRINT_VAR("%hu", val);
 								break;
 							}
 
 							case DebuggerSymbolTypes::I16:
 							{
-								int16_t val = cpu->memory_mapper.get<int16_t>(local.addr);
+								int16_t val = memory::get<int16_t>(local.addr);
 								PRINT_VAR("%hd", val);
 								break;
 							}
 
 							case DebuggerSymbolTypes::U32:
 							{
-								uint32_t val = cpu->memory_mapper.get<uint32_t>(local.addr);
+								uint32_t val = memory::get<uint32_t>(local.addr);
 								PRINT_VAR("%u", val);
 								break;
 							}
 
 							case DebuggerSymbolTypes::I32:
 							{
-								int32_t val = cpu->memory_mapper.get<int32_t>(local.addr);
+								int32_t val = memory::get<int32_t>(local.addr);
 								PRINT_VAR("%d", val);
 								break;
 							}
 
 							case DebuggerSymbolTypes::U64:
 							{
-								uint64_t val = cpu->memory_mapper.get<uint64_t>(local.addr);
+								uint64_t val = memory::get<uint64_t>(local.addr);
 								PRINT_VAR("%lu", val);
 								break;
 							}
 
 							case DebuggerSymbolTypes::I64:
 							{
-								int64_t val = cpu->memory_mapper.get<int64_t>(local.addr);
+								int64_t val = memory::get<int64_t>(local.addr);
 								PRINT_VAR("%ld", val);
 								break;
 							}
 
 							case DebuggerSymbolTypes::POINTER:
 							{
-								int64_t val = cpu->memory_mapper.get<uint64_t>(local.addr);
+								int64_t val = memory::get<uint64_t>(local.addr);
 								printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD
 									"    - " ANSI_BLUE "%s" ANSI_RESET ANSI_BRIGHT_BLACK " = "
 									ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%s" ANSI_RESET "\n",

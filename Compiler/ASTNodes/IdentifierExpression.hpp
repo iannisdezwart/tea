@@ -121,7 +121,7 @@ class IdentifierExpression : public WriteValue {
 
 			if (location_data.is_at_frame_top()) {
 				if (type.is_array()) {
-					assembler.move_reg_into_reg(R_FRAME_P_ID, result_reg);
+					assembler.move_reg_into_reg(R_FRAME_PTR, result_reg);
 					assembler.add_64_into_reg(location_data.offset, result_reg);
 
 					return;

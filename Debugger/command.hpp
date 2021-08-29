@@ -8,13 +8,14 @@
 
 using namespace std;
 
-void print_shell_prompt(const char *file_path, uint64_t addr)
+void print_shell_prompt(const char *file_path, uint8_t *addr)
 {
 	printf(ANSI_CYAN ANSI_BOLD "%s" ANSI_RESET, file_path);
 
-	if (addr != -1) {
+	if (addr != NULL) {
 		printf(ANSI_YELLOW " [ ");
-		printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%04lx" ANSI_RESET, addr);
+		printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%04lx" ANSI_RESET,
+			(uint64_t) addr);
 		printf(ANSI_YELLOW " ]");
 	}
 
@@ -193,7 +194,7 @@ class Command {
 			return args.size();
 		}
 
-		static Command read(const char *file_path, uint64_t addr)
+		static Command read(const char *file_path, uint8_t *addr)
 		{
 			// Reads the next command from the user
 

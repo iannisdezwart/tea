@@ -2,36 +2,36 @@
 #define TEA_DEBUGGER_INSTRUCTION_LISTER_HEADER
 
 #include <bits/stdc++.h>
-#include "../VM/memory-mapper.hpp"
 #include "../ansi.hpp"
 #include "../VM/cpu.hpp"
+#include "../VM/memory.hpp"
 
 using namespace std;
 
 class InstructionLister {
 	public:
-		MemoryMapperReader& reader;
+		memory::Reader& reader;
 		bool first_arg;
 
-		InstructionLister(MemoryMapperReader& reader)
+		InstructionLister(memory::Reader& reader)
 			: reader(reader), first_arg(true) {}
 
-		void print_instruction(const char *instruction, set<uint64_t> breakpoints)
+		void print_instruction(const char *instruction, set<uint8_t *> breakpoints)
 		{
-			uint64_t address = reader.offset - 2;
+			uint8_t *address = reader.addr - 2;
 
 			// Print the address in red if a breakpoint was set to it
 
 			if (breakpoints.count(address)) {
 				printf(ANSI_RED ANSI_BOLD "0x" ANSI_BRIGHT_RED "%04lx" ANSI_RESET "    ",
-					address);
+					(uint64_t) address);
 			}
 
 			// Print address in green otherwise
 
 			else {
 				printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%04lx" ANSI_RESET "    ",
-					address);
+					(uint64_t) address);
 			}
 
 			// Print instruction in orange
@@ -79,7 +79,7 @@ class InstructionLister {
 			first_arg = true;
 		}
 
-		void disassemble_one(const set<uint64_t>& breakpoints)
+		void disassemble_one(const set<uint8_t *>& breakpoints)
 		{
 			// Read the next instruction and print it
 
@@ -140,18 +140,18 @@ class InstructionLister {
 			end_args();
 		}
 
-		void disassemble(size_t num_of_instructions, const set<uint64_t>& breakpoints)
+		void disassemble(size_t num_of_instructions, const set<uint8_t *>& breakpoints)
 		{
 			for (size_t i = 0; i < num_of_instructions; i++) {
-				if (!reader.is_safe()) break;
+				// if (!reader.is_safe()) break;
 				disassemble_one(breakpoints);
 			}
 		}
 
-		void disassemble_all(size_t top, const set<uint64_t>& breakpoints)
+		void disassemble_all(uint8_t *top, const set<uint8_t *>& breakpoints)
 		{
-			while (reader.offset < top) {
-				if (!reader.is_safe()) break;
+			while (reader.addr < top) {
+				// if (!reader.is_safe()) break;
 				disassemble_one(breakpoints);
 			}
 		}

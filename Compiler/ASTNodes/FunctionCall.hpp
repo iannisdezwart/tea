@@ -135,7 +135,7 @@ class FunctionCall : public ReadValue {
 
 			assembler.push_64(args_size);
 			assembler.call(fn_name);
-			assembler.move_reg_into_reg(R_RET_ID, result_reg);
+			assembler.move_reg_into_reg(R_RET, result_reg);
 		}
 };
 

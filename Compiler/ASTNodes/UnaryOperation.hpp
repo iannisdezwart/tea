@@ -360,7 +360,7 @@ class UnaryOperation : public WriteValue {
 					LocationData location_data = wr_expression->get_location_data(compiler_state);
 
 					if (location_data.is_at_frame_top()) {
-						assembler.move_reg_into_reg(R_FRAME_P_ID, result_reg);
+						assembler.move_reg_into_reg(R_FRAME_PTR, result_reg);
 						assembler.add_64_into_reg(location_data.offset, result_reg);
 					}
 

@@ -6,7 +6,6 @@
 #include "file-reader.hpp"
 #include "../ansi.hpp"
 #include "../Assembler/byte_code.hpp"
-#include "../VM/memory-device.hpp"
 #include "../VM/cpu.hpp"
 
 using namespace std;
@@ -25,7 +24,7 @@ class Disassembler {
 			// Print address in green
 
 			fprintf(file_out, ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%04lx" ANSI_RESET "    ",
-				PROGRAM_START + file_reader.read_bytes - 18);
+				file_reader.read_bytes - 18);
 
 			// Print instruction in orange
 
@@ -85,7 +84,7 @@ class Disassembler {
 				uint8_t byte = file_reader.read<uint8_t>();
 
 				fprintf(file_out, "0x%04lx    0x%02hhx    %03hhu    '%c'\n",
-					PROGRAM_START + i, byte, byte, byte);
+					i, byte, byte, byte);
 			}
 
 			// Print program
