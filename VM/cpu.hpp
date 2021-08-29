@@ -1393,6 +1393,14 @@ class CPU {
 					putc(value, stdout);
 					break;
 				}
+
+				case GET_CHAR:
+				{
+					uint8_t reg_id = fetch<uint8_t>();
+					int16_t c = getc(stdin);
+					set_reg_by_id(reg_id, c);
+					break;
+				}
 			}
 		}
 };

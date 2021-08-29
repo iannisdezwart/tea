@@ -967,6 +967,12 @@ class Assembler : public BufferBuilder {
 			push(reg_id);
 		}
 
+		void get_char(uint8_t reg_id)
+		{
+			push_instruction(GET_CHAR);
+			push(reg_id);
+		}
+
 		void add_label(const string& id)
 		{
 			if (labels.count(id)) {

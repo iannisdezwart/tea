@@ -28,6 +28,9 @@ class Type {
 			INIT_LIST
 		};
 
+		enum Value value;
+		size_t size;
+
 		vector<size_t> array_sizes;
 
 		string class_name;
@@ -336,10 +339,6 @@ class Type {
 
 			return DebuggerSymbolTypes::UNDEFINED;
 		}
-
-	private:
-		enum Value value;
-		size_t size;
 };
 
 struct Identifier

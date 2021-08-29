@@ -224,7 +224,8 @@ enum Instruction : uint16_t {
 
 	// System calls
 
-	PRINT_CHAR
+	PRINT_CHAR,
+	GET_CHAR
 };
 
 const char *instruction_to_str(Instruction instruction)
@@ -360,6 +361,7 @@ const char *instruction_to_str(Instruction instruction)
 		case COMMENT: return "COMMENT";
 		case LABEL: return "LABEL";
 		case PRINT_CHAR: return "PRINT_CHAR";
+		case GET_CHAR: return "GET_CHAR";
 		default: return "UNDEFINED";
 	}
 }
@@ -503,6 +505,7 @@ vector<ArgumentType> instruction_arg_types(Instruction instruction)
 		case COMMENT: return { NULL_TERMINATED_STRING };
 		case LABEL: return { NULL_TERMINATED_STRING };
 		case PRINT_CHAR: return { REG };
+		case GET_CHAR: return { ADDR };
 		default: return {};
 	}
 }

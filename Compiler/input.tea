@@ -3,52 +3,16 @@ void putc(u8 c)
 	syscall PRINT_CHAR(c)
 }
 
-void putu(u64 n)
+i16 getc()
 {
-	if (n < 10) {
-		putc(u8(n + '0'))
-	} else {
-		putu(n / 10)
-		putc(u8(n % 10 + '0'))
-	}
-}
-
-u8 is_prime(u64 n)
-{
-	if (n == 2)
-	{
-		return 1
-	}
-
-	if (n < 2)
-	{
-		return 0
-	}
-
-	if (n % 2 == 0)
-	{
-		return 0
-	}
-
-	for (u64 i = 3; i < n; i += 2)
-	{
-		if (n % i == 0)
-		{
-			return 0
-		}
-	}
-
-	return 1
+	i16 c
+	syscall GET_CHAR(&c)
+	return c
 }
 
 u64 main()
 {
-	for (u64 i = 0; i < 10000; i++)
-	{
-		if (is_prime(i))
-		{
-			putu(i)
-			putc('\n')
-		}
-	}
+	u8 c = u8(getc())
+	putc(c)
+	putc('\n')
 }

@@ -5,7 +5,7 @@
 #include "ASTNode.hpp"
 #include "ReadValue.hpp"
 
-set<string> syscall_names = { "PRINT_CHAR" };
+set<string> syscall_names = { "PRINT_CHAR", "GET_CHAR" };
 
 class SysCall : public ASTNode {
 	public:
@@ -61,6 +61,33 @@ class SysCall : public ASTNode {
 				assembler.print_char(char_reg);
 
 				assembler.free_register(char_reg);
+			}
+
+			else if (name_token.value == "GET_CHAR") {
+				if (arguments.size() != 1) {
+					err_at_token(name_token, "Type Error",
+						"Argument count in GET_CHAR SysCall is not equal to 1\n"
+						"Expected a pointer to a character as argument");
+				}
+
+				ReadValue *char_pointer = arguments[0];
+				Type type = char_pointer->get_type(compiler_state);
+
+				if (type.pointer_depth() != 1 || type.pointed_type().byte_size() != 2) {
+					err_at_token(name_token, "Type Error",
+						"Argument in PRINT_CHAR SysCall is a non-pointer or a pointer to a pointer\n"
+						"Expected a pointer to a 16-bit character as argument");
+				}
+
+				uint8_t char_reg = assembler.get_register();
+				assembler.get_char(char_reg);
+
+				uint8_t addr_reg = assembler.get_register();
+				char_pointer->get_value(assembler, compiler_state, addr_reg);
+				assembler.move_reg_into_reg_pointer_16(char_reg, addr_reg);
+
+				assembler.free_register(char_reg);
+				assembler.free_register(addr_reg);
 			}
 		}
 };

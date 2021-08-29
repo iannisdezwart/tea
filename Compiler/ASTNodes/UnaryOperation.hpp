@@ -78,7 +78,7 @@ class UnaryOperation : public WriteValue {
 
 				case ADDRESS_OF:
 				{
-					type.array_sizes.pop_back();
+					type.array_sizes.insert(type.array_sizes.begin(), 1, 0);
 					return type;
 				}
 
