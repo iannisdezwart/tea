@@ -1433,10 +1433,11 @@ class CPU {
 					break;
 				}
 
-				case COMMENT:
-				case LABEL:
+				case PRINT_CHAR:
 				{
-					while (fetch<uint8_t>() != '\0');
+					uint8_t reg_id = fetch<uint8_t>();
+					uint64_t value = get_reg_by_id(reg_id);
+					putc(value, stdout);
 					break;
 				}
 			}

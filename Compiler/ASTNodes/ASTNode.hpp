@@ -32,7 +32,8 @@ enum ASTNodeType {
 	WHILE_STATEMENT,
 	FOR_STATEMENT,
 	CAST_EXPRESSION,
-	OFFSET_EXPRESSION
+	OFFSET_EXPRESSION,
+	SYS_CALL,
 };
 
 const char *ast_node_type_to_str(enum ASTNodeType type)
@@ -42,6 +43,7 @@ const char *ast_node_type_to_str(enum ASTNodeType type)
 		case TYPE_IDENTIFIER_PAIR: return "TypeIdentifierPair";
 		case FUNCTION_DECLARATION: return "FunctionDeclaration";
 		case VARIABLE_DECLARATION: return "VariableDeclaration";
+		case INIT_LIST: return "InitList";
 		case CLASS_DECLARATION: return "ClassDeclaration";
 		case RETURN_STATEMENT: return "ReturnStatement";
 		case CODE_BLOCK: return "CodeBlock";
@@ -52,12 +54,15 @@ const char *ast_node_type_to_str(enum ASTNodeType type)
 		case FUNCTION_CALL: return "FunctionCall";
 		case BINARY_OPERATION: return "Binary Operation";
 		case UNARY_OPERATION: return "UnaryOperation";
+		case MEMBER_EXPRESSION: return "MemberExpression";
+		case METHOD_CALL: return "MethodCall";
 		case ASSIGNMENT_EXPRESSION: return "AssignmentExpression";
 		case IF_STATEMENT: return "IfStatement";
 		case WHILE_STATEMENT: return "WhileStatement";
 		case FOR_STATEMENT: return "ForStatement";
 		case CAST_EXPRESSION: return "CastExpression";
 		case OFFSET_EXPRESSION: return "OffsetExpression";
+		case SYS_CALL: return "SysCall";
 		default: return "Undefined";
 	}
 }

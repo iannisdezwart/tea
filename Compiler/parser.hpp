@@ -31,6 +31,7 @@
 #include "ASTNodes/InitList.hpp"
 #include "ASTNodes/CastExpression.hpp"
 #include "ASTNodes/OffsetExpression.hpp"
+#include "ASTNodes/SysCall.hpp"
 
 using namespace std;
 
@@ -173,6 +174,12 @@ class Parser {
 
 					if (token.value == "class") {
 						return scan_class_declaration();
+					}
+
+					if (token.value == "syscall") {
+						node = scan_syscall();
+						expect_statement_terminator();
+						return node;
 					}
 
 					else err("[ Parser Error ]: Keyword %s not handled.\n",
@@ -978,6 +985,54 @@ class Parser {
 			}
 
 			return new IfStatement(test, if_token, then_block, NULL);
+		}
+
+		SysCall *scan_syscall()
+		{
+			Token syscall_token = next_token();
+			assert_token_type(syscall_token, KEYWORD);
+			assert_token_value(syscall_token, "syscall");
+
+			Token syscall_name_token = next_token();
+
+			if (!syscall_names.count(syscall_name_token.value)) {
+				err_at_token(syscall_name_token, "Undefined System Call",
+					"System call \"%s\" is not defined",
+					syscall_name_token.value.c_str());
+			}
+
+			Token left_parethesis = next_token();
+			assert_token_type(left_parethesis, SPECIAL_CHARACTER);
+			assert_token_value(left_parethesis, "(");
+
+			vector<ReadValue *> arguments;
+			Token next = get_token();
+
+			// Check if there are no arguments
+
+			if (next.type == SPECIAL_CHARACTER && next.value == ")") {
+				i++;
+				goto end_arguments;
+			}
+
+			// Scan parameters
+
+			next_argument:
+
+			arguments.push_back(scan_expression());
+			next = next_token();
+
+			if (next.type != SPECIAL_CHARACTER) goto argument_err;
+			if (next.value == ")") goto end_arguments;
+			if (next.value == ",") goto next_argument;
+
+			argument_err:
+
+			unexpected_token_syntax_err(next);
+
+			end_arguments:
+
+			return new SysCall(syscall_name_token, std::move(arguments));
 		}
 
 		WhileStatement *scan_while_statement()

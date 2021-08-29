@@ -104,7 +104,8 @@ unordered_set<string> types = {
 };
 
 unordered_set<string> keywords = {
-	"if", "else", "return", "while", "for", "break", "continue", "goto", "class"
+	"if", "else", "return", "while", "for", "break", "continue", "goto", "class",
+	"syscall"
 };
 
 enum Operator {
