@@ -5,6 +5,7 @@
 #include "../ansi.hpp"
 #include "../VM/cpu.hpp"
 #include "../VM/memory.hpp"
+#include "util.hpp"
 
 using namespace std;
 
@@ -16,7 +17,7 @@ class InstructionLister {
 		InstructionLister(memory::Reader& reader)
 			: reader(reader), first_arg(true) {}
 
-		void print_instruction(const char *instruction, set<uint8_t *> breakpoints)
+		void print_instruction(const char *instruction, const PtrSet& breakpoints)
 		{
 			uint8_t *address = reader.addr - 2;
 
@@ -79,7 +80,7 @@ class InstructionLister {
 			first_arg = true;
 		}
 
-		void disassemble_one(const set<uint8_t *>& breakpoints)
+		void disassemble_one(const PtrSet& breakpoints)
 		{
 			// Read the next instruction and print it
 
@@ -140,7 +141,7 @@ class InstructionLister {
 			end_args();
 		}
 
-		void disassemble(size_t num_of_instructions, const set<uint8_t *>& breakpoints)
+		void disassemble(size_t num_of_instructions, const PtrSet& breakpoints)
 		{
 			for (size_t i = 0; i < num_of_instructions; i++) {
 				// if (!reader.is_safe()) break;
@@ -148,7 +149,7 @@ class InstructionLister {
 			}
 		}
 
-		void disassemble_all(uint8_t *top, const set<uint8_t *>& breakpoints)
+		void disassemble_all(uint8_t *top, const PtrSet& breakpoints)
 		{
 			while (reader.addr < top) {
 				// if (!reader.is_safe()) break;

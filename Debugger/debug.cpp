@@ -45,7 +45,7 @@ class Shell {
 	private:
 		const char *file_path;
 		CPU *cpu = NULL;
-		set<uint8_t *> breakpoints;
+		PtrSet breakpoints;
 		vector<CallStackEntry> call_stack;
 		vector<vector<VarEntry>> locals;
 		vector<VarEntry> globals;
@@ -443,7 +443,9 @@ class Shell {
 					}
 
 					ss << addr_str;
-					ss >> address;
+					ss >> *(uint64_t *) &address;
+
+					std::cout << (uint64_t) address << std::endl;
 
 					// Insert the address into the breakpoints set
 

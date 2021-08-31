@@ -5,6 +5,16 @@
 
 using namespace std;
 
+template <typename Type>
+struct PtrCmp {
+	bool operator()(const Type *lhs, const Type *rhs) const
+	{
+		return lhs < rhs;
+	}
+};
+
+using PtrSet = set<uint8_t *, PtrCmp<uint8_t>>;
+
 bool starts_with(const string& str, const string& search)
 {
 	if (search.size() > str.size()) return false;
