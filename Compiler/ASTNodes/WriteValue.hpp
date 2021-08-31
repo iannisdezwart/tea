@@ -14,6 +14,7 @@ bool is_write_value(ASTNode *node)
 		case IDENTIFIER_EXPRESSION:
 		case MEMBER_EXPRESSION:
 		case UNARY_OPERATION:
+		case OFFSET_EXPRESSION:
 			return true;
 
 		default:

@@ -22,6 +22,7 @@ bool is_read_value(ASTNode *node)
 		case IDENTIFIER_EXPRESSION:
 		case MEMBER_EXPRESSION:
 		case CAST_EXPRESSION:
+		case OFFSET_EXPRESSION:
 			return true;
 
 		default:

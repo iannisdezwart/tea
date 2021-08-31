@@ -7,14 +7,14 @@
 
 using namespace std;
 
-class OffsetExpression : public ReadValue {
+class OffsetExpression : public WriteValue {
 	public:
-		ReadValue *pointer;
+		WriteValue *pointer;
 		ReadValue *offset;
 
-		OffsetExpression(ReadValue *pointer, ReadValue *offset, Token bracket_token)
+		OffsetExpression(WriteValue *pointer, ReadValue *offset, Token bracket_token)
 			: pointer(pointer), offset(offset),
-				ReadValue(bracket_token, OFFSET_EXPRESSION) {}
+				WriteValue(bracket_token, OFFSET_EXPRESSION) {}
 
 		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
@@ -47,6 +47,109 @@ class OffsetExpression : public ReadValue {
 			}
 
 			return pointer->get_type(compiler_state).pointed_type();
+		}
+
+		LocationData get_location_data(CompilerState& compiler_state)
+		{
+			return pointer->get_location_data(compiler_state);
+		}
+
+		void store(Assembler& assembler, CompilerState& compiler_state, uint8_t value_reg)
+		{
+			Type pointed_type = get_type(compiler_state);
+			uint8_t offset_reg = assembler.get_register();
+			LocationData location_data = get_location_data(compiler_state);
+
+			// Local variable or parameter
+
+			if (location_data.is_at_frame_top()) {
+				switch (location_data.var_size) {
+					case 1:
+						offset->get_value(assembler, compiler_state, offset_reg);
+						assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
+						assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
+						assembler.add_64_into_reg(location_data.offset, offset_reg);
+						assembler.move_reg_into_reg_pointer_8(value_reg, offset_reg);
+						break;
+
+					case 2:
+						offset->get_value(assembler, compiler_state, offset_reg);
+						assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
+						assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
+						assembler.add_64_into_reg(location_data.offset, offset_reg);
+						assembler.move_reg_into_reg_pointer_16(value_reg, offset_reg);
+						break;
+
+					case 4:
+						offset->get_value(assembler, compiler_state, offset_reg);
+						assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
+						assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
+						assembler.add_64_into_reg(location_data.offset, offset_reg);
+						assembler.move_reg_into_reg_pointer_32(value_reg, offset_reg);
+						break;
+
+					case 8:
+						offset->get_value(assembler, compiler_state, offset_reg);
+						assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
+						assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
+						assembler.add_64_into_reg(location_data.offset, offset_reg);
+						assembler.move_reg_into_reg_pointer_64(value_reg, offset_reg);
+						break;
+
+					default:
+						err_at_token(pointer->accountable_token,
+							"Type Error",
+							"Variable doesn't fit in register\n"
+							"Support for this is not implemented yet");
+				}
+
+				assembler.free_register(offset_reg);
+				return;
+			}
+
+			// Global variable
+
+			switch (location_data.var_size) {
+				case 1:
+					offset->get_value(assembler, compiler_state, offset_reg);
+					assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
+					assembler.move_stack_top_address_into_reg(offset_reg);
+					assembler.add_64_into_reg(location_data.offset, offset_reg);
+					assembler.move_reg_into_reg_pointer_8(value_reg, offset_reg);
+					break;
+
+				case 2:
+					offset->get_value(assembler, compiler_state, offset_reg);
+					assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
+					assembler.move_stack_top_address_into_reg(offset_reg);
+					assembler.add_64_into_reg(location_data.offset, offset_reg);
+					assembler.move_reg_into_reg_pointer_16(value_reg, offset_reg);
+					break;
+
+				case 4:
+					offset->get_value(assembler, compiler_state, offset_reg);
+					assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
+					assembler.move_stack_top_address_into_reg(offset_reg);
+					assembler.add_64_into_reg(location_data.offset, offset_reg);
+					assembler.move_reg_into_reg_pointer_32(value_reg, offset_reg);
+					break;
+
+				case 8:
+					offset->get_value(assembler, compiler_state, offset_reg);
+					assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
+					assembler.move_stack_top_address_into_reg(offset_reg);
+					assembler.add_64_into_reg(location_data.offset, offset_reg);
+					assembler.move_reg_into_reg_pointer_64(value_reg, offset_reg);
+					break;
+
+				default:
+					err_at_token(pointer->accountable_token,
+						"Type Error",
+						"Variable doesn't fit in register\n"
+						"Support for this is not implemented yet");
+			}
+
+			assembler.free_register(offset_reg);
 		}
 
 		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
