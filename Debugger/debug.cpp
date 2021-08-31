@@ -421,34 +421,7 @@ class Shell {
 					printf(ANSI_RED "Expected address for breakpoint\n");
 				} else {
 					string addr_str = command[1];
-					uint8_t *address;
-					bool hexadecimal = false;
-
-					// If the address starts with "0x" or "x", use hex format
-
-					if (addr_str.size() >= 1 && addr_str[0] == 'x') {
-						addr_str = addr_str.substr(1);
-						hexadecimal = true;
-					} else if (addr_str.size() >= 2 && addr_str[0] == '0' && addr_str[1] == 'x') {
-						addr_str = addr_str.substr(2);
-						hexadecimal = true;
-					}
-
-					// Read the address
-
-					stringstream ss;
-
-					if (hexadecimal) {
-						ss << hex;
-					}
-
-					ss << addr_str;
-					ss >> *(uint64_t *) &address;
-
-					std::cout << (uint64_t) address << std::endl;
-
-					// Insert the address into the breakpoints set
-
+					uint8_t *address = read_ptr(std::move(addr_str));
 					breakpoints.insert(address);
 				}
 			}
@@ -456,41 +429,23 @@ class Shell {
 			// Remove an existing breakpoint
 
 			else if (command[0] == "rmbp") {
-				string addr_str = command[1];
-				uint8_t *address;
-				bool hexadecimal = false;
+				if (command.num_of_args() < 2) {
+					printf(ANSI_RED "Expected address for breakpoint\n");
+				} else {
+					string addr_str = command[1];
 
-				// If the argument is "all", remove all breakpoints
+					// If the argument is "all", remove all breakpoints
 
-				if (addr_str == "all" || addr_str == "*") {
-					breakpoints.clear();
-					goto shell;
+					if (addr_str == "all" || addr_str == "*") {
+						breakpoints.clear();
+						goto shell;
+					}
+
+					// Else, remove a breakpoint by address
+
+					uint8_t *address = read_ptr(std::move(addr_str));
+					breakpoints.erase(address);
 				}
-
-				// If the address starts with "0x" or "x", use hex format
-
-				if (addr_str.size() >= 1 && addr_str[0] == 'x') {
-					addr_str = addr_str.substr(1);
-					hexadecimal = true;
-				} else if (addr_str.size() >= 2 && addr_str[0] == '0' && addr_str[1] == 'x') {
-					addr_str = addr_str.substr(2);
-					hexadecimal = true;
-				}
-
-				// Read the address
-
-				stringstream ss;
-
-				if (hexadecimal) {
-					ss << hex;
-				}
-
-				ss << addr_str;
-				ss >> address;
-
-				// Remove the address from the breakpoints set
-
-				breakpoints.erase(address);
 			}
 
 			// Dump the current stack state

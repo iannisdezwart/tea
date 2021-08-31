@@ -34,6 +34,35 @@ string to_hex_str(intx_t num)
 	return ss.str();
 }
 
+uint8_t *read_ptr(string&& addr_str)
+{
+	bool hexadecimal = false;
+	uint64_t ptr;
+
+	// If the address starts with "0x" or "x", use hex format
+
+	if (addr_str.size() >= 1 && addr_str[0] == 'x') {
+		addr_str = addr_str.substr(1);
+		hexadecimal = true;
+	} else if (addr_str.size() >= 2 && addr_str[0] == '0' && addr_str[1] == 'x') {
+		addr_str = addr_str.substr(2);
+		hexadecimal = true;
+	}
+
+	// Read the address
+
+	stringstream ss;
+
+	if (hexadecimal) {
+		ss << hex;
+	}
+
+	ss << addr_str;
+	ss >> ptr;
+
+	return (uint8_t *) ptr;
+}
+
 #define is_whitespace(c) (c == ' ' || c == '\t' || c == '\n')
 
 #endif
