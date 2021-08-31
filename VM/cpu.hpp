@@ -121,6 +121,7 @@ class CPU {
 			set_instr_ptr(program_location);
 			set_stack_ptr(stack_top);
 			set_frame_ptr(stack_top);
+			regs[R_RET] = 0;
 		}
 
 		static constexpr const ssize_t stack_frame_size = 48;
