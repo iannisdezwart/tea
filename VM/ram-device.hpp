@@ -8,6 +8,14 @@
 
 using namespace std;
 
+/**
+ * @brief This class is not currently in use.
+ * It was part of the memory mapper, but I removed it from the CPU class,
+ * since it slowed down things considerably.
+ * Most of the methods implemented were reimplemented in the `memory.hpp`
+ * file, which is kind of similar to the RamDevice, except it works with
+ * raw memory directly, thus increasing performance dramatically.
+ */
 class RamDevice : public MemoryDevice, public Buffer {
 	public:
 		RamDevice(uint64_t from, uint64_t to)

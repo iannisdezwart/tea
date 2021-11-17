@@ -7,6 +7,11 @@
 
 using namespace std;
 
+/**
+ * @brief This class is not currently in use.
+ * It was part of the memory mapper, but I removed it from the CPU class,
+ * since it slowed down things considerably.
+ */
 class IODevice : public MemoryDevice {
 	public:
 		static constexpr const uint64_t size = 3;

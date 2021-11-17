@@ -9,6 +9,11 @@
 
 using namespace std;
 
+/**
+ * @brief This class is not currently in use.
+ * It was part of the memory mapper, but I removed it from the CPU class,
+ * since it slowed down things considerably.
+ */
 class MemoryMapper {
 	public:
 		vector<MemoryDevice *> devices;

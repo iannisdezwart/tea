@@ -7,9 +7,14 @@
 #include "../Assembler/assembler.hpp"
 #include "../VM/cpu.hpp"
 #include "debugger-symbols.hpp"
+#include "type.hpp"
 
 using namespace std;
 
+/**
+ * @brief Enum for the different types of identifiers:
+ * globals, functions, parameters and locals.
+ */
 enum class IdentifierKind {
 	UNDEFINED,
 	GLOBAL,
@@ -18,340 +23,37 @@ enum class IdentifierKind {
 	LOCAL
 };
 
-class Type {
-	public:
-		enum Value : uint8_t {
-			UNDEFINED,
-			UNSIGNED_INTEGER,
-			SIGNED_INTEGER,
-			USER_DEFINED_CLASS,
-			INIT_LIST
-		};
-
-		enum Value value;
-		size_t size;
-
-		vector<size_t> array_sizes;
-
-		string class_name;
-		vector<Type> fields;
-
-		bool is_literal = false;
-		string *literal_value;
-
-		Type() : value(UNDEFINED) {}
-
-		Type(enum Value value, size_t size) : value(value), size(size) {}
-
-		Type(enum Value value, size_t size, const vector<size_t>& array_sizes)
-			: value(value), size(size), array_sizes(array_sizes) {}
-
-		size_t pointer_depth() const
-		{
-			return array_sizes.size();
-		}
-
-		// Allow switch comparisons
-
-		operator Value() const { return value; }
-
-		// Don't allow conversion to boolean
-
-		explicit operator bool() = delete;
-
-		constexpr bool operator==(const Type& other) const
-		{
-			return value == other.value && size == other.size
-				&& pointer_depth() == other.pointer_depth();
-		}
-
-		constexpr bool operator!=(const Type& other) const
-		{
-			return value != other.value || size != other.size
-				|| pointer_depth() != other.pointer_depth();
-		}
-
-		constexpr bool operator==(Type::Value other_value) const
-		{
-			return value == other_value;
-		}
-
-		constexpr bool operator!=(Type::Value other_value) const
-		{
-			return value != other_value;
-		}
-
-		size_t byte_size(size_t deref_dep = 0) const
-		{
-			return (pointer_depth() - deref_dep > 0) ? 8 : size;
-		}
-
-		size_t pointed_byte_size() const
-		{
-			return size;
-		}
-
-		Type pointed_type() const
-		{
-			if (array_sizes.size() == 0)
-			{
-				err("Compiler error: tried dereferencing non-pointer Type %s",
-					to_str().c_str());
-			}
-
-			Type type = *this;
-			type.array_sizes.erase(type.array_sizes.begin());
-			return type;
-		}
-
-		size_t storage_size() const
-		{
-			if (pointer_depth() == 0) return byte_size();
-
-			size_t n_members = 1;
-			size_t dim = 0;
-
-			for (size_t i = pointer_depth(); i != 0; i--) {
-				if (array_sizes[i - 1] == 0) break;
-				n_members *= array_sizes[i - 1];
-				dim++;
-			}
-
-			return n_members * byte_size(dim);
-		}
-
-		bool is_array() const
-		{
-			if (array_sizes.size() == 0) return false;
-			return array_sizes.back() != 0;
-		}
-
-		static Type from_string(string str, const vector<size_t>& array_sizes)
-		{
-			if (str == "u8")
-				return Type(Type::UNSIGNED_INTEGER, 1, array_sizes);
-
-			if (str == "i8")
-				return Type(Type::SIGNED_INTEGER, 1, array_sizes);
-
-			if (str == "u16")
-				return Type(Type::UNSIGNED_INTEGER, 2, array_sizes);
-
-			if (str == "i16")
-				return Type(Type::SIGNED_INTEGER, 2, array_sizes);
-
-			if (str == "u32")
-				return Type(Type::UNSIGNED_INTEGER, 4, array_sizes);
-
-			if (str == "i32")
-				return Type(Type::SIGNED_INTEGER, 4, array_sizes);
-
-			if (str == "u64")
-				return Type(Type::UNSIGNED_INTEGER, 8, array_sizes);
-
-			if (str == "i64")
-				return Type(Type::SIGNED_INTEGER, 8, array_sizes);
-
-			if (str == "void")
-				return Type(Type::UNSIGNED_INTEGER, 0, array_sizes);
-
-			err("Wasn't able to convert \"%s\" to a Type", str.c_str());
-		}
-
-		bool fits_in_register()
-		{
-			return (value == Type::SIGNED_INTEGER || value == Type::UNSIGNED_INTEGER)
-				&& size <= 8;
-		}
-
-		bool fits(const Type& type) const
-		{
-			if (value == Type::UNSIGNED_INTEGER || value == Type::SIGNED_INTEGER) {
-				if (type.value != Type::UNSIGNED_INTEGER &&
-					type.value != Type::SIGNED_INTEGER)
-				{
-					return false;
-				}
-
-				if (is_literal) {
-					if (type.value == Type::UNSIGNED_INTEGER && type.size == 1) {
-						return fits_uint8(*literal_value);
-					}
-
-					if (type.value == Type::SIGNED_INTEGER && type.size == 1) {
-						return fits_int8(*literal_value);
-					}
-
-					if (type.value == Type::UNSIGNED_INTEGER && type.size == 2) {
-						return fits_uint16(*literal_value);
-					}
-
-					if (type.value == Type::SIGNED_INTEGER && type.size == 2) {
-						return fits_int16(*literal_value);
-					}
-
-					if (type.value == Type::UNSIGNED_INTEGER && type.size == 4) {
-						return fits_uint32(*literal_value);
-					}
-
-					if (type.value == Type::SIGNED_INTEGER && type.size == 4) {
-						return fits_int32(*literal_value);
-					}
-
-					if (type.value == Type::UNSIGNED_INTEGER && type.size == 8) {
-						return fits_uint64(*literal_value);
-					}
-
-					if (type.value == Type::SIGNED_INTEGER && type.size == 8) {
-						return fits_int64(*literal_value);
-					}
-				}
-
-				if (byte_size() > type.byte_size()) {
-					return false;
-				}
-
-				return true;
-			}
-
-			if (value == Type::USER_DEFINED_CLASS) {
-				if (type.value != Type::USER_DEFINED_CLASS) {
-					return false;
-				}
-
-				if (class_name != type.class_name) {
-					return false;
-				}
-
-				return true;
-			}
-
-			if (value == Type::INIT_LIST) {
-				if (type.value == Type::USER_DEFINED_CLASS) {
-					if (fields.size() > type.fields.size()) return false;
-
-					for (size_t i = 0; i < fields.size(); i++) {
-						if (!fields[i].fits(type.fields[i])) return false;
-					}
-
-					return true;
-				}
-
-				if (type.is_array()) {
-					Type array_item_type = type;
-					array_item_type.array_sizes.pop_back();
-
-					if (fields.size() > type.array_sizes.back()) return false;
-
-					for (size_t i = 0; i < fields.size(); i++) {
-						if (!fields[i].fits(array_item_type)) return false;
-					}
-
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		string to_str() const
-		{
-			string s;
-
-			switch (value) {
-				default:
-				case Type::UNDEFINED:
-					s += "undefined";
-					break;
-
-				case Type::SIGNED_INTEGER:
-					s += "int" + to_string(size * 8);
-					break;
-
-				case Type::UNSIGNED_INTEGER:
-					s += "uint" + to_string(size * 8);
-					break;
-
-				case Type::USER_DEFINED_CLASS:
-					s += class_name;
-					break;
-
-				case Type::INIT_LIST:
-					if (fields.size() == 0) {
-						s += "{}";
-						break;
-					}
-
-					s += "{ ";
-
-					for (size_t i = 0; i < fields.size(); i++) {
-						s += fields[i].to_str();
-						if (i != fields.size() - 1) s += ", ";
-					}
-
-					s += " }";
-
-					break;
-			}
-
-			if (pointer_depth()) {
-				for (size_t i = 0; i < array_sizes.size(); i++) {
-					if (array_sizes[i] == 0) {
-						s += '*';
-					} else {
-						s += '[' + to_string(array_sizes[i]) + ']';
-					}
-				}
-			}
-
-			if (is_literal) {
-				s += " (";
-				s += *literal_value;
-				s += ")";
-			}
-
-			return s;
-		}
-
-		enum DebuggerSymbolTypes to_debug_type()
-		{
-			if (pointer_depth() > 0) return DebuggerSymbolTypes::POINTER;
-
-			if (value == Type::UNSIGNED_INTEGER) {
-				switch (size) {
-					case 1: return DebuggerSymbolTypes::U8;
-					case 2: return DebuggerSymbolTypes::U16;
-					case 4: return DebuggerSymbolTypes::U32;
-					case 8: return DebuggerSymbolTypes::U64;
-					default: return DebuggerSymbolTypes::UNDEFINED;
-				}
-			} else if (value == Type::SIGNED_INTEGER) {
-				switch (size) {
-					case 1: return DebuggerSymbolTypes::I8;
-					case 2: return DebuggerSymbolTypes::I16;
-					case 4: return DebuggerSymbolTypes::I32;
-					case 8: return DebuggerSymbolTypes::I64;
-					default: return DebuggerSymbolTypes::UNDEFINED;
-				}
-			} else if (value == Type::USER_DEFINED_CLASS) {
-				return DebuggerSymbolTypes::USER_DEFINED_CLASS;
-			}
-
-			return DebuggerSymbolTypes::UNDEFINED;
-		}
-};
-
+/**
+ * @brief Structure for the identifiers.
+ * Holds the name and type.
+ */
 struct Identifier
 {
+	// The name of this identifier.
 	string name;
+
+	// The data type of this identifier.
 	Type type;
 
 	Identifier() {}
 	Identifier(const string& name, const Type& type) : name(name), type(type) {}
 };
 
+/**
+ * @brief Structure for a variable type.
+ * Holds the name, type and offset.
+ * Depending on whether the variable is a global, local or parameter,
+ * the offset is either relative to the top of the stack,
+ * or the start of the current stack frame.
+ */
 struct Variable {
+	// The offset of this variable.
+	// Depending on whether the variable is a global, local or parameter,
+	// the offset is either relative to the top of the stack,
+	// or the start of the current stack frame.
 	size_t offset;
+
+	// Holds the name and type of this variable.
 	Identifier id;
 
 	Variable() {}
@@ -359,33 +61,66 @@ struct Variable {
 		: id(name, type), offset(offset) {}
 };
 
+/**
+ * @brief Structure for a function type.
+ * Contains the name and return type, as well as the parameter identifiers.
+ */
 struct Function {
+	// Holds the name and return type of this function.
 	Identifier id;
+
+	// Holds the identifiers of the parameters of this function.
 	vector<Identifier> parameters;
 
 	Function() {}
 	Function(const string& fn_name, Type& return_type)
 		: id(fn_name, return_type) {}
 
+	/**
+	 * @brief Adds a parameter to this function.
+	 * @param param_name The name of the parameter.
+	 * @param param_type The type of the parameter.
+	 */
 	void add_parameter(const string& param_name, const Type& param_type)
 	{
 		parameters.push_back(Identifier(param_name, param_type));
 	}
 };
 
+/**
+ * @brief Structure for a class type.
+ * Holds the byte size of the class,
+ * as well as the identifiers and methods of the class.
+ * Does not contain the name of the class,
+ * since that will be the key to the class in the `compiler_state.classes` map.
+ */
 struct Class {
+	// The byte size of the class.
 	size_t byte_size;
+
+	// A list of all fields in the class.
 	vector<Identifier> fields;
+
+	// A list of all methods in the class.
 	vector<Function> methods;
 
 	Class() {}
 	Class(size_t byte_size): byte_size(byte_size) {}
 
+	/**
+	 * @brief Adds a field to this class.
+	 * @param field_name The name of the field.
+	 * @param field_type The type of the field.
+	 */
 	void add_field(const string& field_name, const Type& field_type)
 	{
 		fields.push_back(Identifier(field_name, field_type));
 	}
 
+	/**
+	 * @param field_name The field name to look for.
+	 * @returns A boolean indicating whether a field with this name exists.
+	 */
 	bool has_field(const string& field_name) const
 	{
 		for (const Identifier& field : fields) {
@@ -395,6 +130,10 @@ struct Class {
 		return false;
 	}
 
+	/**
+	 * @param field_name The field name to look for.
+	 * @returns The type of a field.
+	 */
 	const Type& get_field_type(const string& field_name) const
 	{
 		for (const Identifier& field : fields) {
@@ -404,11 +143,20 @@ struct Class {
 		err("Class field \"%s\" not found", field_name.c_str());
 	}
 
+	/**
+	 * @brief Adds a method to this class.
+	 * @param method_name The name of the method.
+	 * @param method_type The type of the method.
+	 */
 	void add_method(const string& method_name, const Function& method)
 	{
 		methods.push_back(method);
 	}
 
+	/**
+	 * @param method_name The method name to look for.
+	 * @returns A boolean indicating whether a method with this name exists.
+	 */
 	bool has_method(const string& method_name) const
 	{
 		for (const Function& method : methods) {
@@ -418,6 +166,10 @@ struct Class {
 		return false;
 	}
 
+	/**
+	 * @param method_name The method name to look for.
+	 * @returns The type of a method.
+	 */
 	const Function& get_method(const string& method_name) const
 	{
 		for (const Function& method : methods) {
@@ -428,52 +180,125 @@ struct Class {
 	}
 };
 
+/**
+ * @brief Structure for location information.
+ * Holds the kind of identifier (global, function, parameter or local),
+ * as well as the offset and byte size of the identifier.
+ */
 struct LocationData {
+	// The kind of identifier (global, function, parameter or local).
 	IdentifierKind id_kind;
+
+	// The offset of the identifier.
+	// Depending on whether the identifier is a global, local or parameter,
+	// the offset is either relative to the top of the stack,
+	// or the start of the current stack frame.
 	int64_t offset;
+
+	// The byte size of the identifier.
 	uint64_t var_size;
 
 	LocationData(IdentifierKind id_kind, int64_t offset, uint64_t var_size)
 		: id_kind(id_kind), offset(offset), var_size(var_size) {}
 
+	/**
+	 * @returns A boolean indicating whether this location is a global.
+	 */
 	bool is_at_stack_top()
 	{
 		return id_kind == IdentifierKind::GLOBAL;
 	}
 
+	/**
+	 * @returns A boolean indicating whether this location is
+	 * a local or a parameter.
+	 */
 	bool is_at_frame_top()
 	{
 		return id_kind == IdentifierKind::LOCAL || id_kind == IdentifierKind::PARAMETER;
 	}
 };
 
+/**
+ * @brief Structure for the compiler state.
+ * Holds all the information about the current compilation process.
+ * This includes all the identifiers, types, and functions in the current
+ * compilation context, as well as the current stack frame.
+ */
 class CompilerState {
 	public:
+		// A map of all functions in the current compilation context.
 		unordered_map<string, Function> functions;
+
+		// The current function name being compiled.
 		string current_function_name;
 
+
+		// A map of all classes in the current compilation context.
 		unordered_map<string, Class> classes;
 
+
+		// A map of all global variables in the current compilation context.
 		unordered_map<string, Variable> globals;
+
+		// The size of all global variables combined
+		// in the current compilation context.
 		uint64_t globals_size = 0;
 
+
+		// A map of all parameters in the current function being compiled.
 		unordered_map<string, Variable> parameters;
+
+		// The names of the parameters in the current
+		// function being compiled, in order.
 		vector<string> parameter_names_in_order;
+
+		// The size of all parameters combined in the
+		// current function being compiled.
 		uint64_t parameters_size = 0;
 
+
+		// A map of all local variables in the current function being compiled.
 		unordered_map<string, Variable> locals;
+
+		// The names of the local variables in the current
+		// function being compiled, in order.
 		vector<string> local_names_in_order;
+
+		// The size of all local variables combined in the
+		// current function being compiled.
 		uint64_t locals_size = 0;
 
-		size_t scope_depth = 0;
 
+		// Generator for unique label identifiers.
+		// Used for generating unique labels for different
+		// code segments. Starts at 0.
 		uint64_t label_id = 0;
 
+
+		// Whether debug symbols should be generated.
 		const bool debug;
+
+		// The debugger symbols.
 		DebuggerSymbols debugger_symbols;
 
+
+		/**
+		 * @brief Constructs a new Compiler State object.
+		 * @param debug Whether debug symbols should be generated.
+		 */
 		CompilerState(bool debug) : debug(debug) {}
 
+		/**
+		 * @param id_name The identifier to look for.
+		 * @returns The identifier kind of a given identifier.
+		 *
+		 * The identifier is searched in this order:
+		 * * Local variables
+		 * * Parameters
+		 * * Functions
+		 * * Globals
+		 */
 		enum IdentifierKind get_identifier_kind(string id_name)
 		{
 			if (locals.count(id_name)) return IdentifierKind::LOCAL;
@@ -483,21 +308,35 @@ class CompilerState {
 			return IdentifierKind::UNDEFINED;
 		}
 
-		bool add_class(string class_name, Class cl)
+		/**
+		 * @brief Adds a class to the current compilation context.
+		 * @param class_name The name of the class.
+		 * @param class_type The type of the class.
+		 * @returns A boolean indicating whether the class was added.
+		 * A class is only added if it does not already exist.
+		 */
+		bool add_class(string class_name, Class class_type)
 		{
 			if (classes.count(class_name)) return false;
 
-			classes[class_name] = cl;
+			classes[class_name] = class_type;
 
 			// Add the class to the debugger symbols
 
 			if (debug) {
-				// Todo: create
+				// TODO: create
 			}
 
 			return true;
 		}
 
+		/**
+		 * @brief Adds a global variable to the current compilation context.
+		 * @param global_name The name of the global variable.
+		 * @param global_type The type of the global variable.
+		 * @returns A boolean indicating whether the global variable was added.
+		 * A global variable is only added if it does not already exist.
+		 */
 		bool add_global(string global_name, Type global_type)
 		{
 			if (globals.count(global_name) || functions.count(global_name))
@@ -515,6 +354,13 @@ class CompilerState {
 			return true;
 		}
 
+		/**
+		 * @brief Adds a function to the current compilation context.
+		 * @param function_name The name of the function.
+		 * @param function_type The type of the function.
+		 * @returns A boolean indicating whether the function was added.
+		 * A function is only added if it does not already exist.
+		 */
 		bool add_function(string function_name, Function function_type)
 		{
 			if (functions.count(function_name) || globals.count(function_name))
@@ -524,6 +370,13 @@ class CompilerState {
 			return true;
 		}
 
+		/**
+		 * @brief Adds a parameter to the current function being compiled.
+		 * @param param_name The name of the parameter.
+		 * @param param_type The type of the parameter.
+		 * @returns A boolean indicating whether the parameter was added.
+		 * A parameter is only added if it does not already exist.
+		 */
 		bool add_parameter(string param_name, Type param_type)
 		{
 			if (parameters.count(param_name)) return false;
@@ -534,6 +387,13 @@ class CompilerState {
 			return true;
 		}
 
+		/**
+		 * @brief Adds a local variable to the current function being compiled.
+		 * @param local_name The name of the local variable.
+		 * @param local_type The type of the local variable.
+		 * @returns A boolean indicating whether the local variable was added.
+		 * A local variable is only added if it does not already exist.
+		 */
 		bool add_local(string local_name, Type local_type)
 		{
 			if (locals.count(local_name)) return false;
@@ -544,6 +404,12 @@ class CompilerState {
 			return true;
 		}
 
+		/**
+		 * @brief Ends the scope of the current function being compiled.
+		 * Clears all locals and parameters.
+		 * In debug mode, the function, as well as its locals and
+		 * parameters, arr also added to the debugger symbols.
+		 */
 		void end_function_scope()
 		{
 			// Add the function to the debugger symbols
@@ -577,6 +443,21 @@ class CompilerState {
 			parameters_size = 0;
 		}
 
+		/**
+		 * @brief Gets the type of an identifier.
+		 * The identifier is looked up in the current
+		 * compilation context in the following order:
+		 *
+		 * * Local variables
+		 * * Parameters
+		 * * Global variables
+		 *
+		 * If the identifier is not found in any of these locations,
+		 * an empty type is returned.
+		 *
+		 * @param id_name The name of the identifier to get.
+		 * @returns The type of the identifier.
+		 */
 		Type get_type_of_identifier(string id_name)
 		{
 			IdentifierKind id_kind = get_identifier_kind(id_name);
@@ -596,6 +477,11 @@ class CompilerState {
 			}
 		}
 
+		/**
+		 * @brief Generates a label name that can be used to jump to.
+		 * @param type The type of label to generate.
+		 * @returns The generated label name.
+		 */
 		string generate_label(string type)
 		{
 			string label = "compiler-generated-label-";
