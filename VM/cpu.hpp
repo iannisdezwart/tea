@@ -9,31 +9,53 @@
 
 using namespace std;
 
+/**
+ * @brief The class that represents a CPU of the virtual machine.
+ * Contains methods to run an executable.
+ */
 class CPU {
 	public:
-		// Memory
+		// ===== Memory =====
 
+		// A pointer to the RAM of the virtual machine.
 		uint8_t *ram;
 
-		// Program segment sizes
 
+		// ===== Program segment sizes =====
+
+		// The size of the static data segment in bytes.
 		size_t static_data_size;
+
+		// The size of the program size in bytes.
 		size_t program_size;
+
+		// The size of the stack in bytes.
 		size_t stack_size;
 
-		// Pointers to common locations in memory
 
+		// ===== Pointers to common locations in memory =====
+
+		// A pointer to the start of the static data segment.
 		uint8_t *static_data_location;
+
+		// A pointer to the start of the program segment.
 		uint8_t *program_location;
+
+		// A pointer to the bottom (start) of the stack.
 		uint8_t *stack_bottom;
+
+		// A pointer to the top (end) of the stack.
 		uint8_t *stack_top;
 
-		// Registers
 
+		// ===== Registers =====
+
+		// An array that contains the registers of the virtual machine.
 		uint64_t regs[8];
 
-		// General purpose registers
+		// === General purpose registers ===
 
+		// The number of general purpose registers (R_0, R_1, ...)
 		static constexpr size_t general_purpose_register_count = 4;
 
 		#define R_0 0
@@ -41,24 +63,80 @@ class CPU {
 		#define R_2 2
 		#define R_3 3
 
-		// Special registers
+		// === Special registers ===
+
+		// Instruction register
 
 		#define R_INSTR_PTR 4
-		void set_instr_ptr(uint8_t *val) { regs[R_INSTR_PTR] = (uint64_t) val; }
-		uint8_t *get_instr_ptr() { return (uint8_t *) regs[R_INSTR_PTR]; }
+
+		/**
+		 * @brief Sets the instruction pointer to a certain value.
+		 * @param val A memory address to store in the IR register.
+		 */
+		void set_instr_ptr(uint8_t *val)
+		{
+			regs[R_INSTR_PTR] = (uint64_t) val;
+		}
+
+		/**
+		 * @returns The memory address in the IR register.
+		 */
+		uint8_t *get_instr_ptr()
+		{
+			return (uint8_t *) regs[R_INSTR_PTR];
+		}
+
+		// Stack pointer
 
 		#define R_STACK_PTR 5
-		void set_stack_ptr(uint8_t *val) { regs[R_STACK_PTR] = (uint64_t) val; }
-		uint8_t *get_stack_ptr() { return (uint8_t *) regs[R_STACK_PTR]; }
+
+		/**
+		 * @brief Set the stack pointer to a certain value.
+		 * @param val A memory address to store in the SP register.
+		 */
+		void set_stack_ptr(uint8_t *val)
+		{
+			regs[R_STACK_PTR] = (uint64_t) val;
+		}
+
+		/**
+		 * @returns The memory address in the SP register.
+		 */
+		uint8_t *get_stack_ptr()
+		{
+			return (uint8_t *) regs[R_STACK_PTR];
+		}
+
+		// Frame pointer
 
 		#define R_FRAME_PTR 6
-		void set_frame_ptr(uint8_t *val) { regs[R_FRAME_PTR] = (uint64_t) val; }
-		uint8_t *get_frame_ptr() { return (uint8_t *) regs[R_FRAME_PTR]; }
+
+		/**
+		 * @brief Sets the frame pointer to a certain value.
+		 * @param val A memory address the store in the FP register.
+		 */
+		void set_frame_ptr(uint8_t *val)
+		{
+			regs[R_FRAME_PTR] = (uint64_t) val;
+		}
+
+		/**
+		 * @returns The memory address in the FP register.
+		 */
+		uint8_t *get_frame_ptr()
+		{
+			return (uint8_t *) regs[R_FRAME_PTR];
+		}
+
+		// Return value register
 
 		#define R_RET 7
 
+		// Contains the current size of the stack frame.
+		// Is updated every time something is pushed or popped.
 		uint64_t current_stack_frame_size = 0;
 
+		// Converts a register id to a register name.
 		static const char *reg_to_str(uint8_t reg_id)
 		{
 			switch (reg_id) {
@@ -98,6 +176,12 @@ class CPU {
 		bool equal_flag = false;
 		bool greater_flag = false;
 
+		/**
+		 * @brief Constructs a new CPU object.
+		 * Creates RAM and initialises locations and registers.
+		 * @param executable A reference to the executable to run.
+		 * @param stack_size The stack size of the virtual machine.
+		 */
 		CPU(Executable& executable, size_t stack_size)
 			: stack_size(stack_size),
 				static_data_size(executable.static_data_size),
@@ -121,21 +205,43 @@ class CPU {
 			set_instr_ptr(program_location);
 			set_stack_ptr(stack_top);
 			set_frame_ptr(stack_top);
+
+			// If the main function of a program does not return
+			// anything, returns 0 by default to indicate
+			// successful termination.
+
 			regs[R_RET] = 0;
 		}
 
+		// The size of a stack frame.
+		// This consists of the old values of the
+		// four general purpose registers,
+		// the old instruction pointer (used as return address),
+		// and the size parameters in bytes.
 		static constexpr const ssize_t stack_frame_size = 48;
 
+		/**
+		 * @param id The id of the register to get.
+		 * @returns The value inside the register.
+		 */
 		uint64_t get_reg_by_id(uint8_t id)
 		{
 			return regs[id];
 		}
 
+		/**
+		 * @param id The id of the register to set.
+		 * @param value The value to store inside the register.
+		 */
 		void set_reg_by_id(uint8_t id, uint64_t value)
 		{
 			regs[id] = value;
 		}
 
+		/**
+		 * @brief Executes the next instruction of the executable.
+		 * @returns The opcode of the executed instruction.
+		 */
 		Instruction step()
 		{
 			#ifdef RESTORE_INSTRUCTION_POINTER_ON_THROW
@@ -158,6 +264,9 @@ class CPU {
 			return instruction;
 		}
 
+		/**
+		 * @brief Runs the executable until it crashes or completes.
+		 */
 		void run()
 		{
 			while (get_instr_ptr() < stack_top) {
@@ -166,6 +275,12 @@ class CPU {
 		}
 
 	private:
+		/**
+		 * @brief Fetches a value from the current instruction pointer.
+		 * Increments the instruction pointer by the size of the read.
+		 * @tparam intx_t The size of the value to fetch.
+		 * @returns The value at the current instruction pointer.
+		 */
 		template <typename intx_t>
 		intx_t fetch()
 		{
@@ -174,6 +289,11 @@ class CPU {
 			return instruction;
 		}
 
+		/**
+		 * @brief Pushes a value onto the stack.
+		 * @tparam intx_t The size of the value to push.
+		 * @param value The value to push.
+		 */
 		template <typename intx_t>
 		void push(intx_t value)
 		{
@@ -182,6 +302,11 @@ class CPU {
 			current_stack_frame_size += sizeof(intx_t);
 		}
 
+		/**
+		 * @brief Pops a value off the stack.
+		 * @tparam intx_t The size of the value to pop.
+		 * @returns The value popped off the stack.
+		 */
 		template <typename intx_t>
 		intx_t pop()
 		{
@@ -191,6 +316,14 @@ class CPU {
 			return value;
 		}
 
+		/**
+		 * @brief Pushes a stack frame.
+		 * Executed when a function is called.
+		 * A stack frame consists of the old values of the four
+		 * general purpose registers,
+		 * the old instruction pointer (used as return address),
+		 * and the size parameters in bytes.
+		 */
 		void push_stack_frame()
 		{
 			push(get_reg_by_id(R_0));
@@ -204,6 +337,14 @@ class CPU {
 			current_stack_frame_size = 0;
 		}
 
+		/**
+		 * @brief Pops a stack frame.
+		 * Executed when a function returns.
+		 * A stack frame consists of the old values of the four
+		 * general purpose registers,
+		 * the old instruction pointer (used as return address),
+		 * and the size parameters in bytes.
+		 */
 		void pop_stack_frame()
 		{
 			set_stack_ptr(get_frame_ptr());
@@ -224,13 +365,31 @@ class CPU {
 			regs[R_STACK_PTR] -= arguments_size;
 		}
 
+		/**
+		 * @brief Sets the instruction pointer to an offset from
+		 * the start of the program section.
+		 * @param addr The offset to the program section.
+		 */
 		void jump_instruction_p(uint8_t *addr)
 		{
 			set_instr_ptr(program_location + (uint64_t) addr);
 		}
 
+		/**
+		 * @brief Executes an instruction.
+		 * @param instruction The instruction to execute.
+		 */
 		void execute(uint16_t instruction)
 		{
+			// Giant switch statement for all instructions.
+			// If you're unsure about what exactly an instruction
+			// is supposed to do, check out the descriptions
+			// in the `Instruction` enum.
+			// There are no comments in this switch statement,
+			// because the descriptions are self-explanatory.
+			// There is no code after the switch statement,
+			// so don't bother scrolling down.
+
 			switch (instruction) {
 				case MOVE_8_INTO_REG:
 				{
