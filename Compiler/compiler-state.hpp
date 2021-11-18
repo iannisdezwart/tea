@@ -269,6 +269,11 @@ class CompilerState {
 		// current function being compiled.
 		uint64_t locals_size = 0;
 
+		// The current scope depth.
+		// Might be useful in the future when we implement
+		// functions with nested scopes.
+		size_t scope_depth = 0;
+
 
 		// Generator for unique label identifiers.
 		// Used for generating unique labels for different

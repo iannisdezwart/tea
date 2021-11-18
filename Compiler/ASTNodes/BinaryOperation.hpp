@@ -56,18 +56,6 @@ class BinaryOperation : public ReadValue {
 			size_t left_size = left_type.byte_size();
 			size_t right_size = right_type.byte_size();
 
-			#define not_implemented_warning(op) do { \
-				if (!warned) { \
-					warned = true; \
-					warn( \
-						"operator %s (%s) is not implemented for types x = %s and y = %s " \
-						"and might cause undefined behaviour\n" \
-						"At %ld:%ld\n", \
-						op_to_str(op), op_to_example_str(op), left_type.to_str().c_str(), \
-						right_type.to_str().c_str(), op_token.line, op_token.col); \
-				} \
-			} while (0)
-
 			switch (op) {
 				case ADDITION:
 				case SUBTRACTION:
@@ -162,10 +150,23 @@ class BinaryOperation : public ReadValue {
 					break;
 			}
 
-			not_implemented_warning(op);
-			return left_type;
+			// Warn the user that this operator is not implemented
+			// for the given types and undefined behaviour
+			// might occur. This should be removed in the future
+			// and replaced by a compile-time error
+			// when all operators are properly implemented.
 
-			#undef not_implemented_warning
+			if (!warned) {
+				warned = true;
+				warn(
+					"operator %s (%s) is not implemented for types x = %s and y = %s "
+					"and might cause undefined behaviour\n"
+					"At %ld:%ld\n",
+					op_to_str(op), op_to_example_str(op), left_type.to_str().c_str(),
+					right_type.to_str().c_str(), op_token.line, op_token.col);
+			}
+
+			return left_type;
 		}
 
 		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
