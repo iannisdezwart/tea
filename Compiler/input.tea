@@ -3,6 +3,19 @@ void putc(u8 c)
 	syscall PRINT_CHAR(c)
 }
 
+void putu(u64 n)
+{
+	if (n < 10)
+	{
+		putc(u8(n + '0'));
+	}
+	else
+	{
+		putu(n / 10);
+		putc(u8(n % 10 + '0'));
+	}
+}
+
 i16 getc()
 {
 	i16 c
@@ -10,9 +23,21 @@ i16 getc()
 	return c
 }
 
+u64 fibonacci(u64 n)
+{
+	if (n <= 1)
+	{
+		return n
+	}
+
+	return fibonacci(n - 1) + fibonacci(n - 2)
+}
+
 u64 main()
 {
-	u8 c = u8(getc())
-	putc(c)
-	putc('\n')
+	for (i64 i = 0; i < 10; i++)
+	{
+		putu(fibonacci(i));
+		putc('\n');
+	}
 }
