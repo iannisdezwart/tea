@@ -74,7 +74,7 @@ struct Token {
 
 	// Boolean indicating whether the token has a whitespace before it.
 	// This is used to determine line termination.
-	// bool whitespace_before;
+	bool whitespace_before;
 
 	/**
 	 * @returns A string representation of the token.
@@ -104,12 +104,12 @@ struct Token {
 		s += to_string(line);
 		s += ":";
 		s += to_string(col);
-		// s += ANSI_RESET ", ";
+		s += ANSI_RESET ", ";
 
-		// s += ANSI_BRIGHT_RED ANSI_ITALIC "whitespace_before";
-		// s += ANSI_RESET ANSI_BRIGHT_RED " = ";
-		// s += ANSI_BOLD;
-		// s += to_string(whitespace_before);
+		s += ANSI_BRIGHT_RED ANSI_ITALIC "whitespace_before";
+		s += ANSI_RESET ANSI_BRIGHT_RED " = ";
+		s += ANSI_BOLD;
+		s += to_string(whitespace_before);
 
 		s += ANSI_RESET;
 		s += " } @ ";
@@ -534,6 +534,10 @@ class Tokeniser {
 		// The column number of the current token.
 		size_t col;
 
+		// Flag indicating whether the current token has a
+		// whitespace before it or not.
+		bool whitespace_before;
+
 		/**
 		 * @brief Adds a token to the list of tokens.
 		 * Automatically sets the line and column number and
@@ -548,14 +552,14 @@ class Tokeniser {
 				.value = value,
 				.line = line,
 				.col = col,
-				// .whitespace_before = whitespace_before
+				.whitespace_before = whitespace_before
 			};
 
 			tokens.push_back(token);
 
 			// Update the `whitespace_before` flag.
 
-			// whitespace_before = false;
+			whitespace_before = false;
 		}
 
 		/**
@@ -610,7 +614,7 @@ class Tokeniser {
 				if (c == EOF) break;
 
 				if (whitespace_chars.count(c)) {
-					// whitespace_before = true;
+					whitespace_before = true;
 					reader.advance();
 					continue;
 				}
