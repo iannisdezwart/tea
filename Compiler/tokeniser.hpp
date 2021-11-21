@@ -3,6 +3,7 @@
 
 #include <bits/stdc++.h>
 
+#include "file-stream-reader.hpp"
 #include "util.hpp"
 #include "../ansi.hpp"
 
@@ -73,7 +74,7 @@ struct Token {
 
 	// Boolean indicating whether the token has a whitespace before it.
 	// This is used to determine line termination.
-	bool whitespace_before;
+	// bool whitespace_before;
 
 	/**
 	 * @returns A string representation of the token.
@@ -103,12 +104,12 @@ struct Token {
 		s += to_string(line);
 		s += ":";
 		s += to_string(col);
-		s += ANSI_RESET ", ";
+		// s += ANSI_RESET ", ";
 
-		s += ANSI_BRIGHT_RED ANSI_ITALIC "whitespace_before";
-		s += ANSI_RESET ANSI_BRIGHT_RED " = ";
-		s += ANSI_BOLD;
-		s += to_string(whitespace_before);
+		// s += ANSI_BRIGHT_RED ANSI_ITALIC "whitespace_before";
+		// s += ANSI_RESET ANSI_BRIGHT_RED " = ";
+		// s += ANSI_BOLD;
+		// s += to_string(whitespace_before);
 
 		s += ANSI_RESET;
 		s += " } @ ";
@@ -524,54 +525,14 @@ enum Operator str_to_operator(const string& str, bool prefix = false)
  */
 class Tokeniser {
 	private:
-		// The file to tokenise.
-		FILE *file;
+		// The file stream to tokenise.
+		FileStreamReader reader;
 
-		// The current line number.
-		size_t line = 1;
+		// The line number of the current token.
+		size_t line;
 
-		// The current column number.
-		size_t col = 1;
-
-		// Boolean indicating whether the current token has
-		// some whitespace character before it.
-		bool whitespace_before = false;
-
-		/**
-		 * @brief Reads the next character from the file.
-		 * Also increments the line and column numbers.
-		 */
-		char get_char()
-		{
-			char c = fgetc(file);
-
-			if (c == '\n') {
-				line++;
-				col = 1;
-			} else {
-				col++;
-			}
-
-			return c;
-		}
-
-		/**
-		 * @brief Undoes the last character read.
-		 * @param c The character to push back on the file stream.
-		 */
-		void unget_char(char c)
-		{
-			ungetc(c, file);
-
-			// TODO: fix
-
-			if (col == 0) {
-				printf("Undefined behaviour incoming...\n");
-				line--;
-			} else {
-				col--;
-			}
-		}
+		// The column number of the current token.
+		size_t col;
 
 		/**
 		 * @brief Adds a token to the list of tokens.
@@ -587,11 +548,14 @@ class Tokeniser {
 				.value = value,
 				.line = line,
 				.col = col,
-				.whitespace_before = whitespace_before
+				// .whitespace_before = whitespace_before
 			};
 
 			tokens.push_back(token);
-			whitespace_before = false;
+
+			// Update the `whitespace_before` flag.
+
+			// whitespace_before = false;
 		}
 
 		/**
@@ -601,7 +565,7 @@ class Tokeniser {
 		 */
 		#define throw_err(message, ...) do { \
 			fprintf(stderr, "[ Tokenise Error ]: " message "\n", ##__VA_ARGS__); \
-			fprintf(stderr, "At %ld:%ld\n", line, col); \
+			fprintf(stderr, "At %ld:%ld\n", reader.line, reader.col); \
 			abort(); \
 		} while (0)
 
@@ -613,7 +577,7 @@ class Tokeniser {
 		 * @brief Constructs a new Tokeniser object.
 		 * @param input_file The file to tokenise.
 		 */
-		Tokeniser(FILE *input_file) : file(input_file) {}
+		Tokeniser(FILE *input_file) : reader(input_file) {}
 
 		/**
 		 * @brief Prints the list of tokens in a human readable fashion.
@@ -636,15 +600,18 @@ class Tokeniser {
 		vector<Token> tokenise()
 		{
 			// The current character.
-			char c;
+			int c;
 
-			while (true) {
-				c = get_char();
+			while ((c = reader.peek_byte()) != EOF) {
+				printf("tokenise(): %c (%hhu)\n", c, c);
+				line = reader.line;
+				col = reader.col;
 
 				if (c == EOF) break;
 
 				if (whitespace_chars.count(c)) {
-					whitespace_before = true;
+					// whitespace_before = true;
+					reader.advance();
 					continue;
 				}
 
@@ -652,6 +619,7 @@ class Tokeniser {
 
 				if (c == '/') {
 					if (scan_comment()) {
+						reader.advance();
 						continue;
 					}
 				}
@@ -675,6 +643,7 @@ class Tokeniser {
 				// Handle special character.
 
 				else if (special_chars.count(c)) {
+					reader.advance();
 					push_token(SPECIAL_CHARACTER, string(1, c));
 				}
 
@@ -729,18 +698,18 @@ class Tokeniser {
 		 */
 		bool scan_comment()
 		{
-			char next_char = get_char();
+			char next_char = reader.peek_byte();
 
 			// If the next character is not a /,
 			// it's not a // comment.
 			// TODO: support /* comments */.
 
 			if (next_char == '/') {
+				reader.advance();
 				ignore_until_eol();
 
 				return true;
 			} else {
-				unget_char(next_char);
 				return false;
 			}
 		}
@@ -751,10 +720,14 @@ class Tokeniser {
 		 */
 		void ignore_until_eol()
 		{
-			char next_char = get_char();
+			char next_char = reader.peek_byte();
 
-			while (next_char != '\n' && next_char != EOF)
-				next_char = get_char();
+			while (next_char != '\n' && next_char != EOF) {
+				reader.advance();
+				next_char = reader.peek_byte();
+			}
+
+			reader.reset();
 		}
 
 		/**
@@ -765,7 +738,7 @@ class Tokeniser {
 		 */
 		char scan_escape_sequence()
 		{
-			char c = get_char();
+			int c = reader.read_byte();
 
 			switch (c) {
 				case 'a':
@@ -806,8 +779,8 @@ class Tokeniser {
 
 				case 'x':
 				{
-					char xc1 = get_char();
-					char xc2 = get_char();
+					char xc1 = reader.read_byte();
+					char xc2 = reader.read_byte();
 
 					if (!is_hex(xc1) || !is_hex(xc2))
 						throw_err("Invalid hexadecimal escape code");
@@ -831,7 +804,7 @@ class Tokeniser {
 			char c;
 
 			while (true) {
-				c = get_char();
+				c = reader.read_byte();
 				if (c == EOF) throw_err("Unexpected EOF");
 
 				// Escape sequence.
@@ -862,7 +835,7 @@ class Tokeniser {
 		 */
 		char scan_literal_char()
 		{
-			char c = get_char();
+			int c = reader.read_byte();
 			if (c == EOF) throw_err("Unexpected EOF");
 
 			// Escape sequence.
@@ -870,7 +843,7 @@ class Tokeniser {
 			if (c == '\\')
 				c = scan_escape_sequence();
 
-			char next = get_char();
+			char next = reader.read_byte();
 
 			// Expect a closing single quote.
 
@@ -891,7 +864,8 @@ class Tokeniser {
 		{
 			string s;
 			s += first_char;
-			char c = get_char();
+			reader.advance();
+			int c = reader.peek_byte();
 
 			if (first_char == '0') {
 				// If the first character is a '0',
@@ -902,11 +876,12 @@ class Tokeniser {
 
 				if (c == '.') {
 					do {
+						reader.advance();
 						s += '.';
-						c = get_char();
+						c = reader.peek_byte();
 					} while (is_decimal(c));
 
-					unget_char(c);
+					reader.reset();
 					return s;
 				}
 
@@ -915,11 +890,12 @@ class Tokeniser {
 				if (c == 'x') {
 					s.clear();
 
-					while (c = get_char(), is_hex(c)) {
+					while (c = reader.peek_byte(), is_hex(c)) {
+						reader.advance();
 						s += c;
 					}
 
-					unget_char(c);
+					reader.reset();
 
 					return to_string(stoull(s, NULL, 16));
 				}
@@ -929,11 +905,12 @@ class Tokeniser {
 				if (c == 'b') {
 					s.clear();
 
-					while (c = get_char(), is_binary(c)) {
+					while (c = reader.peek_byte(), is_binary(c)) {
+						reader.advance();
 						s += c;
 					}
 
-					unget_char(c);
+					reader.reset();
 
 					return to_string(stoull(s, NULL, 2));
 				}
@@ -948,12 +925,13 @@ class Tokeniser {
 
 			if (c >= '0' && c <= '9' || c == '.') {
 				do {
+					reader.advance();
 					s += c;
-					c = get_char();
+					c = reader.peek_byte();
 				} while (c >= '0' && c <= '9' || c == '.');
 			}
 
-			unget_char(c);
+			reader.reset();
 			return s;
 		}
 
@@ -971,10 +949,11 @@ class Tokeniser {
 			char c;
 
 			while (true) {
-				c = get_char();
+				reader.advance();
+				c = reader.peek_byte();
 
 				if (!is_alphanumeric(c)) {
-					unget_char(c);
+					reader.reset();
 					break;
 				}
 
@@ -995,23 +974,25 @@ class Tokeniser {
 			// Check if the next two characters are
 			// maybe also operators.
 
-			char op_char_2 = get_char();
+			reader.advance();
+			char op_char_2 = reader.peek_byte();
 
 			if (!operator_chars.count(op_char_2)) {
 				// Only the first character is an operator.
 
-				unget_char(op_char_2);
+				reader.reset();
 			} else {
 				// The second character is an operator.
 				// Check if the third is too.
 
-				char op_char_3 = get_char();
+				reader.advance();
+				char op_char_3 = reader.peek_byte();
 
 				if (!operator_chars.count(op_char_3)) {
 					// Only the first two characters
 					// are operators.
 
-					unget_char(op_char_3);
+					reader.reset();
 				} else {
 					// The third character is also an
 					// operator. Check if we can form a
@@ -1023,7 +1004,7 @@ class Tokeniser {
 					op += op_char_3;
 
 					if (str_to_operator(op) != UNDEFINED_OPERATOR) return op;
-					else unget_char(op_char_3);
+					else reader.reset();
 				}
 
 				// Check if we can form a double
@@ -1034,7 +1015,7 @@ class Tokeniser {
 				op += op_char_2;
 
 				if (str_to_operator(op) != UNDEFINED_OPERATOR) return op;
-				else unget_char(op_char_2);
+				else reader.reset();
 			}
 
 			string op;

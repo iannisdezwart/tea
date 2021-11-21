@@ -309,7 +309,7 @@ class Parser {
 			// Currently, you could probably put multiple
 			// statements on the same line in some cases.
 
-			if (terminator.whitespace_before) return;
+			// if (terminator.whitespace_before) return;
 
 			fprintf(stderr,
 				"[ Syntax Error ]: Unexpected token with value \"%s\", "
