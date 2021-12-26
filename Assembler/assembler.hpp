@@ -126,12 +126,12 @@ class Assembler : public BufferBuilder {
 			update_label_references();
 
 			// Push the size of the static data segment
-			// and the size of the program instructions
+			// and the size of the program instructions.
 
 			executable.push<uint64_t>(static_data.offset);
 			executable.push<uint64_t>(offset);
 
-			// Combine static data and program instructions
+			// Combine static data and program instructions.
 
 			for (size_t j = 0; j < static_data.offset; j++) {
 				executable.push(static_data[j]);
@@ -141,7 +141,7 @@ class Assembler : public BufferBuilder {
 				executable.push(operator[](j));
 			}
 
-			// Create memory from the program and return it
+			// Create memory from the program and return it.
 
 			return executable.build();
 		}
@@ -1694,7 +1694,7 @@ class Assembler : public BufferBuilder {
 				const string& label = ref.first;
 				vector<uint64_t>& reference_points = ref.second;
 
-				// Get the location of the label
+				// Get the location of the label.
 
 				if (!labels.count(label)) {
 					printf("ProgramBuilder error: referenced non-defined label %s\n",
@@ -1702,13 +1702,17 @@ class Assembler : public BufferBuilder {
 					abort();
 				}
 
-				uint64_t label_location = static_data.offset + labels[label];
+				uint64_t label_location = labels[label];
 
-				// Update all label references
+				// Update all label references.
+				// Label references are relative to the location of the label.
 
 				for (size_t j = 0; j < reference_points.size(); j++) {
-					uint64_t *reference_point = (uint64_t *) (data() + reference_points[j]);
-					*reference_point = label_location;
+					uint64_t reference_location = reference_points[j];
+					int64_t relative_reference_location = label_location - reference_location + 2;
+					int64_t *reference_point = (int64_t *) (data() + reference_points[j]);
+
+					*reference_point = relative_reference_location;
 				}
 			}
 		}

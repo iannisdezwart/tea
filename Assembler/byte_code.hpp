@@ -445,7 +445,9 @@ enum Instruction : uint16_t {
 	// A label that is used for debugging.
 	LABEL,
 
+
 	// System calls
+
 
 	// Prints a character to stdout.
 	PRINT_CHAR,
@@ -601,7 +603,7 @@ const char *instruction_to_str(Instruction instruction)
  * @brief An enum of all valid argument types.
  */
 enum ArgumentType : uint8_t {
-	REG, ADDR,
+	REG, ABS_ADDR, REL_ADDR,
 	LIT_8, LIT_16, LIT_32, LIT_64,
 	NULL_TERMINATED_STRING
 };
@@ -617,19 +619,19 @@ vector<ArgumentType> instruction_arg_types(Instruction instruction)
 		case MOVE_16_INTO_REG: return { LIT_16, REG };
 		case MOVE_32_INTO_REG: return { LIT_32, REG };
 		case MOVE_64_INTO_REG: return { LIT_64, REG };
-		case MOVE_8_INTO_MEM: return { LIT_8, ADDR };
-		case MOVE_16_INTO_MEM: return { LIT_16, ADDR };
-		case MOVE_32_INTO_MEM: return { LIT_32, ADDR };
-		case MOVE_64_INTO_MEM: return { LIT_64, ADDR };
+		case MOVE_8_INTO_MEM: return { LIT_8, ABS_ADDR };
+		case MOVE_16_INTO_MEM: return { LIT_16, ABS_ADDR };
+		case MOVE_32_INTO_MEM: return { LIT_32, ABS_ADDR };
+		case MOVE_64_INTO_MEM: return { LIT_64, ABS_ADDR };
 		case MOVE_REG_INTO_REG: return { REG, REG };
-		case MOVE_REG_INTO_MEM_8: return { REG, ADDR };
-		case MOVE_REG_INTO_MEM_16: return { REG, ADDR };
-		case MOVE_REG_INTO_MEM_32: return { REG, ADDR };
-		case MOVE_REG_INTO_MEM_64: return { REG, ADDR };
-		case MOVE_MEM_8_INTO_REG: return { ADDR, REG };
-		case MOVE_MEM_16_INTO_REG: return { ADDR, REG };
-		case MOVE_MEM_32_INTO_REG: return { ADDR, REG };
-		case MOVE_MEM_64_INTO_REG: return { ADDR, REG };
+		case MOVE_REG_INTO_MEM_8: return { REG, ABS_ADDR };
+		case MOVE_REG_INTO_MEM_16: return { REG, ABS_ADDR };
+		case MOVE_REG_INTO_MEM_32: return { REG, ABS_ADDR };
+		case MOVE_REG_INTO_MEM_64: return { REG, ABS_ADDR };
+		case MOVE_MEM_8_INTO_REG: return { ABS_ADDR, REG };
+		case MOVE_MEM_16_INTO_REG: return { ABS_ADDR, REG };
+		case MOVE_MEM_32_INTO_REG: return { ABS_ADDR, REG };
+		case MOVE_MEM_64_INTO_REG: return { ABS_ADDR, REG };
 		case MOVE_REG_POINTER_8_INTO_REG: return { REG, REG };
 		case MOVE_REG_POINTER_16_INTO_REG: return { REG, REG };
 		case MOVE_REG_POINTER_32_INTO_REG: return { REG, REG };
@@ -717,13 +719,13 @@ vector<ArgumentType> instruction_arg_types(Instruction instruction)
 		case SET_REG_IF_LESS_OR_EQUAL: return { REG };
 		case SET_REG_IF_EQUAL: return { REG };
 		case SET_REG_IF_NOT_EQUAL: return { REG };
-		case JUMP: return { ADDR };
-		case JUMP_IF_GREATER: return { ADDR };
-		case JUMP_IF_GREATER_OR_EQUAL: return { ADDR };
-		case JUMP_IF_LESS: return { ADDR };
-		case JUMP_IF_LESS_OR_EQUAL: return { ADDR };
-		case JUMP_IF_EQUAL: return { ADDR };
-		case JUMP_IF_NOT_EQUAL: return { ADDR };
+		case JUMP: return { REL_ADDR };
+		case JUMP_IF_GREATER: return { REL_ADDR };
+		case JUMP_IF_GREATER_OR_EQUAL: return { REL_ADDR };
+		case JUMP_IF_LESS: return { REL_ADDR };
+		case JUMP_IF_LESS_OR_EQUAL: return { REL_ADDR };
+		case JUMP_IF_EQUAL: return { REL_ADDR };
+		case JUMP_IF_NOT_EQUAL: return { REL_ADDR };
 		case PUSH_8: return { LIT_8 };
 		case PUSH_16: return { LIT_16 };
 		case PUSH_32: return { LIT_32 };
@@ -736,14 +738,14 @@ vector<ArgumentType> instruction_arg_types(Instruction instruction)
 		case POP_16_INTO_REG: return { REG };
 		case POP_32_INTO_REG: return { REG };
 		case POP_64_INTO_REG: return { REG };
-		case CALL: return { ADDR };
+		case CALL: return { REL_ADDR };
 		case RETURN: return {};
 		case ALLOCATE_STACK: return { LIT_64 };
 		case DEALLOCATE_STACK: return { LIT_64 };
 		case COMMENT: return { NULL_TERMINATED_STRING };
 		case LABEL: return { NULL_TERMINATED_STRING };
 		case PRINT_CHAR: return { REG };
-		case GET_CHAR: return { ADDR };
+		case GET_CHAR: return { ABS_ADDR };
 		default: return {};
 	}
 }

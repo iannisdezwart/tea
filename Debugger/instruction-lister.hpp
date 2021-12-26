@@ -13,26 +13,25 @@ class InstructionLister {
 	public:
 		memory::Reader& reader;
 		bool first_arg;
+		uint8_t *instr_addr;
 
 		InstructionLister(memory::Reader& reader)
 			: reader(reader), first_arg(true) {}
 
 		void print_instruction(const char *instruction, const PtrSet& breakpoints)
 		{
-			uint8_t *address = reader.addr - 2;
-
 			// Print the address in red if a breakpoint was set to it
 
-			if (breakpoints.count(address)) {
+			if (breakpoints.count(instr_addr)) {
 				printf(ANSI_RED ANSI_BOLD "0x" ANSI_BRIGHT_RED "%04lx" ANSI_RESET "    ",
-					(uint64_t) address);
+					(uint64_t) instr_addr);
 			}
 
 			// Print address in green otherwise
 
 			else {
 				printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%04lx" ANSI_RESET "    ",
-					(uint64_t) address);
+					(uint64_t) instr_addr);
 			}
 
 			// Print instruction in orange
@@ -62,6 +61,19 @@ class InstructionLister {
 			printf(ANSI_YELLOW "%ld" ANSI_RESET, num);
 		}
 
+		/**
+		 * @brief Pretty-prints a relative address argument to the
+		 * output file.
+		 * @param str The relative address to print.
+		 */
+		void print_arg_rel_address(int64_t rel_address)
+		{
+			print_arg();
+			uint64_t addr = (uint64_t) instr_addr + rel_address;
+			printf(ANSI_YELLOW "%ld " ANSI_RESET, rel_address);
+			printf("(" ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%lx" ANSI_RESET ")", addr);
+		}
+
 		void print_arg_address(uint64_t address)
 		{
 			print_arg();
@@ -88,6 +100,7 @@ class InstructionLister {
 			const char * instruction_str = instruction_to_str(instruction);
 			vector<ArgumentType> args = instruction_arg_types(instruction);
 
+			instr_addr = reader.addr - 2;
 			print_instruction(instruction_str, breakpoints);
 
 			// Print the arguments
@@ -98,7 +111,11 @@ class InstructionLister {
 						print_arg_reg(reader.read<uint8_t>());
 						break;
 
-					case ADDR:
+					case REL_ADDR:
+						print_arg_rel_address(reader.read<int64_t>());
+						break;
+
+					case ABS_ADDR:
 						print_arg_address(reader.read<uint64_t>());
 						break;
 

@@ -25,6 +25,10 @@ class Disassembler {
 		// or not. Used to determine whether to print a comma or not.
 		bool first_arg;
 
+		// The address of the current instruction being disassembled.
+		// Used to calculate the absolute address of relative addresses.
+		uint64_t instr_addr;
+
 		/**
 		 * @brief Constructs a new Disassembler object.
 		 * Initialises the file reader and the output file.
@@ -42,8 +46,7 @@ class Disassembler {
 		{
 			// Print address in green.
 
-			fprintf(file_out, ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%04lx" ANSI_RESET "    ",
-				file_reader.read_bytes - 18);
+			fprintf(file_out, ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%04lx" ANSI_RESET "    ", instr_addr);
 
 			// Print instruction in orange.
 
@@ -81,6 +84,19 @@ class Disassembler {
 		{
 			print_arg();
 			fprintf(file_out, ANSI_YELLOW "%ld" ANSI_RESET, num);
+		}
+
+		/**
+		 * @brief Pretty-prints a relative address argument to the
+		 * output file.
+		 * @param str The relative address to print.
+		 */
+		void print_arg_rel_address(int64_t rel_address)
+		{
+			print_arg();
+			uint64_t addr = instr_addr + rel_address;
+			fprintf(file_out, ANSI_YELLOW "%ld " ANSI_RESET, rel_address);
+			fprintf(file_out, "(" ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%lx" ANSI_RESET ")", addr);
 		}
 
 		/**
@@ -145,6 +161,7 @@ class Disassembler {
 				const char * instruction_str = instruction_to_str(instruction);
 				vector<ArgumentType> args = instruction_arg_types(instruction);
 
+				instr_addr = file_reader.read_bytes - 18;
 				print_instruction(instruction_str);
 
 				// Print all arguments.
@@ -155,7 +172,11 @@ class Disassembler {
 							print_arg_reg(file_reader.read<uint8_t>());
 							break;
 
-						case ADDR:
+						case REL_ADDR:
+							print_arg_rel_address(file_reader.read<int64_t>());
+							break;
+
+						case ABS_ADDR:
 							print_arg_address(file_reader.read<uint64_t>());
 							break;
 

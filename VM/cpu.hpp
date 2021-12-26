@@ -136,6 +136,9 @@ class CPU {
 		// Is updated every time something is pushed or popped.
 		uint64_t current_stack_frame_size = 0;
 
+		// Holds the address of the current instruction being executed.
+		uint8_t *cur_instr_addr;
+
 		// Converts a register id to a register name.
 		static const char *reg_to_str(uint8_t reg_id)
 		{
@@ -244,9 +247,7 @@ class CPU {
 		 */
 		Instruction step()
 		{
-			#ifdef RESTORE_INSTRUCTION_POINTER_ON_THROW
-			uint8_t *prev_instr_ptr = get_instr_ptr();
-			#endif
+			cur_instr_addr = get_instr_ptr();
 
 			Instruction instruction = (Instruction) fetch<uint16_t>();
 
@@ -254,7 +255,7 @@ class CPU {
 			try {
 				execute(instruction);
 			} catch (const string& err_message) {
-				set_instr_ptr(prev_instr_ptr);
+				set_instr_ptr(cur_instr_addr);
 				throw err_message;
 			}
 			#else
@@ -367,12 +368,12 @@ class CPU {
 
 		/**
 		 * @brief Sets the instruction pointer to an offset from
-		 * the start of the program section.
-		 * @param addr The offset to the program section.
+		 * the current instruction pointer.
+		 * @param offset The relative offset.
 		 */
-		void jump_instruction_p(uint8_t *addr)
+		void jump_instruction_p(int64_t offset)
 		{
-			set_instr_ptr(program_location + (uint64_t) addr);
+			set_instr_ptr(cur_instr_addr + offset);
 		}
 
 		/**
@@ -1370,50 +1371,50 @@ class CPU {
 
 				case JUMP:
 				{
-					uint8_t *address = fetch<uint8_t *>();
-					jump_instruction_p(address);
+					int64_t offset = fetch<int64_t>();
+					jump_instruction_p(offset);
 					break;
 				}
 
 				case JUMP_IF_GREATER:
 				{
-					uint8_t *address = fetch<uint8_t *>();
-					if (greater_flag) jump_instruction_p(address);
+					int64_t offset = fetch<int64_t>();
+					if (greater_flag) jump_instruction_p(offset);
 					break;
 				}
 
 				case JUMP_IF_GREATER_OR_EQUAL:
 				{
-					uint8_t *address = fetch<uint8_t *>();
-					if (greater_flag | equal_flag) jump_instruction_p(address);
+					int64_t offset = fetch<int64_t>();
+					if (greater_flag | equal_flag) jump_instruction_p(offset);
 					break;
 				}
 
 				case JUMP_IF_LESS:
 				{
-					uint8_t *address = fetch<uint8_t *>();
-					if (!greater_flag & !equal_flag) jump_instruction_p(address);
+					int64_t offset = fetch<int64_t>();
+					if (!greater_flag & !equal_flag) jump_instruction_p(offset);
 					break;
 				}
 
 				case JUMP_IF_LESS_OR_EQUAL:
 				{
-					uint8_t *address = fetch<uint8_t *>();
-					if (!greater_flag) jump_instruction_p(address);
+					int64_t offset = fetch<int64_t>();
+					if (!greater_flag) jump_instruction_p(offset);
 					break;
 				}
 
 				case JUMP_IF_EQUAL:
 				{
-					uint8_t *address = fetch<uint8_t *>();
-					if (equal_flag) jump_instruction_p(address);
+					int64_t offset = fetch<int64_t>();
+					if (equal_flag) jump_instruction_p(offset);
 					break;
 				}
 
 				case JUMP_IF_NOT_EQUAL:
 				{
-					uint8_t *address = fetch<uint8_t *>();
-					if (!equal_flag) jump_instruction_p(address);
+					int64_t offset = fetch<int64_t>();
+					if (!equal_flag) jump_instruction_p(offset);
 					break;
 				}
 
@@ -1511,9 +1512,9 @@ class CPU {
 
 				case CALL:
 				{
-					uint8_t *address = fetch<uint8_t *>();
+					int64_t offset = fetch<int64_t>();
 					push_stack_frame();
-					jump_instruction_p(address);
+					jump_instruction_p(offset);
 					break;
 				}
 
