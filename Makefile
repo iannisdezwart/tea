@@ -1,5 +1,3 @@
-CXX = g++
-
 all: VM/vm Disassembler/disassemble Compiler/compile Debugger/debug
 
 doxygen: Doxyfile
@@ -29,3 +27,6 @@ Debugger/debug: Debugger/debug.cpp
 
 clean:
 	rm -rf VM/vm Disassembler/disassemble Assembler/assemble Compiler/compile Debugger/debug
+
+format:
+	find . -iname *.hpp -o -iname *.cpp | xargs clang-format -i
