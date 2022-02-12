@@ -14,6 +14,7 @@
 #include "FunctionDeclaration.hpp"
 #include "VariableDeclaration.hpp"
 #include "CodeBlock.hpp"
+#include "MemberExpression.hpp"
 
 using namespace std;
 

@@ -3,6 +3,7 @@
 
 #include <bits/stdc++.h>
 
+#include "../tokeniser.hpp"
 #include "../compiler-state.hpp"
 #include "../../Assembler/byte_code.hpp"
 #include "../../Assembler/assembler.hpp"
@@ -74,6 +75,8 @@ class ASTNode {
 
 		ASTNode(const Token& accountable_token, ASTNodeType type)
 			: accountable_token(accountable_token), type(type) {}
+
+		virtual ~ASTNode() {}
 
 		virtual string to_str() = 0;
 		virtual void dfs(function<void(ASTNode *, size_t)>, size_t depth = 0) = 0;

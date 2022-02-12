@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "ReadValue.hpp"
+#include "WriteValue.hpp"
 
 using namespace std;
 
