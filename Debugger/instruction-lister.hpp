@@ -7,8 +7,6 @@
 #include "../VM/memory.hpp"
 #include "util.hpp"
 
-using namespace std;
-
 class InstructionLister {
 	public:
 		memory::Reader& reader;
@@ -23,14 +21,14 @@ class InstructionLister {
 			// Print the address in red if a breakpoint was set to it
 
 			if (breakpoints.count(instr_addr)) {
-				printf(ANSI_RED ANSI_BOLD "0x" ANSI_BRIGHT_RED "%04lx" ANSI_RESET "    ",
+				printf(ANSI_RED ANSI_BOLD "0x" ANSI_BRIGHT_RED "%04llx" ANSI_RESET "    ",
 					(uint64_t) instr_addr);
 			}
 
 			// Print address in green otherwise
 
 			else {
-				printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%04lx" ANSI_RESET "    ",
+				printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%04llx" ANSI_RESET "    ",
 					(uint64_t) instr_addr);
 			}
 
@@ -58,7 +56,7 @@ class InstructionLister {
 		void print_arg_literal_number(uint64_t num)
 		{
 			print_arg();
-			printf(ANSI_YELLOW "%ld" ANSI_RESET, num);
+			printf(ANSI_YELLOW "%lld" ANSI_RESET, num);
 		}
 
 		/**
@@ -70,14 +68,14 @@ class InstructionLister {
 		{
 			print_arg();
 			uint64_t addr = (uint64_t) instr_addr + rel_address;
-			printf(ANSI_YELLOW "%ld " ANSI_RESET, rel_address);
-			printf("(" ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%lx" ANSI_RESET ")", addr);
+			printf(ANSI_YELLOW "%lld " ANSI_RESET, rel_address);
+			printf("(" ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%llx" ANSI_RESET ")", addr);
 		}
 
 		void print_arg_address(uint64_t address)
 		{
 			print_arg();
-			printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%lx" ANSI_RESET, address);
+			printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%llx" ANSI_RESET, address);
 		}
 
 		void print_arg_null_terminated_string(char *str)
@@ -98,7 +96,7 @@ class InstructionLister {
 
 			Instruction instruction = (Instruction) reader.read<uint16_t>();
 			const char * instruction_str = instruction_to_str(instruction);
-			vector<ArgumentType> args = instruction_arg_types(instruction);
+			std::vector<ArgumentType> args = instruction_arg_types(instruction);
 
 			instr_addr = reader.addr - 2;
 			print_instruction(instruction_str, breakpoints);
@@ -137,7 +135,7 @@ class InstructionLister {
 
 					case NULL_TERMINATED_STRING:
 					{
-						vector<char> str;
+						std::vector<char> str;
 						char c;
 
 						do {

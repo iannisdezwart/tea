@@ -5,8 +5,6 @@
 #include "util.hpp"
 #include "debugger-symbols.hpp"
 
-using namespace std;
-
 /**
  * Class that represents a data type of a variable.
  *
@@ -51,22 +49,22 @@ class Type {
 		//   * u64[3] -> { 3 }
 		//   * u64[3][4] -> { 3, 4 }
 		//   * u64[3]*[5] -> { 3, 0, 5 }
-		vector<size_t> array_sizes;
+		std::vector<size_t> array_sizes;
 
 		// If the subtype is a user-defined class,
 		// this field will hold the name of the class.
-		string class_name;
+		std::string class_name;
 
 		// If the subtype is a user-defined class or an init list,
 		// this field will hold the children types.
-		vector<Type> fields;
+		std::vector<Type> fields;
 
 		// This boolean indicates if the type is a literal.
 		// In other words, if it had a specified value at compile time.
 		bool is_literal = false;
 
 		// If the type is a literal, this field will hold the value.
-		string *literal_value;
+		std::string *literal_value;
 
 		/**
 		 * @brief Default constructor.
@@ -89,7 +87,7 @@ class Type {
 		 * @param array_sizes Initialises the `array_sizes` field.
 		 * See this field for reference.
 		 */
-		Type(enum Value value, size_t size, const vector<size_t>& array_sizes)
+		Type(enum Value value, size_t size, const std::vector<size_t>& array_sizes)
 			: value(value), size(size), array_sizes(array_sizes) {}
 
 		/**
@@ -259,7 +257,7 @@ class Type {
 		 * @param array_sizes The `array_sizes` of the type.
 		 * @returns The type parsed from the string.
 		 */
-		static Type from_string(string str, const vector<size_t>& array_sizes)
+		static Type from_string(std::string str, const std::vector<size_t>& array_sizes)
 		{
 			if (str == "u8")
 				return Type(Type::UNSIGNED_INTEGER, 1, array_sizes);
@@ -445,9 +443,9 @@ class Type {
 		 * Used for displaying error messages regarding types.
 		 * @returns A Tea string representation of the type.
 		 */
-		string to_str() const
+		std::string to_str() const
 		{
-			string s;
+			std::string s;
 
 			// Add the base type name to the string.
 
@@ -458,11 +456,11 @@ class Type {
 					break;
 
 				case Type::SIGNED_INTEGER:
-					s += "int" + to_string(size * 8);
+					s += "int" + std::to_string(size * 8);
 					break;
 
 				case Type::UNSIGNED_INTEGER:
-					s += "uint" + to_string(size * 8);
+					s += "uint" + std::to_string(size * 8);
 					break;
 
 				case Type::USER_DEFINED_CLASS:
@@ -493,7 +491,7 @@ class Type {
 				if (array_sizes[i] == 0) {
 					s += '*';
 				} else {
-					s += '[' + to_string(array_sizes[i]) + ']';
+					s += '[' + std::to_string(array_sizes[i]) + ']';
 				}
 			}
 

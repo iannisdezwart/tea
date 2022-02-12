@@ -5,8 +5,6 @@
 
 #include "buffer.hpp"
 
-using namespace std;
-
 /**
  * @brief A class that builds a buffer from a stream of data.
  * The data must be passed to the builder using the `push()` method.
@@ -116,7 +114,7 @@ class BufferBuilder {
 		 * @brief Pushes a string onto the buffer.
 		 * @param str A std::string instance to push.
 		 */
-		void push_null_terminated_string(const string& str)
+		void push_null_terminated_string(const std::string& str)
 		{
 			reserve(str.size() + 1);
 			for (char c : str) push(c);

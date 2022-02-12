@@ -6,8 +6,6 @@
 #include "memory-device.hpp"
 #include "../Assembler/buffer.hpp"
 
-using namespace std;
-
 /**
  * @brief This class is not currently in use.
  * It was part of the memory mapper, but I removed it from the CPU class,

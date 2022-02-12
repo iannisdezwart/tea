@@ -8,8 +8,6 @@
 #include "../../Assembler/byte_code.hpp"
 #include "../../Assembler/assembler.hpp"
 
-using namespace std;
-
 enum ASTNodeType {
 	TYPE_NAME,
 	TYPE_IDENTIFIER_PAIR,
@@ -78,8 +76,8 @@ class ASTNode {
 
 		virtual ~ASTNode() {}
 
-		virtual string to_str() = 0;
-		virtual void dfs(function<void(ASTNode *, size_t)>, size_t depth = 0) = 0;
+		virtual std::string to_str() = 0;
+		virtual void dfs(std::function<void(ASTNode *, size_t)>, size_t depth = 0) = 0;
 		virtual void compile(Assembler& assembler, CompilerState& compiler_state) = 0;
 		virtual Type get_type(CompilerState& compiler_state) = 0;
 

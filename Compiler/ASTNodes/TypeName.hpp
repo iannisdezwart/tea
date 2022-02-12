@@ -11,13 +11,13 @@
 class TypeName : public ASTNode {
 	public:
 		Token type_token;
-		vector<size_t> array_sizes;
+		std::vector<size_t> array_sizes;
 
-		TypeName(const Token& type_token, vector<size_t>&& array_sizes)
+		TypeName(const Token& type_token, std::vector<size_t>&& array_sizes)
 			: type_token(type_token), array_sizes(std::move(array_sizes)),
 				ASTNode(type_token, TYPE_NAME) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			callback(this, depth);
 		}
@@ -27,9 +27,9 @@ class TypeName : public ASTNode {
 			return array_sizes.size();
 		}
 
-		string type_to_str()
+		std::string type_to_str()
 		{
-			string out;
+			std::string out;
 
 			out += type_token.value;
 
@@ -37,16 +37,18 @@ class TypeName : public ASTNode {
 				if (array_sizes[i] == 0) {
 					out += '*';
 				} else {
-					out += '[' + to_string(array_sizes[i]) + ']';
+					out += '[';
+					out += to_string(array_sizes[i]);
+					out += ']';
 				}
 			}
 
 			return out;
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "TypeName { type = \"" + type_to_str() + "\" } @ "
+			std::string s = "TypeName { type = \"" + type_to_str() + "\" } @ "
 				+ to_hex((size_t) this);
 			return s;
 		}

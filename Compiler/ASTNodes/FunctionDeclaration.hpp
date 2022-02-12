@@ -13,22 +13,20 @@
 #include "CodeBlock.hpp"
 #include "VariableDeclaration.hpp"
 
-using namespace std;
-
 class FunctionDeclaration : public ASTNode {
 	public:
 		TypeIdentifierPair *type_and_id_pair;
-		vector<TypeIdentifierPair *> params;
+		std::vector<TypeIdentifierPair *> params;
 		CodeBlock *body;
 
 		FunctionDeclaration(
 			TypeIdentifierPair *type_and_id_pair,
-			vector<TypeIdentifierPair *>& params,
+			std::vector<TypeIdentifierPair *>& params,
 			CodeBlock *body
 		) : params(params), type_and_id_pair(type_and_id_pair), body(body),
 			ASTNode(type_and_id_pair->identifier_token, FUNCTION_DECLARATION) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			if (type_and_id_pair != NULL)
 				type_and_id_pair->dfs(callback, depth + 1);
@@ -44,9 +42,9 @@ class FunctionDeclaration : public ASTNode {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "FunctionDeclaration {} @ " + to_hex((size_t) this);
+			std::string s = "FunctionDeclaration {} @ " + to_hex((size_t) this);
 			return s;
 		}
 
@@ -58,7 +56,7 @@ class FunctionDeclaration : public ASTNode {
 			// Add parameters
 
 			for (TypeIdentifierPair *param : params) {
-				string param_name = param->get_identifier_name();
+				std::string param_name = param->get_identifier_name();
 				Type param_type = param->get_type(compiler_state);
 				fn_type.parameters.push_back(Identifier(param_name, param_type));
 			}
@@ -73,7 +71,7 @@ class FunctionDeclaration : public ASTNode {
 
 		void define(CompilerState& compiler_state)
 		{
-			const string& fn_name = type_and_id_pair->get_identifier_name();
+			const std::string& fn_name = type_and_id_pair->get_identifier_name();
 			Function fn_type = get_fn_type(compiler_state);
 
 			if (!compiler_state.add_function(fn_name, fn_type))
@@ -90,7 +88,7 @@ class FunctionDeclaration : public ASTNode {
 					"Nested function error",
 					"Functions cannot be declared within other functions");
 
-			const string& fn_name = type_and_id_pair->get_identifier_name();
+			const std::string& fn_name = type_and_id_pair->get_identifier_name();
 			compiler_state.current_function_name = fn_name;
 
 			assembler.add_label(fn_name);
@@ -99,7 +97,7 @@ class FunctionDeclaration : public ASTNode {
 			// Gather parameters
 
 			for (size_t i = 0; i < params.size(); i++) {
-				string param_name = params[i]->get_identifier_name();
+				std::string param_name = params[i]->get_identifier_name();
 				Type param_type = params[i]->get_type(compiler_state);
 
 				compiler_state.add_parameter(param_name, param_type);
@@ -110,7 +108,7 @@ class FunctionDeclaration : public ASTNode {
 			dfs([&compiler_state](ASTNode *node, size_t depth) {
 				if (node->type == VARIABLE_DECLARATION) {
 					VariableDeclaration *local = (VariableDeclaration *) node;
-					string local_name = local->type_and_id_pair->get_identifier_name();
+					std::string local_name = local->type_and_id_pair->get_identifier_name();
 					Type local_type = local->type_and_id_pair->get_type(compiler_state);
 
 					if (!compiler_state.add_local(local_name, local_type))

@@ -12,8 +12,6 @@
 #include "../Assembler/buffer.hpp"
 #include "ASTNodes/VariableDeclaration.hpp"
 
-using namespace std;
-
 /**
  * @brief Class responsible for compiling a source file into a byte code file.
  * Takes a source file name and compiles this file it into a given output file.
@@ -69,20 +67,20 @@ class Compiler {
 			// Tokenise the source file.
 
 			Tokeniser tokeniser(input_file);
-			vector<Token> tokens = tokeniser.tokenise();
+			std::vector<Token> tokens = tokeniser.tokenise();
 			tokeniser.print_tokens();
 
 			// Parse the tokens.
 
 			Parser parser(tokens);
-			vector<ASTNode *> statements = parser.parse();
+			std::vector<ASTNode *> statements = parser.parse();
 			parser.print_ast();
 
 			// Collect declarations.
 
-			vector<VariableDeclaration *> global_var_decls;
-			vector<FunctionDeclaration *> fn_decls;
-			vector<ClassDeclaration *> class_decls;
+			std::vector<VariableDeclaration *> global_var_decls;
+			std::vector<FunctionDeclaration *> fn_decls;
+			std::vector<ClassDeclaration *> class_decls;
 
 			for (size_t i = 0; i < statements.size(); i++) {
 				ASTNode *statement = statements[i];
@@ -118,13 +116,13 @@ class Compiler {
 				Class cl(byte_size);
 
 				for (TypeIdentifierPair *field : class_decl->fields) {
-					const string& name = field->identifier_token.value;
+					const std::string& name = field->identifier_token.value;
 					Type type = field->get_type(compiler_state);
 					cl.add_field(name, type);
 				}
 
 				for (FunctionDeclaration *method : class_decl->methods) {
-					const string& name = method->type_and_id_pair->identifier_token.value;
+					const std::string& name = method->type_and_id_pair->identifier_token.value;
 					Function method_type = method->get_fn_type(compiler_state);
 					cl.add_method(name, method_type);
 				}
@@ -136,7 +134,7 @@ class Compiler {
 
 			for (size_t i = 0; i < global_var_decls.size(); i++) {
 				VariableDeclaration *decl = global_var_decls[i];
-				string var_name = decl->type_and_id_pair->get_identifier_name();
+				std::string var_name = decl->type_and_id_pair->get_identifier_name();
 				Type var_type = decl->get_type(compiler_state);
 
 				compiler_state.add_global(var_name, var_type);

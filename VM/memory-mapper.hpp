@@ -7,8 +7,6 @@
 #include "ram-device.hpp"
 #include "io-device.hpp"
 
-using namespace std;
-
 /**
  * @brief This class is not currently in use.
  * It was part of the memory mapper, but I removed it from the CPU class,
@@ -16,9 +14,9 @@ using namespace std;
  */
 class MemoryMapper {
 	public:
-		vector<MemoryDevice *> devices;
+		std::vector<MemoryDevice *> devices;
 
-		pair<size_t, size_t> find_device_index(uint64_t offset)
+		std::pair<size_t, size_t> find_device_index(uint64_t offset)
 		{
 			size_t low = 0;
 			size_t high = devices.size();
@@ -27,7 +25,7 @@ class MemoryMapper {
 				size_t middle = (high - low) / 2 + low;
 
 				if (offset >= devices[middle]->from && offset < devices[middle]->to) {
-					return make_pair(middle, middle);
+					return std::make_pair(middle, middle);
 				} else if (offset < devices[middle]->from) {
 					high = middle;
 				} else {
@@ -35,20 +33,20 @@ class MemoryMapper {
 				}
 			}
 
-			if (low == high) return make_pair(low, high + 1);
-			return make_pair(low, high);
+			if (low == high) return std::make_pair(low, high + 1);
+			return std::make_pair(low, high);
 		}
 
 		MemoryDevice *find_device(uint64_t offset)
 		{
-			pair<size_t, size_t> device_index = find_device_index(offset);
+			std::pair<size_t, size_t> device_index = find_device_index(offset);
 
 			if (device_index.first != device_index.second) {
-					stringstream err_message;
+					std::stringstream err_message;
 
 					err_message << "Segmentation Fault\n";
 					err_message << "VM prevented access to memory at 0x";
-					err_message << hex << offset << '\n';
+					err_message << std::hex << offset << '\n';
 					err_message << "No MemoryDevice is registered in this region\n";
 
 					throw err_message.str();
@@ -59,7 +57,7 @@ class MemoryMapper {
 
 		bool is_safe(uint64_t offset)
 		{
-			pair<size_t, size_t> device_index = find_device_index(offset);
+			std::pair<size_t, size_t> device_index = find_device_index(offset);
 			return device_index.first == device_index.second;
 		}
 

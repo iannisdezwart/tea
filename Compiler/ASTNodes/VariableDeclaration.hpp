@@ -12,8 +12,6 @@
 #include "TypeIdentifierPair.hpp"
 #include "InitList.hpp"
 
-using namespace std;
-
 class VariableDeclaration : public ASTNode {
 	public:
 		TypeIdentifierPair *type_and_id_pair;
@@ -26,7 +24,7 @@ class VariableDeclaration : public ASTNode {
 			id_expr(type_and_id_pair->identifier_token), expression(expression),
 			ASTNode(type_and_id_pair->identifier_token, VARIABLE_DECLARATION) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			if (type_and_id_pair != NULL) type_and_id_pair->dfs(callback, depth + 1);
 			if (expression != NULL) expression->dfs(callback, depth + 1);
@@ -34,9 +32,9 @@ class VariableDeclaration : public ASTNode {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "VariableDeclaration {} @ " + to_hex((size_t) this);
+			std::string s = "VariableDeclaration {} @ " + to_hex((size_t) this);
 			return s;
 		}
 
@@ -77,7 +75,7 @@ class VariableDeclaration : public ASTNode {
 					specified_type.to_str().c_str(), assignment_type.to_str().c_str());
 			}
 
-			string id_name = type_and_id_pair->get_identifier_name();
+			std::string id_name = type_and_id_pair->get_identifier_name();
 			IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
 
 			Variable var;
@@ -210,6 +208,11 @@ class VariableDeclaration : public ASTNode {
 
 								break;
 							}
+
+							default: {
+								err_at_token(item->accountable_token, "Internal Error",
+									"Unknown identifier kind %d", id_kind);
+							}
 						}
 					}
 
@@ -314,6 +317,11 @@ class VariableDeclaration : public ASTNode {
 							}
 
 							break;
+						}
+
+						default: {
+							err_at_token(init_list->items[i]->accountable_token, "Internal Error",
+								"Unknown identifier kind %d", id_kind);
 						}
 					}
 				}

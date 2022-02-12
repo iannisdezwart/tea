@@ -5,18 +5,18 @@
 #include "ASTNode.hpp"
 #include "ReadValue.hpp"
 
-set<string> syscall_names = { "PRINT_CHAR", "GET_CHAR" };
+std::set<std::string> syscall_names = { "PRINT_CHAR", "GET_CHAR" };
 
 class SysCall : public ASTNode {
 	public:
 		Token name_token;
-		vector<ReadValue *> arguments;
+		std::vector<ReadValue *> arguments;
 
-		SysCall(Token name_token, vector<ReadValue *>&& arguments)
+		SysCall(Token name_token, std::vector<ReadValue *>&& arguments)
 			: name_token(name_token), arguments(std::move(arguments)),
 				ASTNode(name_token, SYS_CALL) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			for (size_t i = 0; i < arguments.size(); i++) {
 				arguments[i]->dfs(callback, depth + 1);
@@ -25,9 +25,9 @@ class SysCall : public ASTNode {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "SysCall { name = \"" + name_token.value
+			std::string s = "SysCall { name = \"" + name_token.value
 				+ "\" } @ " + to_hex((size_t) this);
 			return s;
 		}

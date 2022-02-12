@@ -3,8 +3,6 @@
 
 #include <bits/stdc++.h>
 
-using namespace std;
-
 template <typename Type>
 struct PtrCmp {
 	bool operator()(const Type *lhs, const Type *rhs) const
@@ -13,9 +11,9 @@ struct PtrCmp {
 	}
 };
 
-using PtrSet = set<uint8_t *, PtrCmp<uint8_t>>;
+using PtrSet = std::set<uint8_t *, PtrCmp<uint8_t>>;
 
-bool starts_with(const string& str, const string& search)
+bool starts_with(const std::string& str, const std::string& search)
 {
 	if (search.size() > str.size()) return false;
 
@@ -27,14 +25,14 @@ bool starts_with(const string& str, const string& search)
 }
 
 template <typename intx_t>
-string to_hex_str(intx_t num)
+std::string to_hex_str(intx_t num)
 {
-	stringstream ss;
-	ss << hex << num;
+	std::stringstream ss;
+	ss << std::hex << num;
 	return ss.str();
 }
 
-uint8_t *read_ptr(string&& addr_str)
+uint8_t *read_ptr(std::string&& addr_str)
 {
 	bool hexadecimal = false;
 	uint64_t ptr;
@@ -51,10 +49,10 @@ uint8_t *read_ptr(string&& addr_str)
 
 	// Read the address
 
-	stringstream ss;
+	std::stringstream ss;
 
 	if (hexadecimal) {
-		ss << hex;
+		ss << std::hex;
 	}
 
 	ss << addr_str;

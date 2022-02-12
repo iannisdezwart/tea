@@ -3,8 +3,6 @@
 
 #include <bits/stdc++.h>
 
-using namespace std;
-
 /**
  * @brief Class that is used to read a file in chunks of user-defined size.
  */

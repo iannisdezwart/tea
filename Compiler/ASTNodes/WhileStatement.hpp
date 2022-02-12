@@ -10,8 +10,6 @@
 #include "../util.hpp"
 #include "CodeBlock.hpp"
 
-using namespace std;
-
 class WhileStatement : public ASTNode {
 	public:
 		Token while_token;
@@ -22,7 +20,7 @@ class WhileStatement : public ASTNode {
 			: test(test), body(body), while_token(while_token),
 				ASTNode(while_token, WHILE_STATEMENT) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			test->dfs(callback, depth + 1);
 			body->dfs(callback, depth + 1);
@@ -30,9 +28,9 @@ class WhileStatement : public ASTNode {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "WhileStatement {} @ " + to_hex((size_t) this);
+			std::string s = "WhileStatement {} @ " + to_hex((size_t) this);
 			return s;
 		}
 
@@ -47,8 +45,8 @@ class WhileStatement : public ASTNode {
 
 			// Create labels
 
-			string loop_label = compiler_state.generate_label("while-loop");
-			string end_label = compiler_state.generate_label("end-while-statement");
+			std::string loop_label = compiler_state.generate_label("while-loop");
+			std::string end_label = compiler_state.generate_label("end-while-statement");
 
 			// Create the loop label
 

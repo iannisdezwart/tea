@@ -6,8 +6,6 @@
 #include "ReadValue.hpp"
 #include "WriteValue.hpp"
 
-using namespace std;
-
 class OffsetExpression : public WriteValue {
 	public:
 		WriteValue *pointer;
@@ -17,7 +15,7 @@ class OffsetExpression : public WriteValue {
 			: pointer(pointer), offset(offset),
 				WriteValue(bracket_token, OFFSET_EXPRESSION) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			pointer->dfs(callback, depth + 1);
 			offset->dfs(callback, depth + 1);
@@ -25,9 +23,9 @@ class OffsetExpression : public WriteValue {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s;
+			std::string s;
 
 			s += "OffsetExpression {} @ ";
 			s += to_hex((size_t) this);

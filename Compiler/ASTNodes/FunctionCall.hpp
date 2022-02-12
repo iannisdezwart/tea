@@ -10,23 +10,21 @@
 #include "../compiler-state.hpp"
 #include "../tokeniser.hpp"
 
-using namespace std;
-
 class FunctionCall : public ReadValue {
 	public:
 		Token fn_token;
-		vector<ReadValue *> arguments;
+		std::vector<ReadValue *> arguments;
 
-		FunctionCall(Token& fn_token, vector<ReadValue *>& arguments)
+		FunctionCall(Token& fn_token, std::vector<ReadValue *>& arguments)
 			: fn_token(fn_token), arguments(arguments),
 				ReadValue(fn_token, FUNCTION_CALL) {}
 
-		string& get_name()
+		std::string& get_name()
 		{
 			return fn_token.value;
 		}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			for (size_t i = 0; i < arguments.size(); i++) {
 				arguments[i]->dfs(callback, depth + 1);
@@ -35,16 +33,16 @@ class FunctionCall : public ReadValue {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "FunctionCall { callee = \"" + get_name() + "\" } @ "
+			std::string s = "FunctionCall { callee = \"" + get_name() + "\" } @ "
 				+ to_hex((size_t) this);
 			return s;
 		}
 
 		Type get_type(CompilerState& compiler_state)
 		{
-			string& fn_name = get_name();
+			std::string& fn_name = get_name();
 
 			if (!compiler_state.functions.count(fn_name))
 				err_at_token(fn_token, "Call to undeclared function",
@@ -58,7 +56,7 @@ class FunctionCall : public ReadValue {
 		{
 			uint8_t arg_reg;
 
-			string& fn_name = get_name();
+			std::string& fn_name = get_name();
 
 			if (!compiler_state.functions.count(fn_name))
 				err_at_token(fn_token, "Call to undeclared function",
@@ -66,7 +64,7 @@ class FunctionCall : public ReadValue {
 					fn_name.c_str());
 
 			Function& fn = compiler_state.functions[fn_name];
-			vector<Identifier>& params = fn.parameters;
+			std::vector<Identifier>& params = fn.parameters;
 
 			// Validate arguments
 
@@ -85,8 +83,8 @@ class FunctionCall : public ReadValue {
 				Type& param_type = params[i].type;
 				Type arg_type = arguments[i]->get_type(compiler_state);
 
-				string param = param_type.to_str();
-				string arg = arg_type.to_str();
+				std::string param = param_type.to_str();
+				std::string arg = arg_type.to_str();
 
 				if (!arg_type.fits(param_type))
 					err_at_token(fn_token,

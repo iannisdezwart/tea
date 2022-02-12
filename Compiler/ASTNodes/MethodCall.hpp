@@ -13,8 +13,6 @@
 #include "../compiler-state.hpp"
 #include "../tokeniser.hpp"
 
-using namespace std;
-
 class MethodCall : public ReadValue {
 	public:
 		IdentifierExpression *object;
@@ -27,7 +25,7 @@ class MethodCall : public ReadValue {
 				: object(object), method(method), op_token(op_token),
 					ReadValue(op_token, METHOD_CALL) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			object->dfs(callback, depth + 1);
 			method->dfs(callback, depth + 1);
@@ -35,16 +33,16 @@ class MethodCall : public ReadValue {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "MethodCall { callee = \"" + object->identifier_token.value
+			std::string s = "MethodCall { callee = \"" + object->identifier_token.value
 				+ "::" + method->get_name() + "\" } @ " + to_hex((size_t) this);
 			return s;
 		}
 
-		string get_object_class_name(CompilerState& compiler_state)
+		std::string get_object_class_name(CompilerState& compiler_state)
 		{
-			const string& obj_name = object->identifier_token.value;
+			const std::string& obj_name = object->identifier_token.value;
 			Type type = compiler_state.get_type_of_identifier(obj_name);
 
 			if (type != Type::USER_DEFINED_CLASS) {
@@ -59,9 +57,9 @@ class MethodCall : public ReadValue {
 
 		Type get_type(CompilerState& compiler_state)
 		{
-			const string& class_name = get_object_class_name(compiler_state);
+			const std::string& class_name = get_object_class_name(compiler_state);
 			const Class& cl = compiler_state.classes[class_name];
-			const string& method_name = method->get_name();
+			const std::string& method_name = method->get_name();
 
 			if (!cl.has_method(method_name))
 				err_at_token(method->accountable_token, "Call to undeclared method",
@@ -75,7 +73,7 @@ class MethodCall : public ReadValue {
 		{
 			uint8_t arg_reg;
 
-			string fn_name = get_object_class_name(compiler_state) + "::" + method->get_name();
+			std::string fn_name = get_object_class_name(compiler_state) + "::" + method->get_name();
 
 			if (!compiler_state.functions.count(fn_name))
 				err_at_token(method->accountable_token, "Call to undeclared method",
@@ -83,7 +81,7 @@ class MethodCall : public ReadValue {
 					fn_name.c_str());
 
 			Function& fn = compiler_state.functions[fn_name];
-			vector<Identifier>& params = fn.parameters;
+			std::vector<Identifier>& params = fn.parameters;
 
 			// Add the this pointer to the argument list
 
@@ -112,8 +110,8 @@ class MethodCall : public ReadValue {
 				Type& param_type = params[i].type;
 				Type arg_type = method->arguments[i]->get_type(compiler_state);
 
-				string param = param_type.to_str();
-				string arg = arg_type.to_str();
+				std::string param = param_type.to_str();
+				std::string arg = arg_type.to_str();
 
 				if (param_type != arg_type)
 					err_at_token(method->fn_token,

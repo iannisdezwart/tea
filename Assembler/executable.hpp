@@ -5,8 +5,6 @@
 
 #include "buffer.hpp"
 
-using namespace std;
-
 /**
  * @brief Class that represents an executable.
  * Inherits from Buffer. It is used to store the executable.

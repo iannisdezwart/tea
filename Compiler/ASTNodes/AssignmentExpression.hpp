@@ -15,8 +15,6 @@
 #include "../tokeniser.hpp"
 #include "../../VM/cpu.hpp"
 
-using namespace std;
-
 class AssignmentExpression : public ReadValue {
 	public:
 		WriteValue *lhs_expr;
@@ -32,16 +30,16 @@ class AssignmentExpression : public ReadValue {
 				op(str_to_operator(op_token.value)),
 				ReadValue(op_token, ASSIGNMENT_EXPRESSION) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			value->dfs(callback, depth + 1);
 			lhs_expr->dfs(callback, depth + 1);
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s;
+			std::string s;
 
 			s += "AssignmentExpression { op = \"";
 			s += op_to_str(op);
@@ -155,6 +153,9 @@ class AssignmentExpression : public ReadValue {
 				case BITWISE_OR_ASSIGNMENT:
 					assembler.or_reg_into_reg(result_reg, prev_val_reg);
 					break;
+
+				default:
+					err_at_token(op_token, "Internal Error", "Unknown assignment operator");
 			}
 
 			assembler.free_register(prev_val_reg);

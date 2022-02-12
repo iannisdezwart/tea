@@ -18,16 +18,16 @@ class CastExpression : public ReadValue {
 			: type_name(type_name), expression(expression),
 				ReadValue(type_name->type_token, CAST_EXPRESSION) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			type_name->dfs(callback, depth + 1);
 			expression->dfs(callback, depth + 1);
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "CastExpression {} @ " + to_hex((size_t) this);
+			std::string s = "CastExpression {} @ " + to_hex((size_t) this);
 			return s;
 		}
 

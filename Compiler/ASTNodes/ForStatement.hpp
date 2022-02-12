@@ -10,8 +10,6 @@
 #include "../util.hpp"
 #include "CodeBlock.hpp"
 
-using namespace std;
-
 class ForStatement : public ASTNode {
 	public:
 		Token for_token;
@@ -25,7 +23,7 @@ class ForStatement : public ASTNode {
 				: init(init), test(test), update(update), body(body),
 					for_token(for_token), ASTNode(for_token, FOR_STATEMENT) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			init->dfs(callback, depth + 1);
 			test->dfs(callback, depth + 1);
@@ -35,9 +33,9 @@ class ForStatement : public ASTNode {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "ForStatement {} @ " + to_hex((size_t) this);
+			std::string s = "ForStatement {} @ " + to_hex((size_t) this);
 			return s;
 		}
 
@@ -52,8 +50,8 @@ class ForStatement : public ASTNode {
 
 			// Create labels
 
-			string loop_label = compiler_state.generate_label("for-loop");
-			string end_label = compiler_state.generate_label("end-for-statement");
+			std::string loop_label = compiler_state.generate_label("for-loop");
+			std::string end_label = compiler_state.generate_label("end-for-statement");
 
 			// Compile code for the init statement
 

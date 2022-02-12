@@ -5,8 +5,6 @@
 
 #include "memory-device.hpp"
 
-using namespace std;
-
 /**
  * @brief This class is not currently in use.
  * It was part of the memory mapper, but I removed it from the CPU class,
@@ -35,11 +33,11 @@ class IODevice : public MemoryDevice {
 
 				default:
 				{
-					stringstream err_message;
+					std::stringstream err_message;
 
 					err_message << "Write-only memory access violation\n";
 					err_message << "VM prevented reading from memory at 0x";
-					err_message << hex << offset << '\n';
+					err_message << std::hex << offset << '\n';
 
 					throw err_message.str();
 				}
@@ -60,11 +58,11 @@ class IODevice : public MemoryDevice {
 
 				default:
 				{
-					stringstream err_message;
+					std::stringstream err_message;
 
 					err_message << "Read-only memory access violation\n";
 					err_message << "VM prevented writing to memory at 0x";
-					err_message << hex << offset << '\n';
+					err_message << std::hex << offset << '\n';
 
 					throw err_message.str();
 				}

@@ -9,25 +9,23 @@
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
-using namespace std;
-
 class LiteralStringExpression : public ReadValue {
 	public:
 		Token literal_string_token;
-		string value;
+		std::string value;
 
-		LiteralStringExpression(Token literal_string_token, string value)
+		LiteralStringExpression(Token literal_string_token, std::string value)
 			: literal_string_token(literal_string_token), value(value),
 				ReadValue(literal_string_token, LITERAL_STRING_EXPRESSION) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "LiteralStringExpression { value = \"" + value + "\" } @ "
+			std::string s = "LiteralStringExpression { value = \"" + value + "\" } @ "
 				+ to_hex((size_t) this);
 			return s;
 		}

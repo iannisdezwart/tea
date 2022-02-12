@@ -4,8 +4,6 @@
 #include "../Assembler/byte_code.hpp"
 #include "file-reader.hpp"
 
-using namespace std;
-
 int main(int argc, char **argv)
 {
 	if (argc < 2) {

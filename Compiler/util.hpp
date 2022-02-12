@@ -80,8 +80,6 @@
  */
 #define is_binary(c) (c == '0' || c == '1')
 
-using namespace std;
-
 /**
  * @brief Converts a number to a hexadecimal string.
  * @tparam intx_t The number type.
@@ -89,10 +87,10 @@ using namespace std;
  * @returns A string containing the hexadecimal representation of the number.
  */
 template <typename intx_t>
-string to_hex(intx_t num)
+std::string to_hex(intx_t num)
 {
-	stringstream stream;
-	stream << setfill('0') << setw(8) << hex << num;
+	std::stringstream stream;
+	stream << std::setfill('0') << std::setw(8) << std::hex << num;
 	return stream.str();
 }
 
@@ -153,10 +151,10 @@ const char *abs_min_int64 = "9223372036854775808";
  * @param c The character to pad with.
  * @returns A new padded string.
  */
-string pad_start(const string& str, size_t len, char c)
+std::string pad_start(const std::string& str, size_t len, char c)
 {
 	if (str.length() >= len) return str;
-	return string(c, len - str.length()) + str;
+	return std::string(c, len - str.length()) + str;
 }
 
 /**
@@ -167,7 +165,7 @@ string pad_start(const string& str, size_t len, char c)
  * @param test The character array to compare to.
  * @returns A boolean if the padded string is greater than the character array.
  */
-bool compare_str(const string& str, const char *test)
+bool compare_str(const std::string& str, const char *test)
 {
 	if (str.length() > strlen(test)) return true;
 	return pad_start(str, strlen(test), '0') > test;
@@ -178,7 +176,7 @@ bool compare_str(const string& str, const char *test)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in a u8.
  */
-bool fits_uint8(const string& str)
+bool fits_uint8(const std::string& str)
 {
 	if (str[0] == '-') return false;
 	if (compare_str(str, abs_max_uint8)) return false;
@@ -190,7 +188,7 @@ bool fits_uint8(const string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in an i8.
  */
-bool fits_int8(const string& str)
+bool fits_int8(const std::string& str)
 {
 	if (str[0] == '-') {
 		if (compare_str(str.substr(1), abs_min_int8)) return false;
@@ -206,7 +204,7 @@ bool fits_int8(const string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in a u16.
  */
-bool fits_uint16(const string& str)
+bool fits_uint16(const std::string& str)
 {
 	if (str[0] == '-') return false;
 	if (compare_str(str, abs_max_uint16)) return false;
@@ -218,7 +216,7 @@ bool fits_uint16(const string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in an i16.
  */
-bool fits_int16(const string& str)
+bool fits_int16(const std::string& str)
 {
 	if (str[0] == '-') {
 		if (compare_str(str.substr(1), abs_min_int16)) return false;
@@ -234,7 +232,7 @@ bool fits_int16(const string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in a u32.
  */
-bool fits_uint32(const string& str)
+bool fits_uint32(const std::string& str)
 {
 	if (str[0] == '-') return false;
 	if (compare_str(str, abs_max_uint32)) return false;
@@ -246,7 +244,7 @@ bool fits_uint32(const string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in an i32.
  */
-bool fits_int32(const string& str)
+bool fits_int32(const std::string& str)
 {
 	if (str[0] == '-') {
 		if (compare_str(str.substr(1), abs_min_int32)) return false;
@@ -262,7 +260,7 @@ bool fits_int32(const string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in a u64.
  */
-bool fits_uint64(const string& str)
+bool fits_uint64(const std::string& str)
 {
 	if (str[0] == '-') return false;
 	if (compare_str(str, abs_max_uint64)) return false;
@@ -274,7 +272,7 @@ bool fits_uint64(const string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in an i64.
  */
-bool fits_int64(const string& str)
+bool fits_int64(const std::string& str)
 {
 	if (str[0] == '-') {
 		if (compare_str(str.substr(1), abs_min_int64)) return false;

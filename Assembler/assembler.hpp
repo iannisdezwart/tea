@@ -8,8 +8,6 @@
 #include "buffer-builder.hpp"
 #include "buffer.hpp"
 
-using namespace std;
-
 /**
  * @brief Structure containing the location to an entry of static data.
  * The static data segment is prepended to the program and can be accessed and
@@ -51,19 +49,19 @@ class Assembler : public BufferBuilder {
 		 * The key is the label name and the value is the offset
 		 * of the label in the program.
 		 */
-		unordered_map<string /* id */, uint64_t /* position */> labels;
+		std::unordered_map<std::string /* id */, uint64_t /* position */> labels;
 
 		/**
 		 * @brief Map containing all references to labels.
 		 * The key is the label name and the value is a list of
 		 * positions in the program where the label is referenced.
 		 */
-		unordered_map<string /* id */, vector<uint64_t>> label_references;
+		std::unordered_map<std::string /* id */, std::vector<uint64_t>> label_references;
 
 		/**
 		 * @brief Bit array used to check whether a register is free.
 		 */
-		vector<bool> free_registers;
+		std::vector<bool> free_registers;
 
 		/**
 		 * @brief A buffer builder for the static data segment.
@@ -1386,7 +1384,7 @@ class Assembler : public BufferBuilder {
 		 * @brief Adds a JUMP instruction to the program.
 		 * @param label The label to jump to.
 		 */
-		void jump(const string& label)
+		void jump(const std::string& label)
 		{
 			push_instruction(JUMP);
 			add_label_reference(label);
@@ -1397,7 +1395,7 @@ class Assembler : public BufferBuilder {
 		 * @brief Adds a JUMP_IF_GREATER instruction to the program.
 		 * @param label The label to jump to.
 		 */
-		void jump_if_greater(const string& label)
+		void jump_if_greater(const std::string& label)
 		{
 			push_instruction(JUMP_IF_GREATER);
 			add_label_reference(label);
@@ -1408,7 +1406,7 @@ class Assembler : public BufferBuilder {
 		 * @brief Adds a JUMP_IF_GREATER_OR_EQUAL instruction to the program.
 		 * @param label The label to jump to.
 		 */
-		void jump_if_greater_or_equal(const string& label)
+		void jump_if_greater_or_equal(const std::string& label)
 		{
 			push_instruction(JUMP_IF_GREATER_OR_EQUAL);
 			add_label_reference(label);
@@ -1419,7 +1417,7 @@ class Assembler : public BufferBuilder {
 		 * @brief Adds a JUMP_IF_LESS instruction to the program.
 		 * @param label The label to jump to.
 		 */
-		void jump_if_less(const string& label)
+		void jump_if_less(const std::string& label)
 		{
 			push_instruction(JUMP_IF_LESS);
 			add_label_reference(label);
@@ -1430,7 +1428,7 @@ class Assembler : public BufferBuilder {
 		 * @brief Adds a JUMP_IF_LESS_OR_EQUAL instruction to the program.
 		 * @param label The label to jump to.
 		 */
-		void jump_if_less_or_equal(const string& label)
+		void jump_if_less_or_equal(const std::string& label)
 		{
 			push_instruction(JUMP_IF_LESS_OR_EQUAL);
 			add_label_reference(label);
@@ -1441,7 +1439,7 @@ class Assembler : public BufferBuilder {
 		 * @brief Adds a JUMP_IF_EQUAL instruction to the program.
 		 * @param label The label to jump to.
 		 */
-		void jump_if_equal(const string& label)
+		void jump_if_equal(const std::string& label)
 		{
 			push_instruction(JUMP_IF_EQUAL);
 			add_label_reference(label);
@@ -1452,7 +1450,7 @@ class Assembler : public BufferBuilder {
 		 * @brief Adds a JUMP_IF_NOT_EQUAL instruction to the program.
 		 * @param label The label to jump to.
 		 */
-		void jump_if_not_equal(const string& label)
+		void jump_if_not_equal(const std::string& label)
 		{
 			push_instruction(JUMP_IF_NOT_EQUAL);
 			add_label_reference(label);
@@ -1583,7 +1581,7 @@ class Assembler : public BufferBuilder {
 		 * @brief Adds a CALL instruction to the program.
 		 * @param label The label to call.
 		 */
-		void call(const string& label)
+		void call(const std::string& label)
 		{
 			push_instruction(CALL);
 			add_label_reference(label);
@@ -1622,7 +1620,7 @@ class Assembler : public BufferBuilder {
 		 * @brief Adds a COMMENT instruction to the program.
 		 * @param str The comment content.
 		 */
-		void comment(const string& str)
+		void comment(const std::string& str)
 		{
 			push_instruction(COMMENT);
 			push_null_terminated_string(str);
@@ -1632,7 +1630,7 @@ class Assembler : public BufferBuilder {
 		 * @brief Adds a LABEL instruction to the program.
 		 * @param str The label name.
 		 */
-		void label(const string& str)
+		void label(const std::string& str)
 		{
 			push_instruction(LABEL);
 			push_null_terminated_string(str);
@@ -1664,7 +1662,7 @@ class Assembler : public BufferBuilder {
 		 * `add_label_reference()` method.
 		 * @param id The label name.
 		 */
-		void add_label(const string& id)
+		void add_label(const std::string& id)
 		{
 			if (labels.count(id)) {
 				printf("ProgramBuilder error: duplicate label %s\n", id.c_str());
@@ -1680,7 +1678,7 @@ class Assembler : public BufferBuilder {
 		 * `add_label()` method.
 		 * @param id The label name.
 		 */
-		void add_label_reference(const string& id)
+		void add_label_reference(const std::string& id)
 		{
 			label_references[id].push_back(offset);
 		}
@@ -1690,9 +1688,9 @@ class Assembler : public BufferBuilder {
 		 */
 		void update_label_references()
 		{
-			for (pair<const string&, vector<uint64_t>> ref : label_references) {
-				const string& label = ref.first;
-				vector<uint64_t>& reference_points = ref.second;
+			for (std::pair<const std::string&, std::vector<uint64_t>> ref : label_references) {
+				const std::string& label = ref.first;
+				std::vector<uint64_t>& reference_points = ref.second;
 
 				// Get the location of the label.
 

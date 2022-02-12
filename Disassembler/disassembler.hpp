@@ -8,8 +8,6 @@
 #include "../Assembler/byte_code.hpp"
 #include "../VM/cpu.hpp"
 
-using namespace std;
-
 /**
  * @brief Class that is responsible for disassembling a bytecode file.
  */
@@ -46,7 +44,7 @@ class Disassembler {
 		{
 			// Print address in green.
 
-			fprintf(file_out, ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%04lx" ANSI_RESET "    ", instr_addr);
+			fprintf(file_out, ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%04llx" ANSI_RESET "    ", instr_addr);
 
 			// Print instruction in orange.
 
@@ -83,7 +81,7 @@ class Disassembler {
 		void print_arg_literal_number(uint64_t num)
 		{
 			print_arg();
-			fprintf(file_out, ANSI_YELLOW "%ld" ANSI_RESET, num);
+			fprintf(file_out, ANSI_YELLOW "%lld" ANSI_RESET, num);
 		}
 
 		/**
@@ -95,8 +93,8 @@ class Disassembler {
 		{
 			print_arg();
 			uint64_t addr = instr_addr + rel_address;
-			fprintf(file_out, ANSI_YELLOW "%ld " ANSI_RESET, rel_address);
-			fprintf(file_out, "(" ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%lx" ANSI_RESET ")", addr);
+			fprintf(file_out, ANSI_YELLOW "%lld " ANSI_RESET, rel_address);
+			fprintf(file_out, "(" ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%llx" ANSI_RESET ")", addr);
 		}
 
 		/**
@@ -106,7 +104,7 @@ class Disassembler {
 		void print_arg_address(uint64_t address)
 		{
 			print_arg();
-			fprintf(file_out, ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%lx" ANSI_RESET, address);
+			fprintf(file_out, ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%llx" ANSI_RESET, address);
 		}
 
 		/**
@@ -139,7 +137,7 @@ class Disassembler {
 
 			// Print static data.
 
-			fprintf(file_out, "Static data (size = %lu)\n\n", static_data_size);
+			fprintf(file_out, "Static data (size = %llu)\n\n", static_data_size);
 
 			for (size_t i = 0; i < static_data_size; i++) {
 				uint8_t byte = file_reader.read<uint8_t>();
@@ -150,7 +148,7 @@ class Disassembler {
 
 			// Print the program.
 
-			fprintf(file_out, "\nProgram (size = %lu)\n\n", program_size);
+			fprintf(file_out, "\nProgram (size = %llu)\n\n", program_size);
 
 			Instruction instruction;
 
@@ -159,7 +157,7 @@ class Disassembler {
 				!= (1 << 16) - 1
 			) {
 				const char * instruction_str = instruction_to_str(instruction);
-				vector<ArgumentType> args = instruction_arg_types(instruction);
+				std::vector<ArgumentType> args = instruction_arg_types(instruction);
 
 				instr_addr = file_reader.read_bytes - 18;
 				print_instruction(instruction_str);
@@ -198,7 +196,7 @@ class Disassembler {
 
 						case NULL_TERMINATED_STRING:
 						{
-							vector<char> str;
+							std::vector<char> str;
 							char c;
 
 							do {

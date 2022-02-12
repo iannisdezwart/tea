@@ -5,8 +5,6 @@
 
 #define STACK_SIZE 8 * 1024 * 1024 // 8MB
 
-using namespace std;
-
 int main(int argc, char **argv)
 {
 	if (argc < 2) {
@@ -21,9 +19,9 @@ int main(int argc, char **argv)
 
 	try {
 		cpu.run();
-		printf("VM exited with exit code %lu\n", cpu.regs[R_RET]);
-	} catch (const string& err_message) {
-		cout << err_message;
+		printf("VM exited with exit code %llu\n", cpu.regs[R_RET]);
+	} catch (const std::string& err_message) {
+		std::cout << err_message;
 		abort();
 	}
 }

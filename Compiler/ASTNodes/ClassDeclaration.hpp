@@ -16,17 +16,15 @@
 #include "CodeBlock.hpp"
 #include "MemberExpression.hpp"
 
-using namespace std;
-
 class ClassDeclaration : public ASTNode {
 	public:
-		string class_name;
-		vector<TypeIdentifierPair *> fields;
-		vector<FunctionDeclaration *> methods;
+		std::string class_name;
+		std::vector<TypeIdentifierPair *> fields;
+		std::vector<FunctionDeclaration *> methods;
 
 		ClassDeclaration(
 			const Token& class_token,
-			const string& class_name,
+			const std::string& class_name,
 			CodeBlock *body
 		) : ASTNode(class_token, CLASS_DECLARATION), class_name(class_name)
 		{
@@ -48,7 +46,7 @@ class ClassDeclaration : public ASTNode {
 			}
 		}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			for (TypeIdentifierPair *field : fields) {
 				field->dfs(callback, depth + 1);
@@ -61,9 +59,9 @@ class ClassDeclaration : public ASTNode {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "ClassDeclaration { name = "
+			std::string s = "ClassDeclaration { name = "
 				+ class_name + " } @ " + to_hex((size_t) this);
 			return s;
 		}
@@ -91,7 +89,7 @@ class ClassDeclaration : public ASTNode {
 			return type;
 		}
 
-		bool has_field(const string& field_name)
+		bool has_field(const std::string& field_name)
 		{
 			for (size_t i = 0; i < fields.size(); i++) {
 				if (fields[i]->identifier_token.value == field_name) {
@@ -110,7 +108,7 @@ class ClassDeclaration : public ASTNode {
 				// Add double colons to indicate scope
 
 				Token& id_token = method->type_and_id_pair->identifier_token;
-				string method_name = id_token.value;
+				std::string method_name = id_token.value;
 				id_token.value = class_name + "::" + method_name;
 
 				// Todo: check if the parameter list does not include a field name

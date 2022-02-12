@@ -10,8 +10,6 @@
 #include "../util.hpp"
 #include "CodeBlock.hpp"
 
-using namespace std;
-
 class IfStatement : public ASTNode {
 	public:
 		Token if_token;
@@ -24,7 +22,7 @@ class IfStatement : public ASTNode {
 				: test(test), then_block(then_block), else_block(else_block),
 					if_token(if_token), ASTNode(if_token, IF_STATEMENT) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			test->dfs(callback, depth + 1);
 			then_block->dfs(callback, depth + 1);
@@ -33,9 +31,9 @@ class IfStatement : public ASTNode {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "IfStatement {} @ " + to_hex((size_t) this);
+			std::string s = "IfStatement {} @ " + to_hex((size_t) this);
 			return s;
 		}
 
@@ -50,8 +48,8 @@ class IfStatement : public ASTNode {
 
 			// Create labels
 
-			string else_label = compiler_state.generate_label("else-block");
-			string end_label = compiler_state.generate_label("end-if-statement");
+			std::string else_label = compiler_state.generate_label("else-block");
+			std::string end_label = compiler_state.generate_label("end-if-statement");
 
 			// Perform the check and move the result into the test register
 

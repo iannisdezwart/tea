@@ -9,8 +9,6 @@
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
-using namespace std;
-
 class ReturnStatement : public ASTNode {
 	public:
 		Token return_token;
@@ -20,7 +18,7 @@ class ReturnStatement : public ASTNode {
 			: expression(expression), return_token(return_token),
 				ASTNode(return_token, RETURN_STATEMENT) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			if (expression != NULL)
 				expression->dfs(callback, depth + 1);
@@ -28,9 +26,9 @@ class ReturnStatement : public ASTNode {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "ReturnStatement {} @ " + to_hex((size_t) this);
+			std::string s = "ReturnStatement {} @ " + to_hex((size_t) this);
 			return s;
 		}
 

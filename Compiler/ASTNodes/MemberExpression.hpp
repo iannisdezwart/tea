@@ -14,8 +14,6 @@
 #include "../tokeniser.hpp"
 #include "../../VM/cpu.hpp"
 
-using namespace std;
-
 class MemberExpression : public WriteValue {
 	public:
 		IdentifierExpression *object;
@@ -35,7 +33,7 @@ class MemberExpression : public WriteValue {
 			delete member;
 		}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			object->dfs(callback, depth + 1);
 			member->dfs(callback, depth + 1);
@@ -43,9 +41,9 @@ class MemberExpression : public WriteValue {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s;
+			std::string s;
 
 			s += "MemberExpression { op = \"";
 			s += op_to_str(op);
@@ -62,7 +60,7 @@ class MemberExpression : public WriteValue {
 		Type get_type(CompilerState& compiler_state)
 		{
 			Type object_type = object->get_type(compiler_state);
-			string member_name = member->identifier_token.value;
+			std::string member_name = member->identifier_token.value;
 
 			if (object_type != Type::USER_DEFINED_CLASS) {
 				err_at_token(op_token, "Type Error",
@@ -70,7 +68,7 @@ class MemberExpression : public WriteValue {
 					member_name.c_str(), object->identifier_token.value.c_str());
 			}
 
-			string class_name = object_type.class_name;
+			std::string class_name = object_type.class_name;
 
 			switch (op) {
 				case POINTER_TO_MEMBER:
@@ -101,8 +99,8 @@ class MemberExpression : public WriteValue {
 		LocationData get_location_data(CompilerState& compiler_state)
 		{
 			Type object_type = object->get_type(compiler_state);
-			string instance_name = object->identifier_token.value;
-			string member_name = member->identifier_token.value;
+			std::string instance_name = object->identifier_token.value;
+			std::string member_name = member->identifier_token.value;
 
 			IdentifierKind id_kind = compiler_state.get_identifier_kind(instance_name);
 
@@ -127,7 +125,7 @@ class MemberExpression : public WriteValue {
 						"Only members of locals and globals can be accessed");
 			}
 
-			string class_name = object_type.class_name;
+			std::string class_name = object_type.class_name;
 			const Class& cl = compiler_state.classes[class_name];
 			const Type& member_type = cl.get_field_type(member_name);
 
@@ -156,9 +154,9 @@ class MemberExpression : public WriteValue {
 		void get_value(Assembler& assembler, CompilerState& compiler_state, uint8_t result_reg)
 		{
 			Type object_type = object->get_type(compiler_state);
-			string instance_name = object->identifier_token.value;
-			string member_name = member->identifier_token.value;
-			string class_name = object_type.class_name;
+			std::string instance_name = object->identifier_token.value;
+			std::string member_name = member->identifier_token.value;
+			std::string class_name = object_type.class_name;
 			const Class& cl = compiler_state.classes[class_name];
 			const Type& member_type = cl.get_field_type(member_name);
 
@@ -315,9 +313,9 @@ class MemberExpression : public WriteValue {
 			uint8_t this_ptr_reg;
 
 			Type object_type = object->get_type(compiler_state);
-			string instance_name = object->identifier_token.value;
-			string member_name = member->identifier_token.value;
-			string class_name = object_type.class_name;
+			std::string instance_name = object->identifier_token.value;
+			std::string member_name = member->identifier_token.value;
+			std::string class_name = object_type.class_name;
 			const Class& cl = compiler_state.classes[class_name];
 			const Type& member_type = cl.get_field_type(member_name);
 

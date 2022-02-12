@@ -12,8 +12,6 @@
 #include "../tokeniser.hpp"
 #include "../../VM/cpu.hpp"
 
-using namespace std;
-
 class BinaryOperation : public ReadValue {
 	public:
 		ReadValue *left;
@@ -28,7 +26,7 @@ class BinaryOperation : public ReadValue {
 				op(str_to_operator(op_token.value)),
 				ReadValue(op_token, BINARY_OPERATION) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			left->dfs(callback, depth + 1);
 			right->dfs(callback, depth + 1);
@@ -36,9 +34,9 @@ class BinaryOperation : public ReadValue {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s;
+			std::string s;
 
 			s += "BinaryOperation { op = \"";
 			s += op_to_str(op);

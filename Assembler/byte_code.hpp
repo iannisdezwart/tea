@@ -3,8 +3,6 @@
 
 #include <bits/stdc++.h>
 
-using namespace std;
-
 /**
  * @brief An enum containing all valid opcodes.
  */
@@ -612,7 +610,7 @@ enum ArgumentType : uint8_t {
  * @brief Returns the allowed argument types for a given instruction.
  * @param instruction The instruction to get the argument types for.
  */
-vector<ArgumentType> instruction_arg_types(Instruction instruction)
+std::vector<ArgumentType> instruction_arg_types(Instruction instruction)
 {
 	switch (instruction) {
 		case MOVE_8_INTO_REG: return { LIT_8, REG };

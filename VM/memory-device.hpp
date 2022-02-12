@@ -3,8 +3,6 @@
 
 #include <bits/stdc++.h>
 
-using namespace std;
-
 // Memory regions
 
 #define IO_DEVICE_OFFSET 0x10

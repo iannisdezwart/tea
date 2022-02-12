@@ -3,8 +3,6 @@
 
 #include <bits/stdc++.h>
 
-using namespace std;
-
 class Buffer {
 	public:
 		// A pointer to the data on the buffer.

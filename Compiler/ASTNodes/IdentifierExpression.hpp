@@ -11,8 +11,6 @@
 #include "../compiler-state.hpp"
 #include "../tokeniser.hpp"
 
-using namespace std;
-
 class IdentifierExpression : public WriteValue {
 	public:
 		Token identifier_token;
@@ -23,14 +21,14 @@ class IdentifierExpression : public WriteValue {
 			: identifier_token(identifier_token),
 				WriteValue(identifier_token, IDENTIFIER_EXPRESSION) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "IdentifierExpression { identifier = \""
+			std::string s = "IdentifierExpression { identifier = \""
 				+ identifier_token.value + "\" } @ " + to_hex((size_t) this);
 			return s;
 		}
@@ -41,7 +39,7 @@ class IdentifierExpression : public WriteValue {
 				return replacement_type;
 			}
 
-			string id_name = identifier_token.value;
+			std::string id_name = identifier_token.value;
 
 			Type type = compiler_state.get_type_of_identifier(id_name);
 
@@ -56,7 +54,7 @@ class IdentifierExpression : public WriteValue {
 
 		LocationData get_location_data(CompilerState& compiler_state)
 		{
-			string id_name = identifier_token.value;
+			std::string id_name = identifier_token.value;
 			IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
 
 			if (id_kind == IdentifierKind::UNDEFINED)

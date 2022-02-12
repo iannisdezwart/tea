@@ -17,21 +17,19 @@
 #define DEFAULT_CALL_STACK_TOP 10
 #define DEFAULT_DUMP_STACK_TOP 24
 
-using namespace std;
-
 #define PROGRAM_NOT_STARTED_ERR() \
 	printf(ANSI_RED "Program has not yet started.\n" \
 		"Start the program with the " ANSI_BRIGHT_MAGENTA ANSI_ITALIC ANSI_BOLD \
 		"start" ANSI_RESET ANSI_RED " command.\n")
 
 struct CallStackEntryArg {
-	string arg_name;
-	string value;
+	std::string arg_name;
+	std::string value;
 };
 
 struct CallStackEntry {
-	string fn_name;
-	vector<CallStackEntryArg> args;
+	std::string fn_name;
+	std::vector<CallStackEntryArg> args;
 };
 
 struct VarEntry : public DebuggerSymbol {
@@ -46,9 +44,9 @@ class Shell {
 		const char *file_path;
 		CPU *cpu = NULL;
 		PtrSet breakpoints;
-		vector<CallStackEntry> call_stack;
-		vector<vector<VarEntry>> locals;
-		vector<VarEntry> globals;
+		std::vector<CallStackEntry> call_stack;
+		std::vector<std::vector<VarEntry>> locals;
+		std::vector<VarEntry> globals;
 		DebuggerSymbols debugger_symbols;
 		bool debugger_symbols_found = false;
 
@@ -66,7 +64,7 @@ class Shell {
 					Instruction next_instruction = (Instruction) memory::get<uint16_t>(
 						cpu->get_instr_ptr());
 
-					stringstream ss;
+					std::stringstream ss;
 
 					// If the function has a debug label, push its name
 
@@ -84,7 +82,7 @@ class Shell {
 					// Else, push its address
 
 					else {
-						ss << "0x" << hex << cpu->get_instr_ptr();
+						ss << "0x" << std::hex << cpu->get_instr_ptr();
 					}
 
 					// Create a call stack entry
@@ -122,57 +120,63 @@ class Shell {
 								case DebuggerSymbolTypes::U8:
 								{
 									uint8_t val = memory::get<uint8_t>(addr);
-									entry_arg.value = ANSI_YELLOW + to_string(val);
+									entry_arg.value = ANSI_YELLOW + std::to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::I8:
 								{
 									int8_t val = memory::get<int8_t>(addr);
-									entry_arg.value = ANSI_YELLOW + to_string(val);
+									entry_arg.value = ANSI_YELLOW + std::to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::U16:
 								{
 									uint16_t val = memory::get<uint16_t>(addr);
-									entry_arg.value = ANSI_YELLOW + to_string(val);
+									entry_arg.value = ANSI_YELLOW + std::to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::I16:
 								{
 									int16_t val = memory::get<int16_t>(addr);
-									entry_arg.value = ANSI_YELLOW + to_string(val);
+									entry_arg.value = ANSI_YELLOW + std::to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::U32:
 								{
 									uint32_t val = memory::get<uint32_t>(addr);
-									entry_arg.value = ANSI_YELLOW + to_string(val);
+									entry_arg.value = ANSI_YELLOW + std::to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::I32:
 								{
 									int32_t val = memory::get<int32_t>(addr);
-									entry_arg.value = ANSI_YELLOW + to_string(val);
+									entry_arg.value = ANSI_YELLOW + std::to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::I64:
 								{
 									int64_t val = memory::get<int64_t>(addr);
-									entry_arg.value = ANSI_YELLOW + to_string(val);
+									entry_arg.value = ANSI_YELLOW + std::to_string(val);
 									break;
 								}
 
 								case DebuggerSymbolTypes::U64:
 								{
 									uint64_t val = memory::get<uint64_t>(addr);
-									entry_arg.value = ANSI_YELLOW + to_string(val);
+									entry_arg.value = ANSI_YELLOW + std::to_string(val);
 									break;
+								}
+
+								default:
+								{
+									fprintf(stderr, "Unknown parameter type: %hhu\n", param.type);
+									abort();
 								}
 							}
 
@@ -182,7 +186,7 @@ class Shell {
 
 						// Store addresses of locals
 
-						vector<VarEntry> new_fn_locals;
+						std::vector<VarEntry> new_fn_locals;
 						uint8_t *addr = cpu->get_stack_ptr();
 
 						for (const DebuggerSymbol& local : fn_symbols.locals) {
@@ -216,7 +220,7 @@ class Shell {
 			if (cpu->get_instr_ptr() < cpu->stack_top) {
 				try {
 					exec_instruction();
-				} catch (const string& err_message) {
+				} catch (const std::string& err_message) {
 					printf(ANSI_RED "The VM encountered an error:\n" ANSI_BRIGHT_RED "%s",
 						err_message.c_str());
 				}
@@ -232,7 +236,7 @@ class Shell {
 			if (cpu->get_instr_ptr() < cpu->stack_top) {
 				try {
 					exec_instruction();
-				} catch (const string& err_message) {
+				} catch (const std::string& err_message) {
 					printf(ANSI_RED "The VM encountered an error:\n" ANSI_BRIGHT_RED "%s",
 						err_message.c_str());
 					return;
@@ -246,7 +250,7 @@ class Shell {
 
 				try {
 					exec_instruction();
-				} catch (const string& err_message) {
+				} catch (const std::string& err_message) {
 					printf(ANSI_RED "The VM encountered an error:\n" ANSI_BRIGHT_RED "%s",
 						err_message.c_str());
 					return;
@@ -255,7 +259,7 @@ class Shell {
 
 			// Print the exit code
 
-			printf(ANSI_CYAN "VM exited with exit code " ANSI_YELLOW "%lu\n", cpu->regs[R_RET]);
+			printf(ANSI_CYAN "VM exited with exit code " ANSI_YELLOW "%llu\n", cpu->regs[R_RET]);
 		}
 
 	public:
@@ -276,7 +280,7 @@ class Shell {
 			// Load the program
 
 			if (command[0] == "start") {
-				string stack_size_flag = command.get_flag_value("stack-size").c_str();
+				std::string stack_size_flag = command.get_flag_value("stack-size").c_str();
 				size_t stack_size;
 
 				if (stack_size_flag == "") stack_size = DEFAULT_STACK_SIZE;
@@ -287,7 +291,7 @@ class Shell {
 
 				printf(ANSI_BRIGHT_MAGENTA "Loaded executable" ANSI_RESET "\n");
 
-				string debug_symbols_filename;
+				std::string debug_symbols_filename;
 				debug_symbols_filename += file_path;
 				debug_symbols_filename += ".debug";
 
@@ -343,7 +347,7 @@ class Shell {
 					goto shell;
 				}
 
-				string top_flag = command.get_flag_value("top").c_str();
+				std::string top_flag = command.get_flag_value("top").c_str();
 				size_t top;
 
 				memory::Reader reader(cpu->get_instr_ptr());
@@ -374,8 +378,8 @@ class Shell {
 				}
 
 				#define REG_FMT_STR(reg) ANSI_BOLD ANSI_ITALIC reg ANSI_RESET " = " \
-					ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%016lx" ANSI_RESET " = " \
-					ANSI_YELLOW "%020lu" ANSI_RESET "\n"
+					ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%016llx" ANSI_RESET " = " \
+					ANSI_YELLOW "%020llu" ANSI_RESET "\n"
 
 				#define FLAG_FMT_STR(flag) ANSI_BOLD ANSI_ITALIC flag ANSI_RESET " = " \
 					ANSI_YELLOW "%hhu" ANSI_RESET "\n"
@@ -410,7 +414,7 @@ class Shell {
 			else if (command[0] == "lsbp") {
 				for (uint8_t *bp : breakpoints) {
 					printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD " - "
-						ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%lx\n", (uint64_t) bp);
+						ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%llx\n", (uint64_t) bp);
 				}
 			}
 
@@ -420,7 +424,7 @@ class Shell {
 				if (command.num_of_args() < 2) {
 					printf(ANSI_RED "Expected address for breakpoint\n");
 				} else {
-					string addr_str = command[1];
+					std::string addr_str = command[1];
 					uint8_t *address = read_ptr(std::move(addr_str));
 					breakpoints.insert(address);
 				}
@@ -432,7 +436,7 @@ class Shell {
 				if (command.num_of_args() < 2) {
 					printf(ANSI_RED "Expected address for breakpoint\n");
 				} else {
-					string addr_str = command[1];
+					std::string addr_str = command[1];
 
 					// If the argument is "all", remove all breakpoints
 
@@ -456,7 +460,7 @@ class Shell {
 					goto shell;
 				}
 
-				string top_flag = command.get_flag_value("top").c_str();
+				std::string top_flag = command.get_flag_value("top").c_str();
 				size_t top;
 
 				// Get the top flag value
@@ -467,7 +471,7 @@ class Shell {
 
 				// Calculate the begin and end from the `top` argument given
 
-				uint8_t *begin = max(cpu->get_stack_ptr() - top, cpu->stack_top);
+				uint8_t *begin = std::max(cpu->get_stack_ptr() - top, cpu->stack_top);
 				uint8_t *end = cpu->get_stack_ptr();
 
 				memory::Reader reader(begin);
@@ -479,17 +483,17 @@ class Shell {
 					uint8_t byte = reader.read<uint8_t>();
 
 					if (addr == cpu->get_frame_ptr()) {
-						printf(ANSI_RED ANSI_BOLD "0x" ANSI_BRIGHT_RED "%04lx" ANSI_RESET
+						printf(ANSI_RED ANSI_BOLD "0x" ANSI_BRIGHT_RED "%04llx" ANSI_RESET
 							"    " ANSI_YELLOW "%03hhu" ANSI_RESET "    "
 							ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%02hhx" ANSI_RESET "\n",
 							(uint64_t) addr, byte, byte);
 					} else if (addr == cpu->get_stack_ptr()) {
-						printf(ANSI_YELLOW ANSI_BOLD "0x" ANSI_BRIGHT_YELLOW "%04lx" ANSI_RESET
+						printf(ANSI_YELLOW ANSI_BOLD "0x" ANSI_BRIGHT_YELLOW "%04llx" ANSI_RESET
 							"    " ANSI_YELLOW "%03hhu" ANSI_RESET "    "
 							ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%02hhx" ANSI_RESET "\n",
 							(uint64_t) addr, byte, byte);
 					} else {
-						printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%04lx" ANSI_RESET
+						printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%04llx" ANSI_RESET
 							"    " ANSI_YELLOW "%03hhu" ANSI_RESET "    "
 							ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%02hhx" ANSI_RESET "\n",
 							(uint64_t) addr, byte, byte);
@@ -505,7 +509,7 @@ class Shell {
 					goto shell;
 				}
 
-				string top_flag = command.get_flag_value("top");
+				std::string top_flag = command.get_flag_value("top");
 				size_t top;
 
 				// Get the top flag value
@@ -521,7 +525,7 @@ class Shell {
 
 				for (size_t i = call_stack.size(); i != lower_bound; i--) {
 					CallStackEntry entry = call_stack[i - 1];
-					const vector<VarEntry>& cur_locals = locals[i - 1];
+					const std::vector<VarEntry>& cur_locals = locals[i - 1];
 
 					// Print function name
 
@@ -609,14 +613,14 @@ class Shell {
 							case DebuggerSymbolTypes::U64:
 							{
 								uint64_t val = memory::get<uint64_t>(local.addr);
-								PRINT_VAR("%lu", val);
+								PRINT_VAR("%llu", val);
 								break;
 							}
 
 							case DebuggerSymbolTypes::I64:
 							{
 								int64_t val = memory::get<int64_t>(local.addr);
-								PRINT_VAR("%ld", val);
+								PRINT_VAR("%lld", val);
 								break;
 							}
 
@@ -662,7 +666,7 @@ class Shell {
 
 			else if (command[0] == "help" || command[0] == "h") {
 				if (command.num_of_args() > 1) {
-					const string& cmd_name = command[1];
+					const std::string& cmd_name = command[1];
 
 					if (cmd_name == "start") print_help_start();
 					else if (cmd_name == "step" || cmd_name == "s") print_help_step();

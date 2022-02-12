@@ -10,11 +10,9 @@
 #include "../../Assembler/assembler.hpp"
 #include "../compiler-state.hpp"
 
-using namespace std;
-
 class CodeBlock : public ASTNode {
 	public:
-		vector<ASTNode *> statements;
+		std::vector<ASTNode *> statements;
 		Token start_token;
 
 		CodeBlock(Token start_token) : start_token(start_token),
@@ -27,7 +25,7 @@ class CodeBlock : public ASTNode {
 			statements.push_back(statement);
 		}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			for (ASTNode *statement : statements) {
 				if (statement != NULL) statement->dfs(callback, depth + 1);
@@ -36,9 +34,9 @@ class CodeBlock : public ASTNode {
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "CodeBlock {} @ " + to_hex((size_t) this);
+			std::string s = "CodeBlock {} @ " + to_hex((size_t) this);
 			return s;
 		}
 

@@ -6,15 +6,13 @@
 #include "keypress.hpp"
 #include "util.hpp"
 
-using namespace std;
-
 void print_shell_prompt(const char *file_path, uint8_t *addr)
 {
 	printf(ANSI_CYAN ANSI_BOLD "%s" ANSI_RESET, file_path);
 
 	if (addr != NULL) {
 		printf(ANSI_YELLOW " [ ");
-		printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%04lx" ANSI_RESET,
+		printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%04llx" ANSI_RESET,
 			(uint64_t) addr);
 		printf(ANSI_YELLOW " ]");
 	}
@@ -24,11 +22,11 @@ void print_shell_prompt(const char *file_path, uint8_t *addr)
 
 class CommandHistory {
 	private:
-		vector<string> history;
+		std::vector<std::string> history;
 		size_t i = 0;
 
 	public:
-		void push(const string& line)
+		void push(const std::string& line)
 		{
 			// Remove trailing empty lines
 
@@ -72,12 +70,12 @@ class CommandHistory {
 			i = history.size() - 1;
 		}
 
-		const string& get()
+		const std::string& get()
 		{
 			return history[i];
 		}
 
-		void update_bottom(const string& new_line)
+		void update_bottom(const std::string& new_line)
 		{
 			history[history.size() - 1] = new_line;
 		}
@@ -87,7 +85,7 @@ CommandHistory command_history;
 
 class Command {
 	private:
-		const string& command_line;
+		const std::string& command_line;
 
 		// Basically split the line into words
 
@@ -132,14 +130,14 @@ class Command {
 		}
 
 	public:
-		vector<string> args;
+		std::vector<std::string> args;
 
-		Command(const string& command_line) : command_line(command_line)
+		Command(const std::string& command_line) : command_line(command_line)
 		{
 			split_command_line();
 		}
 
-		bool has_flag(const string& flag)
+		bool has_flag(const std::string& flag)
 		{
 			// Single letter flag (e.g. "-f")
 
@@ -158,7 +156,7 @@ class Command {
 			else {
 				for (size_t i = 0; i < args.size(); i++) {
 					if (args[i].size() >= 3 && args[i][0] == '-' && args[i][1] == '-') {
-						string arg = args[i].substr(2);
+						std::string arg = args[i].substr(2);
 						if (arg == flag) return true;
 					}
 				}
@@ -167,13 +165,13 @@ class Command {
 			return false;
 		}
 
-		string get_flag_value(const string& flag)
+		std::string get_flag_value(const std::string& flag)
 		{
 			// Returns the value of a word flag (e.g. "--flag 123" -> "123")
 
 			for (size_t i = 0; i < args.size(); i++) {
 				if (args[i].size() >= 3 && args[i][0] == '-' && args[i][1] == '-') {
-					string arg = args[i].substr(2);
+					std::string arg = args[i].substr(2);
 					if (arg == flag) {
 						if (i == args.size() - 1) return "";
 						return args[i + 1];
@@ -184,7 +182,7 @@ class Command {
 			return "";
 		}
 
-		const string& operator[](size_t i)
+		const std::string& operator[](size_t i)
 		{
 			return args[i];
 		}
@@ -198,7 +196,7 @@ class Command {
 		{
 			// Reads the next command from the user
 
-			string line;
+			std::string line;
 			size_t index = 0;
 
 			// Show an empty line and add it to the command history

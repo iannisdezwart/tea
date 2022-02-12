@@ -15,8 +15,6 @@
 #include "../tokeniser.hpp"
 #include "../../VM/cpu.hpp"
 
-using namespace std;
-
 class UnaryOperation : public WriteValue {
 	public:
 		ReadValue *expression;
@@ -31,15 +29,15 @@ class UnaryOperation : public WriteValue {
 				op(str_to_operator(op_token.value, prefix)),
 				prefix(prefix), WriteValue(op_token, UNARY_OPERATION) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			expression->dfs(callback, depth + 1);
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s;
+			std::string s;
 
 			s += "UnaryOperation { op = \"";
 			s += op_to_str(op);
@@ -368,6 +366,11 @@ class UnaryOperation : public WriteValue {
 						assembler.move_stack_top_address_into_reg(result_reg);
 						assembler.add_64_into_reg(location_data.offset, result_reg);
 					}
+				}
+
+				default: {
+					err_at_token(expression->accountable_token, "Internal Error",
+						"Unsupported unary operator");
 				}
 			}
 		}

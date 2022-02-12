@@ -7,8 +7,6 @@
 #include "../Assembler/executable.hpp"
 #include "../Assembler/byte_code.hpp"
 
-using namespace std;
-
 /**
  * @brief The class that represents a CPU of the virtual machine.
  * Contains methods to run an executable.
@@ -254,7 +252,7 @@ class CPU {
 			#ifdef RESTORE_INSTRUCTION_POINTER_ON_THROW
 			try {
 				execute(instruction);
-			} catch (const string& err_message) {
+			} catch (const std::string& err_message) {
 				set_instr_ptr(cur_instr_addr);
 				throw err_message;
 			}

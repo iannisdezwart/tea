@@ -7,8 +7,6 @@
 #include "util.hpp"
 #include "../ansi.hpp"
 
-using namespace std;
-
 /**
  * @brief Enum containing all the possible types of tokens.
  */
@@ -64,7 +62,7 @@ struct Token {
 	TokenType type;
 
 	// The value of the token as a string.
-	string value;
+	std::string value;
 
 	// The line in the source file where the token was found.
 	size_t line;
@@ -79,9 +77,9 @@ struct Token {
 	/**
 	 * @returns A string representation of the token.
 	 */
-	string to_str() const
+	std::string to_str() const
 	{
-		string s;
+		std::string s;
 
 		s += "Token { ";
 
@@ -120,28 +118,28 @@ struct Token {
 };
 
 // A set of all whitespace characters.
-unordered_set<char> whitespace_chars = {
+std::unordered_set<char> whitespace_chars = {
 	' ', '\t', '\n', '\r'
 };
 
 // A set of all special characters in the Tea language.
-unordered_set<char> special_chars = {
+std::unordered_set<char> special_chars = {
 	'(', ')', '{', '}', '[', ']', ',', ';', '"', '\'', '\\'
 };
 
 // A set of all operator characters in the Tea language.
 // Operators can be compound, e.g. ++, --, +=, -=, etc.
-unordered_set<char> operator_chars = {
+std::unordered_set<char> operator_chars = {
 	'+', '-', '*', '/', '%', '=', '<', '>', '&', '^', '|', '!', '~', '.', ':'
 };
 
 // A set of all basic types in the Tea language.
-unordered_set<string> types = {
+std::unordered_set<std::string> types = {
 	"u8", "i8", "u16", "i16", "u32", "i32", "u64", "i64", "void"
 };
 
 // A set of all keywords in the Tea language.
-unordered_set<string> keywords = {
+std::unordered_set<std::string> keywords = {
 	"if", "else", "return", "while", "for", "break", "continue", "goto",
 	"class", "syscall"
 };
@@ -430,8 +428,8 @@ enum Associativity {
 };
 
 // Used in the table below to make the code more readable.
-typedef pair<vector<Operator>, enum Associativity> OperatorPrecedencePair;
-#define mp make_pair<vector<Operator>, enum Associativity>
+typedef std::pair<std::vector<Operator>, enum Associativity> OperatorPrecedencePair;
+#define mp std::make_pair<std::vector<Operator>, enum Associativity>
 
 // The following table is used to determine the order
 // in which operators are parsed.
@@ -439,7 +437,7 @@ typedef pair<vector<Operator>, enum Associativity> OperatorPrecedencePair;
 // that are of the same precedence.
 // The second element of each pair is the associativity
 // of the operators in the vector.
-vector<OperatorPrecedencePair> operator_precedence = {
+std::vector<OperatorPrecedencePair> operator_precedence = {
 	mp({ SCOPE_RESOLUTION }, LEFT_TO_RIGHT),
 	mp({ POSTFIX_INCREMENT, POSTFIX_DECREMENT }, LEFT_TO_RIGHT),
 	mp({ PREFIX_INCREMENT, PREFIX_DECREMENT, UNARY_PLUS, UNARY_MINUS,
@@ -470,7 +468,7 @@ vector<OperatorPrecedencePair> operator_precedence = {
  * or not. Ignored if the operator is a non-unary operator.
  * @returns The operator type.
  */
-enum Operator str_to_operator(const string& str, bool prefix = false)
+enum Operator str_to_operator(const std::string& str, bool prefix = false)
 {
 	if (str.size() > 3) return UNDEFINED_OPERATOR;
 
@@ -545,7 +543,7 @@ class Tokeniser {
 		 * @param type The type of the token.
 		 * @param value The value of the token.
 		 */
-		void push_token(TokenType type, string value)
+		void push_token(TokenType type, std::string value)
 		{
 			Token token = {
 				.type = type,
@@ -575,7 +573,7 @@ class Tokeniser {
 
 	public:
 		// The list of tokens produced by the tokeniser.
-		vector<Token> tokens;
+		std::vector<Token> tokens;
 
 		/**
 		 * @brief Constructs a new Tokeniser object.
@@ -591,7 +589,7 @@ class Tokeniser {
 			printf("\\\\\\ Tokens (%ld) \\\\\\\n\n", tokens.size());
 
 			for (const Token& token : tokens) {
-				cout << token.to_str() << '\n';
+				std::cout << token.to_str() << '\n';
 			}
 
 			printf("\n/// Tokens ///\n");
@@ -601,13 +599,13 @@ class Tokeniser {
 		 * @brief Tokenises the file.
 		 * @returns The list of tokens.
 		 */
-		vector<Token> tokenise()
+		std::vector<Token> tokenise()
 		{
 			// The current character.
 			int c;
 
 			while ((c = reader.peek_byte()) != EOF) {
-				printf("tokenise(): %c (%hhu)\n", c, c);
+				printf("tokenise(): %c (%hhu)\n", c, (uint8_t) c);
 				line = reader.line;
 				col = reader.col;
 
@@ -641,14 +639,14 @@ class Tokeniser {
 				// Handle character literals.
 
 				else if (c == '\'') {
-					push_token(LITERAL_CHAR, string(1, scan_literal_char()));
+					push_token(LITERAL_CHAR, std::string(1, scan_literal_char()));
 				}
 
 				// Handle special character.
 
 				else if (special_chars.count(c)) {
 					reader.advance();
-					push_token(SPECIAL_CHARACTER, string(1, c));
+					push_token(SPECIAL_CHARACTER, std::string(1, c));
 				}
 
 				// Handle operators.
@@ -666,7 +664,7 @@ class Tokeniser {
 				// Handle text (keywords and symbols).
 
 				else if (is_alpha(c)) {
-					string text = scan_text(c);
+					std::string text = scan_text(c);
 
 					// If the token is a type.
 
@@ -685,7 +683,7 @@ class Tokeniser {
 
 				// Unknown character.
 
-				else throw_err("Found unknown character '%c' (%hhd)", c, c);
+				else throw_err("Found unknown character '%c' (%hhu)", c, (uint8_t) c);
 			}
 
 			return tokens;
@@ -694,7 +692,7 @@ class Tokeniser {
 		/**
 		 * @brief Scans a comment.
 		 * Currently only supports // comments.
-		 * TODO: support /* * / comments. Typo is intentional because
+		 * TODO: support / * * / comments. Typo is intentional because
 		 * I cannot write such a comment in this comment because
 		 * it would break out of this comment.
 		 * @returns A boolean indicating if a comment was
@@ -802,9 +800,9 @@ class Tokeniser {
 		 * Converts escape sequences to their ascii characters.
 		 * @returns The contents of the string literal.
 		 */
-		string scan_literal_string()
+		std::string scan_literal_string()
 		{
-			string s;
+			std::string s;
 			char c;
 
 			while (true) {
@@ -864,9 +862,9 @@ class Tokeniser {
 		 * Supports floating point and integer numbers.
 		 * @returns The number as a string.
 		 */
-		string scan_literal_number(char first_char)
+		std::string scan_literal_number(char first_char)
 		{
-			string s;
+			std::string s;
 			s += first_char;
 			reader.advance();
 			int c = reader.peek_byte();
@@ -946,9 +944,9 @@ class Tokeniser {
 		 * Is there because this character is already consumed.
 		 * @returns A string containing the text.
 		 */
-		string scan_text(char first_char)
+		std::string scan_text(char first_char)
 		{
-			string s;
+			std::string s;
 			s += first_char;
 			char c;
 
@@ -973,7 +971,7 @@ class Tokeniser {
 		 * Is there because this character is already consumed.
 		 * @returns A string containing the operator.
 		 */
-		string scan_operator(char first_char)
+		std::string scan_operator(char first_char)
 		{
 			// Check if the next two characters are
 			// maybe also operators.
@@ -1002,7 +1000,7 @@ class Tokeniser {
 					// operator. Check if we can form a
 					// triple character operator.
 
-					string op;
+					std::string op;
 					op += first_char;
 					op += op_char_2;
 					op += op_char_3;
@@ -1014,7 +1012,7 @@ class Tokeniser {
 				// Check if we can form a double
 				// character operator.
 
-				string op;
+				std::string op;
 				op += first_char;
 				op += op_char_2;
 
@@ -1022,7 +1020,7 @@ class Tokeniser {
 				else reader.reset();
 			}
 
-			string op;
+			std::string op;
 			op += first_char;
 			return op;
 		}

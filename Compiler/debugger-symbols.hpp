@@ -4,8 +4,6 @@
 #include <bits/stdc++.h>
 #include "util.hpp"
 
-using namespace std;
-
 /**
  * @brief Structure that holds information about a line
  * of the debugger symbols file.
@@ -16,7 +14,7 @@ struct ParsedLine {
 	size_t indent;
 
 	// The rest of the line excluding indent.
-	string line;
+	std::string line;
 };
 
 /**
@@ -25,7 +23,7 @@ struct ParsedLine {
  * @param str The line to parse
  * @returns The parsed line.
  */
-ParsedLine parse_line(const string& str)
+ParsedLine parse_line(const std::string& str)
 {
 	size_t i = 0;
 
@@ -43,17 +41,17 @@ ParsedLine parse_line(const string& str)
  */
 struct IndentFileNode {
 	// The line of the node.
-	string line;
+	std::string line;
 
 	// The children of the node.
-	vector<IndentFileNode *> children;
+	std::vector<IndentFileNode *> children;
 
 
 	/**
 	 * @brief Constructs a new indent file node.
 	 * @param line The line of the node.
 	 */
-	IndentFileNode(const string& line) : line(line) {}
+	IndentFileNode(const std::string& line) : line(line) {}
 
 	/**
 	 * @brief Adds a child to the node.
@@ -67,7 +65,7 @@ struct IndentFileNode {
 	 * @brief Depth-first searches the node and calls the callback for
 	 * each node. The callback is called before the children are searched.
 	 */
-	void dfs(function<void (IndentFileNode *, size_t)> callback, size_t depth = 0)
+	void dfs(std::function<void (IndentFileNode *, size_t)> callback, size_t depth = 0)
 	{
 		callback(this, depth);
 
@@ -80,7 +78,7 @@ struct IndentFileNode {
 	 * @brief Depth-first searches the node and calls the callback for
 	 * each node. The callback is called after the children are searched.
 	 */
-	void dfs_after(function<void (IndentFileNode *, size_t)> callback, size_t depth = 0)
+	void dfs_after(std::function<void (IndentFileNode *, size_t)> callback, size_t depth = 0)
 	{
 		for (IndentFileNode *child : children) {
 			child->dfs(callback, depth + 1);
@@ -98,7 +96,7 @@ struct IndentFileRootNode : public IndentFileNode {
 	 * @brief Constructs a new indent file root node.
 	 * @param line The line of the node.
 	 */
-	IndentFileRootNode(const string& line) : IndentFileNode(line) {}
+	IndentFileRootNode(const std::string& line) : IndentFileNode(line) {}
 
 	/**
 	 * @brief Deletes all children and the root node itself.
@@ -118,7 +116,7 @@ struct IndentFileRootNode : public IndentFileNode {
 class IndentFileParser {
 	private:
 		// The file stream of the debugger symbols file.
-		ifstream stream;
+		std::ifstream stream;
 
 	public:
 		// The current depth of the nodes.
@@ -128,7 +126,7 @@ class IndentFileParser {
 		 * @brief Constructs a new indent file parser.
 		 * @param file The file to parse.
 		 */
-		IndentFileParser(const string& file_name) : stream(file_name) {}
+		IndentFileParser(const std::string& file_name) : stream(file_name) {}
 
 		/**
 		 * @brief Parses the file.
@@ -137,8 +135,8 @@ class IndentFileParser {
 		IndentFileRootNode parse()
 		{
 			IndentFileRootNode root("root");
-			vector<IndentFileNode *> node_stack = { &root };
-			string line;
+			std::vector<IndentFileNode *> node_stack = { &root };
+			std::string line;
 
 			// Read all lines of the file and adds them to the tree.
 
@@ -203,7 +201,7 @@ const char *debugger_symbol_type_to_str(enum DebuggerSymbolTypes type)
  * @param str The string to parse.
  * @returns The parsed debugger symbol type.
  */
-enum DebuggerSymbolTypes str_to_debugger_symbol_type(const string& str)
+enum DebuggerSymbolTypes str_to_debugger_symbol_type(const std::string& str)
 {
 	if (str == "POINTER") return DebuggerSymbolTypes::POINTER;
 	if (str == "U8") return DebuggerSymbolTypes::U8;
@@ -223,7 +221,7 @@ enum DebuggerSymbolTypes str_to_debugger_symbol_type(const string& str)
  */
 struct DebuggerSymbol {
 	// The name of the symbol.
-	string name;
+	std::string name;
 
 	// The type of the symbol.
 	enum DebuggerSymbolTypes type;
@@ -234,7 +232,7 @@ struct DebuggerSymbol {
 	 * @param name The name of the symbol.
 	 * @param type The type of the symbol.
 	 */
-	DebuggerSymbol(const string& name, enum DebuggerSymbolTypes type)
+	DebuggerSymbol(const std::string& name, enum DebuggerSymbolTypes type)
 		: name(name), type(type) {}
 
 	/**
@@ -262,9 +260,9 @@ struct DebuggerSymbol {
 	 * @brief Returns the string representation of the symbol.
 	 * @returns The string representation of the symbol.
 	 */
-	string to_str() const
+	std::string to_str() const
 	{
-		string str;
+		std::string str;
 
 		str += debugger_symbol_type_to_str(type);
 		str += ' ';
@@ -278,7 +276,7 @@ struct DebuggerSymbol {
 	 * @param str The string to parse.
 	 * @returns The parsed debugger symbol.
 	 */
-	static DebuggerSymbol from_str(const string& str)
+	static DebuggerSymbol from_str(const std::string& str)
 	{
 		size_t space_index = str.find_first_of(' ');
 
@@ -292,8 +290,8 @@ struct DebuggerSymbol {
  * Holds the parameters and locals of the function.
  */
 struct DebuggerFunction {
-	vector<DebuggerSymbol> params;
-	vector<DebuggerSymbol> locals;
+	std::vector<DebuggerSymbol> params;
+	std::vector<DebuggerSymbol> locals;
 };
 
 /**
@@ -302,17 +300,17 @@ struct DebuggerFunction {
 class DebuggerSymbols {
 	public:
 		// A map containing the function debugger symbols.
-		map<string, DebuggerFunction> functions;
+		std::map<std::string, DebuggerFunction> functions;
 
 		// A list containing the global debugger symbols.
-		vector<DebuggerSymbol> globals;
+		std::vector<DebuggerSymbol> globals;
 
 		/**
 		 * @brief Adds a function to the debugger symbols.
 		 * @param name The name of the function.
 		 * @param symbols The function debugger type.
 		 */
-		void add_function(const string& name, const DebuggerFunction& symbols)
+		void add_function(const std::string& name, const DebuggerFunction& symbols)
 		{
 			functions[name] = symbols;
 		}
@@ -333,9 +331,9 @@ class DebuggerSymbols {
 		 * The symbols file will be named after the executable with
 		 * the extension `.debug`.
 		 */
-		void build(const string& exec_file_name)
+		void build(const std::string& exec_file_name)
 		{
-			ofstream stream(exec_file_name + ".debug");
+			std::ofstream stream(exec_file_name + ".debug");
 
 			// Functions
 
@@ -343,11 +341,11 @@ class DebuggerSymbols {
 				stream << "functions\n";
 			}
 
-			for (const pair<string, DebuggerFunction>& function : functions) {
-				const string& fn_name = function.first;
+			for (const std::pair<std::string, DebuggerFunction>& function : functions) {
+				const std::string& fn_name = function.first;
 				const DebuggerFunction& fn_symbols = function.second;
-				const vector<DebuggerSymbol>& params = fn_symbols.params;
-				const vector<DebuggerSymbol>& locals = fn_symbols.locals;
+				const std::vector<DebuggerSymbol>& params = fn_symbols.params;
+				const std::vector<DebuggerSymbol>& locals = fn_symbols.locals;
 
 				// Function
 
@@ -393,7 +391,7 @@ class DebuggerSymbols {
 		 * @param file_name The file name of the symbols file.
 		 * @returns The parsed debugger symbols.
 		 */
-		static DebuggerSymbols parse(const string& file_name)
+		static DebuggerSymbols parse(const std::string& file_name)
 		{
 			IndentFileParser parser(file_name);
 			IndentFileNode file = parser.parse();
@@ -404,17 +402,17 @@ class DebuggerSymbols {
 
 				if (section->line == "functions") {
 					for (IndentFileNode *fn_node : section->children) {
-						const string& fn_name = fn_node->line;
+						const std::string& fn_name = fn_node->line;
 						DebuggerFunction fn_symbols;
-						vector<DebuggerSymbol>& params = fn_symbols.params;
-						vector<DebuggerSymbol>& locals = fn_symbols.locals;
+						std::vector<DebuggerSymbol>& params = fn_symbols.params;
+						std::vector<DebuggerSymbol>& locals = fn_symbols.locals;
 
 						for (IndentFileNode *fn_section: fn_node->children) {
 							// Scan function params
 
 							if (fn_section->line == "parameters") {
 								for (IndentFileNode *fn_param_node : fn_section->children) {
-									const string& param_str = fn_param_node->line;
+									const std::string& param_str = fn_param_node->line;
 									params.push_back(DebuggerSymbol::from_str(param_str));
 								}
 							}
@@ -424,7 +422,7 @@ class DebuggerSymbols {
 							else if (fn_section->line == "locals") {
 
 								for (IndentFileNode *fn_local_node : fn_section->children) {
-									const string& local_str = fn_local_node->line;
+									const std::string& local_str = fn_local_node->line;
 									locals.push_back(DebuggerSymbol::from_str(local_str));
 								}
 							}
@@ -440,7 +438,7 @@ class DebuggerSymbols {
 
 				else if (section->line == "globals") {
 					for (IndentFileNode *global : section->children) {
-						const string& global_str = global->line;
+						const std::string& global_str = global->line;
 						DebuggerSymbol global_sym = DebuggerSymbol::from_str(global_str);
 						debugger_symbols.add_global(global_sym);
 					}

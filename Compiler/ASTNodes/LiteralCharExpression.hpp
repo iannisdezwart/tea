@@ -9,8 +9,6 @@
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
-using namespace std;
-
 class LiteralCharExpression : public ReadValue {
 	public:
 		Token literal_char_token;
@@ -21,15 +19,16 @@ class LiteralCharExpression : public ReadValue {
 				value(literal_char_token.value[0]),
 				ReadValue(literal_char_token, LITERAL_CHAR_EXPRESSION) {}
 
-		void dfs(function<void(ASTNode *, size_t)> callback, size_t depth)
+		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
 		{
 			callback(this, depth);
 		}
 
-		string to_str()
+		std::string to_str()
 		{
-			string s = "LiteralCharExpression { value = \"" + to_string(value) +
-				"\" } @ " + to_hex((size_t) this);
+			std::string s = "LiteralCharExpression { value = \"";
+			s += to_string(value);
+			s += "\" } @ " + to_hex((size_t) this);
 			return s;
 		}
 
