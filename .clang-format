@@ -24,7 +24,7 @@ BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeColon
 BreakInheritanceList: BeforeColon
 BreakStringLiterals: true
-ColumnLimit: 80
+ColumnLimit: 0 # TODO: Change this back to 80 once indentation is somewhat okay.
 ConstructorInitializerIndentWidth: 8
 ContinuationIndentWidth: 8
 Cpp11BracedListStyle: false
@@ -32,7 +32,7 @@ EmptyLineAfterAccessModifier: Always
 EmptyLineBeforeAccessModifier: Always
 IncludeBlocks: Preserve
 IndentAccessModifiers: false
-IndentCaseLabels: true
+IndentCaseLabels: false
 IndentCaseBlocks: false
 IndentPPDirectives: BeforeHash
 IndentRequires: false
