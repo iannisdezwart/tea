@@ -4,15 +4,17 @@
 #include "../Assembler/byte_code.hpp"
 #include "file-reader.hpp"
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
-	if (argc < 2) {
+	if (argc < 2)
+	{
 		fprintf(stderr, "Usage: ./disassemble program.teax\n");
 		exit(1);
 	}
 
 	char *file_in_name = argv[1];
-	FILE *file_in = fopen(file_in_name, "r");
+	FILE *file_in      = fopen(file_in_name, "r");
 	FileReader reader(file_in);
 
 	Disassembler disassembler(file_in, stdout);

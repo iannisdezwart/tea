@@ -10,7 +10,8 @@
 /**
  * @brief Enum containing all the possible types of tokens.
  */
-enum TokenType {
+enum TokenType
+{
 	TYPE,
 	LITERAL_STRING,
 	LITERAL_CHAR,
@@ -26,18 +27,29 @@ enum TokenType {
  * @param type The token type.
  * @returns A string representation of the token type.
  */
-const char *token_type_to_str(enum TokenType type)
+const char *
+token_type_to_str(enum TokenType type)
 {
-	switch (type) {
-		case TYPE: return "TYPE";
-		case LITERAL_STRING: return "LITERAL_STRING";
-		case LITERAL_CHAR: return "LITERAL_CHAR";
-		case LITERAL_NUMBER: return "LITERAL_NUMBER";
-		case IDENTIFIER: return "IDENTIFIER";
-		case KEYWORD: return "KEYWORD";
-		case OPERATOR: return "OPERATOR";
-		case SPECIAL_CHARACTER: return "SPECIAL_CHARACTER";
-		default: return "UNDEFINED";
+	switch (type)
+	{
+	case TYPE:
+		return "TYPE";
+	case LITERAL_STRING:
+		return "LITERAL_STRING";
+	case LITERAL_CHAR:
+		return "LITERAL_CHAR";
+	case LITERAL_NUMBER:
+		return "LITERAL_NUMBER";
+	case IDENTIFIER:
+		return "IDENTIFIER";
+	case KEYWORD:
+		return "KEYWORD";
+	case OPERATOR:
+		return "OPERATOR";
+	case SPECIAL_CHARACTER:
+		return "SPECIAL_CHARACTER";
+	default:
+		return "UNDEFINED";
 	}
 }
 
@@ -45,10 +57,13 @@ const char *token_type_to_str(enum TokenType type)
  * @param b The boolean to be converted to a string.
  * @returns A boolean as a string.
  */
-const char *to_string(bool b)
+const char *
+to_string(bool b)
 {
-	if (b) return "true";
-	else return "false";
+	if (b)
+		return "true";
+	else
+		return "false";
 }
 
 /**
@@ -57,7 +72,8 @@ const char *to_string(bool b)
  * Also holds the line and column of the token.
  * TODO: add the file name of the token when supporting imports.
  */
-struct Token {
+struct Token
+{
 	// The type of the token.
 	TokenType type;
 
@@ -77,7 +93,8 @@ struct Token {
 	/**
 	 * @returns A string representation of the token.
 	 */
-	std::string to_str() const
+	std::string
+	to_str() const
 	{
 		std::string s;
 
@@ -147,7 +164,8 @@ std::unordered_set<std::string> keywords = {
 /**
  * @brief Enum containing the names of all valid tokens in the Tea language.
  */
-enum Operator {
+enum Operator
+{
 	SCOPE_RESOLUTION,
 
 	POSTFIX_INCREMENT,
@@ -217,52 +235,97 @@ enum Operator {
  * @param op The operator to be converted.
  * @returns A string representation of the operator.
  */
-const char *op_to_str(enum Operator op)
+const char *
+op_to_str(enum Operator op)
 {
-	switch (op) {
-		case SCOPE_RESOLUTION: return "SCOPE_RESOLUTION";
-		case POSTFIX_INCREMENT: return "POSTFIX_INCREMENT";
-		case POSTFIX_DECREMENT: return "POSTFIX_DECREMENT";
-		case PREFIX_INCREMENT: return "PREFIX_INCREMENT";
-		case PREFIX_DECREMENT: return "PREFIX_DECREMENT";
-		case UNARY_PLUS: return "UNARY_PLUS";
-		case UNARY_MINUS: return "UNARY_MINUS";
-		case BITWISE_NOT: return "BITWISE_NOT";
-		case LOGICAL_NOT: return "LOGICAL_NOT";
-		case DEREFERENCE: return "DEREFERENCE";
-		case ADDRESS_OF: return "ADDRESS_OF";
-		case POINTER_TO_MEMBER: return "POINTER_TO_MEMBER";
-		case DEREFERENCED_POINTER_TO_MEMBER: return "DEREFERENCED_POINTER_TO_MEMBER";
-		case DIVISION: return "DIVISION";
-		case REMAINDER: return "REMAINDER";
-		case MULTIPLICATION: return "MULTIPLICATION";
-		case ADDITION: return "ADDITION";
-		case SUBTRACTION: return "SUBTRACTION";
-		case LEFT_SHIFT: return "LEFT_SHIFT";
-		case RIGHT_SHIFT: return "RIGHT_SHIFT";
-		case LESS: return "LESS";
-		case LESS_OR_EQUAL: return "LESS_OR_EQUAL";
-		case GREATER: return "GREATER";
-		case GREATER_OR_EQUAL: return "GREATER_OR_EQUAL";
-		case EQUAL: return "EQUAL";
-		case NOT_EQUAL: return "NOT_EQUAL";
-		case BITWISE_AND: return "BITWISE_AND";
-		case BITWISE_XOR: return "BITWISE_XOR";
-		case BITWISE_OR: return "BITWISE_OR";
-		case LOGICAL_AND: return "LOGICAL_AND";
-		case LOGICAL_OR: return "LOGICAL_OR";
-		case ASSIGNMENT: return "ASSIGNMENT";
-		case SUM_ASSIGNMENT: return "SUM_ASSIGNMENT";
-		case DIFFERENCE_ASSIGNMENT: return "DIFFERENCE_ASSIGNMENT";
-		case QUOTIENT_ASSIGNMENT: return "QUOTIENT_ASSIGNMENT";
-		case REMAINDER_ASSIGNMENT: return "REMAINDER_ASSIGNMENT";
-		case PRODUCT_ASSIGNMENT: return "PRODUCT_ASSIGNMENT";
-		case LEFT_SHIFT_ASSIGNMENT: return "LEFT_SHIFT_ASSIGNMENT";
-		case RIGHT_SHIFT_ASSIGNMENT: return "RIGHT_SHIFT_ASSIGNMENT";
-		case BITWISE_AND_ASSIGNMENT: return "BITWISE_AND_ASSIGNMENT";
-		case BITWISE_XOR_ASSIGNMENT: return "BITWISE_XOR_ASSIGNMENT";
-		case BITWISE_OR_ASSIGNMENT: return "BITWISE_OR_ASSIGNMENT";
-		default: return "UNDEFINED";
+	switch (op)
+	{
+	case SCOPE_RESOLUTION:
+		return "SCOPE_RESOLUTION";
+	case POSTFIX_INCREMENT:
+		return "POSTFIX_INCREMENT";
+	case POSTFIX_DECREMENT:
+		return "POSTFIX_DECREMENT";
+	case PREFIX_INCREMENT:
+		return "PREFIX_INCREMENT";
+	case PREFIX_DECREMENT:
+		return "PREFIX_DECREMENT";
+	case UNARY_PLUS:
+		return "UNARY_PLUS";
+	case UNARY_MINUS:
+		return "UNARY_MINUS";
+	case BITWISE_NOT:
+		return "BITWISE_NOT";
+	case LOGICAL_NOT:
+		return "LOGICAL_NOT";
+	case DEREFERENCE:
+		return "DEREFERENCE";
+	case ADDRESS_OF:
+		return "ADDRESS_OF";
+	case POINTER_TO_MEMBER:
+		return "POINTER_TO_MEMBER";
+	case DEREFERENCED_POINTER_TO_MEMBER:
+		return "DEREFERENCED_POINTER_TO_MEMBER";
+	case DIVISION:
+		return "DIVISION";
+	case REMAINDER:
+		return "REMAINDER";
+	case MULTIPLICATION:
+		return "MULTIPLICATION";
+	case ADDITION:
+		return "ADDITION";
+	case SUBTRACTION:
+		return "SUBTRACTION";
+	case LEFT_SHIFT:
+		return "LEFT_SHIFT";
+	case RIGHT_SHIFT:
+		return "RIGHT_SHIFT";
+	case LESS:
+		return "LESS";
+	case LESS_OR_EQUAL:
+		return "LESS_OR_EQUAL";
+	case GREATER:
+		return "GREATER";
+	case GREATER_OR_EQUAL:
+		return "GREATER_OR_EQUAL";
+	case EQUAL:
+		return "EQUAL";
+	case NOT_EQUAL:
+		return "NOT_EQUAL";
+	case BITWISE_AND:
+		return "BITWISE_AND";
+	case BITWISE_XOR:
+		return "BITWISE_XOR";
+	case BITWISE_OR:
+		return "BITWISE_OR";
+	case LOGICAL_AND:
+		return "LOGICAL_AND";
+	case LOGICAL_OR:
+		return "LOGICAL_OR";
+	case ASSIGNMENT:
+		return "ASSIGNMENT";
+	case SUM_ASSIGNMENT:
+		return "SUM_ASSIGNMENT";
+	case DIFFERENCE_ASSIGNMENT:
+		return "DIFFERENCE_ASSIGNMENT";
+	case QUOTIENT_ASSIGNMENT:
+		return "QUOTIENT_ASSIGNMENT";
+	case REMAINDER_ASSIGNMENT:
+		return "REMAINDER_ASSIGNMENT";
+	case PRODUCT_ASSIGNMENT:
+		return "PRODUCT_ASSIGNMENT";
+	case LEFT_SHIFT_ASSIGNMENT:
+		return "LEFT_SHIFT_ASSIGNMENT";
+	case RIGHT_SHIFT_ASSIGNMENT:
+		return "RIGHT_SHIFT_ASSIGNMENT";
+	case BITWISE_AND_ASSIGNMENT:
+		return "BITWISE_AND_ASSIGNMENT";
+	case BITWISE_XOR_ASSIGNMENT:
+		return "BITWISE_XOR_ASSIGNMENT";
+	case BITWISE_OR_ASSIGNMENT:
+		return "BITWISE_OR_ASSIGNMENT";
+	default:
+		return "UNDEFINED";
 	}
 }
 
@@ -280,52 +343,97 @@ const char *op_to_str(enum Operator op)
  * @param op The operator to be converted.
  * @returns The example string.
  */
-const char *op_to_example_str(enum Operator op)
+const char *
+op_to_example_str(enum Operator op)
 {
-	switch (op) {
-		case SCOPE_RESOLUTION: return "x::y";
-		case POSTFIX_INCREMENT: return "x++";
-		case POSTFIX_DECREMENT: return "x--";
-		case PREFIX_INCREMENT: return "++x";
-		case PREFIX_DECREMENT: return "--x";
-		case UNARY_PLUS: return "+x";
-		case UNARY_MINUS: return "-x";
-		case BITWISE_NOT: return "~x";
-		case LOGICAL_NOT: return "!x";
-		case DEREFERENCE: return "*x";
-		case ADDRESS_OF: return "&x";
-		case POINTER_TO_MEMBER: return "x.y";
-		case DEREFERENCED_POINTER_TO_MEMBER: return "x->y";
-		case DIVISION: return "x / y";
-		case REMAINDER: return "x % y";
-		case MULTIPLICATION: return "x * y";
-		case ADDITION: return "x + y";
-		case SUBTRACTION: return "x - y";
-		case LEFT_SHIFT: return "x << y";
-		case RIGHT_SHIFT: return "x >> y";
-		case LESS: return "x < y";
-		case LESS_OR_EQUAL: return "x <= y";
-		case GREATER: return "x > y";
-		case GREATER_OR_EQUAL: return "x >= y";
-		case EQUAL: return "x == y";
-		case NOT_EQUAL: return "x != y";
-		case BITWISE_AND: return "x & y";
-		case BITWISE_XOR: return "x ^ y";
-		case BITWISE_OR: return "x | y";
-		case LOGICAL_AND: return "x && y";
-		case LOGICAL_OR: return "x || y";
-		case ASSIGNMENT: return "x = y";
-		case SUM_ASSIGNMENT: return "x += y";
-		case DIFFERENCE_ASSIGNMENT: return "x -= y";
-		case QUOTIENT_ASSIGNMENT: return "x /= y";
-		case REMAINDER_ASSIGNMENT: return "x %= y";
-		case PRODUCT_ASSIGNMENT: return "x *= y";
-		case LEFT_SHIFT_ASSIGNMENT: return "x <<= y";
-		case RIGHT_SHIFT_ASSIGNMENT: return "x >>= y";
-		case BITWISE_AND_ASSIGNMENT: return "x &= y";
-		case BITWISE_XOR_ASSIGNMENT: return "x ^= y";
-		case BITWISE_OR_ASSIGNMENT: return "x |= y";
-		default: return "undefined";
+	switch (op)
+	{
+	case SCOPE_RESOLUTION:
+		return "x::y";
+	case POSTFIX_INCREMENT:
+		return "x++";
+	case POSTFIX_DECREMENT:
+		return "x--";
+	case PREFIX_INCREMENT:
+		return "++x";
+	case PREFIX_DECREMENT:
+		return "--x";
+	case UNARY_PLUS:
+		return "+x";
+	case UNARY_MINUS:
+		return "-x";
+	case BITWISE_NOT:
+		return "~x";
+	case LOGICAL_NOT:
+		return "!x";
+	case DEREFERENCE:
+		return "*x";
+	case ADDRESS_OF:
+		return "&x";
+	case POINTER_TO_MEMBER:
+		return "x.y";
+	case DEREFERENCED_POINTER_TO_MEMBER:
+		return "x->y";
+	case DIVISION:
+		return "x / y";
+	case REMAINDER:
+		return "x % y";
+	case MULTIPLICATION:
+		return "x * y";
+	case ADDITION:
+		return "x + y";
+	case SUBTRACTION:
+		return "x - y";
+	case LEFT_SHIFT:
+		return "x << y";
+	case RIGHT_SHIFT:
+		return "x >> y";
+	case LESS:
+		return "x < y";
+	case LESS_OR_EQUAL:
+		return "x <= y";
+	case GREATER:
+		return "x > y";
+	case GREATER_OR_EQUAL:
+		return "x >= y";
+	case EQUAL:
+		return "x == y";
+	case NOT_EQUAL:
+		return "x != y";
+	case BITWISE_AND:
+		return "x & y";
+	case BITWISE_XOR:
+		return "x ^ y";
+	case BITWISE_OR:
+		return "x | y";
+	case LOGICAL_AND:
+		return "x && y";
+	case LOGICAL_OR:
+		return "x || y";
+	case ASSIGNMENT:
+		return "x = y";
+	case SUM_ASSIGNMENT:
+		return "x += y";
+	case DIFFERENCE_ASSIGNMENT:
+		return "x -= y";
+	case QUOTIENT_ASSIGNMENT:
+		return "x /= y";
+	case REMAINDER_ASSIGNMENT:
+		return "x %= y";
+	case PRODUCT_ASSIGNMENT:
+		return "x *= y";
+	case LEFT_SHIFT_ASSIGNMENT:
+		return "x <<= y";
+	case RIGHT_SHIFT_ASSIGNMENT:
+		return "x >>= y";
+	case BITWISE_AND_ASSIGNMENT:
+		return "x &= y";
+	case BITWISE_XOR_ASSIGNMENT:
+		return "x ^= y";
+	case BITWISE_OR_ASSIGNMENT:
+		return "x |= y";
+	default:
+		return "undefined";
 	}
 }
 
@@ -336,21 +444,23 @@ const char *op_to_example_str(enum Operator op)
  * Examples are ++x, &x, ~x, etc.
  * Used by the parser to determine the order to parse operators.
  */
-bool is_prefix_unary_operator(enum Operator op)
+bool
+is_prefix_unary_operator(enum Operator op)
 {
-	switch (op) {
-		case PREFIX_INCREMENT:
-		case PREFIX_DECREMENT:
-		case UNARY_PLUS:
-		case UNARY_MINUS:
-		case BITWISE_NOT:
-		case LOGICAL_NOT:
-		case DEREFERENCE:
-		case ADDRESS_OF:
-			return true;
+	switch (op)
+	{
+	case PREFIX_INCREMENT:
+	case PREFIX_DECREMENT:
+	case UNARY_PLUS:
+	case UNARY_MINUS:
+	case BITWISE_NOT:
+	case LOGICAL_NOT:
+	case DEREFERENCE:
+	case ADDRESS_OF:
+		return true;
 
-		default:
-			return false;
+	default:
+		return false;
 	}
 }
 
@@ -361,15 +471,17 @@ bool is_prefix_unary_operator(enum Operator op)
  * Examples are x++ and x--.
  * Used by the parser to determine the order to parse operators.
  */
-bool is_postfix_unary_operator(enum Operator op)
+bool
+is_postfix_unary_operator(enum Operator op)
 {
-	switch (op) {
-		case POSTFIX_INCREMENT:
-		case POSTFIX_DECREMENT:
-			return true;
+	switch (op)
+	{
+	case POSTFIX_INCREMENT:
+	case POSTFIX_DECREMENT:
+		return true;
 
-		default:
-			return false;
+	default:
+		return false;
 	}
 }
 
@@ -380,49 +492,52 @@ bool is_postfix_unary_operator(enum Operator op)
  * Examples are x * y, x->y, x % y, etc.
  * Used by the parser to determine the order to parse operators.
  */
-bool is_binary_operator(enum Operator op)
+bool
+is_binary_operator(enum Operator op)
 {
-	switch (op) {
-		case SCOPE_RESOLUTION:
-		case POINTER_TO_MEMBER:
-		case DEREFERENCED_POINTER_TO_MEMBER:
-		case DIVISION:
-		case REMAINDER:
-		case MULTIPLICATION:
-		case ADDITION:
-		case SUBTRACTION:
-		case LEFT_SHIFT:
-		case RIGHT_SHIFT:
-		case LESS:
-		case LESS_OR_EQUAL:
-		case GREATER:
-		case GREATER_OR_EQUAL:
-		case EQUAL:
-		case NOT_EQUAL:
-		case BITWISE_AND:
-		case BITWISE_XOR:
-		case BITWISE_OR:
-		case LOGICAL_AND:
-		case LOGICAL_OR:
-		case ASSIGNMENT:
-		case SUM_ASSIGNMENT:
-		case DIFFERENCE_ASSIGNMENT:
-		case QUOTIENT_ASSIGNMENT:
-		case REMAINDER_ASSIGNMENT:
-		case PRODUCT_ASSIGNMENT:
-		case LEFT_SHIFT_ASSIGNMENT:
-		case RIGHT_SHIFT_ASSIGNMENT:
-		case BITWISE_AND_ASSIGNMENT:
-		case BITWISE_XOR_ASSIGNMENT:
-		case BITWISE_OR_ASSIGNMENT:
-			return true;
+	switch (op)
+	{
+	case SCOPE_RESOLUTION:
+	case POINTER_TO_MEMBER:
+	case DEREFERENCED_POINTER_TO_MEMBER:
+	case DIVISION:
+	case REMAINDER:
+	case MULTIPLICATION:
+	case ADDITION:
+	case SUBTRACTION:
+	case LEFT_SHIFT:
+	case RIGHT_SHIFT:
+	case LESS:
+	case LESS_OR_EQUAL:
+	case GREATER:
+	case GREATER_OR_EQUAL:
+	case EQUAL:
+	case NOT_EQUAL:
+	case BITWISE_AND:
+	case BITWISE_XOR:
+	case BITWISE_OR:
+	case LOGICAL_AND:
+	case LOGICAL_OR:
+	case ASSIGNMENT:
+	case SUM_ASSIGNMENT:
+	case DIFFERENCE_ASSIGNMENT:
+	case QUOTIENT_ASSIGNMENT:
+	case REMAINDER_ASSIGNMENT:
+	case PRODUCT_ASSIGNMENT:
+	case LEFT_SHIFT_ASSIGNMENT:
+	case RIGHT_SHIFT_ASSIGNMENT:
+	case BITWISE_AND_ASSIGNMENT:
+	case BITWISE_XOR_ASSIGNMENT:
+	case BITWISE_OR_ASSIGNMENT:
+		return true;
 
-		default:
-			return false;
+	default:
+		return false;
 	}
 }
 
-enum Associativity {
+enum Associativity
+{
 	LEFT_TO_RIGHT,
 	RIGHT_TO_LEFT
 };
@@ -441,7 +556,8 @@ std::vector<OperatorPrecedencePair> operator_precedence = {
 	mp({ SCOPE_RESOLUTION }, LEFT_TO_RIGHT),
 	mp({ POSTFIX_INCREMENT, POSTFIX_DECREMENT }, LEFT_TO_RIGHT),
 	mp({ PREFIX_INCREMENT, PREFIX_DECREMENT, UNARY_PLUS, UNARY_MINUS,
-		BITWISE_NOT, LOGICAL_NOT, DEREFERENCE, ADDRESS_OF }, RIGHT_TO_LEFT),
+		   BITWISE_NOT, LOGICAL_NOT, DEREFERENCE, ADDRESS_OF },
+		RIGHT_TO_LEFT),
 	mp({ POINTER_TO_MEMBER, DEREFERENCED_POINTER_TO_MEMBER }, LEFT_TO_RIGHT),
 	mp({ MULTIPLICATION, DIVISION, REMAINDER }, LEFT_TO_RIGHT),
 	mp({ ADDITION, SUBTRACTION }, LEFT_TO_RIGHT),
@@ -454,9 +570,10 @@ std::vector<OperatorPrecedencePair> operator_precedence = {
 	mp({ LOGICAL_AND }, LEFT_TO_RIGHT),
 	mp({ LOGICAL_OR }, LEFT_TO_RIGHT),
 	mp({ ASSIGNMENT, SUM_ASSIGNMENT, DIFFERENCE_ASSIGNMENT, QUOTIENT_ASSIGNMENT,
-		REMAINDER_ASSIGNMENT, PRODUCT_ASSIGNMENT, LEFT_SHIFT_ASSIGNMENT,
-		RIGHT_SHIFT_ASSIGNMENT, BITWISE_AND_ASSIGNMENT, BITWISE_XOR_ASSIGNMENT,
-		BITWISE_OR_ASSIGNMENT }, RIGHT_TO_LEFT)
+		   REMAINDER_ASSIGNMENT, PRODUCT_ASSIGNMENT, LEFT_SHIFT_ASSIGNMENT,
+		   RIGHT_SHIFT_ASSIGNMENT, BITWISE_AND_ASSIGNMENT, BITWISE_XOR_ASSIGNMENT,
+		   BITWISE_OR_ASSIGNMENT },
+		RIGHT_TO_LEFT)
 };
 
 #undef mp
@@ -468,52 +585,96 @@ std::vector<OperatorPrecedencePair> operator_precedence = {
  * or not. Ignored if the operator is a non-unary operator.
  * @returns The operator type.
  */
-enum Operator str_to_operator(const std::string& str, bool prefix = false)
+enum Operator
+str_to_operator(const std::string &str, bool prefix = false)
 {
-	if (str.size() > 3) return UNDEFINED_OPERATOR;
+	if (str.size() > 3)
+		return UNDEFINED_OPERATOR;
 
-	if (str == "::") return SCOPE_RESOLUTION;
-	if (str == "++" && prefix) return PREFIX_INCREMENT;
-	if (str == "--" && prefix) return PREFIX_DECREMENT;
-	if (str == "++") return POSTFIX_INCREMENT;
-	if (str == "--") return POSTFIX_DECREMENT;
-	if (str == "+" && prefix) return UNARY_PLUS;
-	if (str == "-" && prefix) return UNARY_MINUS;
-	if (str == "~" && prefix) return BITWISE_NOT;
-	if (str == "!" && prefix) return LOGICAL_NOT;
-	if (str == "*" && prefix) return DEREFERENCE;
-	if (str == "&" && prefix) return ADDRESS_OF;
-	if (str == ".") return POINTER_TO_MEMBER;
-	if (str == "->") return DEREFERENCED_POINTER_TO_MEMBER;
-	if (str == "*") return MULTIPLICATION;
-	if (str == "/") return DIVISION;
-	if (str == "%") return REMAINDER;
-	if (str == "+") return ADDITION;
-	if (str == "-") return SUBTRACTION;
-	if (str == "<<") return LEFT_SHIFT;
-	if (str == ">>") return RIGHT_SHIFT;
-	if (str == "<") return LESS;
-	if (str == "<=") return LESS_OR_EQUAL;
-	if (str == ">") return GREATER;
-	if (str == ">=") return GREATER_OR_EQUAL;
-	if (str == "==") return EQUAL;
-	if (str == "!=") return NOT_EQUAL;
-	if (str == "&") return BITWISE_AND;
-	if (str == "^") return BITWISE_XOR;
-	if (str == "|") return BITWISE_OR;
-	if (str == "&&") return LOGICAL_AND;
-	if (str == "||") return LOGICAL_OR;
-	if (str == "=") return ASSIGNMENT;
-	if (str == "+=") return SUM_ASSIGNMENT;
-	if (str == "-=") return DIFFERENCE_ASSIGNMENT;
-	if (str == "/=") return QUOTIENT_ASSIGNMENT;
-	if (str == "%=") return REMAINDER_ASSIGNMENT;
-	if (str == "*=") return PRODUCT_ASSIGNMENT;
-	if (str == "<<=") return LEFT_SHIFT_ASSIGNMENT;
-	if (str == ">>=") return RIGHT_SHIFT_ASSIGNMENT;
-	if (str == "&=") return BITWISE_AND_ASSIGNMENT;
-	if (str == "^=") return BITWISE_XOR_ASSIGNMENT;
-	if (str == "|=") return BITWISE_OR_ASSIGNMENT;
+	if (str == "::")
+		return SCOPE_RESOLUTION;
+	if (str == "++" && prefix)
+		return PREFIX_INCREMENT;
+	if (str == "--" && prefix)
+		return PREFIX_DECREMENT;
+	if (str == "++")
+		return POSTFIX_INCREMENT;
+	if (str == "--")
+		return POSTFIX_DECREMENT;
+	if (str == "+" && prefix)
+		return UNARY_PLUS;
+	if (str == "-" && prefix)
+		return UNARY_MINUS;
+	if (str == "~" && prefix)
+		return BITWISE_NOT;
+	if (str == "!" && prefix)
+		return LOGICAL_NOT;
+	if (str == "*" && prefix)
+		return DEREFERENCE;
+	if (str == "&" && prefix)
+		return ADDRESS_OF;
+	if (str == ".")
+		return POINTER_TO_MEMBER;
+	if (str == "->")
+		return DEREFERENCED_POINTER_TO_MEMBER;
+	if (str == "*")
+		return MULTIPLICATION;
+	if (str == "/")
+		return DIVISION;
+	if (str == "%")
+		return REMAINDER;
+	if (str == "+")
+		return ADDITION;
+	if (str == "-")
+		return SUBTRACTION;
+	if (str == "<<")
+		return LEFT_SHIFT;
+	if (str == ">>")
+		return RIGHT_SHIFT;
+	if (str == "<")
+		return LESS;
+	if (str == "<=")
+		return LESS_OR_EQUAL;
+	if (str == ">")
+		return GREATER;
+	if (str == ">=")
+		return GREATER_OR_EQUAL;
+	if (str == "==")
+		return EQUAL;
+	if (str == "!=")
+		return NOT_EQUAL;
+	if (str == "&")
+		return BITWISE_AND;
+	if (str == "^")
+		return BITWISE_XOR;
+	if (str == "|")
+		return BITWISE_OR;
+	if (str == "&&")
+		return LOGICAL_AND;
+	if (str == "||")
+		return LOGICAL_OR;
+	if (str == "=")
+		return ASSIGNMENT;
+	if (str == "+=")
+		return SUM_ASSIGNMENT;
+	if (str == "-=")
+		return DIFFERENCE_ASSIGNMENT;
+	if (str == "/=")
+		return QUOTIENT_ASSIGNMENT;
+	if (str == "%=")
+		return REMAINDER_ASSIGNMENT;
+	if (str == "*=")
+		return PRODUCT_ASSIGNMENT;
+	if (str == "<<=")
+		return LEFT_SHIFT_ASSIGNMENT;
+	if (str == ">>=")
+		return RIGHT_SHIFT_ASSIGNMENT;
+	if (str == "&=")
+		return BITWISE_AND_ASSIGNMENT;
+	if (str == "^=")
+		return BITWISE_XOR_ASSIGNMENT;
+	if (str == "|=")
+		return BITWISE_OR_ASSIGNMENT;
 	return UNDEFINED_OPERATOR;
 }
 
@@ -521,507 +682,569 @@ enum Operator str_to_operator(const std::string& str, bool prefix = false)
  * @brief Class that is responsible for tokenising a source file into a list of
  * tokens that can be parsed by the `Parser` class.
  */
-struct Tokeniser {
-		// The file stream to tokenise.
-		FileStreamReader reader;
+struct Tokeniser
+{
+	// The file stream to tokenise.
+	FileStreamReader reader;
 
-		// The line number of the current token.
-		size_t line;
+	// The line number of the current token.
+	size_t line;
 
-		// The column number of the current token.
-		size_t col;
+	// The column number of the current token.
+	size_t col;
 
-		// Flag indicating whether the current token has a
-		// whitespace before it or not.
-		bool whitespace_before;
+	// Flag indicating whether the current token has a
+	// whitespace before it or not.
+	bool whitespace_before;
 
-		/**
-		 * @brief Adds a token to the list of tokens.
-		 * Automatically sets the line and column number and
-		 * the `whitespace_before` flag.
-		 * @param type The type of the token.
-		 * @param value The value of the token.
-		 */
-		void push_token(TokenType type, std::string value)
+	/**
+	 * @brief Adds a token to the list of tokens.
+	 * Automatically sets the line and column number and
+	 * the `whitespace_before` flag.
+	 * @param type The type of the token.
+	 * @param value The value of the token.
+	 */
+	void
+	push_token(TokenType type, std::string value)
+	{
+		Token token = {
+			.type              = type,
+			.value             = value,
+			.line              = line,
+			.col               = col,
+			.whitespace_before = whitespace_before
+		};
+
+		tokens.push_back(token);
+
+		// Update the `whitespace_before` flag.
+
+		whitespace_before = false;
+	}
+
+/**
+ * @brief Macro that throws a tokenisation error.
+ * @param message A format string for the message.
+ * @param ... The arguments for the format string.
+ */
+#define throw_err(message, ...)                                                      \
+	do                                                                           \
+	{                                                                            \
+		fprintf(stderr, "[ Tokenise Error ]: " message "\n", ##__VA_ARGS__); \
+		fprintf(stderr, "At %ld:%ld\n", reader.line, reader.col);            \
+		abort();                                                             \
+	} while (0)
+
+	// The list of tokens produced by the tokeniser.
+	std::vector<Token> tokens;
+
+	/**
+	 * @brief Constructs a new Tokeniser object.
+	 * @param input_file The file to tokenise.
+	 */
+	Tokeniser(FILE *input_file)
+		: reader(input_file) {}
+
+	/**
+	 * @brief Prints the list of tokens in a human readable fashion.
+	 */
+	void
+	print_tokens()
+	{
+		printf("\\\\\\ Tokens (%ld) \\\\\\\n\n", tokens.size());
+
+		for (const Token &token : tokens)
 		{
-			Token token = {
-				.type = type,
-				.value = value,
-				.line = line,
-				.col = col,
-				.whitespace_before = whitespace_before
-			};
-
-			tokens.push_back(token);
-
-			// Update the `whitespace_before` flag.
-
-			whitespace_before = false;
+			std::cout << token.to_str() << '\n';
 		}
 
-		/**
-		 * @brief Macro that throws a tokenisation error.
-		 * @param message A format string for the message.
-		 * @param ... The arguments for the format string.
-		 */
-		#define throw_err(message, ...) do { \
-			fprintf(stderr, "[ Tokenise Error ]: " message "\n", ##__VA_ARGS__); \
-			fprintf(stderr, "At %ld:%ld\n", reader.line, reader.col); \
-			abort(); \
-		} while (0)
+		printf("\n/// Tokens ///\n");
+	}
 
-		// The list of tokens produced by the tokeniser.
-		std::vector<Token> tokens;
+	/**
+	 * @brief Tokenises the file.
+	 * @returns The list of tokens.
+	 */
+	std::vector<Token>
+	tokenise()
+	{
+		// The current character.
+		int c;
 
-		/**
-		 * @brief Constructs a new Tokeniser object.
-		 * @param input_file The file to tokenise.
-		 */
-		Tokeniser(FILE *input_file) : reader(input_file) {}
-
-		/**
-		 * @brief Prints the list of tokens in a human readable fashion.
-		 */
-		void print_tokens()
+		while ((c = reader.peek_byte()) != EOF)
 		{
-			printf("\\\\\\ Tokens (%ld) \\\\\\\n\n", tokens.size());
+			printf("tokenise(): %c (%hhu)\n", c, (uint8_t) c);
+			line = reader.line;
+			col  = reader.col;
 
-			for (const Token& token : tokens) {
-				std::cout << token.to_str() << '\n';
-			}
+			if (c == EOF)
+				break;
 
-			printf("\n/// Tokens ///\n");
-		}
-
-		/**
-		 * @brief Tokenises the file.
-		 * @returns The list of tokens.
-		 */
-		std::vector<Token> tokenise()
-		{
-			// The current character.
-			int c;
-
-			while ((c = reader.peek_byte()) != EOF) {
-				printf("tokenise(): %c (%hhu)\n", c, (uint8_t) c);
-				line = reader.line;
-				col = reader.col;
-
-				if (c == EOF) break;
-
-				if (whitespace_chars.count(c)) {
-					whitespace_before = true;
-					reader.advance();
-					continue;
-				}
-
-				// Handle comments.
-
-				if (c == '/') {
-					if (scan_comment()) {
-						reader.advance();
-						continue;
-					}
-				}
-
-				if (c == '#') {
-					ignore_until_eol();
-				}
-
-				// Handle string literals.
-
-				else if (c == '"') {
-					push_token(LITERAL_STRING, scan_literal_string());
-				}
-
-				// Handle character literals.
-
-				else if (c == '\'') {
-					push_token(LITERAL_CHAR, std::string(1, scan_literal_char()));
-				}
-
-				// Handle special character.
-
-				else if (special_chars.count(c)) {
-					reader.advance();
-					push_token(SPECIAL_CHARACTER, std::string(1, c));
-				}
-
-				// Handle operators.
-
-				else if (operator_chars.count(c)) {
-					push_token(OPERATOR, scan_operator(c));
-				}
-
-				// Handle number literals.
-
-				else if (c >= '0' && c <= '9' || c == '.') {
-					push_token(LITERAL_NUMBER, scan_literal_number(c));
-				}
-
-				// Handle text (keywords and symbols).
-
-				else if (is_alpha(c)) {
-					std::string text = scan_text(c);
-
-					// If the token is a type.
-
-					if (types.count(text))
-						push_token(TYPE, text);
-
-					// If the token is a keyword.
-
-					else if (keywords.count(text))
-						push_token(KEYWORD, text);
-
-					// It's probably an identifier.
-
-					else push_token(IDENTIFIER, text);
-				}
-
-				// Unknown character.
-
-				else throw_err("Found unknown character '%c' (%hhu)", c, (uint8_t) c);
-			}
-
-			return tokens;
-		}
-
-		/**
-		 * @brief Scans a comment.
-		 * Currently only supports // comments.
-		 * TODO: support / * * / comments. Typo is intentional because
-		 * I cannot write such a comment in this comment because
-		 * it would break out of this comment.
-		 * @returns A boolean indicating if a comment was
-		 * successfully scanned.
-		 */
-		bool scan_comment()
-		{
-			char next_char = reader.peek_byte();
-
-			// If the next character is not a /,
-			// it's not a // comment.
-			// TODO: support /* comments */.
-
-			if (next_char == '/') {
+			if (whitespace_chars.count(c))
+			{
+				whitespace_before = true;
 				reader.advance();
-				ignore_until_eol();
-
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		/**
-		 * @brief Ignores everything until the end of the line.
-		 * Used for scanning comments.
-		 */
-		void ignore_until_eol()
-		{
-			char next_char = reader.peek_byte();
-
-			while (next_char != '\n' && next_char != EOF) {
-				reader.advance();
-				next_char = reader.peek_byte();
+				continue;
 			}
 
-			reader.reset();
-		}
+			// Handle comments.
 
-		/**
-		 * @brief Scans escape sequences.
-		 * Used in string literal scanning.
-		 * @returns The escape sequence as an ascii character.
-		 * TODO: support unicode escape sequences.
-		 */
-		char scan_escape_sequence()
-		{
-			int c = reader.read_byte();
-
-			switch (c) {
-				case 'a':
-					return '\x07';
-
-				case 'b':
-					return '\x08';
-
-				case 'e':
-					return '\x01b';
-
-				case 'f':
-					return '\x0c';
-
-				case 'n':
-					return '\x0a';
-
-				case 'r':
-					return '\x0d';
-
-				case 't':
-					return '\x09';
-
-				case 'v':
-					return '\x0b';
-
-				case '\\':
-					return '\x5c';
-
-				case '\'':
-					return '\x27';
-
-				case '"':
-					return '\x22';
-
-				case '?':
-					return '\x3f';
-
-				case 'x':
+			if (c == '/')
+			{
+				if (scan_comment())
 				{
-					char xc1 = reader.read_byte();
-					char xc2 = reader.read_byte();
-
-					if (!is_hex(xc1) || !is_hex(xc2))
-						throw_err("Invalid hexadecimal escape code");
-
-					return hex_chars_to_byte(xc1, xc2);
-				}
-
-				default:
-					throw_err("Invalid escape code");
-			}
-		}
-
-		/**
-		 * @brief Scans a string literal surrounded by double quotes.
-		 * Converts escape sequences to their ascii characters.
-		 * @returns The contents of the string literal.
-		 */
-		std::string scan_literal_string()
-		{
-			std::string s;
-			char c;
-
-			while (true) {
-				c = reader.read_byte();
-				if (c == EOF) throw_err("Unexpected EOF");
-
-				// Escape sequence.
-
-				if (c == '\\') {
-					s += scan_escape_sequence();
+					reader.advance();
 					continue;
 				}
-
-				// Stop on end of string.
-
-				if (c == '"') {
-					break;
-				}
-
-				// Add this character to the string.
-
-				s += c;
 			}
 
-			return s;
+			if (c == '#')
+			{
+				ignore_until_eol();
+			}
+
+			// Handle string literals.
+
+			else if (c == '"')
+			{
+				push_token(LITERAL_STRING, scan_literal_string());
+			}
+
+			// Handle character literals.
+
+			else if (c == '\'')
+			{
+				push_token(LITERAL_CHAR, std::string(1, scan_literal_char()));
+			}
+
+			// Handle special character.
+
+			else if (special_chars.count(c))
+			{
+				reader.advance();
+				push_token(SPECIAL_CHARACTER, std::string(1, c));
+			}
+
+			// Handle operators.
+
+			else if (operator_chars.count(c))
+			{
+				push_token(OPERATOR, scan_operator(c));
+			}
+
+			// Handle number literals.
+
+			else if (c >= '0' && c <= '9' || c == '.')
+			{
+				push_token(LITERAL_NUMBER, scan_literal_number(c));
+			}
+
+			// Handle text (keywords and symbols).
+
+			else if (is_alpha(c))
+			{
+				std::string text = scan_text(c);
+
+				// If the token is a type.
+
+				if (types.count(text))
+					push_token(TYPE, text);
+
+				// If the token is a keyword.
+
+				else if (keywords.count(text))
+					push_token(KEYWORD, text);
+
+				// It's probably an identifier.
+
+				else
+					push_token(IDENTIFIER, text);
+			}
+
+			// Unknown character.
+
+			else
+				throw_err("Found unknown character '%c' (%hhu)", c, (uint8_t) c);
 		}
 
-		/**
-		 * @brief Scans a character literal surrounded by single quotes.
-		 * Converts an escape sequence to its ascii character.
-		 * @returns The contents of the character literal.
-		 */
-		char scan_literal_char()
+		return tokens;
+	}
+
+	/**
+	 * @brief Scans a comment.
+	 * Currently only supports // comments.
+	 * TODO: support / * * / comments. Typo is intentional because
+	 * I cannot write such a comment in this comment because
+	 * it would break out of this comment.
+	 * @returns A boolean indicating if a comment was
+	 * successfully scanned.
+	 */
+	bool
+	scan_comment()
+	{
+		char next_char = reader.peek_byte();
+
+		// If the next character is not a /,
+		// it's not a // comment.
+		// TODO: support /* comments */.
+
+		if (next_char == '/')
 		{
-			int c = reader.read_byte();
-			if (c == EOF) throw_err("Unexpected EOF");
+			reader.advance();
+			ignore_until_eol();
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * @brief Ignores everything until the end of the line.
+	 * Used for scanning comments.
+	 */
+	void
+	ignore_until_eol()
+	{
+		char next_char = reader.peek_byte();
+
+		while (next_char != '\n' && next_char != EOF)
+		{
+			reader.advance();
+			next_char = reader.peek_byte();
+		}
+
+		reader.reset();
+	}
+
+	/**
+	 * @brief Scans escape sequences.
+	 * Used in string literal scanning.
+	 * @returns The escape sequence as an ascii character.
+	 * TODO: support unicode escape sequences.
+	 */
+	char
+	scan_escape_sequence()
+	{
+		int c = reader.read_byte();
+
+		switch (c)
+		{
+		case 'a':
+			return '\x07';
+
+		case 'b':
+			return '\x08';
+
+		case 'e':
+			return '\x01b';
+
+		case 'f':
+			return '\x0c';
+
+		case 'n':
+			return '\x0a';
+
+		case 'r':
+			return '\x0d';
+
+		case 't':
+			return '\x09';
+
+		case 'v':
+			return '\x0b';
+
+		case '\\':
+			return '\x5c';
+
+		case '\'':
+			return '\x27';
+
+		case '"':
+			return '\x22';
+
+		case '?':
+			return '\x3f';
+
+		case 'x':
+		{
+			char xc1 = reader.read_byte();
+			char xc2 = reader.read_byte();
+
+			if (!is_hex(xc1) || !is_hex(xc2))
+				throw_err("Invalid hexadecimal escape code");
+
+			return hex_chars_to_byte(xc1, xc2);
+		}
+
+		default:
+			throw_err("Invalid escape code");
+		}
+	}
+
+	/**
+	 * @brief Scans a string literal surrounded by double quotes.
+	 * Converts escape sequences to their ascii characters.
+	 * @returns The contents of the string literal.
+	 */
+	std::string
+	scan_literal_string()
+	{
+		std::string s;
+		char c;
+
+		while (true)
+		{
+			c = reader.read_byte();
+			if (c == EOF)
+				throw_err("Unexpected EOF");
 
 			// Escape sequence.
 
 			if (c == '\\')
-				c = scan_escape_sequence();
-
-			char next = reader.read_byte();
-
-			// Expect a closing single quote.
-
-			if (next == EOF) throw_err("Unexpected EOF");
-			if (next != '\'')
-				throw_err("Unexpected char '%c', expected ending quote", next);
-
-			return c;
-		}
-
-		/**
-		 * @brief Scans a number.
-		 * Supports hexadecimal, octal, and decimal numbers.
-		 * Supports floating point and integer numbers.
-		 * @returns The number as a string.
-		 */
-		std::string scan_literal_number(char first_char)
-		{
-			std::string s;
-			s += first_char;
-			reader.advance();
-			int c = reader.peek_byte();
-
-			if (first_char == '0') {
-				// If the first character is a '0',
-				// we could have to deal with 0x or 0b prefix,
-				// or a decimal seperator.
-
-				// Decimal seperator for floating point number.
-
-				if (c == '.') {
-					do {
-						reader.advance();
-						s += '.';
-						c = reader.peek_byte();
-					} while (is_decimal(c));
-
-					reader.reset();
-					return s;
-				}
-
-				// Hexadecimal integer.
-
-				if (c == 'x') {
-					s.clear();
-
-					while (c = reader.peek_byte(), is_hex(c)) {
-						reader.advance();
-						s += c;
-					}
-
-					reader.reset();
-
-					return to_string(stoull(s, NULL, 16));
-				}
-
-				// Binary integer.
-
-				if (c == 'b') {
-					s.clear();
-
-					while (c = reader.peek_byte(), is_binary(c)) {
-						reader.advance();
-						s += c;
-					}
-
-					reader.reset();
-
-					return to_string(stoull(s, NULL, 2));
-				}
-
-				// Unrecognised prefix.
-
-				if (c < '0' && c > '9' && c != '.')
-					throw_err("Unexpected char '%c'", c);
+			{
+				s += scan_escape_sequence();
+				continue;
 			}
 
-			// Decimal integer or floating point number.
+			// Stop on end of string.
 
-			if (c >= '0' && c <= '9' || c == '.') {
-				do {
+			if (c == '"')
+			{
+				break;
+			}
+
+			// Add this character to the string.
+
+			s += c;
+		}
+
+		return s;
+	}
+
+	/**
+	 * @brief Scans a character literal surrounded by single quotes.
+	 * Converts an escape sequence to its ascii character.
+	 * @returns The contents of the character literal.
+	 */
+	char
+	scan_literal_char()
+	{
+		int c = reader.read_byte();
+		if (c == EOF)
+			throw_err("Unexpected EOF");
+
+		// Escape sequence.
+
+		if (c == '\\')
+			c = scan_escape_sequence();
+
+		char next = reader.read_byte();
+
+		// Expect a closing single quote.
+
+		if (next == EOF)
+			throw_err("Unexpected EOF");
+		if (next != '\'')
+			throw_err("Unexpected char '%c', expected ending quote", next);
+
+		return c;
+	}
+
+	/**
+	 * @brief Scans a number.
+	 * Supports hexadecimal, octal, and decimal numbers.
+	 * Supports floating point and integer numbers.
+	 * @returns The number as a string.
+	 */
+	std::string
+	scan_literal_number(char first_char)
+	{
+		std::string s;
+		s += first_char;
+		reader.advance();
+		int c = reader.peek_byte();
+
+		if (first_char == '0')
+		{
+			// If the first character is a '0',
+			// we could have to deal with 0x or 0b prefix,
+			// or a decimal seperator.
+
+			// Decimal seperator for floating point number.
+
+			if (c == '.')
+			{
+				do
+				{
 					reader.advance();
-					s += c;
+					s += '.';
 					c = reader.peek_byte();
-				} while (c >= '0' && c <= '9' || c == '.');
-			}
-
-			reader.reset();
-			return s;
-		}
-
-		/**
-		 * @brief Scans a symbol name, class name, function name,
-		 * keyword name or any kind of text.
-		 * @param first_char The first character of the text.
-		 * Is there because this character is already consumed.
-		 * @returns A string containing the text.
-		 */
-		std::string scan_text(char first_char)
-		{
-			std::string s;
-			s += first_char;
-			char c;
-
-			while (true) {
-				reader.advance();
-				c = reader.peek_byte();
-
-				if (!is_alphanumeric(c)) {
-					reader.reset();
-					break;
-				}
-
-				s += c;
-			}
-
-			return s;
-		}
-
-		/**
-		 * @brief Scans an operator.
-		 * @param first_char The first character of the operator.
-		 * Is there because this character is already consumed.
-		 * @returns A string containing the operator.
-		 */
-		std::string scan_operator(char first_char)
-		{
-			// Check if the next two characters are
-			// maybe also operators.
-
-			reader.advance();
-			char op_char_2 = reader.peek_byte();
-
-			if (!operator_chars.count(op_char_2)) {
-				// Only the first character is an operator.
+				} while (is_decimal(c));
 
 				reader.reset();
-			} else {
-				// The second character is an operator.
-				// Check if the third is too.
+				return s;
+			}
 
-				reader.advance();
-				char op_char_3 = reader.peek_byte();
+			// Hexadecimal integer.
 
-				if (!operator_chars.count(op_char_3)) {
-					// Only the first two characters
-					// are operators.
+			if (c == 'x')
+			{
+				s.clear();
 
-					reader.reset();
-				} else {
-					// The third character is also an
-					// operator. Check if we can form a
-					// triple character operator.
-
-					std::string op;
-					op += first_char;
-					op += op_char_2;
-					op += op_char_3;
-
-					if (str_to_operator(op) != UNDEFINED_OPERATOR) return op;
-					else reader.reset();
+				while (c = reader.peek_byte(), is_hex(c))
+				{
+					reader.advance();
+					s += c;
 				}
 
-				// Check if we can form a double
-				// character operator.
+				reader.reset();
+
+				return to_string(stoull(s, NULL, 16));
+			}
+
+			// Binary integer.
+
+			if (c == 'b')
+			{
+				s.clear();
+
+				while (c = reader.peek_byte(), is_binary(c))
+				{
+					reader.advance();
+					s += c;
+				}
+
+				reader.reset();
+
+				return to_string(stoull(s, NULL, 2));
+			}
+
+			// Unrecognised prefix.
+
+			if (c < '0' && c > '9' && c != '.')
+				throw_err("Unexpected char '%c'", c);
+		}
+
+		// Decimal integer or floating point number.
+
+		if (c >= '0' && c <= '9' || c == '.')
+		{
+			do
+			{
+				reader.advance();
+				s += c;
+				c = reader.peek_byte();
+			} while (c >= '0' && c <= '9' || c == '.');
+		}
+
+		reader.reset();
+		return s;
+	}
+
+	/**
+	 * @brief Scans a symbol name, class name, function name,
+	 * keyword name or any kind of text.
+	 * @param first_char The first character of the text.
+	 * Is there because this character is already consumed.
+	 * @returns A string containing the text.
+	 */
+	std::string
+	scan_text(char first_char)
+	{
+		std::string s;
+		s += first_char;
+		char c;
+
+		while (true)
+		{
+			reader.advance();
+			c = reader.peek_byte();
+
+			if (!is_alphanumeric(c))
+			{
+				reader.reset();
+				break;
+			}
+
+			s += c;
+		}
+
+		return s;
+	}
+
+	/**
+	 * @brief Scans an operator.
+	 * @param first_char The first character of the operator.
+	 * Is there because this character is already consumed.
+	 * @returns A string containing the operator.
+	 */
+	std::string
+	scan_operator(char first_char)
+	{
+		// Check if the next two characters are
+		// maybe also operators.
+
+		reader.advance();
+		char op_char_2 = reader.peek_byte();
+
+		if (!operator_chars.count(op_char_2))
+		{
+			// Only the first character is an operator.
+
+			reader.reset();
+		}
+		else
+		{
+			// The second character is an operator.
+			// Check if the third is too.
+
+			reader.advance();
+			char op_char_3 = reader.peek_byte();
+
+			if (!operator_chars.count(op_char_3))
+			{
+				// Only the first two characters
+				// are operators.
+
+				reader.reset();
+			}
+			else
+			{
+				// The third character is also an
+				// operator. Check if we can form a
+				// triple character operator.
 
 				std::string op;
 				op += first_char;
 				op += op_char_2;
+				op += op_char_3;
 
-				if (str_to_operator(op) != UNDEFINED_OPERATOR) return op;
-				else reader.reset();
+				if (str_to_operator(op) != UNDEFINED_OPERATOR)
+					return op;
+				else
+					reader.reset();
 			}
+
+			// Check if we can form a double
+			// character operator.
 
 			std::string op;
 			op += first_char;
-			return op;
+			op += op_char_2;
+
+			if (str_to_operator(op) != UNDEFINED_OPERATOR)
+				return op;
+			else
+				reader.reset();
 		}
+
+		std::string op;
+		op += first_char;
+		return op;
+	}
 };
 
 #endif

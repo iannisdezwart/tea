@@ -253,9 +253,8 @@ struct Shell
 			}
 			catch (const std::string &err_message)
 			{
-				printf(ANSI_RED "The VM encountered an error:\n"
-					ANSI_BRIGHT_RED "%s",
-						err_message.c_str());
+				printf(ANSI_RED "The VM encountered an error:\n" ANSI_BRIGHT_RED "%s",
+					err_message.c_str());
 			}
 		}
 		else

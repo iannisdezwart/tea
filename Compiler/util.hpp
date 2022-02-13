@@ -9,11 +9,13 @@
  * @param message The message format string.
  * @param ... The arguments to the format string.
  */
-#define err(message, ...) do { \
-	fprintf(stderr, message, ##__VA_ARGS__); \
-	putc('\n', stderr); \
-	abort(); \
-} while (0)
+#define err(message, ...)                                \
+	do                                               \
+	{                                                \
+		fprintf(stderr, message, ##__VA_ARGS__); \
+		putc('\n', stderr);                      \
+		abort();                                 \
+	} while (0)
 
 /**
  * @brief Macro that prints an error message at a line and column,
@@ -23,11 +25,13 @@
  * @param message The message format string.
  * @param ... The arguments to the format string.
  */
-#define err_at_token(token, prefix, message, ...) do { \
-	fprintf(stderr, "[ %s ]: " message "\n", prefix, ##__VA_ARGS__); \
-	fprintf(stderr, "At %ld:%ld\n", token.line, token.col); \
-	abort(); \
-} while (0)
+#define err_at_token(token, prefix, message, ...)                                \
+	do                                                                       \
+	{                                                                        \
+		fprintf(stderr, "[ %s ]: " message "\n", prefix, ##__VA_ARGS__); \
+		fprintf(stderr, "At %ld:%ld\n", token.line, token.col);          \
+		abort();                                                         \
+	} while (0)
 
 /**
  * @brief Macro that prints a warning message.
@@ -35,9 +39,11 @@
  * @param message The message format string.
  * @param ... The arguments to the format string.
  */
-#define warn(message, ...) do { \
-	fprintf(stderr, "[ warning ]: " message "\n", ##__VA_ARGS__); \
-} while (0)
+#define warn(message, ...)                                                    \
+	do                                                                    \
+	{                                                                     \
+		fprintf(stderr, "[ warning ]: " message "\n", ##__VA_ARGS__); \
+	} while (0)
 
 /**
  * @brief Macro that evaluates to true if the character is an
@@ -87,7 +93,8 @@
  * @returns A string containing the hexadecimal representation of the number.
  */
 template <typename intx_t>
-std::string to_hex(intx_t num)
+std::string
+to_hex(intx_t num)
 {
 	std::stringstream stream;
 	stream << std::setfill('0') << std::setw(8) << std::hex << num;
@@ -99,10 +106,13 @@ std::string to_hex(intx_t num)
  * @param x The hex character to convert.
  * @returns An integer (0-15) corresponding to the hex character.
  */
-uint8_t hex_char_to_num(char x)
+uint8_t
+hex_char_to_num(char x)
 {
-	if (x >= '0' && x <= '9') return x - '0';
-	if (x >= 'a') return x - 'a' + 10;
+	if (x >= '0' && x <= '9')
+		return x - '0';
+	if (x >= 'a')
+		return x - 'a' + 10;
 	return x - 'A' + 10;
 }
 
@@ -112,7 +122,8 @@ uint8_t hex_char_to_num(char x)
  * @param lower The lower hex character.
  * @returns The byte corresponding to the two hex characters.
  */
-char hex_chars_to_byte(char upper, char lower)
+char
+hex_chars_to_byte(char upper, char lower)
 {
 	return hex_char_to_num(upper) << 4 | hex_char_to_num(lower);
 }
@@ -151,9 +162,11 @@ const char *abs_min_int64 = "9223372036854775808";
  * @param c The character to pad with.
  * @returns A new padded string.
  */
-std::string pad_start(const std::string& str, size_t len, char c)
+std::string
+pad_start(const std::string &str, size_t len, char c)
 {
-	if (str.length() >= len) return str;
+	if (str.length() >= len)
+		return str;
 	return std::string(c, len - str.length()) + str;
 }
 
@@ -165,9 +178,11 @@ std::string pad_start(const std::string& str, size_t len, char c)
  * @param test The character array to compare to.
  * @returns A boolean if the padded string is greater than the character array.
  */
-bool compare_str(const std::string& str, const char *test)
+bool
+compare_str(const std::string &str, const char *test)
 {
-	if (str.length() > strlen(test)) return true;
+	if (str.length() > strlen(test))
+		return true;
 	return pad_start(str, strlen(test), '0') > test;
 }
 
@@ -176,10 +191,13 @@ bool compare_str(const std::string& str, const char *test)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in a u8.
  */
-bool fits_uint8(const std::string& str)
+bool
+fits_uint8(const std::string &str)
 {
-	if (str[0] == '-') return false;
-	if (compare_str(str, abs_max_uint8)) return false;
+	if (str[0] == '-')
+		return false;
+	if (compare_str(str, abs_max_uint8))
+		return false;
 	return true;
 }
 
@@ -188,14 +206,18 @@ bool fits_uint8(const std::string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in an i8.
  */
-bool fits_int8(const std::string& str)
+bool
+fits_int8(const std::string &str)
 {
-	if (str[0] == '-') {
-		if (compare_str(str.substr(1), abs_min_int8)) return false;
+	if (str[0] == '-')
+	{
+		if (compare_str(str.substr(1), abs_min_int8))
+			return false;
 		return true;
 	}
 
-	if (compare_str(str, abs_max_int8)) return false;
+	if (compare_str(str, abs_max_int8))
+		return false;
 	return true;
 }
 
@@ -204,10 +226,13 @@ bool fits_int8(const std::string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in a u16.
  */
-bool fits_uint16(const std::string& str)
+bool
+fits_uint16(const std::string &str)
 {
-	if (str[0] == '-') return false;
-	if (compare_str(str, abs_max_uint16)) return false;
+	if (str[0] == '-')
+		return false;
+	if (compare_str(str, abs_max_uint16))
+		return false;
 	return true;
 }
 
@@ -216,14 +241,18 @@ bool fits_uint16(const std::string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in an i16.
  */
-bool fits_int16(const std::string& str)
+bool
+fits_int16(const std::string &str)
 {
-	if (str[0] == '-') {
-		if (compare_str(str.substr(1), abs_min_int16)) return false;
+	if (str[0] == '-')
+	{
+		if (compare_str(str.substr(1), abs_min_int16))
+			return false;
 		return true;
 	}
 
-	if (compare_str(str, abs_max_int16)) return false;
+	if (compare_str(str, abs_max_int16))
+		return false;
 	return true;
 }
 
@@ -232,10 +261,13 @@ bool fits_int16(const std::string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in a u32.
  */
-bool fits_uint32(const std::string& str)
+bool
+fits_uint32(const std::string &str)
 {
-	if (str[0] == '-') return false;
-	if (compare_str(str, abs_max_uint32)) return false;
+	if (str[0] == '-')
+		return false;
+	if (compare_str(str, abs_max_uint32))
+		return false;
 	return true;
 }
 
@@ -244,14 +276,18 @@ bool fits_uint32(const std::string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in an i32.
  */
-bool fits_int32(const std::string& str)
+bool
+fits_int32(const std::string &str)
 {
-	if (str[0] == '-') {
-		if (compare_str(str.substr(1), abs_min_int32)) return false;
+	if (str[0] == '-')
+	{
+		if (compare_str(str.substr(1), abs_min_int32))
+			return false;
 		return true;
 	}
 
-	if (compare_str(str, abs_max_int32)) return false;
+	if (compare_str(str, abs_max_int32))
+		return false;
 	return true;
 }
 
@@ -260,10 +296,13 @@ bool fits_int32(const std::string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in a u64.
  */
-bool fits_uint64(const std::string& str)
+bool
+fits_uint64(const std::string &str)
 {
-	if (str[0] == '-') return false;
-	if (compare_str(str, abs_max_uint64)) return false;
+	if (str[0] == '-')
+		return false;
+	if (compare_str(str, abs_max_uint64))
+		return false;
 	return true;
 }
 
@@ -272,14 +311,18 @@ bool fits_uint64(const std::string& str)
  * @param str The literal string.
  * @returns A boolean indicating whether the literal fits in an i64.
  */
-bool fits_int64(const std::string& str)
+bool
+fits_int64(const std::string &str)
 {
-	if (str[0] == '-') {
-		if (compare_str(str.substr(1), abs_min_int64)) return false;
+	if (str[0] == '-')
+	{
+		if (compare_str(str.substr(1), abs_min_int64))
+			return false;
 		return true;
 	}
 
-	if (compare_str(str, abs_max_int64)) return false;
+	if (compare_str(str, abs_max_int64))
+		return false;
 	return true;
 }
 

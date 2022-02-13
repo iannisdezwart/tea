@@ -128,7 +128,7 @@ struct ClassDeclaration : public ASTNode
 				Token this_token;
 				this_token.type  = IDENTIFIER;
 				this_token.value = "this";
-
+				if (2) {}
 				Token op_token;
 				op_token.type  = OPERATOR;
 				op_token.value = "->";
@@ -137,7 +137,7 @@ struct ClassDeclaration : public ASTNode
 				IdentifierExpression *field_expr = new IdentifierExpression(*id_expr);
 				MemberExpression *mem_expr       = new MemberExpression(
 					      this_expr, field_expr, op_token);
-				Class class_obj = compiler_state.classes[class_name];
+				Class class_obj        = compiler_state.classes[class_name];
 				const Type &field_type = class_obj.get_field_type(field_name);
 
 				id_expr->replacement      = mem_expr;

@@ -8,50 +8,57 @@
 #include "../../Assembler/assembler.hpp"
 #include "../compiler-state.hpp"
 
-bool is_write_value(ASTNode *node)
+bool
+is_write_value(ASTNode *node)
 {
-	switch (node->type) {
-		case IDENTIFIER_EXPRESSION:
-		case MEMBER_EXPRESSION:
-		case UNARY_OPERATION:
-		case OFFSET_EXPRESSION:
-			return true;
+	switch (node->type)
+	{
+	case IDENTIFIER_EXPRESSION:
+	case MEMBER_EXPRESSION:
+	case UNARY_OPERATION:
+	case OFFSET_EXPRESSION:
+		return true;
 
-		default:
-			return false;
+	default:
+		return false;
 	}
 }
 
 class WriteValue : public ReadValue
 {
 	public:
-		WriteValue(const Token& accountable_token, ASTNodeType type)
-			: ReadValue(accountable_token, type) {}
 
-		/**
-		 *  Stores the value in value_reg into this value.
-		 */
-		virtual void store(Assembler& assembler, CompilerState& compiler_state, uint8_t value_reg) = 0;
+	WriteValue(const Token &accountable_token, ASTNodeType type)
+		: ReadValue(accountable_token, type) {}
 
-		/**
-		 *  Gets data about the location of the value.
-		 */
-		virtual LocationData get_location_data(CompilerState& compiler_state) = 0;
+	/**
+	 *  Stores the value in value_reg into this value.
+	 */
+	virtual void
+	store(Assembler &assembler, CompilerState &compiler_state, uint8_t value_reg) = 0;
 
-		/**
-		 *  Casts an ASTNode into a WriteValue.
-		 */
-		static WriteValue *cast(ASTNode *node)
+	/**
+	 *  Gets data about the location of the value.
+	 */
+	virtual LocationData
+	get_location_data(CompilerState &compiler_state) = 0;
+
+	/**
+	 *  Casts an ASTNode into a WriteValue.
+	 */
+	static WriteValue *
+	cast(ASTNode *node)
+	{
+		if (!is_write_value(node))
 		{
-			if (!is_write_value(node)) {
-				err_at_token(node->accountable_token,
-					"Value Type Error",
-					"Expected a WriteValue\n"
-					"This value is not writable");
-			}
-
-			return (WriteValue *) node;
+			err_at_token(node->accountable_token,
+				"Value Type Error",
+				"Expected a WriteValue\n"
+				"This value is not writable");
 		}
+
+		return (WriteValue *) node;
+	}
 };
 
 #endif

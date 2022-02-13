@@ -203,7 +203,14 @@ struct IndentFileParser
 enum struct DebuggerSymbolTypes : uint8_t
 {
 	POINTER,
-	U8, I8, U16, I16, U32, I32, U64, I64,
+	U8,
+	I8,
+	U16,
+	I16,
+	U32,
+	I32,
+	U64,
+	I64,
 	USER_DEFINED_CLASS,
 	UNDEFINED
 };

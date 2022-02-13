@@ -13,7 +13,8 @@
  * @brief Enum for the different types of identifiers:
  * globals, functions, parameters and locals.
  */
-enum struct IdentifierKind {
+enum struct IdentifierKind
+{
 	UNDEFINED,
 	GLOBAL,
 	FUNCTION,
@@ -34,7 +35,8 @@ struct Identifier
 	Type type;
 
 	Identifier() {}
-	Identifier(const std::string& name, const Type& type) : name(name), type(type) {}
+	Identifier(const std::string &name, const Type &type)
+		: name(name), type(type) {}
 };
 
 /**
@@ -44,7 +46,8 @@ struct Identifier
  * the offset is either relative to the top of the stack,
  * or the start of the current stack frame.
  */
-struct Variable {
+struct Variable
+{
 	// The offset of this variable.
 	// Depending on whether the variable is a global, local or parameter,
 	// the offset is either relative to the top of the stack,
@@ -55,7 +58,7 @@ struct Variable {
 	Identifier id;
 
 	Variable() {}
-	Variable(const std::string& name, Type& type, size_t offset)
+	Variable(const std::string &name, Type &type, size_t offset)
 		: id(name, type), offset(offset) {}
 };
 
@@ -63,7 +66,8 @@ struct Variable {
  * @brief Structure for a function type.
  * Contains the name and return type, as well as the parameter identifiers.
  */
-struct Function {
+struct Function
+{
 	// Holds the name and return type of this function.
 	Identifier id;
 
@@ -71,7 +75,7 @@ struct Function {
 	std::vector<Identifier> parameters;
 
 	Function() {}
-	Function(const std::string& fn_name, Type& return_type)
+	Function(const std::string &fn_name, Type &return_type)
 		: id(fn_name, return_type) {}
 
 	/**
@@ -79,7 +83,8 @@ struct Function {
 	 * @param param_name The name of the parameter.
 	 * @param param_type The type of the parameter.
 	 */
-	void add_parameter(const std::string& param_name, const Type& param_type)
+	void
+	add_parameter(const std::string &param_name, const Type &param_type)
 	{
 		parameters.push_back(Identifier(param_name, param_type));
 	}
@@ -92,7 +97,8 @@ struct Function {
  * Does not contain the name of the class,
  * since that will be the key to the class in the `compiler_state.classes` map.
  */
-struct Class {
+struct Class
+{
 	// The byte size of the class.
 	size_t byte_size;
 
@@ -103,14 +109,16 @@ struct Class {
 	std::vector<Function> methods;
 
 	Class() {}
-	Class(size_t byte_size): byte_size(byte_size) {}
+	Class(size_t byte_size)
+		: byte_size(byte_size) {}
 
 	/**
 	 * @brief Adds a field to this class.
 	 * @param field_name The name of the field.
 	 * @param field_type The type of the field.
 	 */
-	void add_field(const std::string& field_name, const Type& field_type)
+	void
+	add_field(const std::string &field_name, const Type &field_type)
 	{
 		fields.push_back(Identifier(field_name, field_type));
 	}
@@ -119,10 +127,13 @@ struct Class {
 	 * @param field_name The field name to look for.
 	 * @returns A boolean indicating whether a field with this name exists.
 	 */
-	bool has_field(const std::string& field_name) const
+	bool
+	has_field(const std::string &field_name) const
 	{
-		for (const Identifier& field : fields) {
-			if (field.name == field_name) return true;
+		for (const Identifier &field : fields)
+		{
+			if (field.name == field_name)
+				return true;
 		}
 
 		return false;
@@ -132,10 +143,13 @@ struct Class {
 	 * @param field_name The field name to look for.
 	 * @returns The type of a field.
 	 */
-	const Type& get_field_type(const std::string& field_name) const
+	const Type &
+	get_field_type(const std::string &field_name) const
 	{
-		for (const Identifier& field : fields) {
-			if (field.name == field_name) return field.type;
+		for (const Identifier &field : fields)
+		{
+			if (field.name == field_name)
+				return field.type;
 		}
 
 		err("Class field \"%s\" not found", field_name.c_str());
@@ -146,7 +160,8 @@ struct Class {
 	 * @param method_name The name of the method.
 	 * @param method_type The type of the method.
 	 */
-	void add_method(const std::string& method_name, const Function& method)
+	void
+	add_method(const std::string &method_name, const Function &method)
 	{
 		methods.push_back(method);
 	}
@@ -155,10 +170,13 @@ struct Class {
 	 * @param method_name The method name to look for.
 	 * @returns A boolean indicating whether a method with this name exists.
 	 */
-	bool has_method(const std::string& method_name) const
+	bool
+	has_method(const std::string &method_name) const
 	{
-		for (const Function& method : methods) {
-			if (method.id.name == method_name) return true;
+		for (const Function &method : methods)
+		{
+			if (method.id.name == method_name)
+				return true;
 		}
 
 		return false;
@@ -168,10 +186,13 @@ struct Class {
 	 * @param method_name The method name to look for.
 	 * @returns The type of a method.
 	 */
-	const Function& get_method(const std::string& method_name) const
+	const Function &
+	get_method(const std::string &method_name) const
 	{
-		for (const Function& method : methods) {
-			if (method.id.name == method_name) return method;
+		for (const Function &method : methods)
+		{
+			if (method.id.name == method_name)
+				return method;
 		}
 
 		err("Class method \"%s\" not found", method_name.c_str());
@@ -183,7 +204,8 @@ struct Class {
  * Holds the kind of identifier (global, function, parameter or local),
  * as well as the offset and byte size of the identifier.
  */
-struct LocationData {
+struct LocationData
+{
 	// The kind of identifier (global, function, parameter or local).
 	IdentifierKind id_kind;
 
@@ -202,7 +224,8 @@ struct LocationData {
 	/**
 	 * @returns A boolean indicating whether this location is a global.
 	 */
-	bool is_at_stack_top()
+	bool
+	is_at_stack_top()
 	{
 		return id_kind == IdentifierKind::GLOBAL;
 	}
@@ -211,7 +234,8 @@ struct LocationData {
 	 * @returns A boolean indicating whether this location is
 	 * a local or a parameter.
 	 */
-	bool is_at_frame_top()
+	bool
+	is_at_frame_top()
 	{
 		return id_kind == IdentifierKind::LOCAL || id_kind == IdentifierKind::PARAMETER;
 	}
@@ -223,275 +247,292 @@ struct LocationData {
  * This includes all the identifiers, types, and functions in the current
  * compilation context, as well as the current stack frame.
  */
-struct CompilerState {
-		// A map of all functions in the current compilation context.
-		std::unordered_map<std::string, Function> functions;
+struct CompilerState
+{
+	// A map of all functions in the current compilation context.
+	std::unordered_map<std::string, Function> functions;
 
-		// The current function name being compiled.
-		std::string current_function_name;
+	// The current function name being compiled.
+	std::string current_function_name;
 
+	// A map of all classes in the current compilation context.
+	std::unordered_map<std::string, Class> classes;
 
-		// A map of all classes in the current compilation context.
-		std::unordered_map<std::string, Class> classes;
+	// A map of all global variables in the current compilation context.
+	std::unordered_map<std::string, Variable> globals;
 
+	// The size of all global variables combined
+	// in the current compilation context.
+	uint64_t globals_size = 0;
 
-		// A map of all global variables in the current compilation context.
-		std::unordered_map<std::string, Variable> globals;
+	// A map of all parameters in the current function being compiled.
+	std::unordered_map<std::string, Variable> parameters;
 
-		// The size of all global variables combined
-		// in the current compilation context.
-		uint64_t globals_size = 0;
+	// The names of the parameters in the current
+	// function being compiled, in order.
+	std::vector<std::string> parameter_names_in_order;
 
+	// The size of all parameters combined in the
+	// current function being compiled.
+	uint64_t parameters_size = 0;
 
-		// A map of all parameters in the current function being compiled.
-		std::unordered_map<std::string, Variable> parameters;
+	// A map of all local variables in the current function being compiled.
+	std::unordered_map<std::string, Variable> locals;
 
-		// The names of the parameters in the current
-		// function being compiled, in order.
-		std::vector<std::string> parameter_names_in_order;
+	// The names of the local variables in the current
+	// function being compiled, in order.
+	std::vector<std::string> local_names_in_order;
 
-		// The size of all parameters combined in the
-		// current function being compiled.
-		uint64_t parameters_size = 0;
+	// The size of all local variables combined in the
+	// current function being compiled.
+	uint64_t locals_size = 0;
 
+	// The current scope depth.
+	// Might be useful in the future when we implement
+	// functions with nested scopes.
+	size_t scope_depth = 0;
 
-		// A map of all local variables in the current function being compiled.
-		std::unordered_map<std::string, Variable> locals;
+	// Generator for unique label identifiers.
+	// Used for generating unique labels for different
+	// code segments. Starts at 0.
+	uint64_t label_id = 0;
 
-		// The names of the local variables in the current
-		// function being compiled, in order.
-		std::vector<std::string> local_names_in_order;
+	// Whether debug symbols should be generated.
+	const bool debug;
 
-		// The size of all local variables combined in the
-		// current function being compiled.
-		uint64_t locals_size = 0;
+	// The debugger symbols.
+	DebuggerSymbols debugger_symbols;
 
-		// The current scope depth.
-		// Might be useful in the future when we implement
-		// functions with nested scopes.
-		size_t scope_depth = 0;
+	/**
+	 * @brief Constructs a new Compiler State object.
+	 * @param debug Whether debug symbols should be generated.
+	 */
+	CompilerState(bool debug)
+		: debug(debug) {}
 
+	/**
+	 * @param id_name The identifier to look for.
+	 * @returns The identifier kind of a given identifier.
+	 *
+	 * The identifier is searched in this order:
+	 * * Local variables
+	 * * Parameters
+	 * * Functions
+	 * * Globals
+	 */
+	enum IdentifierKind
+	get_identifier_kind(std::string id_name)
+	{
+		if (locals.count(id_name))
+			return IdentifierKind::LOCAL;
+		if (parameters.count(id_name))
+			return IdentifierKind::PARAMETER;
+		if (functions.count(id_name))
+			return IdentifierKind::FUNCTION;
+		if (globals.count(id_name))
+			return IdentifierKind::GLOBAL;
+		return IdentifierKind::UNDEFINED;
+	}
 
-		// Generator for unique label identifiers.
-		// Used for generating unique labels for different
-		// code segments. Starts at 0.
-		uint64_t label_id = 0;
+	/**
+	 * @brief Adds a class to the current compilation context.
+	 * @param class_name The name of the class.
+	 * @param class_type The type of the class.
+	 * @returns A boolean indicating whether the class was added.
+	 * A class is only added if it does not already exist.
+	 */
+	bool
+	add_class(std::string class_name, Class class_type)
+	{
+		if (classes.count(class_name))
+			return false;
 
+		classes[class_name] = class_type;
 
-		// Whether debug symbols should be generated.
-		const bool debug;
+		// Add the class to the debugger symbols
 
-		// The debugger symbols.
-		DebuggerSymbols debugger_symbols;
-
-
-		/**
-		 * @brief Constructs a new Compiler State object.
-		 * @param debug Whether debug symbols should be generated.
-		 */
-		CompilerState(bool debug) : debug(debug) {}
-
-		/**
-		 * @param id_name The identifier to look for.
-		 * @returns The identifier kind of a given identifier.
-		 *
-		 * The identifier is searched in this order:
-		 * * Local variables
-		 * * Parameters
-		 * * Functions
-		 * * Globals
-		 */
-		enum IdentifierKind get_identifier_kind(std::string id_name)
+		if (debug)
 		{
-			if (locals.count(id_name)) return IdentifierKind::LOCAL;
-			if (parameters.count(id_name)) return IdentifierKind::PARAMETER;
-			if (functions.count(id_name)) return IdentifierKind::FUNCTION;
-			if (globals.count(id_name)) return IdentifierKind::GLOBAL;
-			return IdentifierKind::UNDEFINED;
+			// TODO: create
 		}
 
-		/**
-		 * @brief Adds a class to the current compilation context.
-		 * @param class_name The name of the class.
-		 * @param class_type The type of the class.
-		 * @returns A boolean indicating whether the class was added.
-		 * A class is only added if it does not already exist.
-		 */
-		bool add_class(std::string class_name, Class class_type)
+		return true;
+	}
+
+	/**
+	 * @brief Adds a global variable to the current compilation context.
+	 * @param global_name The name of the global variable.
+	 * @param global_type The type of the global variable.
+	 * @returns A boolean indicating whether the global variable was added.
+	 * A global variable is only added if it does not already exist.
+	 */
+	bool
+	add_global(std::string global_name, Type global_type)
+	{
+		if (globals.count(global_name) || functions.count(global_name))
+			return false;
+
+		globals[global_name] = Variable(global_name, global_type, globals_size);
+		globals_size += global_type.storage_size();
+
+		// Add the global to the debugger symbols
+
+		if (debug)
 		{
-			if (classes.count(class_name)) return false;
+			debugger_symbols.add_global(DebuggerSymbol(global_name, global_type.to_debug_type()));
+		}
 
-			classes[class_name] = class_type;
+		return true;
+	}
 
-			// Add the class to the debugger symbols
+	/**
+	 * @brief Adds a function to the current compilation context.
+	 * @param function_name The name of the function.
+	 * @param function_type The type of the function.
+	 * @returns A boolean indicating whether the function was added.
+	 * A function is only added if it does not already exist.
+	 */
+	bool
+	add_function(std::string function_name, Function function_type)
+	{
+		if (functions.count(function_name) || globals.count(function_name))
+			return false;
 
-			if (debug) {
-				// TODO: create
+		functions[function_name] = function_type;
+		return true;
+	}
+
+	/**
+	 * @brief Adds a parameter to the current function being compiled.
+	 * @param param_name The name of the parameter.
+	 * @param param_type The type of the parameter.
+	 * @returns A boolean indicating whether the parameter was added.
+	 * A parameter is only added if it does not already exist.
+	 */
+	bool
+	add_parameter(std::string param_name, Type param_type)
+	{
+		if (parameters.count(param_name))
+			return false;
+
+		parameters[param_name] = Variable(param_name, param_type, parameters_size);
+		parameter_names_in_order.push_back(param_name);
+		parameters_size += param_type.byte_size();
+		return true;
+	}
+
+	/**
+	 * @brief Adds a local variable to the current function being compiled.
+	 * @param local_name The name of the local variable.
+	 * @param local_type The type of the local variable.
+	 * @returns A boolean indicating whether the local variable was added.
+	 * A local variable is only added if it does not already exist.
+	 */
+	bool
+	add_local(std::string local_name, Type local_type)
+	{
+		if (locals.count(local_name))
+			return false;
+
+		locals[local_name] = Variable(local_name, local_type, locals_size);
+		local_names_in_order.push_back(local_name);
+		locals_size += local_type.storage_size();
+		return true;
+	}
+
+	/**
+	 * @brief Ends the scope of the current function being compiled.
+	 * Clears all locals and parameters.
+	 * In debug mode, the function, as well as its locals and
+	 * parameters, arr also added to the debugger symbols.
+	 */
+	void
+	end_function_scope()
+	{
+		// Add the function to the debugger symbols
+
+		if (debug)
+		{
+			DebuggerFunction fn_symbols;
+
+			// Add params
+
+			for (const std::string &param_name : parameter_names_in_order)
+			{
+				DebuggerSymbolTypes fn_param_type = parameters[param_name].id.type.to_debug_type();
+				fn_symbols.params.push_back(DebuggerSymbol(param_name, fn_param_type));
 			}
 
-			return true;
-		}
+			// Add locals
 
-		/**
-		 * @brief Adds a global variable to the current compilation context.
-		 * @param global_name The name of the global variable.
-		 * @param global_type The type of the global variable.
-		 * @returns A boolean indicating whether the global variable was added.
-		 * A global variable is only added if it does not already exist.
-		 */
-		bool add_global(std::string global_name, Type global_type)
-		{
-			if (globals.count(global_name) || functions.count(global_name))
-				return false;
-
-			globals[global_name] = Variable(global_name, global_type, globals_size);
-			globals_size += global_type.storage_size();
-
-			// Add the global to the debugger symbols
-
-			if (debug) {
-				debugger_symbols.add_global(DebuggerSymbol(global_name, global_type.to_debug_type()));
+			for (const std::string &local_name : local_names_in_order)
+			{
+				DebuggerSymbolTypes local_type = locals[local_name].id.type.to_debug_type();
+				fn_symbols.locals.push_back(DebuggerSymbol(local_name, local_type));
 			}
 
-			return true;
+			debugger_symbols.add_function(current_function_name, fn_symbols);
 		}
 
-		/**
-		 * @brief Adds a function to the current compilation context.
-		 * @param function_name The name of the function.
-		 * @param function_type The type of the function.
-		 * @returns A boolean indicating whether the function was added.
-		 * A function is only added if it does not already exist.
-		 */
-		bool add_function(std::string function_name, Function function_type)
+		locals.clear();
+		local_names_in_order.clear();
+		locals_size = 0;
+
+		parameters.clear();
+		parameter_names_in_order.clear();
+		parameters_size = 0;
+	}
+
+	/**
+	 * @brief Gets the type of an identifier.
+	 * The identifier is looked up in the current
+	 * compilation context in the following order:
+	 *
+	 * * Local variables
+	 * * Parameters
+	 * * Global variables
+	 *
+	 * If the identifier is not found in any of these locations,
+	 * an empty type is returned.
+	 *
+	 * @param id_name The name of the identifier to get.
+	 * @returns The type of the identifier.
+	 */
+	Type
+	get_type_of_identifier(std::string id_name)
+	{
+		IdentifierKind id_kind = get_identifier_kind(id_name);
+
+		switch (id_kind)
 		{
-			if (functions.count(function_name) || globals.count(function_name))
-				return false;
+		case IdentifierKind::LOCAL:
+			return locals[id_name].id.type;
 
-			functions[function_name] = function_type;
-			return true;
+		case IdentifierKind::PARAMETER:
+			return parameters[id_name].id.type;
+
+		case IdentifierKind::GLOBAL:
+			return globals[id_name].id.type;
+
+		default:
+			return Type();
 		}
+	}
 
-		/**
-		 * @brief Adds a parameter to the current function being compiled.
-		 * @param param_name The name of the parameter.
-		 * @param param_type The type of the parameter.
-		 * @returns A boolean indicating whether the parameter was added.
-		 * A parameter is only added if it does not already exist.
-		 */
-		bool add_parameter(std::string param_name, Type param_type)
-		{
-			if (parameters.count(param_name)) return false;
-
-			parameters[param_name] = Variable(param_name, param_type, parameters_size);
-			parameter_names_in_order.push_back(param_name);
-			parameters_size += param_type.byte_size();
-			return true;
-		}
-
-		/**
-		 * @brief Adds a local variable to the current function being compiled.
-		 * @param local_name The name of the local variable.
-		 * @param local_type The type of the local variable.
-		 * @returns A boolean indicating whether the local variable was added.
-		 * A local variable is only added if it does not already exist.
-		 */
-		bool add_local(std::string local_name, Type local_type)
-		{
-			if (locals.count(local_name)) return false;
-
-			locals[local_name] = Variable(local_name, local_type, locals_size);
-			local_names_in_order.push_back(local_name);
-			locals_size += local_type.storage_size();
-			return true;
-		}
-
-		/**
-		 * @brief Ends the scope of the current function being compiled.
-		 * Clears all locals and parameters.
-		 * In debug mode, the function, as well as its locals and
-		 * parameters, arr also added to the debugger symbols.
-		 */
-		void end_function_scope()
-		{
-			// Add the function to the debugger symbols
-
-			if (debug) {
-				DebuggerFunction fn_symbols;
-
-				// Add params
-
-				for (const std::string& param_name : parameter_names_in_order) {
-					DebuggerSymbolTypes fn_param_type = parameters[param_name].id.type.to_debug_type();
-					fn_symbols.params.push_back(DebuggerSymbol(param_name, fn_param_type));
-				}
-
-				// Add locals
-
-				for (const std::string& local_name : local_names_in_order) {
-					DebuggerSymbolTypes local_type = locals[local_name].id.type.to_debug_type();
-					fn_symbols.locals.push_back(DebuggerSymbol(local_name, local_type));
-				}
-
-				debugger_symbols.add_function(current_function_name, fn_symbols);
-			}
-
-			locals.clear();
-			local_names_in_order.clear();
-			locals_size = 0;
-
-			parameters.clear();
-			parameter_names_in_order.clear();
-			parameters_size = 0;
-		}
-
-		/**
-		 * @brief Gets the type of an identifier.
-		 * The identifier is looked up in the current
-		 * compilation context in the following order:
-		 *
-		 * * Local variables
-		 * * Parameters
-		 * * Global variables
-		 *
-		 * If the identifier is not found in any of these locations,
-		 * an empty type is returned.
-		 *
-		 * @param id_name The name of the identifier to get.
-		 * @returns The type of the identifier.
-		 */
-		Type get_type_of_identifier(std::string id_name)
-		{
-			IdentifierKind id_kind = get_identifier_kind(id_name);
-
-			switch (id_kind) {
-				case IdentifierKind::LOCAL:
-					return locals[id_name].id.type;
-
-				case IdentifierKind::PARAMETER:
-					return parameters[id_name].id.type;
-
-				case IdentifierKind::GLOBAL:
-					return globals[id_name].id.type;
-
-				default:
-					return Type();
-			}
-		}
-
-		/**
-		 * @brief Generates a label name that can be used to jump to.
-		 * @param type The type of label to generate.
-		 * @returns The generated label name.
-		 */
-		std::string generate_label(std::string type)
-		{
-			std::string label = "compiler-generated-label-";
-			label += std::to_string(label_id++);
-			label += "-for-";
-			label += type;
-			return label;
-		}
+	/**
+	 * @brief Generates a label name that can be used to jump to.
+	 * @param type The type of label to generate.
+	 * @returns The generated label name.
+	 */
+	std::string
+	generate_label(std::string type)
+	{
+		std::string label = "compiler-generated-label-";
+		label += std::to_string(label_id++);
+		label += "-for-";
+		label += type;
+		return label;
+	}
 };
 
 #endif

@@ -10,46 +10,56 @@
 #include "../../Assembler/assembler.hpp"
 #include "../compiler-state.hpp"
 
-struct CodeBlock : public ASTNode {
-		std::vector<ASTNode *> statements;
-		Token start_token;
+struct CodeBlock : public ASTNode
+{
+	std::vector<ASTNode *> statements;
+	Token start_token;
 
-		CodeBlock(Token start_token) : start_token(start_token),
-			ASTNode(start_token, CODE_BLOCK) {}
+	CodeBlock(Token start_token)
+		: start_token(start_token),
+		  ASTNode(start_token, CODE_BLOCK) {}
 
-		~CodeBlock() {}
+	~CodeBlock() {}
 
-		void add_statement(ASTNode *statement)
+	void
+	add_statement(ASTNode *statement)
+	{
+		statements.push_back(statement);
+	}
+
+	void
+	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+	{
+		for (ASTNode *statement : statements)
 		{
-			statements.push_back(statement);
+			if (statement != NULL)
+				statement->dfs(callback, depth + 1);
 		}
 
-		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		{
-			for (ASTNode *statement : statements) {
-				if (statement != NULL) statement->dfs(callback, depth + 1);
-			}
+		callback(this, depth);
+	}
 
-			callback(this, depth);
-		}
+	std::string
+	to_str()
+	{
+		std::string s = "CodeBlock {} @ " + to_hex((size_t) this);
+		return s;
+	}
 
-		std::string to_str()
-		{
-			std::string s = "CodeBlock {} @ " + to_hex((size_t) this);
-			return s;
-		}
+	Type
+	get_type(CompilerState &compiler_state)
+	{
+		return Type();
+	}
 
-		Type get_type(CompilerState& compiler_state)
+	void
+	compile(Assembler &assembler, CompilerState &compiler_state)
+	{
+		for (ASTNode *statement : statements)
 		{
-			return Type();
+			statement->compile(assembler, compiler_state);
 		}
-
-		void compile(Assembler& assembler, CompilerState& compiler_state)
-		{
-			for (ASTNode *statement : statements) {
-				statement->compile(assembler, compiler_state);
-			}
-		}
+	}
 };
 
 #endif

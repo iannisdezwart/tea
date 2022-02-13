@@ -29,7 +29,8 @@ struct FileStreamReader
 	 * @brief Constructs a new File Stream Reader object.
 	 * @param file The file to read from.
 	 */
-	FileStreamReader(FILE *file) : file(file) {}
+	FileStreamReader(FILE *file)
+		: file(file) {}
 
 	/**
 	 * @brief Reads the previous byte from the file.
@@ -86,7 +87,7 @@ struct FileStreamReader
 	reset()
 	{
 		cur_line = line;
-		cur_col = col;
+		cur_col  = col;
 		fseek(file, pos, SEEK_SET);
 	}
 
@@ -96,8 +97,8 @@ struct FileStreamReader
 	void
 	advance()
 	{
-		pos = ftell(file);
+		pos  = ftell(file);
 		line = cur_line;
-		col = cur_col;
+		col  = cur_col;
 	}
 };

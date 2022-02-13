@@ -10,71 +10,76 @@
 #include "../util.hpp"
 #include "CodeBlock.hpp"
 
-struct WhileStatement : public ASTNode {
-		Token while_token;
-		ReadValue *test;
-		CodeBlock *body;
+struct WhileStatement : public ASTNode
+{
+	Token while_token;
+	ReadValue *test;
+	CodeBlock *body;
 
-		WhileStatement(ReadValue *test, Token while_token, CodeBlock *body)
-			: test(test), body(body), while_token(while_token),
-				ASTNode(while_token, WHILE_STATEMENT) {}
+	WhileStatement(ReadValue *test, Token while_token, CodeBlock *body)
+		: test(test), body(body), while_token(while_token),
+		  ASTNode(while_token, WHILE_STATEMENT) {}
 
-		void dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		{
-			test->dfs(callback, depth + 1);
-			body->dfs(callback, depth + 1);
+	void
+	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+	{
+		test->dfs(callback, depth + 1);
+		body->dfs(callback, depth + 1);
 
-			callback(this, depth);
-		}
+		callback(this, depth);
+	}
 
-		std::string to_str()
-		{
-			std::string s = "WhileStatement {} @ " + to_hex((size_t) this);
-			return s;
-		}
+	std::string
+	to_str()
+	{
+		std::string s = "WhileStatement {} @ " + to_hex((size_t) this);
+		return s;
+	}
 
-		Type get_type(CompilerState& compiler_state)
-		{
-			return Type();
-		}
+	Type
+	get_type(CompilerState &compiler_state)
+	{
+		return Type();
+	}
 
-		void compile(Assembler& assembler, CompilerState& compiler_state)
-		{
-			uint8_t test_reg;
+	void
+	compile(Assembler &assembler, CompilerState &compiler_state)
+	{
+		uint8_t test_reg;
 
-			// Create labels
+		// Create labels
 
-			std::string loop_label = compiler_state.generate_label("while-loop");
-			std::string end_label = compiler_state.generate_label("end-while-statement");
+		std::string loop_label = compiler_state.generate_label("while-loop");
+		std::string end_label  = compiler_state.generate_label("end-while-statement");
 
-			// Create the loop label
+		// Create the loop label
 
-			assembler.add_label(loop_label);
+		assembler.add_label(loop_label);
 
-			// Perform the check and move the result into the test register
+		// Perform the check and move the result into the test register
 
-			test_reg = assembler.get_register();
-			test->get_value(assembler, compiler_state, test_reg);
+		test_reg = assembler.get_register();
+		test->get_value(assembler, compiler_state, test_reg);
 
-			// Break the loop if false
+		// Break the loop if false
 
-			assembler.compare_reg_to_8(test_reg, 0);
-			assembler.jump_if_equal(end_label);
+		assembler.compare_reg_to_8(test_reg, 0);
+		assembler.jump_if_equal(end_label);
 
-			assembler.free_register(test_reg);
+		assembler.free_register(test_reg);
 
-			// Compile code for the body block
+		// Compile code for the body block
 
-			body->compile(assembler, compiler_state);
+		body->compile(assembler, compiler_state);
 
-			// Jump to the start of the loop again
+		// Jump to the start of the loop again
 
-			assembler.jump(loop_label);
+		assembler.jump(loop_label);
 
-			// Create the end label
+		// Create the end label
 
-			assembler.add_label(end_label);
-		}
+		assembler.add_label(end_label);
+	}
 };
 
 #endif

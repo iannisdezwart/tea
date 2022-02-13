@@ -20,18 +20,66 @@
 #define ANSI_SCROLL_UP(n)        "\x1b[" #n "S"
 #define ANSI_SCROLL_DOWN(n)      "\x1b[" #n "T"
 
-void ansi_cursor_up(size_t n) { printf("\x1b[%luA", n); }
-void ansi_cursor_down(size_t n) { printf("\x1b[%luB", n); }
-void ansi_cursor_forward(size_t n) { printf("\x1b[%luC", n); }
-void ansi_cursor_back(size_t n) { printf("\x1b[%luD", n); }
-void ansi_cursor_next_line(size_t n) { printf("\x1b[%luE", n); }
-void ansi_cursor_prev_line(size_t n) { printf("\x1b[%luF", n); }
-void ansi_cursor_to_col(size_t n) { printf("\x1b[%luG", n); }
-void ansi_cursor_to(size_t x, size_t y) { printf("\x1b[%lu;%luH", x, y); }
-void ansi_erase_display(size_t n) { printf("\x1b[J"); }
-void ansi_erase_line(size_t n) { printf("\x1b[K"); }
-void ansi_scroll_up(size_t n) { printf("\x1b[%luS", n); }
-void ansi_scroll_down(size_t n) { printf("\x1b[%luT", n); }
+void
+ansi_cursor_up(size_t n)
+{
+	printf("\x1b[%luA", n);
+}
+void
+ansi_cursor_down(size_t n)
+{
+	printf("\x1b[%luB", n);
+}
+void
+ansi_cursor_forward(size_t n)
+{
+	printf("\x1b[%luC", n);
+}
+void
+ansi_cursor_back(size_t n)
+{
+	printf("\x1b[%luD", n);
+}
+void
+ansi_cursor_next_line(size_t n)
+{
+	printf("\x1b[%luE", n);
+}
+void
+ansi_cursor_prev_line(size_t n)
+{
+	printf("\x1b[%luF", n);
+}
+void
+ansi_cursor_to_col(size_t n)
+{
+	printf("\x1b[%luG", n);
+}
+void
+ansi_cursor_to(size_t x, size_t y)
+{
+	printf("\x1b[%lu;%luH", x, y);
+}
+void
+ansi_erase_display(size_t n)
+{
+	printf("\x1b[J");
+}
+void
+ansi_erase_line(size_t n)
+{
+	printf("\x1b[K");
+}
+void
+ansi_scroll_up(size_t n)
+{
+	printf("\x1b[%luS", n);
+}
+void
+ansi_scroll_down(size_t n)
+{
+	printf("\x1b[%luT", n);
+}
 
 /*
 	Rendition
@@ -112,7 +160,7 @@ void ansi_scroll_down(size_t n) { printf("\x1b[%luT", n); }
 
 // 24-bit colour
 
-#define ANSI_SET_COLOUR(r, g, b) "\x1b[38;2;" #r ";" #g ";" #b "m"
+#define ANSI_SET_COLOUR(r, g, b)    "\x1b[38;2;" #r ";" #g ";" #b "m"
 #define ANSI_SET_BG_COLOUR(r, g, b) "\x1b[48;2;" #r ";" #g ";" #b "m"
 
 #endif

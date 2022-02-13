@@ -143,8 +143,8 @@ struct BinaryOperation : public ReadValue
 			// intX & intX
 
 			if (left_type.pointer_depth() == 0
-					&& right_type.pointer_depth() == 0
-					&& left_size == right_size)
+				&& right_type.pointer_depth() == 0
+				&& left_size == right_size)
 			{
 				return left_type;
 			}
@@ -177,8 +177,8 @@ struct BinaryOperation : public ReadValue
 		{
 			warned = true;
 			warn("operator %s (%s) is not implemented for types x = %s and y = %s "
-				"and might cause undefined behaviour\n"
-				"At %ld:%ld\n",
+			     "and might cause undefined behaviour\n"
+			     "At %ld:%ld\n",
 				op_to_str(op), op_to_example_str(op),
 				left_type.to_str().c_str(),
 				right_type.to_str().c_str(), op_token.line,
