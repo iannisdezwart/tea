@@ -8,8 +8,7 @@
 #include "../compiler-state.hpp"
 #include "../util.hpp"
 
-class TypeName : public ASTNode {
-	public:
+struct TypeName : public ASTNode {
 		Token type_token;
 		std::vector<size_t> array_sizes;
 

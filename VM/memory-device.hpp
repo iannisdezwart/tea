@@ -13,8 +13,7 @@
  * It was part of the memory mapper, but I removed it from the CPU class,
  * since it slowed down things considerably.
  */
-class MemoryDevice {
-	public:
+struct MemoryDevice {
 		uint64_t from;
 		uint64_t to;
 

@@ -521,8 +521,7 @@ enum Operator str_to_operator(const std::string& str, bool prefix = false)
  * @brief Class that is responsible for tokenising a source file into a list of
  * tokens that can be parsed by the `Parser` class.
  */
-class Tokeniser {
-	private:
+struct Tokeniser {
 		// The file stream to tokenise.
 		FileStreamReader reader;
 
@@ -571,7 +570,6 @@ class Tokeniser {
 			abort(); \
 		} while (0)
 
-	public:
 		// The list of tokens produced by the tokeniser.
 		std::vector<Token> tokens;
 

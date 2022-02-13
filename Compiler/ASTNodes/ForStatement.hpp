@@ -10,8 +10,7 @@
 #include "../util.hpp"
 #include "CodeBlock.hpp"
 
-class ForStatement : public ASTNode {
-	public:
+struct ForStatement : public ASTNode {
 		Token for_token;
 		ASTNode *init;
 		ReadValue *test;

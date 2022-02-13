@@ -15,8 +15,7 @@
 #include "../tokeniser.hpp"
 #include "../../VM/cpu.hpp"
 
-class UnaryOperation : public WriteValue {
-	public:
+struct UnaryOperation : public WriteValue {
 		ReadValue *expression;
 		Token op_token;
 		bool prefix;

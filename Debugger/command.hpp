@@ -20,12 +20,10 @@ void print_shell_prompt(const char *file_path, uint8_t *addr)
 	printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD " ➜ " ANSI_RESET);
 }
 
-class CommandHistory {
-	private:
+struct CommandHistory {
 		std::vector<std::string> history;
 		size_t i = 0;
 
-	public:
 		void push(const std::string& line)
 		{
 			// Remove trailing empty lines
@@ -83,8 +81,7 @@ class CommandHistory {
 
 CommandHistory command_history;
 
-class Command {
-	private:
+struct Command {
 		const std::string& command_line;
 
 		// Basically split the line into words
@@ -129,7 +126,6 @@ class Command {
 			}
 		}
 
-	public:
 		std::vector<std::string> args;
 
 		Command(const std::string& command_line) : command_line(command_line)

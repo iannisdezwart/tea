@@ -113,12 +113,10 @@ struct IndentFileRootNode : public IndentFileNode {
  * @brief Class that parses the debugger symbols file.
 
  */
-class IndentFileParser {
-	private:
+struct IndentFileParser {
 		// The file stream of the debugger symbols file.
 		std::ifstream stream;
 
-	public:
 		// The current depth of the nodes.
 		ssize_t depth = -1;
 
@@ -170,7 +168,7 @@ class IndentFileParser {
  * @brief Enum that represents the possible debugger symbol types.
  * TODO: See how to support user-defined classes in a nicer way.
  */
-enum class DebuggerSymbolTypes : uint8_t {
+enum struct DebuggerSymbolTypes : uint8_t {
 	POINTER, U8, I8, U16, I16, U32, I32, U64, I64, USER_DEFINED_CLASS, UNDEFINED
 };
 
@@ -297,8 +295,7 @@ struct DebuggerFunction {
 /**
  * @brief A structure that reprsents the debugger symbols.
  */
-class DebuggerSymbols {
-	public:
+struct DebuggerSymbols {
 		// A map containing the function debugger symbols.
 		std::map<std::string, DebuggerFunction> functions;
 

@@ -16,8 +16,7 @@
  * @brief Class responsible for compiling a source file into a byte code file.
  * Takes a source file name and compiles this file it into a given output file.
  */
-class Compiler {
-	public:
+struct Compiler {
 		// A file pointer to the source file.
 		FILE *input_file;
 

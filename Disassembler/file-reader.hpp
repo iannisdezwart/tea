@@ -6,8 +6,7 @@
 /**
  * @brief Class that is used to read a file in chunks of user-defined size.
  */
-class FileReader {
-	public:
+struct FileReader {
 		// The file to read from.
 		FILE *file;
 

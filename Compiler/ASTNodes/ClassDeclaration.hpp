@@ -16,8 +16,7 @@
 #include "CodeBlock.hpp"
 #include "MemberExpression.hpp"
 
-class ClassDeclaration : public ASTNode {
-	public:
+struct ClassDeclaration : public ASTNode {
 		std::string class_name;
 		std::vector<TypeIdentifierPair *> fields;
 		std::vector<FunctionDeclaration *> methods;

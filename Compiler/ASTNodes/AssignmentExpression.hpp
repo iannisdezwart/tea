@@ -15,8 +15,7 @@
 #include "../tokeniser.hpp"
 #include "../../VM/cpu.hpp"
 
-class AssignmentExpression : public ReadValue {
-	public:
+struct AssignmentExpression : public ReadValue {
 		WriteValue *lhs_expr;
 		ReadValue *value;
 		Token op_token;

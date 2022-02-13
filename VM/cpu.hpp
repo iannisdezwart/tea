@@ -11,8 +11,7 @@
  * @brief The class that represents a CPU of the virtual machine.
  * Contains methods to run an executable.
  */
-class CPU {
-	public:
+struct CPU {
 		// ===== Memory =====
 
 		// A pointer to the RAM of the virtual machine.
@@ -273,7 +272,6 @@ class CPU {
 			}
 		}
 
-	private:
 		/**
 		 * @brief Fetches a value from the current instruction pointer.
 		 * Increments the instruction pointer by the size of the read.

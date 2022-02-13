@@ -12,8 +12,7 @@
 #include "TypeIdentifierPair.hpp"
 #include "InitList.hpp"
 
-class VariableDeclaration : public ASTNode {
-	public:
+struct VariableDeclaration : public ASTNode {
 		TypeIdentifierPair *type_and_id_pair;
 		IdentifierExpression id_expr;
 		ReadValue *expression;

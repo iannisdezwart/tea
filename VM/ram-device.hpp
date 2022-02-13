@@ -14,8 +14,7 @@
  * file, which is kind of similar to the RamDevice, except it works with
  * raw memory directly, thus increasing performance dramatically.
  */
-class RamDevice : public MemoryDevice, public Buffer {
-	public:
+struct RamDevice : public MemoryDevice, public Buffer {
 		RamDevice(uint64_t from, uint64_t to)
 			: MemoryDevice(from, to),
 				Buffer(Buffer::alloc(to - from)) {}
@@ -57,7 +56,7 @@ class RamDevice : public MemoryDevice, public Buffer {
 				if (highlight_fg == i) printf("\x1b[31m");
 				if (highlight_bg == i) printf("\x1b[43m");
 				uint8_t byte = get<uint8_t>(i - from);
-				printf("0x%04lx    0x%02hhx    %03hhu\x1b[m\n", i, byte, byte);
+				printf("0x%04llx    0x%02hhx    %03hhu\x1b[m\n", i, byte, byte);
 			}
 
 			printf("\n");

@@ -16,8 +16,7 @@
  * This class has lot's of handy methods to get additional information about
  * the data type it corresponds.
  */
-class Type {
-	public:
+struct Type {
 		/**
 		 * @brief The different subtypes of a type.
 		 */

@@ -7,8 +7,7 @@
 #include "../VM/memory.hpp"
 #include "util.hpp"
 
-class InstructionLister {
-	public:
+struct InstructionLister {
 		memory::Reader& reader;
 		bool first_arg;
 		uint8_t *instr_addr;

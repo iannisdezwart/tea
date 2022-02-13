@@ -66,8 +66,7 @@ const char *ast_node_type_to_str(enum ASTNodeType type)
 	}
 }
 
-class ASTNode {
-	public:
+struct ASTNode {
 		ASTNodeType type;
 		Token accountable_token;
 

@@ -42,8 +42,7 @@ struct StaticData {
  * add instructions to the program, allocate registers,
  * and to translate the program into the byte code.
  */
-class Assembler : public BufferBuilder {
-	public:
+struct Assembler : public BufferBuilder {
 		/**
 		 * @brief Map containing all labels.
 		 * The key is the label name and the value is the offset

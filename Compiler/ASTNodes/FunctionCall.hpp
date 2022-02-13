@@ -10,8 +10,7 @@
 #include "../compiler-state.hpp"
 #include "../tokeniser.hpp"
 
-class FunctionCall : public ReadValue {
-	public:
+struct FunctionCall : public ReadValue {
 		Token fn_token;
 		std::vector<ReadValue *> arguments;
 

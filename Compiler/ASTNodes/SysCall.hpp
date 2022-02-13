@@ -7,8 +7,7 @@
 
 std::set<std::string> syscall_names = { "PRINT_CHAR", "GET_CHAR" };
 
-class SysCall : public ASTNode {
-	public:
+struct SysCall : public ASTNode {
 		Token name_token;
 		std::vector<ReadValue *> arguments;
 

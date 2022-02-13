@@ -12,8 +12,7 @@
  * It was part of the memory mapper, but I removed it from the CPU class,
  * since it slowed down things considerably.
  */
-class MemoryMapper {
-	public:
+struct MemoryMapper {
 		std::vector<MemoryDevice *> devices;
 
 		std::pair<size_t, size_t> find_device_index(uint64_t offset)
@@ -130,11 +129,8 @@ class MemoryMapper {
 		}
 };
 
-class MemoryMapperReader {
-	private:
+struct MemoryMapperReader {
 		MemoryMapper& memory_mapper;
-
-	public:
 		size_t offset;
 
 		MemoryMapperReader(MemoryMapper& memory_mapper, size_t offset)

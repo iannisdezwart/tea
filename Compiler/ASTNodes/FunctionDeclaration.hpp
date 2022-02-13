@@ -13,8 +13,7 @@
 #include "CodeBlock.hpp"
 #include "VariableDeclaration.hpp"
 
-class FunctionDeclaration : public ASTNode {
-	public:
+struct FunctionDeclaration : public ASTNode {
 		TypeIdentifierPair *type_and_id_pair;
 		std::vector<TypeIdentifierPair *> params;
 		CodeBlock *body;

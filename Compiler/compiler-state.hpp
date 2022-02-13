@@ -13,7 +13,7 @@
  * @brief Enum for the different types of identifiers:
  * globals, functions, parameters and locals.
  */
-enum class IdentifierKind {
+enum struct IdentifierKind {
 	UNDEFINED,
 	GLOBAL,
 	FUNCTION,
@@ -223,8 +223,7 @@ struct LocationData {
  * This includes all the identifiers, types, and functions in the current
  * compilation context, as well as the current stack frame.
  */
-class CompilerState {
-	public:
+struct CompilerState {
 		// A map of all functions in the current compilation context.
 		std::unordered_map<std::string, Function> functions;
 

@@ -11,8 +11,7 @@
 /**
  * @brief Class that is responsible for disassembling a bytecode file.
  */
-class Disassembler {
-	public:
+struct Disassembler {
 		// The file reader for the bytecode file.
 		FileReader file_reader;
 

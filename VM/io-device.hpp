@@ -10,8 +10,7 @@
  * It was part of the memory mapper, but I removed it from the CPU class,
  * since it slowed down things considerably.
  */
-class IODevice : public MemoryDevice {
-	public:
+struct IODevice : public MemoryDevice {
 		static constexpr const uint64_t size = 3;
 		static constexpr const uint64_t stdin_read = 0;
 		static constexpr const uint64_t stdout_write = 1;

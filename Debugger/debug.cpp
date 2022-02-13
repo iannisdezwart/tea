@@ -39,8 +39,7 @@ struct VarEntry : public DebuggerSymbol {
 		: DebuggerSymbol(sym), addr(addr) {}
 };
 
-class Shell {
-	private:
+struct Shell {
 		const char *file_path;
 		CPU *cpu = NULL;
 		PtrSet breakpoints;
@@ -262,7 +261,6 @@ class Shell {
 			printf(ANSI_CYAN "VM exited with exit code " ANSI_YELLOW "%llu\n", cpu->regs[R_RET]);
 		}
 
-	public:
 		Shell(const char *file_path) : file_path(file_path) {}
 
 		void run_shell()

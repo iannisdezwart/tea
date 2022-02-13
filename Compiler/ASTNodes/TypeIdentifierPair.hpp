@@ -10,8 +10,7 @@
 #include "../util.hpp"
 #include "TypeName.hpp"
 
-class TypeIdentifierPair : public ASTNode {
-	public:
+struct TypeIdentifierPair : public ASTNode {
 		Token identifier_token;
 		TypeName *type_name;
 

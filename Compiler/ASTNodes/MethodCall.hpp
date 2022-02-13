@@ -13,8 +13,7 @@
 #include "../compiler-state.hpp"
 #include "../tokeniser.hpp"
 
-class MethodCall : public ReadValue {
-	public:
+struct MethodCall : public ReadValue {
 		IdentifierExpression *object;
 		FunctionCall *method;
 		Token op_token;

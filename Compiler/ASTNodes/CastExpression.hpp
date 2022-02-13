@@ -9,8 +9,7 @@
 #include "../tokeniser.hpp"
 #include "../util.hpp"
 
-class CastExpression : public ReadValue {
-	public:
+struct CastExpression : public ReadValue {
 		ReadValue *expression;
 		TypeName *type_name;
 

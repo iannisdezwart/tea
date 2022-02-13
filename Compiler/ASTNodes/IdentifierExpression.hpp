@@ -11,8 +11,7 @@
 #include "../compiler-state.hpp"
 #include "../tokeniser.hpp"
 
-class IdentifierExpression : public WriteValue {
-	public:
+struct IdentifierExpression : public WriteValue {
 		Token identifier_token;
 		WriteValue *replacement = NULL;
 		Type replacement_type;

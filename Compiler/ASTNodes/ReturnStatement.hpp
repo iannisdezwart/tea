@@ -9,8 +9,7 @@
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
-class ReturnStatement : public ASTNode {
-	public:
+struct ReturnStatement : public ASTNode {
 		Token return_token;
 		ReadValue *expression;
 

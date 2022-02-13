@@ -10,8 +10,7 @@
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
-class InitList : public ReadValue {
-	public:
+struct InitList : public ReadValue {
 		std::vector<ReadValue *> items;
 
 		InitList(const Token& start_token, std::vector<ReadValue *>&& items)

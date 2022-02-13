@@ -9,8 +9,7 @@
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
-class LiteralCharExpression : public ReadValue {
-	public:
+struct LiteralCharExpression : public ReadValue {
 		Token literal_char_token;
 		uint8_t value;
 

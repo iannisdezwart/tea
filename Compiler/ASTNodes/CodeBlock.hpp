@@ -10,8 +10,7 @@
 #include "../../Assembler/assembler.hpp"
 #include "../compiler-state.hpp"
 
-class CodeBlock : public ASTNode {
-	public:
+struct CodeBlock : public ASTNode {
 		std::vector<ASTNode *> statements;
 		Token start_token;
 

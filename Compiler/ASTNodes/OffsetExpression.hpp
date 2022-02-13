@@ -6,8 +6,7 @@
 #include "ReadValue.hpp"
 #include "WriteValue.hpp"
 
-class OffsetExpression : public WriteValue {
-	public:
+struct OffsetExpression : public WriteValue {
 		WriteValue *pointer;
 		ReadValue *offset;
 

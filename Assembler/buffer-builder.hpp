@@ -10,8 +10,7 @@
  * The data must be passed to the builder using the `push()` method.
  * The buffer grows automatically.
  */
-class BufferBuilder {
-	private:
+struct BufferBuilder {
 		uint8_t *buffer;
 		size_t capacity;
 
@@ -37,7 +36,6 @@ class BufferBuilder {
 			return 1;
 		}
 
-	public:
 		// The offset to the next element to be pushed.
 		size_t offset = 0;
 

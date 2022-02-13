@@ -12,8 +12,7 @@
 #include "../tokeniser.hpp"
 #include "../../VM/cpu.hpp"
 
-class BinaryOperation : public ReadValue {
-	public:
+struct BinaryOperation : public ReadValue {
 		ReadValue *left;
 		ReadValue *right;
 		Token op_token;

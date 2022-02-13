@@ -3,8 +3,7 @@
 
 #include <bits/stdc++.h>
 
-class Buffer {
-	public:
+struct Buffer {
 		// A pointer to the data on the buffer.
 		uint8_t *data;
 

@@ -67,8 +67,7 @@ namespace memory {
 	/**
 	 * @brief Class used to easily read a block of memory sequentially.
 	 */
-	class Reader {
-		public:
+	struct Reader {
 			// A pointer to the memory byte to read from.
 			uint8_t *addr;
 

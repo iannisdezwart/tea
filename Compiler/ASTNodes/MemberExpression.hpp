@@ -14,8 +14,7 @@
 #include "../tokeniser.hpp"
 #include "../../VM/cpu.hpp"
 
-class MemberExpression : public WriteValue {
-	public:
+struct MemberExpression : public WriteValue {
 		IdentifierExpression *object;
 		IdentifierExpression *member;
 		Token op_token;

@@ -10,8 +10,7 @@
 #include "../util.hpp"
 #include "CodeBlock.hpp"
 
-class WhileStatement : public ASTNode {
-	public:
+struct WhileStatement : public ASTNode {
 		Token while_token;
 		ReadValue *test;
 		CodeBlock *body;

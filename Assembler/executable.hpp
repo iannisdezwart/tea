@@ -9,8 +9,7 @@
  * @brief Class that represents an executable.
  * Inherits from Buffer. It is used to store the executable.
  */
-class Executable : public Buffer {
-	public:
+struct Executable : public Buffer {
 		// The size of the static data segment.
 		uint64_t static_data_size;
 

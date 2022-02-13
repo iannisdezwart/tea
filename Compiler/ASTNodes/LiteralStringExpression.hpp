@@ -9,8 +9,7 @@
 #include "../../Assembler/byte_code.hpp"
 #include "../util.hpp"
 
-class LiteralStringExpression : public ReadValue {
-	public:
+struct LiteralStringExpression : public ReadValue {
 		Token literal_string_token;
 		std::string value;
 

@@ -10,8 +10,7 @@
 #include "../util.hpp"
 #include "CodeBlock.hpp"
 
-class IfStatement : public ASTNode {
-	public:
+struct IfStatement : public ASTNode {
 		Token if_token;
 		ReadValue *test;
 		CodeBlock *then_block;
