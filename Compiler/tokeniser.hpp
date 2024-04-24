@@ -1,7 +1,7 @@
 #ifndef TEA_TOKENISER_HEADER
 #define TEA_TOKENISER_HEADER
 
-#include <bits/stdc++.h>
+#include <unordered_set>
 
 #include "file-stream-reader.hpp"
 #include "util.hpp"

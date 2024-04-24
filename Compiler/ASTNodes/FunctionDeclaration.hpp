@@ -1,8 +1,6 @@
 #ifndef TEA_AST_NODE_FUNCTION_DECLARATION_HEADER
 #define TEA_AST_NODE_FUNCTION_DECLARATION_HEADER
 
-#include <bits/stdc++.h>
-
 #include "../util.hpp"
 #include "ASTNode.hpp"
 #include "../tokeniser.hpp"

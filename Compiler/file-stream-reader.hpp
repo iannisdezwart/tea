@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include <cstdio>
 
 /**
  * @brief Class that is used to read source files.

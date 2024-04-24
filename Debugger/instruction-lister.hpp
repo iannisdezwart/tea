@@ -1,7 +1,6 @@
 #ifndef TEA_DEBUGGER_INSTRUCTION_LISTER_HEADER
 #define TEA_DEBUGGER_INSTRUCTION_LISTER_HEADER
 
-#include <bits/stdc++.h>
 #include "../ansi.hpp"
 #include "../VM/cpu.hpp"
 #include "../VM/memory.hpp"

@@ -1,8 +1,6 @@
 #ifndef TEA_WRITE_BUFFER_HEADER
 #define TEA_WRITE_BUFFER_HEADER
 
-#include <bits/stdc++.h>
-
 #include "buffer.hpp"
 
 /**

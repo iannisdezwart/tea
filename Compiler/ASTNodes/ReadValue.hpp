@@ -1,8 +1,6 @@
 #ifndef TEA_READ_VALUE_HEADER
 #define TEA_READ_VALUE_HEADER
 
-#include <bits/stdc++.h>
-
 #include "ASTNode.hpp"
 #include "../tokeniser.hpp"
 #include "../../Assembler/assembler.hpp"

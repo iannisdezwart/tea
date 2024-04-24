@@ -1,8 +1,6 @@
 #ifndef TEA_EXECUTABLE_HEADER
 #define TEA_EXECUTABLE_HEADER
 
-#include <bits/stdc++.h>
-
 #include "buffer.hpp"
 
 /**

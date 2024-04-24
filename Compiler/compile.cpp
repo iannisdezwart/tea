@@ -1,5 +1,3 @@
-#include <bits/stdc++.h>
-
 #include "compiler.hpp"
 #include "util.hpp"
 

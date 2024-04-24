@@ -1,8 +1,6 @@
 #ifndef TEA_COMPILER_STATE_HEADER
 #define TEA_COMPILER_STATE_HEADER
 
-#include <bits/stdc++.h>
-
 #include "util.hpp"
 #include "../Assembler/assembler.hpp"
 #include "../VM/cpu.hpp"

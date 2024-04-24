@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include <iostream>
 
 #include "cpu.hpp"
 #include "../Assembler/assembler.hpp"

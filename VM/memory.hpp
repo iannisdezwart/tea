@@ -1,7 +1,7 @@
 #ifndef TEA_VM_MEMORY_HEADER
 #define TEA_VM_MEMORY_HEADER
 
-#include <bits/stdc++.h>
+#include <cstdint>
 
 namespace memory
 {

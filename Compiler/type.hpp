@@ -1,7 +1,6 @@
 #ifndef TEA_TYPE_HEADER
 #define TEA_TYPE_HEADER
 
-#include <bits/stdc++.h>
 #include "util.hpp"
 #include "debugger-symbols.hpp"
 

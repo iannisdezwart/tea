@@ -1,7 +1,6 @@
 #ifndef KEYPRESS_HEADER
 #define KEYPRESS_HEADER
 
-#include <bits/stdc++.h>
 #include <termios.h>
 #include <unistd.h>
 

@@ -1,8 +1,6 @@
 #ifndef TEA_DISASSEMBLER_HEADER
 #define TEA_DISASSEMBLER_HEADER
 
-#include <bits/stdc++.h>
-
 #include "file-reader.hpp"
 #include "../ansi.hpp"
 #include "../Assembler/byte_code.hpp"

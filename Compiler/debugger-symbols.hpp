@@ -1,7 +1,8 @@
 #ifndef TEA_COMPILER_DEBUGGER_SYMBOLS_HEADER
 #define TEA_COMPILER_DEBUGGER_SYMBOLS_HEADER
 
-#include <bits/stdc++.h>
+#include <map>
+#include <fstream>
 #include "util.hpp"
 
 /**

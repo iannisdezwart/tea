@@ -1,8 +1,6 @@
 #ifndef TEA_WRITE_VALUE_HEADER
 #define TEA_WRITE_VALUE_HEADER
 
-#include <bits/stdc++.h>
-
 #include "ReadValue.hpp"
 #include "../tokeniser.hpp"
 #include "../../Assembler/assembler.hpp"

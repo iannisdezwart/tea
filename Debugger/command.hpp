@@ -1,7 +1,6 @@
 #ifndef TEA_DEBUGGER_COMMAND_HEADER
 #define TEA_DEBUGGER_COMMAND_HEADER
 
-#include <bits/stdc++.h>
 #include "../ansi.hpp"
 #include "keypress.hpp"
 #include "util.hpp"

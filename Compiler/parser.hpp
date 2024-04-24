@@ -1,8 +1,6 @@
 #ifndef TEA_PARSER_HEADER
 #define TEA_PARSER_HEADER
 
-#include <bits/stdc++.h>
-
 #include "tokeniser.hpp"
 
 #include "ASTNodes/ASTNode.hpp"

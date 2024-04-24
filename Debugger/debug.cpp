@@ -1,4 +1,3 @@
-#include <bits/stdc++.h>
 #include <sys/stat.h>
 
 #define RESTORE_INSTRUCTION_POINTER_ON_THROW

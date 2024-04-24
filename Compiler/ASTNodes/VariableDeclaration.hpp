@@ -1,8 +1,6 @@
 #ifndef TEA_AST_NODE_VARIABLE_DECLARATION_HEADER
 #define TEA_AST_NODE_VARIABLE_DECLARATION_HEADER
 
-#include <bits/stdc++.h>
-
 #include "ASTNode.hpp"
 #include "ReadValue.hpp"
 #include "IdentifierExpression.hpp"

@@ -1,7 +1,7 @@
 #ifndef TEA_ANSI_HEADER
 #define TEA_ANSI_HEADER
 
-#include <bits/stdc++.h>
+#include <iostream>
 
 /*
 	Terminal output sequences

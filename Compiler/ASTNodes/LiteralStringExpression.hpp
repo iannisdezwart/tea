@@ -1,8 +1,6 @@
 #ifndef TEA_AST_NODE_LITERAL_STRING_EXPRESSION_HEADER
 #define TEA_AST_NODE_LITERAL_STRING_EXPRESSION_HEADER
 
-#include <bits/stdc++.h>
-
 #include "ASTNode.hpp"
 #include "ReadValue.hpp"
 #include "../tokeniser.hpp"

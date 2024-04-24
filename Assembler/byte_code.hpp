@@ -1,7 +1,8 @@
 #ifndef TEA_BYTE_CODE_HEADER
 #define TEA_BYTE_CODE_HEADER
 
-#include <bits/stdc++.h>
+#include <cstdint>
+#include <vector>
 
 /**
  * @brief An enum containing all valid opcodes.

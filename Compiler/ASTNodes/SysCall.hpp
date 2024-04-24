@@ -1,7 +1,9 @@
 #ifndef TEA_AST_NODE_SYS_CALL_HEADER_HEADER
 #define TEA_AST_NODE_SYS_CALL_HEADER_HEADER
 
-#include <bits/stdc++.h>
+#include <set>
+#include <string>
+
 #include "ASTNode.hpp"
 #include "ReadValue.hpp"
 

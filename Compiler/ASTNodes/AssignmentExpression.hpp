@@ -1,7 +1,7 @@
 #ifndef TEA_AST_NODES_ASSIGNMENT_EXPRESSION_HEADER
 #define TEA_AST_NODES_ASSIGNMENT_EXPRESSION_HEADER
 
-#include <bits/stdc++.h>
+#include <functional>
 
 #include "../util.hpp"
 #include "ASTNode.hpp"

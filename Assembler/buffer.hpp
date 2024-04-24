@@ -1,7 +1,7 @@
 #ifndef TEA_BUFFER_HEADER
 #define TEA_BUFFER_HEADER
 
-#include <bits/stdc++.h>
+#include <cstdint>
 
 struct Buffer
 {

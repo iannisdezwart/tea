@@ -1,7 +1,7 @@
 #ifndef TEA_RAM_DEVICE_HEADER
 #define TEA_RAM_DEVICE_HEADER
 
-#include <bits/stdc++.h>
+#include <iostream>
 
 #include "memory-device.hpp"
 #include "../Assembler/buffer.hpp"

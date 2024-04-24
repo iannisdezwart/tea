@@ -1,7 +1,7 @@
 #ifndef TEA_FILE_READER_HEADER
 #define TEA_FILE_READER_HEADER
 
-#include <bits/stdc++.h>
+#include <cstdint>
 
 /**
  * @brief Class that is used to read a file in chunks of user-defined size.

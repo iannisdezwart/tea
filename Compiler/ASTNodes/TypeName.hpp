@@ -1,8 +1,6 @@
 #ifndef TEA_AST_NODE_TYPE_NAME_HEADER
 #define TEA_AST_NODE_TYPE_NAME_HEADER
 
-#include <bits/stdc++.h>
-
 #include "ASTNode.hpp"
 #include "../tokeniser.hpp"
 #include "../compiler-state.hpp"

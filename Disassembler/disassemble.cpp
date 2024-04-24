@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include <cstdio>
 
 #include "disassembler.hpp"
 #include "../Assembler/byte_code.hpp"

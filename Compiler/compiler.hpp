@@ -1,8 +1,6 @@
 #ifndef TEA_COMPILER_HEADER
 #define TEA_COMPILER_HEADER
 
-#include <bits/stdc++.h>
-
 #include "ASTNodes/ClassDeclaration.hpp"
 #include "util.hpp"
 #include "tokeniser.hpp"

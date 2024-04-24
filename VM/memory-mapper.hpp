@@ -1,7 +1,8 @@
 #ifndef TEA_MEMORY_MAPPER_HEADER
 #define TEA_MEMORY_MAPPER_HEADER
 
-#include <bits/stdc++.h>
+#include <vector>
+#include <sstream>
 
 #include "memory-device.hpp"
 #include "ram-device.hpp"

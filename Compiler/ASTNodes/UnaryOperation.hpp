@@ -1,8 +1,6 @@
 #ifndef TEA_AST_NODES_UNARY_OPERATION_HEADER
 #define TEA_AST_NODES_UNARY_OPERATION_HEADER
 
-#include <bits/stdc++.h>
-
 #include "../util.hpp"
 #include "ASTNode.hpp"
 #include "ReadValue.hpp"
@@ -408,6 +406,8 @@ struct UnaryOperation : public WriteValue
 				assembler.move_stack_top_address_into_reg(result_reg);
 				assembler.add_64_into_reg(location_data.offset, result_reg);
 			}
+
+			break;
 		}
 
 		default:

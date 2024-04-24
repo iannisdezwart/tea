@@ -1,8 +1,6 @@
 #ifndef TEA_AST_NODE_FOR_STATEMENT_HEADER
 #define TEA_AST_NODE_FOR_STATEMENT_HEADER
 
-#include <bits/stdc++.h>
-
 #include "ASTNode.hpp"
 #include "ReadValue.hpp"
 #include "../tokeniser.hpp"

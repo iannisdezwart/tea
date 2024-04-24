@@ -1,8 +1,6 @@
 #ifndef TEA_AST_NODE_OFFSET_EXPRESSION_HEADER
 #define TEA_AST_NODE_OFFSET_EXPRESSION_HEADER
 
-#include <bits/stdc++.h>
-
 #include "ReadValue.hpp"
 #include "WriteValue.hpp"
 

@@ -1,7 +1,7 @@
 #ifndef TEA_MEMORY_DEVICE_HEADER
 #define TEA_MEMORY_DEVICE_HEADER
 
-#include <bits/stdc++.h>
+#include <cstdint>
 
 // Memory regions
 

@@ -1,7 +1,11 @@
 #ifndef TEA_COMPILER_UTIL_HEADER
 #define TEA_COMPILER_UTIL_HEADER
 
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
+#include <cstdint>
+#include <sstream>
+#include <iomanip>
 
 /**
  * @brief Macro that prints an error message and aborts the program.

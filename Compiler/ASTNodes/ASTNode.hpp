@@ -1,8 +1,6 @@
 #ifndef TEA_AST_NODE_HEADER
 #define TEA_AST_NODE_HEADER
 
-#include <bits/stdc++.h>
-
 #include "../tokeniser.hpp"
 #include "../compiler-state.hpp"
 #include "../../Assembler/byte_code.hpp"

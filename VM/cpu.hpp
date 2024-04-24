@@ -1,8 +1,6 @@
 #ifndef TEA_CPU_HEADER
 #define TEA_CPU_HEADER
 
-#include <bits/stdc++.h>
-
 #include "memory.hpp"
 #include "../Assembler/executable.hpp"
 #include "../Assembler/byte_code.hpp"

@@ -1,7 +1,8 @@
 #ifndef TEA_DEBUGGER_UTIL_HEADER
 #define TEA_DEBUGGER_UTIL_HEADER
 
-#include <bits/stdc++.h>
+#include <set>
+#include <sstream>
 
 template <typename Type>
 struct PtrCmp

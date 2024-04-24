@@ -1,7 +1,7 @@
 #ifndef TEA_ASSEMBLER_HEADER
 #define TEA_ASSEMBLER_HEADER
 
-#include <bits/stdc++.h>
+#include <unordered_map>
 
 #include "../VM/cpu.hpp"
 #include "byte_code.hpp"
