@@ -43,11 +43,17 @@ struct ReturnStatement : public ASTNode
 	void
 	compile(Assembler &assembler, CompilerState &compiler_state)
 	{
-		// Moves the return value into R_RET
+		uint8_t res_reg = assembler.get_register();
+
+		// Store value in result register.
 
 		if (expression != NULL)
-			expression->get_value(assembler, compiler_state, R_RET);
+			expression->get_value(assembler, compiler_state, res_reg);
 
+		// Return value.
+
+		assembler.move_reg_into_reg(res_reg, R_RET);
+		assembler.free_register(res_reg);
 		assembler.return_();
 	}
 };
