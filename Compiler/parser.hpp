@@ -227,7 +227,7 @@ merge_bin_ops_rtl(std::vector<ReadValue *> &expressions,
  * Merges unary operators with left-to-right associativity.
  */
 void
-merge_un_ops_ltr(ReadValue *expression,
+merge_un_ops_ltr(ReadValue *&expression,
 	std::vector<std::pair<Token, bool>> &operators,
 	const std::vector<Operator> &active_ops)
 {
@@ -270,7 +270,7 @@ merge_un_ops_ltr(ReadValue *expression,
  * @brief Merges unary operators with right-to-left associativity.
  */
 void
-merge_un_ops_rtl(ReadValue *expression,
+merge_un_ops_rtl(ReadValue *&expression,
 	std::vector<std::pair<Token, bool>> &operators,
 	const std::vector<Operator> &active_ops)
 {
