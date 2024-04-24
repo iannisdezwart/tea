@@ -58,7 +58,7 @@ token_type_to_str(enum TokenType type)
  * @returns A boolean as a string.
  */
 const char *
-to_string(bool b)
+bool_to_string(bool b)
 {
 	if (b)
 		return "true";
@@ -116,15 +116,15 @@ struct Token
 		s += ANSI_GREEN ANSI_ITALIC "line:col";
 		s += ANSI_RESET ANSI_GREEN " = ";
 		s += ANSI_BOLD;
-		s += to_string(line);
+		s += std::to_string(line);
 		s += ":";
-		s += to_string(col);
+		s += std::to_string(col);
 		s += ANSI_RESET ", ";
 
 		s += ANSI_BRIGHT_RED ANSI_ITALIC "whitespace_before";
 		s += ANSI_RESET ANSI_BRIGHT_RED " = ";
 		s += ANSI_BOLD;
-		s += to_string(whitespace_before);
+		s += bool_to_string(whitespace_before);
 
 		s += ANSI_RESET;
 		s += " } @ ";
@@ -1102,7 +1102,7 @@ struct Tokeniser
 
 				reader.reset();
 
-				return to_string(stoull(s, NULL, 16));
+				return std::to_string(stoull(s, NULL, 16));
 			}
 
 			// Binary integer.
@@ -1119,7 +1119,7 @@ struct Tokeniser
 
 				reader.reset();
 
-				return to_string(stoull(s, NULL, 2));
+				return std::to_string(stoull(s, NULL, 2));
 			}
 
 			// Unrecognised prefix.

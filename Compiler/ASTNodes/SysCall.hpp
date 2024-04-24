@@ -88,7 +88,7 @@ struct SysCall : public ASTNode
 			if (type.pointer_depth() != 1 || type.pointed_type().byte_size() != 2)
 			{
 				err_at_token(name_token, "Type Error",
-					"Argument in PRINT_CHAR SysCall is a non-pointer or a pointer to a pointer\n"
+					"Argument in GET_CHAR SysCall is a non-pointer or a pointer to a pointer\n"
 					"Expected a pointer to a 16-bit character as argument");
 			}
 

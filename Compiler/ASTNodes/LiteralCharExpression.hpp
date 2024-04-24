@@ -27,7 +27,7 @@ struct LiteralCharExpression : public ReadValue
 	to_str()
 	{
 		std::string s = "LiteralCharExpression { value = \"";
-		s += to_string(value);
+		s += std::to_string(value);
 		s += "\" } @ " + to_hex((size_t) this);
 		return s;
 	}

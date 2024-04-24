@@ -43,7 +43,7 @@ struct TypeName : public ASTNode
 			else
 			{
 				out += '[';
-				out += to_string(array_sizes[i]);
+				out += std::to_string(array_sizes[i]);
 				out += ']';
 			}
 		}
