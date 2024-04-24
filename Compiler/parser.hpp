@@ -30,6 +30,8 @@
 #include "ASTNodes/CastExpression.hpp"
 #include "ASTNodes/OffsetExpression.hpp"
 #include "ASTNodes/SysCall.hpp"
+#include "ASTNodes/BreakStatement.hpp"
+#include "ASTNodes/ContinueStatement.hpp"
 
 /**
  * @brief Merges binary operators with left-to-right associativity.
@@ -583,6 +585,20 @@ struct Parser
 			if (token.value == "syscall")
 			{
 				node = scan_syscall();
+				expect_statement_terminator();
+				return node;
+			}
+
+			if (token.value == "break")
+			{
+				node = scan_break_statement();
+				expect_statement_terminator();
+				return node;
+			}
+
+			if (token.value == "continue")
+			{
+				node = scan_continue_statement();
 				expect_statement_terminator();
 				return node;
 			}
@@ -1623,6 +1639,35 @@ struct Parser
 		CodeBlock *body = scan_code_block_or_statement();
 
 		return new ForStatement(init, test, update, for_token, body);
+	}
+
+	/**
+	 * Scans a break statement.
+	 * "break"
+	 */
+	BreakStatement *
+	scan_break_statement()
+	{
+		Token break_token = next_token();
+		assert_token_type(break_token, KEYWORD);
+		assert_token_value(break_token, "break");
+
+		expect_statement_terminator();
+		return new BreakStatement(break_token);
+	}
+
+	/**
+	 * Scans a continue statement.
+	 */
+	ContinueStatement *
+	scan_continue_statement()
+	{
+		Token continue_token = next_token();
+		assert_token_type(continue_token, KEYWORD);
+		assert_token_value(continue_token, "continue");
+
+		expect_statement_terminator();
+		return new ContinueStatement(continue_token);
 	}
 };
 

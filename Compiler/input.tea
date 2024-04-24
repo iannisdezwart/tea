@@ -7,12 +7,12 @@ void putu(u64 n)
 {
 	if (n < 10)
 	{
-		putc(u8(n + '0'));
+		putc(u8(n + '0'))
 	}
 	else
 	{
-		putu(n / 10);
-		putc(u8(n % 10 + '0'));
+		putu(n / 10)
+		putc(u8(n % 10 + '0'))
 	}
 }
 
@@ -23,21 +23,42 @@ i16 getc()
 	return c
 }
 
-u64 fibonacci(u64 n)
+u64 read_int()
 {
-	if (n <= 1)
+	i64 n = 0
+	while (1)
 	{
-		return n
+		i16 c = getc()
+		if (c < '0' | c > '9')
+		{
+			break
+		}
+		n = n * 10 + i64(c - '0')
 	}
-
-	return fibonacci(n - 1) + fibonacci(n - 2)
+	return n
 }
+
+// u64 fibonacci(u64 n)
+// {
+// 	if (n <= 1)
+// 	{
+// 		return n
+// 	}
+
+// 	return fibonacci(n - 1) + fibonacci(n - 2)
+// }
+
+// u64 main()
+// {
+// 	for (u64 i = 0; i < 10; i++)
+// 	{
+// 		putu(fibonacci(i))
+// 		putc('\n')
+// 	}
+// }
 
 u64 main()
 {
-	for (u64 i = 0; i < 10; i++)
-	{
-		putu(fibonacci(i));
-		putc('\n');
-	}
+	i64 n = read_int()
+	putu(n)
 }

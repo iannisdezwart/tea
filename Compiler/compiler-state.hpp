@@ -1,6 +1,8 @@
 #ifndef TEA_COMPILER_STATE_HEADER
 #define TEA_COMPILER_STATE_HEADER
 
+#include <stack>
+
 #include "util.hpp"
 #include "../Assembler/assembler.hpp"
 #include "../VM/cpu.hpp"
@@ -295,6 +297,10 @@ struct CompilerState
 	// code segments. Starts at 0.
 	uint64_t label_id = 0;
 
+	// A stack containing the current loop labels.
+	// Used for the break and continue statements.
+	std::stack<std::pair<std::string, std::string>> loop_labels;
+
 	// Whether debug symbols should be generated.
 	const bool debug;
 
@@ -530,6 +536,28 @@ struct CompilerState
 		label += "-for-";
 		label += type;
 		return label;
+	}
+
+	/**
+	 * @brief Starts a new scope within the current function being compiled.
+	 * @returns The start and end labels of the new scope.
+	 */
+	std::pair<std::string, std::string>
+	push_loop_scope()
+	{
+		std::pair<std::string, std::string> labels = std::make_pair<>(
+			generate_label("loop-start"), generate_label("loop-end"));
+		loop_labels.push(labels);
+		return labels;
+	}
+
+	/**
+	 * @brief Ends the current scope within the current function being compiled.
+	 */
+	void
+	pop_loop_scope()
+	{
+		loop_labels.pop();
 	}
 };
 

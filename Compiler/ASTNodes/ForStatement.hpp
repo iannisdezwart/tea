@@ -52,8 +52,7 @@ struct ForStatement : public ASTNode
 
 		// Create labels
 
-		std::string loop_label = compiler_state.generate_label("for-loop");
-		std::string end_label  = compiler_state.generate_label("end-for-statement");
+		auto [start_label, end_label] = compiler_state.push_loop_scope();
 
 		// Compile code for the init statement
 
@@ -61,7 +60,7 @@ struct ForStatement : public ASTNode
 
 		// Create the loop label
 
-		assembler.add_label(loop_label);
+		assembler.add_label(start_label);
 
 		// Perform the check and move the result into the test register
 
@@ -85,11 +84,13 @@ struct ForStatement : public ASTNode
 
 		// Jump to the start of the loop again
 
-		assembler.jump(loop_label);
+		assembler.jump(start_label);
 
 		// Create the end label
 
 		assembler.add_label(end_label);
+
+		compiler_state.pop_loop_scope();
 	}
 };
 
