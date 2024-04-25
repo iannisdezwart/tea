@@ -306,8 +306,11 @@ enum Instruction : uint16_t
 	// Compares a register to a 64-bit literal.
 	COMPARE_REG_TO_64,
 
-	// Compares a register to a register.
-	COMPARE_REG_TO_REG,
+	// Compares a register to a register (signed).
+	COMPARE_REG_TO_REG_SIGNED,
+
+	// Compares a register to a register (unsigned).
+	COMPARE_REG_TO_REG_UNSIGNED,
 
 	// Sets a register to 1 if LHS > RHS.
 	SET_REG_IF_GREATER,
@@ -621,8 +624,10 @@ instruction_to_str(Instruction instruction)
 		return "COMPARE_REG_TO_32";
 	case COMPARE_REG_TO_64:
 		return "COMPARE_REG_TO_64";
-	case COMPARE_REG_TO_REG:
-		return "COMPARE_REG_TO_REG";
+	case COMPARE_REG_TO_REG_SIGNED:
+		return "COMPARE_REG_TO_REG_SIGNED";
+	case COMPARE_REG_TO_REG_UNSIGNED:
+		return "COMPARE_REG_TO_REG_UNSIGNED";
 	case SET_REG_IF_GREATER:
 		return "SET_REG_IF_GREATER";
 	case SET_REG_IF_GREATER_OR_EQUAL:
@@ -912,7 +917,9 @@ instruction_arg_types(Instruction instruction)
 		return { REG, LIT_32 };
 	case COMPARE_REG_TO_64:
 		return { REG, LIT_64 };
-	case COMPARE_REG_TO_REG:
+	case COMPARE_REG_TO_REG_SIGNED:
+		return { REG, REG };
+	case COMPARE_REG_TO_REG_UNSIGNED:
 		return { REG, REG };
 	case SET_REG_IF_GREATER:
 		return { REG };

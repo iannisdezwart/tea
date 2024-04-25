@@ -155,7 +155,30 @@ struct BinaryOperation : public ReadValue
 		case EQUAL:
 		case NOT_EQUAL:
 		{
-			return Type(Type::SIGNED_INTEGER, 1);
+			if (left_type != Type::SIGNED_INTEGER && left_type != Type::UNSIGNED_INTEGER)
+			{
+				warn("comparing non-integer type x = %s\n"
+				     "At %ld:%ld\n",
+					left_type.to_str().c_str(), op_token.line,
+					op_token.col);
+			}
+			if (right_type != Type::SIGNED_INTEGER && right_type != Type::UNSIGNED_INTEGER)
+			{
+				warn("comparing non-integer type y = %s\n"
+				     "At %ld:%ld\n",
+					right_type.to_str().c_str(), op_token.line,
+					op_token.col);
+			}
+			if (left_type != right_type)
+			{
+				warn("comparing types of different signedness x = %s and y = %s\n"
+				     "At %ld:%ld\n",
+					left_type.to_str().c_str(),
+					right_type.to_str().c_str(), op_token.line,
+					op_token.col);
+			}
+
+			return Type(left_type, 1);
 		}
 
 		default:
@@ -192,7 +215,7 @@ struct BinaryOperation : public ReadValue
 	{
 		uint8_t rhs_reg;
 
-		get_type(compiler_state);
+		Type type = get_type(compiler_state);
 
 		// Get the left hand side value.
 
@@ -243,34 +266,38 @@ struct BinaryOperation : public ReadValue
 
 			// Logical binary operations
 
+#define COMPARE_AND_SET(op)                                                         \
+	do                                                                          \
+	{                                                                           \
+		if (type == Type::SIGNED_INTEGER)                                   \
+			assembler.compare_reg_to_reg_signed(result_reg, rhs_reg);   \
+		else                                                                \
+			assembler.compare_reg_to_reg_unsigned(result_reg, rhs_reg); \
+		assembler.set_reg_if_##op(result_reg);                              \
+	} while (0)
+
 		case LESS:
-			assembler.compare_reg_to_reg(result_reg, rhs_reg);
-			assembler.set_reg_if_less(result_reg);
+			COMPARE_AND_SET(less);
 			break;
 
 		case LESS_OR_EQUAL:
-			assembler.compare_reg_to_reg(result_reg, rhs_reg);
-			assembler.set_reg_if_less_or_equal(result_reg);
+			COMPARE_AND_SET(less_or_equal);
 			break;
 
 		case GREATER:
-			assembler.compare_reg_to_reg(result_reg, rhs_reg);
-			assembler.set_reg_if_greater(result_reg);
+			COMPARE_AND_SET(greater);
 			break;
 
 		case GREATER_OR_EQUAL:
-			assembler.compare_reg_to_reg(result_reg, rhs_reg);
-			assembler.set_reg_if_greater_or_equal(result_reg);
+			COMPARE_AND_SET(greater_or_equal);
 			break;
 
 		case EQUAL:
-			assembler.compare_reg_to_reg(result_reg, rhs_reg);
-			assembler.set_reg_if_equal(result_reg);
+			COMPARE_AND_SET(equal);
 			break;
 
 		case NOT_EQUAL:
-			assembler.compare_reg_to_reg(result_reg, rhs_reg);
-			assembler.set_reg_if_not_equal(result_reg);
+			COMPARE_AND_SET(not_equal);
 			break;
 
 		default:
@@ -279,6 +306,8 @@ struct BinaryOperation : public ReadValue
 			abort();
 			break;
 		}
+
+#undef COMPARE_AND_SET
 
 		assembler.free_register(rhs_reg);
 	}

@@ -1356,7 +1356,33 @@ struct CPU
 			break;
 		}
 
-		case COMPARE_REG_TO_REG:
+		case COMPARE_REG_TO_REG_SIGNED:
+		{
+			uint8_t reg_id_1    = fetch<uint8_t>();
+			int64_t reg_value_1 = get_reg_by_id(reg_id_1);
+			uint8_t reg_id_2    = fetch<uint8_t>();
+			int64_t reg_value_2 = get_reg_by_id(reg_id_2);
+
+			if (reg_value_1 > reg_value_2)
+			{
+				greater_flag = true;
+				equal_flag   = false;
+			}
+			else if (reg_value_1 == reg_value_2)
+			{
+				greater_flag = false;
+				equal_flag   = true;
+			}
+			else
+			{
+				greater_flag = false;
+				equal_flag   = false;
+			}
+
+			break;
+		}
+
+		case COMPARE_REG_TO_REG_UNSIGNED:
 		{
 			uint8_t reg_id_1     = fetch<uint8_t>();
 			uint64_t reg_value_1 = get_reg_by_id(reg_id_1);

@@ -1417,14 +1417,27 @@ struct Assembler : public BufferBuilder
 	}
 
 	/**
-	 * @brief Adds a COMPARE_REG_TO_REG instruction to the program.
+	 * @brief Adds a COMPARE_REG_TO_REG_SIGNED instruction to the program.
 	 * @param reg_id The LHS register.
 	 * @param reg_id The RHS register.
 	 */
 	void
-	compare_reg_to_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+	compare_reg_to_reg_signed(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(COMPARE_REG_TO_REG);
+		push_instruction(COMPARE_REG_TO_REG_SIGNED);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a COMPARE_REG_TO_REG_UNSIGNED instruction to the program.
+	 * @param reg_id The LHS register.
+	 * @param reg_id The RHS register.
+	 */
+	void
+	compare_reg_to_reg_unsigned(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(COMPARE_REG_TO_REG_UNSIGNED);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
