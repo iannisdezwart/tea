@@ -1,24 +1,26 @@
 #ifndef TEA_AST_NODE_INIT_LIST_HEADER
 #define TEA_AST_NODE_INIT_LIST_HEADER
 
-#include "ASTNode.hpp"
-#include "ReadValue.hpp"
-#include "../tokeniser.hpp"
-#include "../compiler-state.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../util.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
+#include "Executable/byte-code.hpp"
+#include "Compiler/util.hpp"
 
-struct InitList : public ReadValue
+struct InitList final : public ReadValue
 {
-	std::vector<ReadValue *> items;
+	std::vector<std::unique_ptr<ReadValue>> items;
 
-	InitList(const Token &start_token, std::vector<ReadValue *> &&items)
-		: ReadValue(start_token, INIT_LIST), items(std::move(items)) {}
+	InitList(Token start_token, std::vector<std::unique_ptr<ReadValue>> &&items)
+		: ReadValue(std::move(start_token), INIT_LIST),
+		  items(std::move(items)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
-		for (ASTNode *item : items)
+		for (std::unique_ptr<ReadValue> &item : items)
 		{
 			item->dfs(callback, depth + 1);
 		}
@@ -28,31 +30,33 @@ struct InitList : public ReadValue
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s = "InitList {} @ " + to_hex((size_t) this);
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
 		std::vector<Type> fields;
-		size_t total_size;
+		size_t total_size = 0;
 
-		for (ReadValue *item : items)
+		for (std::unique_ptr<ReadValue> &item : items)
 		{
-			Type item_type = item->get_type(compiler_state);
-			total_size += item_type.byte_size();
-			fields.push_back(std::move(item_type));
+			item->type_check(type_check_state);
+			total_size += item->type.byte_size();
+			fields.push_back(item->type);
 		}
 
-		Type type(Type::INIT_LIST, total_size);
+		type        = Type(Type::INIT_LIST, total_size);
 		type.fields = std::move(fields);
-		return type;
 	}
 
 	void
-	get_value(Assembler &assembler, CompilerState &compiler_state, uint8_t result_reg)
+	get_value(Assembler &assembler, uint8_t result_reg)
+		const override
 	{
 		// Todo: create
 	}

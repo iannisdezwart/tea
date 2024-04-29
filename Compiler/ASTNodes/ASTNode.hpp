@@ -1,10 +1,10 @@
 #ifndef TEA_AST_NODE_HEADER
 #define TEA_AST_NODE_HEADER
 
-#include "../tokeniser.hpp"
-#include "../compiler-state.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../../Assembler/assembler.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
+#include "Compiler/code-gen/Assembler.hpp"
 
 enum ASTNodeType
 {
@@ -24,7 +24,6 @@ enum ASTNodeType
 	BINARY_OPERATION,
 	UNARY_OPERATION,
 	MEMBER_EXPRESSION,
-	METHOD_CALL,
 	ASSIGNMENT_EXPRESSION,
 	IF_STATEMENT,
 	WHILE_STATEMENT,
@@ -37,7 +36,7 @@ enum ASTNodeType
 };
 
 const char *
-ast_node_type_to_str(enum ASTNodeType type)
+ast_node_type_to_str(ASTNodeType type)
 {
 	switch (type)
 	{
@@ -73,8 +72,6 @@ ast_node_type_to_str(enum ASTNodeType type)
 		return "UnaryOperation";
 	case MEMBER_EXPRESSION:
 		return "MemberExpression";
-	case METHOD_CALL:
-		return "MethodCall";
 	case ASSIGNMENT_EXPRESSION:
 		return "AssignmentExpression";
 	case IF_STATEMENT:
@@ -89,6 +86,10 @@ ast_node_type_to_str(enum ASTNodeType type)
 		return "OffsetExpression";
 	case SYS_CALL:
 		return "SysCall";
+	case BREAK_STATEMENT:
+		return "BreakStatement";
+	case CONTINUE_STATEMENT:
+		return "ContinueStatement";
 	default:
 		return "Undefined";
 	}
@@ -96,22 +97,28 @@ ast_node_type_to_str(enum ASTNodeType type)
 
 struct ASTNode
 {
-	ASTNodeType type;
 	Token accountable_token;
+	ASTNodeType node_type;
+	Type type;
 
-	ASTNode(const Token &accountable_token, ASTNodeType type)
-		: accountable_token(accountable_token), type(type) {}
+	ASTNode(Token accountable_token, ASTNodeType node_type)
+		: accountable_token(std::move(accountable_token)),
+		  node_type(node_type) {}
 
 	virtual ~ASTNode() {}
 
 	virtual std::string
 	to_str() = 0;
+
 	virtual void
 	dfs(std::function<void(ASTNode *, size_t)>, size_t depth = 0) = 0;
+
 	virtual void
-	compile(Assembler &assembler, CompilerState &compiler_state) = 0;
-	virtual Type
-	get_type(CompilerState &compiler_state) = 0;
+	type_check(TypeCheckState &type_check_state) = 0;
+
+	virtual void
+	code_gen(Assembler &assembler)
+		const = 0;
 
 	void
 	print(const char *prefix)

@@ -1,15 +1,14 @@
 #ifndef TEA_WRITE_VALUE_HEADER
 #define TEA_WRITE_VALUE_HEADER
 
-#include "ReadValue.hpp"
-#include "../tokeniser.hpp"
-#include "../../Assembler/assembler.hpp"
-#include "../compiler-state.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
 
 bool
 is_write_value(ASTNode *node)
 {
-	switch (node->type)
+	switch (node->node_type)
 	{
 	case IDENTIFIER_EXPRESSION:
 	case MEMBER_EXPRESSION:
@@ -22,24 +21,21 @@ is_write_value(ASTNode *node)
 	}
 }
 
-class WriteValue : public ReadValue
+struct WriteValue : public ReadValue
 {
-	public:
+	std::unique_ptr<LocationData> location_data { nullptr };
 
-	WriteValue(const Token &accountable_token, ASTNodeType type)
-		: ReadValue(accountable_token, type) {}
+	WriteValue(Token accountable_token, ASTNodeType type)
+		: ReadValue(std::move(accountable_token), type) {}
+
+	virtual ~WriteValue() {}
 
 	/**
 	 *  Stores the value in value_reg into this value.
 	 */
 	virtual void
-	store(Assembler &assembler, CompilerState &compiler_state, uint8_t value_reg) = 0;
-
-	/**
-	 *  Gets data about the location of the value.
-	 */
-	virtual LocationData
-	get_location_data(CompilerState &compiler_state) = 0;
+	store(Assembler &assembler, uint8_t value_reg)
+		const = 0;
 
 	/**
 	 *  Casts an ASTNode into a WriteValue.

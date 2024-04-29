@@ -1,0 +1,53 @@
+void putc(u8 c)
+{
+	syscall PRINT_CHAR(c)
+}
+
+void print_unsigned(u64 n)
+{
+	if (n < 10)
+	{
+		putc(u8(n + '0'))
+	}
+	else
+	{
+		print_unsigned(n / 10)
+		putc(u8(n % 10 + '0'))
+	}
+}
+
+class Bar
+{
+	u8 test
+}
+
+class Foo
+{
+	u64 a
+	u32 b
+	Bar c
+}
+
+void Foo_op(Foo* foo)
+{
+	foo->a += 1
+	foo->b -= 1
+	// foo->c.test = 1
+}
+
+u64 main()
+{
+	Foo foo
+	foo.a = 10
+	foo.b = 20
+	// foo.c.test = 0
+
+	Foo_op(&foo)
+
+	print_unsigned(foo.a)
+	putc(',')
+	print_unsigned(foo.b)
+	putc('\n')
+
+	return 0
+}

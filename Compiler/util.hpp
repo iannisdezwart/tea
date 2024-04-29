@@ -330,4 +330,14 @@ fits_int64(const std::string &str)
 	return true;
 }
 
+/**
+ * Cast std::unique_ptr<T> to std::unique_ptr<U>.
+ */
+template <typename To, typename From>
+std::unique_ptr<To>
+static_unique_ptr_cast(std::unique_ptr<From> &&ptr)
+{
+	return std::unique_ptr<To> { static_cast<To *>(ptr.release()) };
+}
+
 #endif

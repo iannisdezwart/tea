@@ -1,9 +1,9 @@
 #ifndef TEA_CPU_HEADER
 #define TEA_CPU_HEADER
 
-#include "memory.hpp"
-#include "../Assembler/executable.hpp"
-#include "../Assembler/byte_code.hpp"
+#include "VM/memory.hpp"
+#include "Executable/executable.hpp"
+#include "Executable/byte-code.hpp"
 
 /**
  * @brief The class that represents a CPU of the virtual machine.
@@ -11,11 +11,6 @@
  */
 struct CPU
 {
-	// ===== Memory =====
-
-	// A pointer to the RAM of the virtual machine.
-	uint8_t *ram;
-
 	// ===== Program segment sizes =====
 
 	// The size of the static data segment in bytes.
@@ -187,21 +182,25 @@ struct CPU
 	 * @param stack_size The stack size of the virtual machine.
 	 */
 	CPU(Executable &executable, size_t stack_size)
-		: stack_size(stack_size),
-		  static_data_size(executable.static_data_size),
-		  program_size(executable.program_size)
+		: static_data_size(executable.static_data_size),
+		  program_size(executable.program_size),
+		  stack_size(stack_size)
 	{
-		// Initialise the RAM
+		// Initialise the memory regions
 
-		size_t ram_size = executable.size + stack_size;
-		ram             = memory::allocate(ram_size);
-		memcpy(ram, executable.data, executable.size);
+		// 1. Program region, contains the executable code.
+		uint8_t *program_region = memory::allocate(program_size);
+		memcpy(program_region, executable.data + static_data_size, program_size);
+
+		// 2. Stack region, contains the stack, prepended by the static data.
+		uint8_t *stack_region = memory::allocate(static_data_size + stack_size);
+		memcpy(stack_region, executable.data, static_data_size);
 
 		// Initialise the common memory locations
 
-		static_data_location = ram;
-		program_location     = static_data_location + static_data_size;
-		stack_top            = program_location + program_size;
+		program_location     = program_region;
+		static_data_location = stack_region;
+		stack_top            = stack_region + static_data_size;
 		stack_bottom         = stack_top + stack_size;
 
 		// Initialise the registers
@@ -278,7 +277,7 @@ struct CPU
 	void
 	run()
 	{
-		while (get_instr_ptr() < stack_top)
+		while (get_instr_ptr() < program_location + program_size)
 		{
 			step();
 		}
@@ -781,6 +780,7 @@ struct CPU
 		{
 			uint8_t reg_id = fetch<uint8_t>();
 			set_reg_by_id(reg_id, (uint64_t) stack_top);
+			break;
 		}
 
 		case ADD_8_INTO_REG:

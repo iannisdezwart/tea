@@ -1,15 +1,15 @@
 #ifndef TEA_READ_VALUE_HEADER
 #define TEA_READ_VALUE_HEADER
 
-#include "ASTNode.hpp"
-#include "../tokeniser.hpp"
-#include "../../Assembler/assembler.hpp"
-#include "../compiler-state.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Compiler/code-gen/Assembler.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
 
 bool
 is_read_value(ASTNode *node)
 {
-	switch (node->type)
+	switch (node->node_type)
 	{
 	case BINARY_OPERATION:
 	case UNARY_OPERATION:
@@ -30,21 +30,22 @@ is_read_value(ASTNode *node)
 	}
 }
 
-class ReadValue : public ASTNode
+struct ReadValue : public ASTNode
 {
-	public:
+	ReadValue(Token accountable_token, ASTNodeType node_type)
+		: ASTNode(std::move(accountable_token), node_type) {}
 
-	ReadValue(const Token &accountable_token, ASTNodeType type)
-		: ASTNode(accountable_token, type) {}
+	virtual ~ReadValue() {}
 
 	/**
 	 *  Gets the value of this expression and ignores it.
 	 */
 	void
-	compile(Assembler &assembler, CompilerState &compiler_state)
+	code_gen(Assembler &assembler)
+		const override
 	{
 		uint8_t result_reg = assembler.get_register();
-		get_value(assembler, compiler_state, result_reg);
+		get_value(assembler, result_reg);
 		assembler.free_register(result_reg);
 	}
 
@@ -52,7 +53,8 @@ class ReadValue : public ASTNode
 	 *  Gets the value of this expression and puts it into result_reg.
 	 */
 	virtual void
-	get_value(Assembler &assembler, CompilerState &compiler_state, uint8_t result_reg) = 0;
+	get_value(Assembler &assembler, uint8_t result_reg)
+		const = 0;
 
 	/**
 	 *  Casts an ASTNode into a ReadValue

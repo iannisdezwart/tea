@@ -1,64 +1,57 @@
 #ifndef TEA_AST_NODE_CLASS_DECLARATION_HEADER
 #define TEA_AST_NODE_CLASS_DECLARATION_HEADER
 
-#include "../util.hpp"
-#include "ASTNode.hpp"
-#include "../tokeniser.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../../Assembler/assembler.hpp"
-#include "../compiler-state.hpp"
-#include "TypeName.hpp"
-#include "TypeIdentifierPair.hpp"
-#include "FunctionDeclaration.hpp"
-#include "VariableDeclaration.hpp"
-#include "CodeBlock.hpp"
-#include "MemberExpression.hpp"
+#include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Compiler/code-gen/Assembler.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
+#include "Compiler/ASTNodes/TypeName.hpp"
+#include "Compiler/ASTNodes/TypeIdentifierPair.hpp"
+#include "Compiler/ASTNodes/FunctionDeclaration.hpp"
+#include "Compiler/ASTNodes/VariableDeclaration.hpp"
+#include "Compiler/ASTNodes/CodeBlock.hpp"
+#include "Compiler/ASTNodes/MemberExpression.hpp"
 
-struct ClassDeclaration : public ASTNode
+struct ClassDeclaration final : public ASTNode
 {
 	std::string class_name;
-	std::vector<TypeIdentifierPair *> fields;
-	std::vector<FunctionDeclaration *> methods;
+	std::vector<std::unique_ptr<VariableDeclaration>> fields;
 
 	ClassDeclaration(
-		const Token &class_token,
-		const std::string &class_name,
-		CodeBlock *body)
-		: ASTNode(class_token, CLASS_DECLARATION), class_name(class_name)
+		Token class_token,
+		std::string class_name,
+		std::unique_ptr<CodeBlock> body)
+		: ASTNode(std::move(class_token), CLASS_DECLARATION),
+		  class_name(std::move(class_name))
 	{
-		for (ASTNode *node : body->statements)
+		for (std::unique_ptr<ASTNode> &node : body->statements)
 		{
-			if (node->type == FUNCTION_DECLARATION)
+			if (node->node_type == VARIABLE_DECLARATION)
 			{
-				methods.push_back((FunctionDeclaration *) node);
+				// TODO: As of now, variable assignments are ignored here.
+				fields.push_back(static_unique_ptr_cast<VariableDeclaration>(std::move(node)));
 			}
 
-			else if (node->type == VARIABLE_DECLARATION)
-			{
-				fields.push_back(((VariableDeclaration *) node)->type_and_id_pair);
-			}
+			// TODO: Support for methods has been removed.
 
 			else
 			{
 				err_at_token(node->accountable_token, "Syntax Error",
 					"Unexpected statement of type %s\n"
 					"Only VariableDeclarations and FunctionDeclarations are allowed within a class body",
-					ast_node_type_to_str(node->type));
+					ast_node_type_to_str(node->node_type));
 			}
 		}
 	}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
-		for (TypeIdentifierPair *field : fields)
+		for (const std::unique_ptr<VariableDeclaration> &field : fields)
 		{
 			field->dfs(callback, depth + 1);
-		}
-
-		for (FunctionDeclaration *method : methods)
-		{
-			method->dfs(callback, depth + 1);
 		}
 
 		callback(this, depth);
@@ -66,135 +59,44 @@ struct ClassDeclaration : public ASTNode
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s = "ClassDeclaration { name = "
 			+ class_name + " } @ " + to_hex((size_t) this);
 		return s;
 	}
 
-	size_t
-	byte_size(CompilerState &compiler_state)
-	{
-		size_t size = 0;
-
-		for (TypeIdentifierPair *field : fields)
-		{
-			size += field->get_type(compiler_state).byte_size();
-		}
-
-		return size;
-	}
-
-	Type
-	get_type(CompilerState &compiler_state)
-	{
-		Type type(Type::USER_DEFINED_CLASS, byte_size(compiler_state));
-		type.class_name = class_name;
-
-		for (TypeIdentifierPair *field : fields)
-		{
-			type.fields.push_back(field->get_type(compiler_state));
-		}
-
-		return type;
-	}
-
-	bool
-	has_field(const std::string &field_name)
-	{
-		for (size_t i = 0; i < fields.size(); i++)
-		{
-			if (fields[i]->identifier_token.value == field_name)
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	void
-	dereference_field_reference(CompilerState &compiler_state, ASTNode *node)
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		if (node->type == IDENTIFIER_EXPRESSION)
+		size_t byte_size = 0;
+
+		for (std::unique_ptr<VariableDeclaration> &field : fields)
 		{
-			IdentifierExpression *id_expr = (IdentifierExpression *) node;
-			const std::string &field_name = id_expr->identifier_token.value;
+			field->type_check(type_check_state);
+			byte_size += field->type.byte_size();
+		}
 
-			if (has_field(field_name))
-			{
-				Token this_token;
-				this_token.type  = IDENTIFIER;
-				this_token.value = "this";
-				if (2) {}
-				Token op_token;
-				op_token.type  = OPERATOR;
-				op_token.value = "->";
+		ClassDefinition class_def(byte_size);
 
-				IdentifierExpression *this_expr  = new IdentifierExpression(this_token);
-				IdentifierExpression *field_expr = new IdentifierExpression(*id_expr);
-				MemberExpression *mem_expr       = new MemberExpression(
-					      this_expr, field_expr, op_token);
-				Class class_obj        = compiler_state.classes[class_name];
-				const Type &field_type = class_obj.get_field_type(field_name);
+		for (std::unique_ptr<VariableDeclaration> &field : fields)
+		{
+			class_def.add_field(field->type_and_id_pair->get_identifier_name(), field->type);
+		}
 
-				id_expr->replacement      = mem_expr;
-				id_expr->replacement_type = field_type;
-			}
+		if (!type_check_state.add_class(class_name, class_def))
+		{
+			err_at_token(accountable_token, "Type Error",
+				"Class %s has already been declared",
+				class_name.c_str());
 		}
 	}
 
 	void
-	define(CompilerState &compiler_state)
+	code_gen(Assembler &assembler)
+		const override
 	{
-		// Define methods
-
-		for (FunctionDeclaration *method : methods)
-		{
-			// Add double colons to indicate scope
-
-			Token &id_token         = method->type_and_id_pair->identifier_token;
-			std::string method_name = id_token.value;
-			id_token.value          = class_name + "::" + method_name;
-
-			// Todo: check if the parameter list does not include a field name
-			// Add pointer to class as first parameter (this)
-
-			Token pointer_param_type_token;
-			pointer_param_type_token.type  = TYPE;
-			pointer_param_type_token.value = class_name;
-
-			Token pointer_param_id_token;
-			pointer_param_id_token.type  = IDENTIFIER;
-			pointer_param_id_token.value = "this";
-
-			TypeIdentifierPair *class_pointer = new TypeIdentifierPair(
-				new TypeName(pointer_param_type_token, { 0 }),
-				pointer_param_id_token);
-
-			method->params.insert(method->params.begin(), 1, class_pointer);
-			method->define(compiler_state);
-
-			// Dereference field references
-
-			auto cb = [this, &compiler_state](ASTNode *node, size_t)
-			{
-				dereference_field_reference(compiler_state, node);
-			};
-
-			method->dfs(cb, 0);
-		}
-	}
-
-	void
-	compile(Assembler &assembler, CompilerState &compiler_state)
-	{
-		// Compile methods
-
-		for (FunctionDeclaration *method : methods)
-		{
-			method->compile(assembler, compiler_state);
-		}
 	}
 };
 

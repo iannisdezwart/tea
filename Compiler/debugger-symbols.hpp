@@ -3,7 +3,8 @@
 
 #include <map>
 #include <fstream>
-#include "util.hpp"
+
+#include "Compiler/util.hpp"
 
 /**
  * @brief Structure that holds information about a line
@@ -201,7 +202,7 @@ struct IndentFileParser
  * @brief Enum that represents the possible debugger symbol types.
  * TODO: See how to support user-defined classes in a nicer way.
  */
-enum struct DebuggerSymbolTypes : uint8_t
+enum struct DebuggerSymbolType : uint8_t
 {
 	POINTER,
 	U8,
@@ -222,30 +223,30 @@ enum struct DebuggerSymbolTypes : uint8_t
  * @returns A string representation of the debugger symbol type.
  */
 const char *
-debugger_symbol_type_to_str(enum DebuggerSymbolTypes type)
+debugger_symbol_type_to_str(DebuggerSymbolType type)
 {
 	switch (type)
 	{
-	case DebuggerSymbolTypes::POINTER:
+	case DebuggerSymbolType::POINTER:
 		return "POINTER";
-	case DebuggerSymbolTypes::U8:
+	case DebuggerSymbolType::U8:
 		return "U8";
-	case DebuggerSymbolTypes::I8:
+	case DebuggerSymbolType::I8:
 		return "I8";
-	case DebuggerSymbolTypes::U16:
+	case DebuggerSymbolType::U16:
 		return "U16";
-	case DebuggerSymbolTypes::I16:
+	case DebuggerSymbolType::I16:
 		return "I16";
-	case DebuggerSymbolTypes::U32:
+	case DebuggerSymbolType::U32:
 		return "U32";
-	case DebuggerSymbolTypes::I32:
+	case DebuggerSymbolType::I32:
 		return "I32";
-	case DebuggerSymbolTypes::U64:
+	case DebuggerSymbolType::U64:
 		return "U64";
-	case DebuggerSymbolTypes::I64:
+	case DebuggerSymbolType::I64:
 		return "I64";
-	case DebuggerSymbolTypes::USER_DEFINED_CLASS:
-		return "class";
+	case DebuggerSymbolType::USER_DEFINED_CLASS:
+		return "CLASS";
 	default:
 		return "UNDEFINED";
 	}
@@ -256,30 +257,30 @@ debugger_symbol_type_to_str(enum DebuggerSymbolTypes type)
  * @param str The string to parse.
  * @returns The parsed debugger symbol type.
  */
-enum DebuggerSymbolTypes
+DebuggerSymbolType
 str_to_debugger_symbol_type(const std::string &str)
 {
 	if (str == "POINTER")
-		return DebuggerSymbolTypes::POINTER;
+		return DebuggerSymbolType::POINTER;
 	if (str == "U8")
-		return DebuggerSymbolTypes::U8;
+		return DebuggerSymbolType::U8;
 	if (str == "I8")
-		return DebuggerSymbolTypes::I8;
+		return DebuggerSymbolType::I8;
 	if (str == "U16")
-		return DebuggerSymbolTypes::U16;
+		return DebuggerSymbolType::U16;
 	if (str == "I16")
-		return DebuggerSymbolTypes::I16;
+		return DebuggerSymbolType::I16;
 	if (str == "U32")
-		return DebuggerSymbolTypes::U32;
+		return DebuggerSymbolType::U32;
 	if (str == "I32")
-		return DebuggerSymbolTypes::I32;
+		return DebuggerSymbolType::I32;
 	if (str == "U64")
-		return DebuggerSymbolTypes::U64;
+		return DebuggerSymbolType::U64;
 	if (str == "I64")
-		return DebuggerSymbolTypes::I64;
-	if (str == "class")
-		return DebuggerSymbolTypes::USER_DEFINED_CLASS;
-	return DebuggerSymbolTypes::UNDEFINED;
+		return DebuggerSymbolType::I64;
+	if (str == "CLASS")
+		return DebuggerSymbolType::USER_DEFINED_CLASS;
+	return DebuggerSymbolType::UNDEFINED;
 }
 
 /**
@@ -291,15 +292,20 @@ struct DebuggerSymbol
 	std::string name;
 
 	// The type of the symbol.
-	enum DebuggerSymbolTypes type;
+	DebuggerSymbolType type;
+
+	// Extra data.
+	std::string extra;
 
 	/**
 	 * @brief Constructs a new debugger symbol.
 	 * @param name The name of the symbol.
 	 * @param type The type of the symbol.
+	 * @param extra Extra data.
 	 */
-	DebuggerSymbol(const std::string &name, enum DebuggerSymbolTypes type)
-		: name(name), type(type) {}
+	DebuggerSymbol(const std::string &name, DebuggerSymbolType type,
+		const std::string &extra = "")
+		: name(name), type(type), extra(extra) {}
 
 	/**
 	 * @brief Returns the byte size of the symbol.
@@ -311,19 +317,19 @@ struct DebuggerSymbol
 	{
 		switch (type)
 		{
-		case DebuggerSymbolTypes::POINTER:
+		case DebuggerSymbolType::POINTER:
 			return 8;
-		case DebuggerSymbolTypes::U8:
-		case DebuggerSymbolTypes::I8:
+		case DebuggerSymbolType::U8:
+		case DebuggerSymbolType::I8:
 			return 1;
-		case DebuggerSymbolTypes::U16:
-		case DebuggerSymbolTypes::I16:
+		case DebuggerSymbolType::U16:
+		case DebuggerSymbolType::I16:
 			return 2;
-		case DebuggerSymbolTypes::U32:
-		case DebuggerSymbolTypes::I32:
+		case DebuggerSymbolType::U32:
+		case DebuggerSymbolType::I32:
 			return 4;
-		case DebuggerSymbolTypes::U64:
-		case DebuggerSymbolTypes::I64:
+		case DebuggerSymbolType::U64:
+		case DebuggerSymbolType::I64:
 			return 8;
 		default:
 			return 0;
@@ -340,6 +346,11 @@ struct DebuggerSymbol
 		std::string str;
 
 		str += debugger_symbol_type_to_str(type);
+		if (extra.size())
+		{
+			str += ':';
+			str += extra;
+		}
 		str += ' ';
 		str += name;
 
@@ -354,10 +365,24 @@ struct DebuggerSymbol
 	static DebuggerSymbol
 	from_str(const std::string &str)
 	{
-		size_t space_index = str.find_first_of(' ');
+		size_t space_index         = str.find_first_of(' ');
+		std::string name           = str.substr(space_index + 1);
+		std::string type_and_extra = str.substr(0, space_index);
+		size_t colon_index         = type_and_extra.find_first_of(':');
+		std::string extra;
+		DebuggerSymbolType type;
 
-		return DebuggerSymbol(str.substr(space_index + 1),
-			str_to_debugger_symbol_type(str.substr(0, space_index)));
+		if (colon_index != std::string::npos)
+		{
+			extra = type_and_extra.substr(colon_index + 1);
+			type  = str_to_debugger_symbol_type(str.substr(0, colon_index));
+		}
+		else
+		{
+			type = str_to_debugger_symbol_type(type_and_extra);
+		}
+
+		return DebuggerSymbol(name, type, extra);
 	}
 };
 
@@ -372,6 +397,15 @@ struct DebuggerFunction
 };
 
 /**
+ * @brief A structure that represents a debugger class.
+ * Holds the fields of the class.
+ */
+struct DebuggerClass
+{
+	std::vector<DebuggerSymbol> fields;
+};
+
+/**
  * @brief A structure that reprsents the debugger symbols.
  */
 struct DebuggerSymbols
@@ -381,6 +415,18 @@ struct DebuggerSymbols
 
 	// A list containing the global debugger symbols.
 	std::vector<DebuggerSymbol> globals;
+
+	// A list containing the class debugger symbols.
+	std::map<std::string, DebuggerClass> classes;
+
+	/**
+	 * @brief Adds a class to the debugger symbols.
+	 */
+	void
+	add_class(const std::string &name, const DebuggerClass &cls)
+	{
+		classes[name] = cls;
+	}
 
 	/**
 	 * @brief Adds a function to the debugger symbols.
@@ -415,6 +461,34 @@ struct DebuggerSymbols
 	{
 		std::ofstream stream(exec_file_name + ".debug");
 
+		// Classes
+
+		if (classes.size())
+		{
+			stream << "classes\n";
+		}
+
+		for (const auto &[cls_name, cls_symbols] : classes)
+		{
+			const std::vector<DebuggerSymbol> &fields = cls_symbols.fields;
+
+			// Class
+
+			stream << '\t' << cls_name << '\n';
+
+			// Fields
+
+			if (fields.size())
+			{
+				stream << "\t\tfields\n";
+			}
+
+			for (const DebuggerSymbol &field : fields)
+			{
+				stream << "\t\t\t" << field.to_str() << '\n';
+			}
+		}
+
 		// Functions
 
 		if (functions.size())
@@ -422,10 +496,8 @@ struct DebuggerSymbols
 			stream << "functions\n";
 		}
 
-		for (const std::pair<std::string, DebuggerFunction> &function : functions)
+		for (const auto &[fn_name, fn_symbols] : functions)
 		{
-			const std::string &fn_name                = function.first;
-			const DebuggerFunction &fn_symbols        = function.second;
 			const std::vector<DebuggerSymbol> &params = fn_symbols.params;
 			const std::vector<DebuggerSymbol> &locals = fn_symbols.locals;
 
@@ -496,6 +568,32 @@ struct DebuggerSymbols
 	}
 
 	static void
+	scan_classes(IndentFileNode *section, DebuggerSymbols &debugger_symbols)
+	{
+		for (IndentFileNode *cls_node : section->children)
+		{
+			const std::string &cls_name = cls_node->line;
+			DebuggerClass cls_symbols;
+
+			for (IndentFileNode *cls_section : cls_node->children)
+			{
+				if (cls_section->line == "fields")
+				{
+					for (IndentFileNode *field_node : cls_section->children)
+					{
+						const std::string &field_str = field_node->line;
+						cls_symbols.fields.push_back(DebuggerSymbol::from_str(field_str));
+					}
+				}
+			}
+
+			// Add the class to the debugger symbols
+
+			debugger_symbols.add_class(cls_name, cls_symbols);
+		}
+	}
+
+	static void
 	scan_functions(IndentFileNode *section, DebuggerSymbols &debugger_symbols)
 	{
 		for (IndentFileNode *fn_node : section->children)
@@ -548,6 +646,13 @@ struct DebuggerSymbols
 
 		for (IndentFileNode *section : file.children)
 		{
+			// Scan classes
+
+			if (section->line == "classes")
+			{
+				scan_classes(section, debugger_symbols);
+			}
+
 			// Scan function symbols
 
 			if (section->line == "functions")

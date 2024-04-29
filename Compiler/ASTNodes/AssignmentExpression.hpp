@@ -3,35 +3,36 @@
 
 #include <functional>
 
-#include "../util.hpp"
-#include "ASTNode.hpp"
-#include "ReadValue.hpp"
-#include "WriteValue.hpp"
-#include "IdentifierExpression.hpp"
-#include "MemberExpression.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../../Assembler/assembler.hpp"
-#include "../compiler-state.hpp"
-#include "../tokeniser.hpp"
-#include "../../VM/cpu.hpp"
+#include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/WriteValue.hpp"
+#include "Compiler/ASTNodes/IdentifierExpression.hpp"
+#include "Compiler/ASTNodes/MemberExpression.hpp"
+#include "Executable/byte-code.hpp"
+#include "Compiler/code-gen/Assembler.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "VM/cpu.hpp"
 
-struct AssignmentExpression : public ReadValue
+struct AssignmentExpression final : public ReadValue
 {
-	WriteValue *lhs_expr;
-	ReadValue *value;
-	Token op_token;
-	enum Operator op;
+	std::unique_ptr<WriteValue> lhs_expr;
+	std::unique_ptr<ReadValue> value;
+	Operator op;
 
 	AssignmentExpression(
-		WriteValue *lhs_expr,
-		ReadValue *value,
+		std::unique_ptr<WriteValue> lhs_expr,
+		std::unique_ptr<ReadValue> value,
 		Token op_token)
-		: lhs_expr(lhs_expr), value(value), op_token(op_token),
-		  op(str_to_operator(op_token.value)),
-		  ReadValue(op_token, ASSIGNMENT_EXPRESSION) {}
+		: ReadValue(std::move(op_token), ASSIGNMENT_EXPRESSION),
+		  lhs_expr(std::move(lhs_expr)),
+		  value(std::move(value)),
+		  op(str_to_operator(accountable_token.value)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
 		value->dfs(callback, depth + 1);
 		lhs_expr->dfs(callback, depth + 1);
@@ -40,6 +41,7 @@ struct AssignmentExpression : public ReadValue
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s;
 
@@ -51,71 +53,43 @@ struct AssignmentExpression : public ReadValue
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		Type lhs_type   = lhs_expr->get_type(compiler_state);
-		Type value_type = value->get_type(compiler_state);
+		lhs_expr->type_check(type_check_state);
+		value->type_check(type_check_state);
 
-		if (!value_type.fits(lhs_type))
+		if (!value->type.fits(lhs_expr->type))
 			err_at_token(lhs_expr->accountable_token,
 				"Type Error",
 				"Right hand side value of AssignmentExpression does not fit into "
 				"left hand side value\n"
 				"lhs_type = %s, rhs_type = %s",
-				lhs_type.to_str().c_str(), value_type.to_str().c_str());
+				lhs_expr->type.to_str().c_str(), value->type.to_str().c_str());
 
-		return lhs_type;
-	}
-
-	bool
-	lhs_is_id_expr()
-	{
-		if (lhs_expr->type == IDENTIFIER_EXPRESSION)
-		{
-			IdentifierExpression *id_expr = (IdentifierExpression *) lhs_expr;
-			if (id_expr->replacement != NULL)
-				return false;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	MemberExpression *
-	get_mem_expr()
-	{
-		if (lhs_expr->type == IDENTIFIER_EXPRESSION)
-		{
-			IdentifierExpression *id_expr = (IdentifierExpression *) lhs_expr;
-			return (MemberExpression *) id_expr->replacement;
-		}
-		else
-		{
-			return (MemberExpression *) lhs_expr;
-		}
+		type = lhs_expr->type;
 	}
 
 	/**
 	 *  Performs the assignment.
 	 */
 	void
-	get_value(Assembler &assembler, CompilerState &compiler_state, uint8_t result_reg)
+	get_value(Assembler &assembler, uint8_t result_reg)
+		const override
 	{
 		uint8_t prev_val_reg;
 
 		// Moves result into its register
 
-		value->get_value(assembler, compiler_state, result_reg);
+		value->get_value(assembler, result_reg);
 
 		// If we're doing direct assignment,
 		// directly set the variable to the new value
 
 		if (op == ASSIGNMENT)
 		{
-			lhs_expr->store(assembler, compiler_state, result_reg);
+			lhs_expr->store(assembler, result_reg);
 			return;
 		}
 
@@ -123,7 +97,7 @@ struct AssignmentExpression : public ReadValue
 		// move the previous value into its register
 
 		prev_val_reg = assembler.get_register();
-		lhs_expr->get_value(assembler, compiler_state, prev_val_reg);
+		lhs_expr->get_value(assembler, prev_val_reg);
 
 		// Perform the correct operation
 
@@ -170,11 +144,12 @@ struct AssignmentExpression : public ReadValue
 			break;
 
 		default:
-			err_at_token(op_token, "Internal Error", "Unknown assignment operator");
+			err_at_token(accountable_token,
+				"Internal Error", "Unknown assignment operator");
 		}
 
 		assembler.free_register(prev_val_reg);
-		lhs_expr->store(assembler, compiler_state, prev_val_reg);
+		lhs_expr->store(assembler, prev_val_reg);
 	}
 };
 

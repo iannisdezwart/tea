@@ -1,7 +1,9 @@
 #ifndef TEA_WRITE_BUFFER_HEADER
 #define TEA_WRITE_BUFFER_HEADER
 
-#include "buffer.hpp"
+#include <cstdint>
+
+#include "Shared/buffer.hpp"
 
 /**
  * @brief A class that builds a buffer from a stream of data.

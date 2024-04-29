@@ -1,42 +1,42 @@
 #ifndef TEA_AST_NODE_CONTINUE_STATEMENT_HEADER
 #define TEA_AST_NODE_CONTINUE_STATEMENT_HEADER
 
-#include "ASTNode.hpp"
-#include "../tokeniser.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/tokeniser.hpp"
 
-struct ContinueStatement : public ASTNode
+struct ContinueStatement final : public ASTNode
 {
-	Token continue_token;
-
-	ContinueStatement(const Token &continue_token)
-		: continue_token(continue_token),
-		  ASTNode(continue_token, CONTINUE_STATEMENT) {}
+	ContinueStatement(Token continue_token)
+		: ASTNode(std::move(continue_token), CONTINUE_STATEMENT) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
 		callback(this, depth);
 	}
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s = "ContinueStatement {} @ " + to_hex((size_t) this);
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		return Type();
 	}
 
 	void
-	compile(Assembler &assembler, CompilerState &compiler_state)
+	code_gen(Assembler &assembler)
+		const override
 	{
 		// Get the loop label.
 
-		auto [start_label, _] = compiler_state.loop_labels.top();
+		auto [start_label, _] = assembler.loop_labels.top();
 
 		// Jump to the loop label.
 

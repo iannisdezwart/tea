@@ -1,28 +1,32 @@
 #ifndef TEA_AST_NODE_FOR_STATEMENT_HEADER
 #define TEA_AST_NODE_FOR_STATEMENT_HEADER
 
-#include "ASTNode.hpp"
-#include "ReadValue.hpp"
-#include "../tokeniser.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../util.hpp"
-#include "CodeBlock.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Executable/byte-code.hpp"
+#include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/CodeBlock.hpp"
 
-struct ForStatement : public ASTNode
+struct ForStatement final : public ASTNode
 {
-	Token for_token;
-	ASTNode *init;
-	ReadValue *test;
-	ReadValue *update;
-	CodeBlock *body;
+	std::unique_ptr<ASTNode> init;
+	std::unique_ptr<ReadValue> test;
+	std::unique_ptr<ReadValue> update;
+	std::unique_ptr<CodeBlock> body;
 
-	ForStatement(ASTNode *init, ReadValue *test, ReadValue *update,
-		Token for_token, CodeBlock *body)
-		: init(init), test(test), update(update), body(body),
-		  for_token(for_token), ASTNode(for_token, FOR_STATEMENT) {}
+	ForStatement(std::unique_ptr<ASTNode> init, std::unique_ptr<ReadValue> test,
+		std::unique_ptr<ReadValue> update,
+		Token for_token, std::unique_ptr<CodeBlock> body)
+		: ASTNode(std::move(for_token), FOR_STATEMENT),
+		  init(std::move(init)),
+		  test(std::move(test)),
+		  update(std::move(update)),
+		  body(std::move(body)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
 		init->dfs(callback, depth + 1);
 		test->dfs(callback, depth + 1);
@@ -34,29 +38,35 @@ struct ForStatement : public ASTNode
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s = "ForStatement {} @ " + to_hex((size_t) this);
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		return Type();
+		init->type_check(type_check_state);
+		test->type_check(type_check_state);
+		update->type_check(type_check_state);
+		body->type_check(type_check_state);
 	}
 
 	void
-	compile(Assembler &assembler, CompilerState &compiler_state)
+	code_gen(Assembler &assembler)
+		const override
 	{
 		uint8_t test_reg;
 
 		// Create labels
 
-		auto [start_label, end_label] = compiler_state.push_loop_scope();
+		auto [start_label, end_label] = assembler.push_loop_scope();
 
 		// Compile code for the init statement
 
-		init->compile(assembler, compiler_state);
+		init->code_gen(assembler);
 
 		// Create the loop label
 
@@ -65,7 +75,7 @@ struct ForStatement : public ASTNode
 		// Perform the check and move the result into the test register
 
 		test_reg = assembler.get_register();
-		test->get_value(assembler, compiler_state, test_reg);
+		test->get_value(assembler, test_reg);
 
 		// Break the loop if false
 
@@ -76,11 +86,11 @@ struct ForStatement : public ASTNode
 
 		// Compile code for the body block
 
-		body->compile(assembler, compiler_state);
+		body->code_gen(assembler);
 
 		// Compile code for the update expression
 
-		update->compile(assembler, compiler_state);
+		update->code_gen(assembler);
 
 		// Jump to the start of the loop again
 
@@ -90,7 +100,7 @@ struct ForStatement : public ASTNode
 
 		assembler.add_label(end_label);
 
-		compiler_state.pop_loop_scope();
+		assembler.pop_loop_scope();
 	}
 };
 

@@ -1,8 +1,8 @@
 #ifndef TEA_TYPE_HEADER
 #define TEA_TYPE_HEADER
 
-#include "util.hpp"
-#include "debugger-symbols.hpp"
+#include "Compiler/util.hpp"
+#include "Compiler/debugger-symbols.hpp"
 
 /**
  * Class that represents a data type of a variable.
@@ -30,7 +30,7 @@ struct Type
 	};
 
 	// The subtype of the type.
-	enum Value value;
+	Value value;
 
 	// The size of the type in bytes.
 	size_t size;
@@ -79,7 +79,7 @@ struct Type
 	 * @param value The subtype of the type.
 	 * @param size The size of the type in bytes.
 	 */
-	Type(enum Value value, size_t size)
+	Type(Value value, size_t size)
 		: value(value), size(size) {}
 
 	/**
@@ -89,7 +89,7 @@ struct Type
 	 * @param array_sizes Initialises the `array_sizes` field.
 	 * See this field for reference.
 	 */
-	Type(enum Value value, size_t size, const std::vector<size_t> &array_sizes)
+	Type(Value value, size_t size, const std::vector<size_t> &array_sizes)
 		: value(value), size(size), array_sizes(array_sizes) {}
 
 	/**
@@ -115,7 +115,8 @@ struct Type
 
 	// Don't allow conversion to boolean
 
-	explicit operator bool() = delete;
+	explicit
+	operator bool() = delete;
 
 	/**
 	 * @brief Compares two types with each other for equality.
@@ -565,26 +566,27 @@ struct Type
 	 * Used for generating debugger symbols.
 	 * @returns A debugger symbol type.
 	 */
-	enum DebuggerSymbolTypes
+	DebuggerSymbolType
 	to_debug_type()
+		const
 	{
 		if (pointer_depth() > 0)
-			return DebuggerSymbolTypes::POINTER;
+			return DebuggerSymbolType::POINTER;
 
 		if (value == Type::UNSIGNED_INTEGER)
 		{
 			switch (size)
 			{
 			case 1:
-				return DebuggerSymbolTypes::U8;
+				return DebuggerSymbolType::U8;
 			case 2:
-				return DebuggerSymbolTypes::U16;
+				return DebuggerSymbolType::U16;
 			case 4:
-				return DebuggerSymbolTypes::U32;
+				return DebuggerSymbolType::U32;
 			case 8:
-				return DebuggerSymbolTypes::U64;
+				return DebuggerSymbolType::U64;
 			default:
-				return DebuggerSymbolTypes::UNDEFINED;
+				return DebuggerSymbolType::UNDEFINED;
 			}
 		}
 		else if (value == Type::SIGNED_INTEGER)
@@ -592,23 +594,23 @@ struct Type
 			switch (size)
 			{
 			case 1:
-				return DebuggerSymbolTypes::I8;
+				return DebuggerSymbolType::I8;
 			case 2:
-				return DebuggerSymbolTypes::I16;
+				return DebuggerSymbolType::I16;
 			case 4:
-				return DebuggerSymbolTypes::I32;
+				return DebuggerSymbolType::I32;
 			case 8:
-				return DebuggerSymbolTypes::I64;
+				return DebuggerSymbolType::I64;
 			default:
-				return DebuggerSymbolTypes::UNDEFINED;
+				return DebuggerSymbolType::UNDEFINED;
 			}
 		}
 		else if (value == Type::USER_DEFINED_CLASS)
 		{
-			return DebuggerSymbolTypes::USER_DEFINED_CLASS;
+			return DebuggerSymbolType::USER_DEFINED_CLASS;
 		}
 
-		return DebuggerSymbolTypes::UNDEFINED;
+		return DebuggerSymbolType::UNDEFINED;
 	}
 };
 

@@ -1,14 +1,13 @@
 #ifndef TEA_COMPILER_HEADER
 #define TEA_COMPILER_HEADER
 
-#include "ASTNodes/ClassDeclaration.hpp"
-#include "util.hpp"
-#include "tokeniser.hpp"
-#include "parser.hpp"
-#include "compiler-state.hpp"
+#include "Compiler/ASTNodes/ClassDeclaration.hpp"
+#include "Compiler/util.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Compiler/parser.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
 #include "debugger-symbols.hpp"
-#include "../Assembler/assembler.hpp"
-#include "../Assembler/buffer.hpp"
+#include "Compiler/code-gen/Assembler.hpp"
 #include "ASTNodes/VariableDeclaration.hpp"
 
 /**
@@ -28,7 +27,7 @@ struct Compiler
 	Assembler assembler;
 
 	// The compiler state object.
-	CompilerState compiler_state;
+	TypeCheckState type_check_state;
 
 	/**
 	 * @brief Constructor.
@@ -37,7 +36,9 @@ struct Compiler
 	 * @param output_file_name The name of the output file.
 	 */
 	Compiler(char *input_file_name, char *output_file_name, bool debug)
-		: output_file_name(output_file_name), compiler_state(debug)
+		: output_file_name(output_file_name),
+		  assembler(debug),
+		  type_check_state(debug)
 	{
 		input_file = fopen(input_file_name, "r");
 
@@ -60,53 +61,58 @@ struct Compiler
 	collect_decl(std::vector<VariableDeclaration *> &global_var_decls,
 		std::vector<FunctionDeclaration *> &fn_decls,
 		std::vector<ClassDeclaration *> &class_decls,
-		ASTNode *statement)
+		const std::unique_ptr<ASTNode> &statement)
 	{
-		switch (statement->type)
+		switch (statement->node_type)
 		{
 		case VARIABLE_DECLARATION:
-			global_var_decls.push_back((VariableDeclaration *) statement);
+			global_var_decls.push_back((VariableDeclaration *) statement.get());
 			break;
 
 		case FUNCTION_DECLARATION:
-			fn_decls.push_back((FunctionDeclaration *) statement);
+			fn_decls.push_back((FunctionDeclaration *) statement.get());
 			break;
 
 		case CLASS_DECLARATION:
 		{
-			class_decls.push_back((ClassDeclaration *) statement);
+			class_decls.push_back((ClassDeclaration *) statement.get());
 			break;
 		}
 
 		default:
 			err_at_token(statement->accountable_token, "Unexpected statement",
-				"Unexpected statement of type %d",
-				statement->type);
+				"Unexpected statement of type %s",
+				ast_node_type_to_str(statement->node_type));
 			break;
 		}
 	}
 
+	/**
+	 * @brief Pretty-prints the AST to stdout.
+	 * The AST is printed in a depth-first post-order traversal.
+	 * TODO: Also support pre-order traversal.
+	 */
 	void
-	add_class(ClassDeclaration *class_decl)
+	print_ast(const std::vector<std::unique_ptr<ASTNode>> &statements)
 	{
-		size_t byte_size = class_decl->byte_size(compiler_state);
-		Class cl(byte_size);
+		printf("\\\\\\ AST \\\\\\\n\n");
 
-		for (TypeIdentifierPair *field : class_decl->fields)
+		for (const std::unique_ptr<ASTNode> &statement : statements)
 		{
-			const std::string &name = field->identifier_token.value;
-			Type type               = field->get_type(compiler_state);
-			cl.add_field(name, type);
+			auto cb = [](ASTNode *node, size_t depth)
+			{
+				for (size_t i = 0; i < depth; i++)
+				{
+					putc('\t', stdout);
+				}
+
+				node->print("\u279a");
+			};
+
+			statement->dfs(cb);
 		}
 
-		for (FunctionDeclaration *method : class_decl->methods)
-		{
-			const std::string &name = method->type_and_id_pair->identifier_token.value;
-			Function method_type    = method->get_fn_type(compiler_state);
-			cl.add_method(name, method_type);
-		}
-
-		compiler_state.add_class(class_decl->class_name, cl);
+		printf("\n/// AST ///\n");
 	}
 
 	/**
@@ -126,8 +132,15 @@ struct Compiler
 		// Parse the tokens.
 
 		Parser parser(tokens);
-		std::vector<ASTNode *> statements = parser.parse();
-		parser.print_ast();
+		std::vector<std::unique_ptr<ASTNode>> statements = parser.parse();
+		print_ast(statements);
+
+		// Type checking.
+
+		for (const std::unique_ptr<ASTNode> &statement : statements)
+		{
+			statement->type_check(type_check_state);
+		}
 
 		// Collect declarations.
 
@@ -135,44 +148,23 @@ struct Compiler
 		std::vector<FunctionDeclaration *> fn_decls;
 		std::vector<ClassDeclaration *> class_decls;
 
-		for (size_t i = 0; i < statements.size(); i++)
+		for (const std::unique_ptr<ASTNode> &statement : statements)
 		{
-			ASTNode *statement = statements[i];
-			collect_decl(global_var_decls, fn_decls, class_decls,
-				statement);
-		}
-
-		// Add classes.
-
-		for (ClassDeclaration *class_decl : class_decls)
-		{
-			add_class(class_decl);
-		}
-
-		// Add global variables.
-
-		for (size_t i = 0; i < global_var_decls.size(); i++)
-		{
-			VariableDeclaration *decl = global_var_decls[i];
-			std::string var_name      = decl->type_and_id_pair->get_identifier_name();
-			Type var_type             = decl->get_type(compiler_state);
-
-			compiler_state.add_global(var_name, var_type);
+			collect_decl(global_var_decls, fn_decls, class_decls, statement);
 		}
 
 		// Start assembling.
 		// Allocate space for globals & update stack and frame pointer.
 
-		assembler.allocate_stack(compiler_state.globals_size);
-		assembler.add_64_into_reg(compiler_state.globals_size, R_STACK_PTR);
-		assembler.add_64_into_reg(compiler_state.globals_size, R_FRAME_PTR);
+		assembler.allocate_stack(type_check_state.globals_size);
+		assembler.add_64_into_reg(type_check_state.globals_size, R_STACK_PTR);
+		assembler.add_64_into_reg(type_check_state.globals_size, R_FRAME_PTR);
 
 		// Compile intitialisation values for global variables.
 
-		for (size_t i = 0; i < global_var_decls.size(); i++)
+		for (VariableDeclaration *decl : global_var_decls)
 		{
-			VariableDeclaration *decl = global_var_decls[i];
-			decl->compile(assembler, compiler_state);
+			decl->code_gen(assembler);
 		}
 
 		// Push parameter count and call main.
@@ -181,38 +173,18 @@ struct Compiler
 		assembler.call("main");
 		assembler.jump("exit");
 
-		// Define functions.
-
-		for (size_t i = 0; i < fn_decls.size(); i++)
-		{
-			FunctionDeclaration *decl = fn_decls[i];
-			decl->define(compiler_state);
-		}
-
-		// Define class methods.
-
-		for (size_t i = 0; i < class_decls.size(); i++)
-		{
-			ClassDeclaration *decl = class_decls[i];
-			decl->define(compiler_state);
-		}
-
-		parser.print_ast();
-
 		// Compile function declarations.
 
-		for (size_t i = 0; i < fn_decls.size(); i++)
+		for (FunctionDeclaration *decl : fn_decls)
 		{
-			FunctionDeclaration *decl = fn_decls[i];
-			decl->compile(assembler, compiler_state);
+			decl->code_gen(assembler);
 		}
 
 		// Compile class method declarations.
 
-		for (size_t i = 0; i < class_decls.size(); i++)
+		for (ClassDeclaration *decl : class_decls)
 		{
-			ClassDeclaration *decl = class_decls[i];
-			decl->compile(assembler, compiler_state);
+			decl->code_gen(assembler);
 		}
 
 		// Add an exit label.
@@ -227,9 +199,9 @@ struct Compiler
 
 		// Create debugger symbols
 
-		if (compiler_state.debug)
+		if (type_check_state.debug)
 		{
-			compiler_state.debugger_symbols.build(output_file_name);
+			type_check_state.debugger_symbols.build(output_file_name);
 		}
 	}
 };

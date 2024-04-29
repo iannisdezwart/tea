@@ -1,49 +1,51 @@
 #ifndef TEA_AST_NODE_LITERAL_STRING_EXPRESSION_HEADER
 #define TEA_AST_NODE_LITERAL_STRING_EXPRESSION_HEADER
 
-#include "ASTNode.hpp"
-#include "ReadValue.hpp"
-#include "../tokeniser.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../util.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Executable/byte-code.hpp"
+#include "Compiler/util.hpp"
 
-struct LiteralStringExpression : public ReadValue
+struct LiteralStringExpression final : public ReadValue
 {
-	Token literal_string_token;
 	std::string value;
 
 	LiteralStringExpression(Token literal_string_token, std::string value)
-		: literal_string_token(literal_string_token), value(value),
-		  ReadValue(literal_string_token, LITERAL_STRING_EXPRESSION) {}
+		: ReadValue(std::move(literal_string_token), LITERAL_STRING_EXPRESSION),
+		  value(std::move(value)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
 		callback(this, depth);
 	}
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s = "LiteralStringExpression { value = \"" + value + "\" } @ "
 			+ to_hex((size_t) this);
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		Type type(Type::UNSIGNED_INTEGER, 1, { 0 });
-		return type;
+		type = Type(Type::UNSIGNED_INTEGER, 1, { 0 });
 	}
 
 	void
-	get_value(Assembler &assembler, CompilerState &compiler_state, uint8_t result_reg)
+	get_value(Assembler &assembler, uint8_t result_reg)
+		const override
 	{
-		StaticData static_data = assembler.add_static_data(
-			(uint8_t *) value.data(), value.size());
+		StaticData static_data = assembler.add_static_data(value);
 
-		assembler.move_64_into_reg(static_data.offset, result_reg);
+		assembler.move_stack_top_address_into_reg(result_reg);
+		assembler.add_64_into_reg(static_data.offset, result_reg);
 	}
 };
 

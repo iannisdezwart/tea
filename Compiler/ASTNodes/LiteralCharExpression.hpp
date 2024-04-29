@@ -1,30 +1,30 @@
 #ifndef TEA_AST_NODE_LITERAL_CHAR_EXPRESSION_HEADER
 #define TEA_AST_NODE_LITERAL_CHAR_EXPRESSION_HEADER
 
-#include "ASTNode.hpp"
-#include "ReadValue.hpp"
-#include "../tokeniser.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../util.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Executable/byte-code.hpp"
+#include "Compiler/util.hpp"
 
-struct LiteralCharExpression : public ReadValue
+struct LiteralCharExpression final : public ReadValue
 {
-	Token literal_char_token;
 	uint8_t value;
 
 	LiteralCharExpression(Token literal_char_token)
-		: literal_char_token(literal_char_token),
-		  value(literal_char_token.value[0]),
-		  ReadValue(literal_char_token, LITERAL_CHAR_EXPRESSION) {}
+		: ReadValue(std::move(literal_char_token), LITERAL_CHAR_EXPRESSION),
+		  value(accountable_token.value[0]) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
 		callback(this, depth);
 	}
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s = "LiteralCharExpression { value = \"";
 		s += std::to_string(value);
@@ -32,14 +32,16 @@ struct LiteralCharExpression : public ReadValue
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		return Type(Type::UNSIGNED_INTEGER, 1);
+		type = Type(Type::UNSIGNED_INTEGER, 1);
 	}
 
 	void
-	get_value(Assembler &assembler, CompilerState &compiler_state, uint8_t result_reg)
+	get_value(Assembler &assembler, uint8_t result_reg)
+		const override
 	{
 		assembler.move_8_into_reg(value, result_reg);
 	}

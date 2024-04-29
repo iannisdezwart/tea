@@ -1,5 +1,5 @@
-#include "compiler.hpp"
-#include "util.hpp"
+#include "Compiler/compiler.hpp"
+#include "Compiler/util.hpp"
 
 int
 main(int argc, char **argv)
@@ -15,6 +15,6 @@ main(int argc, char **argv)
 	std::string debug_flag = argc > 3 ? argv[3] : "";
 	bool debug             = debug_flag == "--debug" || debug_flag == "-d";
 
-	Compiler compiler(input_file_name, output_file_name, debug_flag == "--debug");
+	Compiler compiler(input_file_name, output_file_name, debug);
 	compiler.compile();
 }

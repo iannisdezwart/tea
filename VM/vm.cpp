@@ -1,7 +1,6 @@
 #include <iostream>
 
-#include "cpu.hpp"
-#include "../Assembler/assembler.hpp"
+#include "VM/cpu.hpp"
 
 #define STACK_SIZE 8 * 1024 * 1024 // 8MB
 

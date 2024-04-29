@@ -1,31 +1,28 @@
 #ifndef TEA_AST_NODE_BINARY_OPERATION_HEADER
 #define TEA_AST_NODE_BINARY_OPERATION_HEADER
 
-#include "../util.hpp"
-#include "ASTNode.hpp"
-#include "ReadValue.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../../Assembler/assembler.hpp"
-#include "../compiler-state.hpp"
-#include "../tokeniser.hpp"
-#include "../../VM/cpu.hpp"
+#include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/code-gen/Assembler.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
+#include "Compiler/tokeniser.hpp"
 
-struct BinaryOperation : public ReadValue
+struct BinaryOperation final : public ReadValue
 {
-	ReadValue *left;
-	ReadValue *right;
-	Token op_token;
-	enum Operator op;
+	std::unique_ptr<ReadValue> left;
+	std::unique_ptr<ReadValue> right;
+	Operator op;
 
-	bool warned = false;
-
-	BinaryOperation(ReadValue *left, ReadValue *right, Token op_token)
-		: left(left), right(right), op_token(op_token),
-		  op(str_to_operator(op_token.value)),
-		  ReadValue(op_token, BINARY_OPERATION) {}
+	BinaryOperation(std::unique_ptr<ReadValue> left, std::unique_ptr<ReadValue> right, Token op_token)
+		: ReadValue(std::move(op_token), BINARY_OPERATION),
+		  left(std::move(left)),
+		  right(std::move(right)),
+		  op(str_to_operator(accountable_token.value)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
 		left->dfs(callback, depth + 1);
 		right->dfs(callback, depth + 1);
@@ -35,6 +32,7 @@ struct BinaryOperation : public ReadValue
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s;
 
@@ -46,14 +44,15 @@ struct BinaryOperation : public ReadValue
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		Type left_type  = left->get_type(compiler_state);
-		Type right_type = right->get_type(compiler_state);
+		left->type_check(type_check_state);
+		right->type_check(type_check_state);
 
-		size_t left_size  = left_type.byte_size();
-		size_t right_size = right_type.byte_size();
+		size_t left_size  = left->type.byte_size();
+		size_t right_size = right->type.byte_size();
 
 		switch (op)
 		{
@@ -62,31 +61,35 @@ struct BinaryOperation : public ReadValue
 		{
 			// intX + intY -> max(intX, intY)
 
-			if (left_type.pointer_depth() == 0
-				&& right_type.pointer_depth() == 0)
+			if (left->type.pointer_depth() == 0
+				&& right->type.pointer_depth() == 0)
 			{
 				if (left_size > right_size)
 				{
-					return left_type;
+					type = left->type;
+					return;
 				}
 
-				return right_type;
+				type = right->type;
+				return;
 			}
 
 			// pointer + int -> pointer
 
-			if (left_type.pointer_depth() > 0
-				&& right_type.pointer_depth() == 0)
+			if (left->type.pointer_depth() > 0
+				&& right->type.pointer_depth() == 0)
 			{
-				return left_type;
+				type = left->type;
+				return;
 			}
 
 			// int + pointer -> pointer
 
-			if (right_type.pointer_depth() > 0
-				&& left_type.pointer_depth() == 0)
+			if (right->type.pointer_depth() > 0
+				&& left->type.pointer_depth() == 0)
 			{
-				return right_type;
+				type = right->type;
+				return;
 			}
 
 			break;
@@ -96,15 +99,17 @@ struct BinaryOperation : public ReadValue
 		{
 			// intX * intY -> max(intX, intY)
 
-			if (left_type.pointer_depth() == 0
-				&& right_type.pointer_depth() == 0)
+			if (left->type.pointer_depth() == 0
+				&& right->type.pointer_depth() == 0)
 			{
 				if (left_size > right_size)
 				{
-					return left_type;
+					type = left->type;
+					return;
 				}
 
-				return right_type;
+				type = right->type;
+				return;
 			}
 
 			break;
@@ -114,10 +119,11 @@ struct BinaryOperation : public ReadValue
 		{
 			// intX / intY -> intX
 
-			if (left_type.pointer_depth() == 0
-				&& right_type.pointer_depth() == 0)
+			if (left->type.pointer_depth() == 0
+				&& right->type.pointer_depth() == 0)
 			{
-				return left_type;
+				type = left->type;
+				return;
 			}
 
 			break;
@@ -127,10 +133,11 @@ struct BinaryOperation : public ReadValue
 		{
 			// intX % intY -> intX
 
-			if (left_type.pointer_depth() == 0
-				&& right_type.pointer_depth() == 0)
+			if (left->type.pointer_depth() == 0
+				&& right->type.pointer_depth() == 0)
 			{
-				return left_type;
+				type = left->type;
+				return;
 			}
 		}
 
@@ -140,11 +147,12 @@ struct BinaryOperation : public ReadValue
 		{
 			// intX & intX
 
-			if (left_type.pointer_depth() == 0
-				&& right_type.pointer_depth() == 0
+			if (left->type.pointer_depth() == 0
+				&& right->type.pointer_depth() == 0
 				&& left_size == right_size)
 			{
-				return left_type;
+				type = left->type;
+				return;
 			}
 		}
 
@@ -155,30 +163,31 @@ struct BinaryOperation : public ReadValue
 		case EQUAL:
 		case NOT_EQUAL:
 		{
-			if (left_type != Type::SIGNED_INTEGER && left_type != Type::UNSIGNED_INTEGER)
+			if (left->type != Type::SIGNED_INTEGER && left->type != Type::UNSIGNED_INTEGER)
 			{
 				warn("comparing non-integer type x = %s\n"
 				     "At %ld:%ld\n",
-					left_type.to_str().c_str(), op_token.line,
-					op_token.col);
+					left->type.to_str().c_str(), accountable_token.line,
+					accountable_token.col);
 			}
-			if (right_type != Type::SIGNED_INTEGER && right_type != Type::UNSIGNED_INTEGER)
+			if (right->type != Type::SIGNED_INTEGER && right->type != Type::UNSIGNED_INTEGER)
 			{
 				warn("comparing non-integer type y = %s\n"
 				     "At %ld:%ld\n",
-					right_type.to_str().c_str(), op_token.line,
-					op_token.col);
+					right->type.to_str().c_str(), accountable_token.line,
+					accountable_token.col);
 			}
-			if (left_type != right_type)
+			if (left->type != right->type)
 			{
 				warn("comparing types of different signedness x = %s and y = %s\n"
 				     "At %ld:%ld\n",
-					left_type.to_str().c_str(),
-					right_type.to_str().c_str(), op_token.line,
-					op_token.col);
+					left->type.to_str().c_str(),
+					right->type.to_str().c_str(), accountable_token.line,
+					accountable_token.col);
 			}
 
-			return Type(left_type, 1);
+			type = Type(left->type, 1);
+			return;
 		}
 
 		default:
@@ -194,37 +203,31 @@ struct BinaryOperation : public ReadValue
 		// and replaced by a compile-time error
 		// when all operators are properly implemented.
 
-		if (!warned)
-		{
-			warned = true;
-			warn("operator %s (%s) is not implemented for types x = %s and y = %s "
-			     "and might cause undefined behaviour\n"
-			     "At %ld:%ld\n",
-				op_to_str(op), op_to_example_str(op),
-				left_type.to_str().c_str(),
-				right_type.to_str().c_str(), op_token.line,
-				op_token.col);
-		}
+		warn("operator %s (%s) is not implemented for types x = %s and y = %s "
+		     "and might cause undefined behaviour\n"
+		     "At %ld:%ld\n",
+			op_to_str(op), op_to_example_str(op),
+			left->type.to_str().c_str(),
+			right->type.to_str().c_str(), accountable_token.line,
+			accountable_token.col);
 
-		return left_type;
+		type = left->type;
 	}
 
 	void
-	get_value(Assembler &assembler, CompilerState &compiler_state,
-		uint8_t result_reg)
+	get_value(Assembler &assembler, uint8_t result_reg)
+		const override
 	{
 		uint8_t rhs_reg;
 
-		Type type = get_type(compiler_state);
-
 		// Get the left hand side value.
 
-		left->get_value(assembler, compiler_state, result_reg);
+		left->get_value(assembler, result_reg);
 
 		// Get the right hand side value.
 
 		rhs_reg = assembler.get_register();
-		right->get_value(assembler, compiler_state, rhs_reg);
+		right->get_value(assembler, rhs_reg);
 
 		// Perform the operation.
 

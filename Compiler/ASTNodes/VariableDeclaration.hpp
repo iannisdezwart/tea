@@ -1,37 +1,40 @@
 #ifndef TEA_AST_NODE_VARIABLE_DECLARATION_HEADER
 #define TEA_AST_NODE_VARIABLE_DECLARATION_HEADER
 
-#include "ASTNode.hpp"
-#include "ReadValue.hpp"
-#include "IdentifierExpression.hpp"
-#include "../tokeniser.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../util.hpp"
-#include "TypeIdentifierPair.hpp"
-#include "InitList.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/IdentifierExpression.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Executable/byte-code.hpp"
+#include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/TypeIdentifierPair.hpp"
+#include "Compiler/ASTNodes/InitList.hpp"
 
-struct VariableDeclaration : public ASTNode
+struct VariableDeclaration final : public ASTNode
 {
-	TypeIdentifierPair *type_and_id_pair;
+	std::unique_ptr<TypeIdentifierPair> type_and_id_pair;
+	std::unique_ptr<ReadValue> assignment;
 	IdentifierExpression id_expr;
-	ReadValue *expression;
+	std::unique_ptr<ClassDefinition> class_definition;
+	IdentifierKind id_kind;
+	VariableDefinition variable_definition;
 
-	VariableDeclaration(TypeIdentifierPair *type_and_id_pair,
-		ReadValue *expression)
-		: type_and_id_pair(type_and_id_pair),
-		  id_expr(type_and_id_pair->identifier_token), expression(expression),
-		  ASTNode(type_and_id_pair->identifier_token, VARIABLE_DECLARATION) {}
+	VariableDeclaration(std::unique_ptr<TypeIdentifierPair> type_and_id_pair,
+		std::unique_ptr<ReadValue> assignment)
+		: ASTNode(type_and_id_pair->accountable_token, VARIABLE_DECLARATION),
+		  type_and_id_pair(std::move(type_and_id_pair)),
+		  assignment(std::move(assignment)),
+		  id_expr(this->type_and_id_pair->accountable_token) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
-		if (type_and_id_pair != NULL)
+		type_and_id_pair->dfs(callback, depth + 1);
+
+		if (assignment)
 		{
-			type_and_id_pair->dfs(callback, depth + 1);
-		}
-		if (expression != NULL)
-		{
-			expression->dfs(callback, depth + 1);
+			assignment->dfs(callback, depth + 1);
 		}
 
 		callback(this, depth);
@@ -39,242 +42,61 @@ struct VariableDeclaration : public ASTNode
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s = "VariableDeclaration {} @ " + to_hex((size_t) this);
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
-	{
-		return type_and_id_pair->get_type(compiler_state);
-	}
-
-	size_t
-	arr_size()
-	{
-		size_t size = 0;
-
-		for (size_t n : type_and_id_pair->type_name->array_sizes)
-		{
-			size += n;
-		}
-
-		return size;
-	}
-
 	void
-	put_item_into_class_instance(Assembler &assembler,
-		CompilerState &compiler_state, IdentifierKind id_kind,
-		uint8_t init_list_item_reg, const Type &type,
-		const Type &field_type, uint64_t offset, uint64_t &sub_offset,
-		ReadValue *item)
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		switch (id_kind)
+		type_and_id_pair->type_check(type_check_state);
+		type = type_and_id_pair->type;
+
+		std::string decl_name = type_and_id_pair->get_identifier_name();
+
+		if (!type_check_state.add_var(decl_name, type))
 		{
-		case IdentifierKind::LOCAL:
-		{
-			switch (field_type.byte_size())
-			{
-			case 1:
-				assembler.move_reg_into_frame_offset_8(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 1;
-				break;
-
-			case 2:
-				assembler.move_reg_into_frame_offset_16(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 2;
-				break;
-
-			case 4:
-				assembler.move_reg_into_frame_offset_32(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 4;
-				break;
-
-			case 8:
-				assembler.move_reg_into_frame_offset_64(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 8;
-				break;
-
-			default:
-				err_at_token(item->accountable_token, "Type Error",
-					"Cannot put an item of %lu bytes into a class instance\n"
-					"This behaviour is not implemented yet",
-					field_type.byte_size());
-			}
-
-			break;
+			err_at_token(accountable_token,
+				"Duplicate identifier name",
+				"Identifier %s is already declared",
+				decl_name.c_str());
 		}
 
-		case IdentifierKind::GLOBAL:
-		{
-			switch (field_type.byte_size())
-			{
-			case 1:
-				assembler.move_reg_into_stack_top_offset_8(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 1;
-				break;
+		id_expr.type_check(type_check_state);
 
-			case 2:
-				assembler.move_reg_into_stack_top_offset_16(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 2;
-				break;
-
-			case 4:
-				assembler.move_reg_into_stack_top_offset_32(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 4;
-				break;
-
-			case 8:
-				assembler.move_reg_into_stack_top_offset_64(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 8;
-				break;
-
-			default:
-				err_at_token(item->accountable_token, "Type Error",
-					"Cannot put an item of %lu bytes into a class instance\n"
-					"This behaviour is not implemented yet",
-					field_type.byte_size());
-			}
-
-			break;
-		}
-
-		default:
-		{
-			err_at_token(item->accountable_token, "Internal Error",
-				"Unknown identifier kind %d", id_kind);
-		} // default
-		} // switch
-	}
-
-	void
-	put_item_into_array(Assembler &assembler, CompilerState &compiler_state,
-		IdentifierKind id_kind, uint8_t init_list_item_reg,
-		const Type &array_item_type, uint64_t offset, uint64_t &sub_offset,
-		ReadValue *item)
-	{
-		switch (id_kind)
-		{
-		case IdentifierKind::LOCAL:
-		{
-			switch (array_item_type.byte_size())
-			{
-			case 1:
-				assembler.move_reg_into_frame_offset_8(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 1;
-				break;
-
-			case 2:
-				assembler.move_reg_into_frame_offset_16(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 2;
-				break;
-
-			case 4:
-				assembler.move_reg_into_frame_offset_32(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 4;
-				break;
-
-			case 8:
-				assembler.move_reg_into_frame_offset_64(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 8;
-				break;
-			}
-
-			break;
-		}
-
-		case IdentifierKind::GLOBAL:
-		{
-			switch (array_item_type.byte_size())
-			{
-			case 1:
-				assembler.move_reg_into_stack_top_offset_8(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 1;
-				break;
-
-			case 2:
-				assembler.move_reg_into_stack_top_offset_16(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 2;
-				break;
-
-			case 4:
-				assembler.move_reg_into_stack_top_offset_32(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 4;
-				break;
-
-			case 8:
-				assembler.move_reg_into_stack_top_offset_64(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 8;
-				break;
-			}
-
-			break;
-		}
-
-		default:
-		{
-			err_at_token(item->accountable_token, "Internal Error",
-				"Unknown identifier kind %d", id_kind);
-		} // default
-		} // switch
-	}
-
-	void
-	compile(Assembler &assembler, CompilerState &compiler_state)
-	{
-		uint8_t init_list_item_reg;
-		uint8_t init_value_reg;
-
-		if (expression == NULL)
+		if (!assignment)
 		{
 			return;
 		}
 
+		assignment->type_check(type_check_state);
+
 		// Match types
 
-		Type specified_type  = get_type(compiler_state);
-		Type assignment_type = expression->get_type(compiler_state);
-
-		if (!assignment_type.fits(specified_type))
+		if (!assignment->type.fits(type))
 		{
-			err_at_token(expression->accountable_token,
+			err_at_token(assignment->accountable_token,
 				"Type Error",
 				"Initial value of VariableDeclaration does not fit into "
 				"specified type\n"
-				"specified_type = %s, assignment_value = %s",
-				specified_type.to_str().c_str(), assignment_type.to_str().c_str());
+				"type = %s, assignment_value = %s",
+				type.to_str().c_str(), assignment->type.to_str().c_str());
 		}
 
-		std::string id_name    = type_and_id_pair->get_identifier_name();
-		IdentifierKind id_kind = compiler_state.get_identifier_kind(id_name);
-
-		Variable var;
+		std::string id_name = type_and_id_pair->get_identifier_name();
+		id_kind             = type_check_state.get_identifier_kind(id_name);
 
 		switch (id_kind)
 		{
 		case IdentifierKind::LOCAL:
-			var = compiler_state.locals[id_name];
+			variable_definition = type_check_state.locals[id_name];
 			break;
 
 		case IdentifierKind::GLOBAL:
-			var = compiler_state.globals[id_name];
+			variable_definition = type_check_state.globals[id_name];
 			break;
 
 		default:
@@ -283,44 +105,227 @@ struct VariableDeclaration : public ASTNode
 				"Only locals and globals can be declared");
 		}
 
-		Type &type        = var.id.type;
-		uint64_t offset   = var.offset;
-		uint64_t var_size = type.byte_size();
+		type = variable_definition.id.type;
+
+		if (type == Type::USER_DEFINED_CLASS)
+		{
+			class_definition = std::make_unique<ClassDefinition>(
+				type_check_state.classes[type.class_name]);
+		}
+	}
+
+	void
+	put_item_into_class_instance(Assembler &assembler, IdentifierKind id_kind,
+		uint8_t init_list_item_reg, const Type &type, const Type &field_type,
+		uint64_t offset, uint64_t &sub_offset, std::unique_ptr<ReadValue> &item)
+		const
+	{
+		switch (id_kind)
+		{
+		case IdentifierKind::LOCAL:
+		{
+			switch (field_type.byte_size())
+			{
+			case 1:
+				assembler.move_reg_into_frame_offset_8(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 1;
+				break;
+
+			case 2:
+				assembler.move_reg_into_frame_offset_16(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 2;
+				break;
+
+			case 4:
+				assembler.move_reg_into_frame_offset_32(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 4;
+				break;
+
+			case 8:
+				assembler.move_reg_into_frame_offset_64(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 8;
+				break;
+
+			default:
+				err_at_token(item->accountable_token, "Type Error",
+					"Cannot put an item of %lu bytes into a class instance\n"
+					"This behaviour is not implemented yet",
+					field_type.byte_size());
+			}
+
+			break;
+		}
+
+		case IdentifierKind::GLOBAL:
+		{
+			switch (field_type.byte_size())
+			{
+			case 1:
+				assembler.move_reg_into_stack_top_offset_8(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 1;
+				break;
+
+			case 2:
+				assembler.move_reg_into_stack_top_offset_16(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 2;
+				break;
+
+			case 4:
+				assembler.move_reg_into_stack_top_offset_32(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 4;
+				break;
+
+			case 8:
+				assembler.move_reg_into_stack_top_offset_64(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 8;
+				break;
+
+			default:
+				err_at_token(item->accountable_token, "Type Error",
+					"Cannot put an item of %lu bytes into a class instance\n"
+					"This behaviour is not implemented yet",
+					field_type.byte_size());
+			}
+
+			break;
+		}
+
+		default:
+		{
+			err_at_token(item->accountable_token, "Internal Error",
+				"Unknown identifier kind %d", id_kind);
+		} // default
+		} // switch
+	}
+
+	void
+	put_item_into_array(Assembler &assembler, IdentifierKind id_kind,
+		uint8_t init_list_item_reg, const Type &array_item_type,
+		uint64_t offset, uint64_t &sub_offset, std::unique_ptr<ReadValue> &item)
+		const
+	{
+		switch (id_kind)
+		{
+		case IdentifierKind::LOCAL:
+		{
+			switch (array_item_type.byte_size())
+			{
+			case 1:
+				assembler.move_reg_into_frame_offset_8(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 1;
+				break;
+
+			case 2:
+				assembler.move_reg_into_frame_offset_16(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 2;
+				break;
+
+			case 4:
+				assembler.move_reg_into_frame_offset_32(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 4;
+				break;
+
+			case 8:
+				assembler.move_reg_into_frame_offset_64(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 8;
+				break;
+			}
+
+			break;
+		}
+
+		case IdentifierKind::GLOBAL:
+		{
+			switch (array_item_type.byte_size())
+			{
+			case 1:
+				assembler.move_reg_into_stack_top_offset_8(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 1;
+				break;
+
+			case 2:
+				assembler.move_reg_into_stack_top_offset_16(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 2;
+				break;
+
+			case 4:
+				assembler.move_reg_into_stack_top_offset_32(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 4;
+				break;
+
+			case 8:
+				assembler.move_reg_into_stack_top_offset_64(
+					init_list_item_reg, offset + sub_offset);
+				sub_offset += 8;
+				break;
+			}
+
+			break;
+		}
+
+		default:
+		{
+			err_at_token(item->accountable_token, "Internal Error",
+				"Unknown identifier kind %d", id_kind);
+		} // default
+		} // switch
+	}
+
+	void
+	code_gen(Assembler &assembler)
+		const override
+	{
+		uint8_t init_list_item_reg;
+		uint8_t init_value_reg;
 
 		// Class instance declaration
 
 		if (type == Type::USER_DEFINED_CLASS)
 		{
-			// Expect an init list or a constructor call
-
-			if (expression->type == INIT_LIST)
+			if (!assignment)
 			{
-				InitList *init_list = (InitList *) expression;
-				const Class &cl     = compiler_state.classes[type.class_name];
+				// TODO: Implement default constructor
+			}
+			else if (assignment->node_type == INIT_LIST)
+			{
+				InitList *init_list = (InitList *) assignment.get();
 
 				// Check type compatibility
 
-				if (init_list->items.size() > cl.fields.size())
+				if (init_list->items.size() > class_definition->fields.size())
 				{
 					err_at_token(init_list->accountable_token, "Type Error",
 						"InitList for %s class instance holds %lu members, "
 						"but %s has only %lu fields",
 						type.class_name.c_str(), init_list->items.size(),
-						type.class_name.c_str(), cl.fields.size());
+						type.class_name.c_str(), class_definition->fields.size());
 				}
 
 				uint64_t sub_offset = 0;
 
 				if (init_list->items.size())
-				{
 					init_list_item_reg = assembler.get_register();
-				}
 
 				for (size_t i = 0; i < init_list->items.size(); i++)
 				{
-					ReadValue *item        = init_list->items[i];
-					const Type item_type   = item->get_type(compiler_state);
-					const Type &field_type = cl.fields[i].type;
+					std::unique_ptr<ReadValue> &item = init_list->items[i];
+					const Type item_type             = item->type;
+					const Type &field_type           = class_definition->fields[i].type;
 
 					// Type compatibility
 
@@ -336,9 +341,10 @@ struct VariableDeclaration : public ASTNode
 
 					// Put item into class instance
 
-					item->get_value(assembler, compiler_state, init_list_item_reg);
-					put_item_into_class_instance(assembler, compiler_state,
-						id_kind, init_list_item_reg, type, field_type, offset, sub_offset, item);
+					item->get_value(assembler, init_list_item_reg);
+					put_item_into_class_instance(assembler,
+						id_kind, init_list_item_reg, type, field_type,
+						variable_definition.offset, sub_offset, item);
 				}
 
 				if (init_list->items.size())
@@ -346,11 +352,11 @@ struct VariableDeclaration : public ASTNode
 			}
 			else
 			{
-				err_at_token(expression->accountable_token, "Semantic Error",
+				err_at_token(assignment->accountable_token, "Semantic Error",
 					"Unexpected expression of type \"%s\" at the right hand "
 					"side of a class instance declaration\n"
 					"Expected an initialiser list or a constructor call",
-					ast_node_type_to_str(expression->type));
+					ast_node_type_to_str(assignment->node_type));
 			}
 
 			return;
@@ -360,18 +366,19 @@ struct VariableDeclaration : public ASTNode
 
 		else if (type.is_array())
 		{
-			// Expect an init list
+			if (!assignment)
+				return;
 
-			if (expression->type != INIT_LIST)
+			if (assignment->node_type != INIT_LIST)
 			{
-				err_at_token(expression->accountable_token, "Semantic Error",
+				err_at_token(assignment->accountable_token, "Semantic Error",
 					"Expected an initialiser list or nothing on the right hand side "
 					"of an array declaration\n"
 					"Found an expression of type \"%s\"",
-					ast_node_type_to_str(expression->type));
+					ast_node_type_to_str(assignment->node_type));
 			}
 
-			InitList *init_list = (InitList *) expression;
+			InitList *init_list = (InitList *) assignment.get();
 
 			// Check type compatibility
 
@@ -395,11 +402,10 @@ struct VariableDeclaration : public ASTNode
 			{
 				// Put item into array
 
-				init_list->items[i]->get_value(assembler,
-					compiler_state, init_list_item_reg);
-				put_item_into_array(assembler, compiler_state, id_kind,
-					init_list_item_reg, array_item_type, offset,
-					sub_offset, init_list->items[i]);
+				init_list->items[i]->get_value(assembler, init_list_item_reg);
+				put_item_into_array(assembler, id_kind,
+					init_list_item_reg, array_item_type,
+					variable_definition.offset, sub_offset, init_list->items[i]);
 			}
 
 			if (init_list->items.size())
@@ -411,9 +417,12 @@ struct VariableDeclaration : public ASTNode
 		// Built-in type declaration
 		// Get the expression value into a register and store it in memory
 
+		if (!assignment)
+			return;
+
 		init_value_reg = assembler.get_register();
-		expression->get_value(assembler, compiler_state, init_value_reg);
-		id_expr.store(assembler, compiler_state, init_value_reg);
+		assignment->get_value(assembler, init_value_reg);
+		id_expr.store(assembler, init_value_reg);
 		assembler.free_register(init_value_reg);
 	}
 };

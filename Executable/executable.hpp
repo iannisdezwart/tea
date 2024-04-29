@@ -1,7 +1,7 @@
 #ifndef TEA_EXECUTABLE_HEADER
 #define TEA_EXECUTABLE_HEADER
 
-#include "buffer.hpp"
+#include "Shared/buffer.hpp"
 
 /**
  * @brief Class that represents an executable.

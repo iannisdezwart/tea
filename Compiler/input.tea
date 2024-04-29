@@ -3,19 +3,6 @@ void putc(u8 c)
 	syscall PRINT_CHAR(c)
 }
 
-void putu(u64 n)
-{
-	if (n < 10)
-	{
-		putc(u8(n + '0'))
-	}
-	else
-	{
-		putu(n / 10)
-		putc(u8(n % 10 + '0'))
-	}
-}
-
 i16 getc()
 {
 	i16 c
@@ -23,42 +10,123 @@ i16 getc()
 	return c
 }
 
-u64 read_int()
+void print_str(u8* str)
+{
+	while (*str != 0)
+	{
+		putc(*str)
+		str++
+	}
+}
+
+void print_unsigned(u64 n)
+{
+	if (n < 10)
+	{
+		putc(u8(n + '0'))
+	}
+	else
+	{
+		print_unsigned(n / 10)
+		putc(u8(n % 10 + '0'))
+	}
+}
+
+void print_signed(i64 n)
+{
+	if (n < 0)
+	{
+		putc('-')
+		print_unsigned(u64(-n))
+	}
+	else
+	{
+		print_unsigned(u64(n))
+	}
+}
+
+i64 read_signed()
 {
 	i64 n = 0
+	i64 neg_mult = 1
+	i16 c = getc()
+
+	if (c == '-')
+	{
+		neg_mult = -1
+	}
+	else if (c >= '0' & c <= '9')
+	{
+		n = i64(c - '0')
+	}
+	else
+	{
+		return 0
+	}
+
 	while (1)
 	{
-		i16 c = getc()
+		c = getc()
 		if (c < '0' | c > '9')
 		{
 			break
 		}
 		n = n * 10 + i64(c - '0')
 	}
-	return n
+
+	return n * neg_mult
 }
-
-// u64 fibonacci(u64 n)
-// {
-// 	if (n <= 1)
-// 	{
-// 		return n
-// 	}
-
-// 	return fibonacci(n - 1) + fibonacci(n - 2)
-// }
 
 // u64 main()
 // {
-// 	for (u64 i = 0; i < 10; i++)
-// 	{
-// 		putu(fibonacci(i))
-// 		putc('\n')
-// 	}
+// 	i64 n = read_signed()
+// 	print_signed(n)
+// 	putc('\n')
 // }
+
+// i32 main()
+// {
+// 	i16 a = -1
+// 	u16 b = 2
+// 	i32 c = a + b
+
+// 	return c
+// }
+
+// class MyClass
+// {
+// 	i64 a
+// 	i64 b
+// }
+
+// i64 main()
+// {
+// 	MyClass c
+// 	c.a = 1
+// 	c.b = 2
+
+// 	return c.a + c.b
+// }
+
+u64 fib(u64 n)
+{
+	if (n <= 1)
+	{
+		return n
+	}
+
+	return fib(n - 1) + fib(n - 2)
+}
 
 u64 main()
 {
-	i64 n = read_int()
-	putu(n)
+	for (u64 i = 0; i < 40; i++)
+	{
+		u64 n = fib(i)
+		print_str("fib(")
+		print_unsigned(i)
+		print_str(") = ")
+		print_unsigned(n)
+		putc('\n')
+	}
 }

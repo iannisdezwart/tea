@@ -4,9 +4,9 @@
 #include <vector>
 #include <sstream>
 
-#include "memory-device.hpp"
-#include "ram-device.hpp"
-#include "io-device.hpp"
+#include "VM/memory-device.hpp"
+#include "VM/ram-device.hpp"
+#include "VM/io-device.hpp"
 
 /**
  * @brief This class is not currently in use.

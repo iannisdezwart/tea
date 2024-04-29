@@ -2,14 +2,13 @@
 
 #define RESTORE_INSTRUCTION_POINTER_ON_THROW
 
-#include "../ansi.hpp"
-#include "../VM/cpu.hpp"
-#include "../VM/memory.hpp"
-#include "../Assembler/assembler.hpp"
-#include "util.hpp"
-#include "command.hpp"
-#include "instruction-lister.hpp"
-#include "../Compiler/debugger-symbols.hpp"
+#include "Shared/ansi.hpp"
+#include "VM/cpu.hpp"
+#include "VM/memory.hpp"
+#include "Debugger/util.hpp"
+#include "Debugger/command.hpp"
+#include "Debugger/instruction-lister.hpp"
+#include "Compiler/debugger-symbols.hpp"
 
 #define DEFAULT_STACK_SIZE     2048
 #define DEFAULT_LIST_TOP       15
@@ -62,63 +61,62 @@ struct Shell
 
 		switch (param.type)
 		{
-		case DebuggerSymbolTypes::POINTER:
+		case DebuggerSymbolType::POINTER:
 		{
-			uint64_t val    = memory::get<uint64_t>(addr);
 			entry_arg.value = ANSI_GREEN "0x" ANSI_BRIGHT_GREEN + to_hex_str(addr);
 			break;
 		}
 
-		case DebuggerSymbolTypes::U8:
+		case DebuggerSymbolType::U8:
 		{
 			uint8_t val     = memory::get<uint8_t>(addr);
 			entry_arg.value = ANSI_YELLOW + std::to_string(val);
 			break;
 		}
 
-		case DebuggerSymbolTypes::I8:
+		case DebuggerSymbolType::I8:
 		{
 			int8_t val      = memory::get<int8_t>(addr);
 			entry_arg.value = ANSI_YELLOW + std::to_string(val);
 			break;
 		}
 
-		case DebuggerSymbolTypes::U16:
+		case DebuggerSymbolType::U16:
 		{
 			uint16_t val    = memory::get<uint16_t>(addr);
 			entry_arg.value = ANSI_YELLOW + std::to_string(val);
 			break;
 		}
 
-		case DebuggerSymbolTypes::I16:
+		case DebuggerSymbolType::I16:
 		{
 			int16_t val     = memory::get<int16_t>(addr);
 			entry_arg.value = ANSI_YELLOW + std::to_string(val);
 			break;
 		}
 
-		case DebuggerSymbolTypes::U32:
+		case DebuggerSymbolType::U32:
 		{
 			uint32_t val    = memory::get<uint32_t>(addr);
 			entry_arg.value = ANSI_YELLOW + std::to_string(val);
 			break;
 		}
 
-		case DebuggerSymbolTypes::I32:
+		case DebuggerSymbolType::I32:
 		{
 			int32_t val     = memory::get<int32_t>(addr);
 			entry_arg.value = ANSI_YELLOW + std::to_string(val);
 			break;
 		}
 
-		case DebuggerSymbolTypes::I64:
+		case DebuggerSymbolType::I64:
 		{
 			int64_t val     = memory::get<int64_t>(addr);
 			entry_arg.value = ANSI_YELLOW + std::to_string(val);
 			break;
 		}
 
-		case DebuggerSymbolTypes::U64:
+		case DebuggerSymbolType::U64:
 		{
 			uint64_t val    = memory::get<uint64_t>(addr);
 			entry_arg.value = ANSI_YELLOW + std::to_string(val);
@@ -244,7 +242,7 @@ struct Shell
 	{
 		// Execute the next instruction, if the program is still running.
 
-		if (cpu->get_instr_ptr() < cpu->stack_top)
+		if (cpu->get_instr_ptr() < cpu->program_location + cpu->program_size)
 		{
 			try
 			{
@@ -267,7 +265,7 @@ struct Shell
 	{
 		// Execute the next instruction.
 
-		if (cpu->get_instr_ptr() < cpu->stack_top)
+		if (cpu->get_instr_ptr() < cpu->program_location + cpu->program_size)
 		{
 			try
 			{
@@ -283,7 +281,7 @@ struct Shell
 
 		// And keep executing until a breakpoint is hit, or the program finishes.
 
-		while (cpu->get_instr_ptr() < cpu->stack_top)
+		while (cpu->get_instr_ptr() < cpu->program_location + cpu->program_size)
 		{
 			if (breakpoints.count(cpu->get_instr_ptr()))
 			{
@@ -357,96 +355,97 @@ struct Shell
 				conn_chars = "├─";
 			}
 
-#define PRINT_VAR(printf_flag, val) printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD                                     \
-	"    %s " ANSI_BLUE "%s" ANSI_RESET ANSI_BRIGHT_BLACK " = " ANSI_YELLOW printf_flag ANSI_RESET "\n", \
-	conn_chars, local.name.c_str(), val)
+			printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD
+				"    %s " ANSI_BLUE "%s" ANSI_RESET ANSI_BRIGHT_BLACK " = %s\n",
+				conn_chars, local.name.c_str(), pretty_val(local).c_str());
+		}
+	}
 
-			switch (local.type)
+	std::string
+	pretty_val(const VarEntry &var_entry)
+	{
+		switch (var_entry.type)
+		{
+		case DebuggerSymbolType::U8:
+		{
+			uint8_t val = memory::get<uint8_t>(var_entry.addr);
+			return ANSI_YELLOW + std::to_string(val) + ANSI_RESET;
+		}
+
+		case DebuggerSymbolType::I8:
+		{
+			int8_t val = memory::get<int8_t>(var_entry.addr);
+			return ANSI_YELLOW + std::to_string(val) + ANSI_RESET;
+		}
+
+		case DebuggerSymbolType::U16:
+		{
+			uint16_t val = memory::get<uint16_t>(var_entry.addr);
+			return ANSI_YELLOW + std::to_string(val) + ANSI_RESET;
+		}
+
+		case DebuggerSymbolType::I16:
+		{
+			int16_t val = memory::get<int16_t>(var_entry.addr);
+			return ANSI_YELLOW + std::to_string(val) + ANSI_RESET;
+		}
+
+		case DebuggerSymbolType::U32:
+		{
+			uint32_t val = memory::get<uint32_t>(var_entry.addr);
+			return ANSI_YELLOW + std::to_string(val) + ANSI_RESET;
+		}
+
+		case DebuggerSymbolType::I32:
+		{
+			int32_t val = memory::get<int32_t>(var_entry.addr);
+			return ANSI_YELLOW + std::to_string(val) + ANSI_RESET;
+		}
+
+		case DebuggerSymbolType::U64:
+		{
+			uint64_t val = memory::get<uint64_t>(var_entry.addr);
+			return ANSI_YELLOW + std::to_string(val) + ANSI_RESET;
+		}
+
+		case DebuggerSymbolType::I64:
+		{
+			int64_t val = memory::get<int64_t>(var_entry.addr);
+			return ANSI_YELLOW + std::to_string(val) + ANSI_RESET;
+		}
+
+		case DebuggerSymbolType::POINTER:
+		{
+			int64_t val = memory::get<uint64_t>(var_entry.addr);
+			return ANSI_GREEN "0x" ANSI_BRIGHT_GREEN + to_hex_str(val) + ANSI_RESET;
+		}
+
+		case DebuggerSymbolType::USER_DEFINED_CLASS:
+		{
+			DebuggerClass cls = debugger_symbols.classes[var_entry.extra];
+
+			std::string out = ANSI_YELLOW "class " + var_entry.extra + ANSI_RESET ANSI_BRIGHT_BLACK " { ";
+
+			size_t offset = 0;
+			for (size_t i = 0; i < cls.fields.size(); i++)
 			{
-			case DebuggerSymbolTypes::U8:
-			{
-				uint8_t val = memory::get<uint8_t>(local.addr);
-				PRINT_VAR("%hhu", val);
-				break;
+				const DebuggerSymbol &field = cls.fields[i];
+				out += ANSI_BRIGHT_BLACK + field.name
+					+ ANSI_RESET ANSI_BRIGHT_BLACK " = "
+					+ pretty_val(VarEntry(field, var_entry.addr + offset))
+					+ ANSI_BRIGHT_BLACK + (i < cls.fields.size() - 1 ? ", " : "");
+				offset += field.byte_size();
 			}
 
-			case DebuggerSymbolTypes::I8:
-			{
-				int8_t val = memory::get<int8_t>(local.addr);
-				PRINT_VAR("%hhd", val);
-				break;
-			}
+			out += ANSI_BRIGHT_BLACK " }" ANSI_RESET;
 
-			case DebuggerSymbolTypes::U16:
-			{
-				uint16_t val = memory::get<uint16_t>(local.addr);
-				PRINT_VAR("%hu", val);
-				break;
-			}
+			return out;
+		}
 
-			case DebuggerSymbolTypes::I16:
-			{
-				int16_t val = memory::get<int16_t>(local.addr);
-				PRINT_VAR("%hd", val);
-				break;
-			}
-
-			case DebuggerSymbolTypes::U32:
-			{
-				uint32_t val = memory::get<uint32_t>(local.addr);
-				PRINT_VAR("%u", val);
-				break;
-			}
-
-			case DebuggerSymbolTypes::I32:
-			{
-				int32_t val = memory::get<int32_t>(local.addr);
-				PRINT_VAR("%d", val);
-				break;
-			}
-
-			case DebuggerSymbolTypes::U64:
-			{
-				uint64_t val = memory::get<uint64_t>(local.addr);
-				PRINT_VAR("%llu", val);
-				break;
-			}
-
-			case DebuggerSymbolTypes::I64:
-			{
-				int64_t val = memory::get<int64_t>(local.addr);
-				PRINT_VAR("%lld", val);
-				break;
-			}
-
-			case DebuggerSymbolTypes::POINTER:
-			{
-				int64_t val = memory::get<uint64_t>(local.addr);
-				printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD
-					"    - " ANSI_BLUE "%s" ANSI_RESET ANSI_BRIGHT_BLACK " = " ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%s" ANSI_RESET "\n",
-					local.name.c_str(), to_hex_str(val).c_str());
-				break;
-			}
-
-			case DebuggerSymbolTypes::USER_DEFINED_CLASS:
-			{
-				// Todo: create
-
-				printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD
-					"    - " ANSI_BLUE "%s" ANSI_RESET ANSI_BRIGHT_BLACK " = " ANSI_YELLOW "... (not implemented)" ANSI_RESET "\n",
-					local.name.c_str());
-				break;
-			}
-
-			default:
-			{
-				printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD
-					"    - " ANSI_BLUE "???" ANSI_RESET ANSI_BRIGHT_BLACK " = " ANSI_YELLOW "???" ANSI_RESET "\n");
-				break;
-			}
-			}
-
-#undef PRINT_VAR
+		default:
+		{
+			return ANSI_YELLOW "???" ANSI_RESET;
+		}
 		}
 	}
 

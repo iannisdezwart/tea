@@ -1,8 +1,8 @@
 #include <cstdio>
 
 #include "disassembler.hpp"
-#include "../Assembler/byte_code.hpp"
-#include "file-reader.hpp"
+#include "Executable/byte-code.hpp"
+#include "Disassembler/file-reader.hpp"
 
 int
 main(int argc, char **argv)

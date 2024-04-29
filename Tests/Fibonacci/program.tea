@@ -1,0 +1,51 @@
+void putc(u8 c)
+{
+	syscall PRINT_CHAR(c)
+}
+
+void print_str(u8* str)
+{
+	while (*str != 0)
+	{
+		putc(*str)
+		str++
+	}
+}
+
+void print_unsigned(u64 n)
+{
+	if (n < 10)
+	{
+		putc(u8(n + '0'))
+	}
+	else
+	{
+		print_unsigned(n / 10)
+		putc(u8(n % 10 + '0'))
+	}
+}
+
+u64 fib(u64 n)
+{
+	if (n <= 1)
+	{
+		return n
+	}
+
+	return fib(n - 1) + fib(n - 2)
+}
+
+u64 main()
+{
+	for (u64 i = 0; i <= 20; i++)
+	{
+		u64 n = fib(i)
+		print_str("fib(")
+		print_unsigned(i)
+		print_str(") = ")
+		print_unsigned(n)
+		putc('\n')
+	}
+
+    return 0
+}

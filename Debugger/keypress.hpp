@@ -6,7 +6,7 @@
 
 namespace keypress
 {
-struct termios saved_termios;
+termios saved_termios;
 
 void
 save_termios()
@@ -17,7 +17,7 @@ save_termios()
 void
 start_getch_mode()
 {
-	struct termios new_termios = saved_termios;
+	termios new_termios = saved_termios;
 	new_termios.c_lflag &= ~(ICANON | ECHO);
 	tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
 }

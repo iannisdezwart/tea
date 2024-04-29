@@ -3,9 +3,9 @@
 
 #include <unordered_set>
 
-#include "file-stream-reader.hpp"
-#include "util.hpp"
-#include "../ansi.hpp"
+#include "Compiler/file-stream-reader.hpp"
+#include "Compiler/util.hpp"
+#include "Shared/ansi.hpp"
 
 /**
  * @brief Enum containing all the possible types of tokens.
@@ -28,7 +28,7 @@ enum TokenType
  * @returns A string representation of the token type.
  */
 const char *
-token_type_to_str(enum TokenType type)
+token_type_to_str(TokenType type)
 {
 	switch (type)
 	{
@@ -236,7 +236,7 @@ enum Operator
  * @returns A string representation of the operator.
  */
 const char *
-op_to_str(enum Operator op)
+op_to_str(Operator op)
 {
 	switch (op)
 	{
@@ -344,7 +344,7 @@ op_to_str(enum Operator op)
  * @returns The example string.
  */
 const char *
-op_to_example_str(enum Operator op)
+op_to_example_str(Operator op)
 {
 	switch (op)
 	{
@@ -445,7 +445,7 @@ op_to_example_str(enum Operator op)
  * Used by the parser to determine the order to parse operators.
  */
 bool
-is_prefix_unary_operator(enum Operator op)
+is_prefix_unary_operator(Operator op)
 {
 	switch (op)
 	{
@@ -472,7 +472,7 @@ is_prefix_unary_operator(enum Operator op)
  * Used by the parser to determine the order to parse operators.
  */
 bool
-is_postfix_unary_operator(enum Operator op)
+is_postfix_unary_operator(Operator op)
 {
 	switch (op)
 	{
@@ -493,7 +493,7 @@ is_postfix_unary_operator(enum Operator op)
  * Used by the parser to determine the order to parse operators.
  */
 bool
-is_binary_operator(enum Operator op)
+is_binary_operator(Operator op)
 {
 	switch (op)
 	{
@@ -543,8 +543,8 @@ enum Associativity
 };
 
 // Used in the table below to make the code more readable.
-typedef std::pair<std::vector<Operator>, enum Associativity> OperatorPrecedencePair;
-#define mp std::make_pair<std::vector<Operator>, enum Associativity>
+typedef std::pair<std::vector<Operator>, Associativity> OperatorPrecedencePair;
+#define mp std::make_pair<std::vector<Operator>, Associativity>
 
 // The following table is used to determine the order
 // in which operators are parsed.
@@ -834,7 +834,7 @@ struct Tokeniser
 
 			// Handle number literals.
 
-			else if (c >= '0' && c <= '9' || c == '.')
+			else if ((c >= '0' && c <= '9') || c == '.')
 			{
 				push_token(LITERAL_NUMBER, scan_literal_number(c));
 			}
@@ -1130,14 +1130,14 @@ struct Tokeniser
 
 		// Decimal integer or floating point number.
 
-		if (c >= '0' && c <= '9' || c == '.')
+		if ((c >= '0' && c <= '9') || c == '.')
 		{
 			do
 			{
 				reader.advance();
 				s += c;
 				c = reader.peek_byte();
-			} while (c >= '0' && c <= '9' || c == '.');
+			} while ((c >= '0' && c <= '9') || c == '.');
 		}
 
 		reader.reset();

@@ -1,10 +1,10 @@
 #ifndef TEA_DEBUGGER_INSTRUCTION_LISTER_HEADER
 #define TEA_DEBUGGER_INSTRUCTION_LISTER_HEADER
 
-#include "../ansi.hpp"
-#include "../VM/cpu.hpp"
-#include "../VM/memory.hpp"
-#include "util.hpp"
+#include "Shared/ansi.hpp"
+#include "VM/cpu.hpp"
+#include "VM/memory.hpp"
+#include "Debugger/util.hpp"
 
 struct InstructionLister
 {

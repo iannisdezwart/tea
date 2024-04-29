@@ -3,47 +3,47 @@
 
 #include "tokeniser.hpp"
 
-#include "ASTNodes/ASTNode.hpp"
-#include "ASTNodes/WriteValue.hpp"
-#include "ASTNodes/ReadValue.hpp"
-#include "ASTNodes/TypeName.hpp"
-#include "ASTNodes/TypeIdentifierPair.hpp"
-#include "ASTNodes/VariableDeclaration.hpp"
-#include "ASTNodes/FunctionDeclaration.hpp"
-#include "ASTNodes/ReturnStatement.hpp"
-#include "ASTNodes/CodeBlock.hpp"
-#include "ASTNodes/LiteralStringExpression.hpp"
-#include "ASTNodes/LiteralCharExpression.hpp"
-#include "ASTNodes/LiteralNumberExpression.hpp"
-#include "ASTNodes/IdentifierExpression.hpp"
-#include "ASTNodes/FunctionCall.hpp"
-#include "ASTNodes/BinaryOperation.hpp"
-#include "ASTNodes/UnaryOperation.hpp"
-#include "ASTNodes/MemberExpression.hpp"
-#include "ASTNodes/MethodCall.hpp"
-#include "ASTNodes/AssignmentExpression.hpp"
-#include "ASTNodes/IfStatement.hpp"
-#include "ASTNodes/WhileStatement.hpp"
-#include "ASTNodes/ForStatement.hpp"
-#include "ASTNodes/ClassDeclaration.hpp"
-#include "ASTNodes/InitList.hpp"
-#include "ASTNodes/CastExpression.hpp"
-#include "ASTNodes/OffsetExpression.hpp"
-#include "ASTNodes/SysCall.hpp"
-#include "ASTNodes/BreakStatement.hpp"
-#include "ASTNodes/ContinueStatement.hpp"
+#include <vector>
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/WriteValue.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/TypeName.hpp"
+#include "Compiler/ASTNodes/TypeIdentifierPair.hpp"
+#include "Compiler/ASTNodes/VariableDeclaration.hpp"
+#include "Compiler/ASTNodes/FunctionDeclaration.hpp"
+#include "Compiler/ASTNodes/ReturnStatement.hpp"
+#include "Compiler/ASTNodes/CodeBlock.hpp"
+#include "Compiler/ASTNodes/LiteralStringExpression.hpp"
+#include "Compiler/ASTNodes/LiteralCharExpression.hpp"
+#include "Compiler/ASTNodes/LiteralNumberExpression.hpp"
+#include "Compiler/ASTNodes/IdentifierExpression.hpp"
+#include "Compiler/ASTNodes/FunctionCall.hpp"
+#include "Compiler/ASTNodes/BinaryOperation.hpp"
+#include "Compiler/ASTNodes/UnaryOperation.hpp"
+#include "Compiler/ASTNodes/MemberExpression.hpp"
+#include "Compiler/ASTNodes/AssignmentExpression.hpp"
+#include "Compiler/ASTNodes/IfStatement.hpp"
+#include "Compiler/ASTNodes/WhileStatement.hpp"
+#include "Compiler/ASTNodes/ForStatement.hpp"
+#include "Compiler/ASTNodes/ClassDeclaration.hpp"
+#include "Compiler/ASTNodes/InitList.hpp"
+#include "Compiler/ASTNodes/CastExpression.hpp"
+#include "Compiler/ASTNodes/OffsetExpression.hpp"
+#include "Compiler/ASTNodes/SysCall.hpp"
+#include "Compiler/ASTNodes/BreakStatement.hpp"
+#include "Compiler/ASTNodes/ContinueStatement.hpp"
 
 /**
  * @brief Merges binary operators with left-to-right associativity.
  */
 void
-merge_bin_ops_ltr(std::vector<ReadValue *> &expressions,
+merge_bin_ops_ltr(std::vector<std::unique_ptr<ReadValue>> &expressions,
 	std::vector<Token> &operators, const std::vector<Operator> &active_ops)
 {
 	for (size_t j = 0; j < operators.size(); j++)
 	{
-		Token &op_token  = operators[j];
-		enum Operator op = str_to_operator(op_token.value);
+		Token &op_token = operators[j];
+		Operator op     = str_to_operator(op_token.value);
 
 		// Check if this operator is mergeable.
 
@@ -62,9 +62,9 @@ merge_bin_ops_ltr(std::vector<ReadValue *> &expressions,
 
 	merge_op:
 
-		ReadValue *left_expr  = expressions[j];
-		ReadValue *right_expr = expressions[j + 1];
-		ReadValue *new_expr;
+		std::unique_ptr<ReadValue> &left_expr  = expressions[j];
+		std::unique_ptr<ReadValue> &right_expr = expressions[j + 1];
+		std::unique_ptr<ReadValue> new_expr;
 
 		switch (op)
 		{
@@ -90,34 +90,29 @@ merge_bin_ops_ltr(std::vector<ReadValue *> &expressions,
 		case EQUAL:
 		case NOT_EQUAL:
 		{
-			new_expr = new BinaryOperation(left_expr, right_expr, op_token);
+			new_expr = std::make_unique<BinaryOperation>(
+				std::move(left_expr), std::move(right_expr), op_token);
 			break;
 		}
 
 		case POINTER_TO_MEMBER:
 		case DEREFERENCED_POINTER_TO_MEMBER:
 		{
-			if (left_expr->type != IDENTIFIER_EXPRESSION)
+			if (left_expr->node_type != IDENTIFIER_EXPRESSION)
 			{
 				err_at_token(left_expr->accountable_token, "Type Error",
 					"Cannot use pointer to member operator on a non-identifier");
 			}
 
-			if (right_expr->type == IDENTIFIER_EXPRESSION)
+			if (right_expr->node_type == IDENTIFIER_EXPRESSION)
 			{
-				IdentifierExpression *object = (IdentifierExpression *) left_expr;
-				IdentifierExpression *member = (IdentifierExpression *) right_expr;
+				std::unique_ptr<IdentifierExpression> object =
+					static_unique_ptr_cast<IdentifierExpression>(std::move(left_expr));
+				std::unique_ptr<IdentifierExpression> member =
+					static_unique_ptr_cast<IdentifierExpression>(std::move(right_expr));
 
-				new_expr = new MemberExpression(object, member, op_token);
-				break;
-			}
-
-			if (right_expr->type == FUNCTION_CALL)
-			{
-				IdentifierExpression *object = (IdentifierExpression *) left_expr;
-				FunctionCall *method         = (FunctionCall *) right_expr;
-
-				new_expr = new MethodCall(object, method, op_token);
+				new_expr = std::make_unique<MemberExpression>(
+					std::move(object), std::move(member), op_token);
 				break;
 			}
 
@@ -125,11 +120,11 @@ merge_bin_ops_ltr(std::vector<ReadValue *> &expressions,
 				"A member of a class instance must be an IdentifierExpression "
 				"or a FunctionCall\n"
 				"Found a %s",
-				ast_node_type_to_str(right_expr->type));
+				ast_node_type_to_str(right_expr->node_type));
 		} // case DEREFERENCED_POINTER_TO_MEMBER
 		} // switch
 
-		expressions[j] = new_expr;
+		expressions[j] = std::move(new_expr);
 
 		operators.erase(operators.begin() + j);
 		expressions.erase(expressions.begin() + j + 1);
@@ -142,13 +137,13 @@ merge_bin_ops_ltr(std::vector<ReadValue *> &expressions,
  * @brief Merges binary operators with right-to-left associativity.
  */
 void
-merge_bin_ops_rtl(std::vector<ReadValue *> &expressions,
+merge_bin_ops_rtl(std::vector<std::unique_ptr<ReadValue>> &expressions,
 	std::vector<Token> &operators, const std::vector<Operator> &active_ops)
 {
 	for (size_t j = operators.size(); j != 0; j--)
 	{
-		Token &op_token  = operators[j - 1];
-		enum Operator op = str_to_operator(op_token.value);
+		Token &op_token = operators[j - 1];
+		Operator op     = str_to_operator(op_token.value);
 
 		// Check if this operator is mergeable.
 
@@ -167,9 +162,9 @@ merge_bin_ops_rtl(std::vector<ReadValue *> &expressions,
 
 	merge_op:
 
-		ReadValue *left  = expressions[j - 1];
-		ReadValue *right = expressions[j];
-		ReadValue *new_expr;
+		std::unique_ptr<ReadValue> &left  = expressions[j - 1];
+		std::unique_ptr<ReadValue> &right = expressions[j];
+		std::unique_ptr<ReadValue> new_expr;
 
 		switch (op)
 		{
@@ -211,14 +206,15 @@ merge_bin_ops_rtl(std::vector<ReadValue *> &expressions,
 			// 	dereference_depth++;
 			// }
 
-			new_expr = new AssignmentExpression(WriteValue::cast(left),
-				right, op_token);
+			new_expr = std::make_unique<AssignmentExpression>(
+				std::unique_ptr<WriteValue>(WriteValue::cast(left.release())),
+				std::move(right), op_token);
 
 			break;
 		} // case BITWISE_OR_ASSIGNMENT
 		} // switch
 
-		expressions[j - 1] = new_expr;
+		expressions[j - 1] = std::move(new_expr);
 
 		operators.erase(operators.begin() + j - 1);
 		expressions.erase(expressions.begin() + j);
@@ -229,15 +225,15 @@ merge_bin_ops_rtl(std::vector<ReadValue *> &expressions,
  * Merges unary operators with left-to-right associativity.
  */
 void
-merge_un_ops_ltr(ReadValue *&expression,
+merge_un_ops_ltr(std::unique_ptr<ReadValue> &expression,
 	std::vector<std::pair<Token, bool>> &operators,
 	const std::vector<Operator> &active_ops)
 {
 	for (size_t j = 0; j < operators.size(); j++)
 	{
-		Token &op_token  = operators[j].first;
-		bool prefix      = operators[j].second;
-		enum Operator op = str_to_operator(op_token.value, prefix);
+		Token &op_token = operators[j].first;
+		bool prefix     = operators[j].second;
+		Operator op     = str_to_operator(op_token.value, prefix);
 
 		// Check if this operator is mergeable.
 
@@ -258,9 +254,9 @@ merge_un_ops_ltr(ReadValue *&expression,
 
 	merge_op:
 
-		ReadValue *new_expr = new UnaryOperation(expression, op_token, prefix);
-
-		expression = new_expr;
+		std::unique_ptr<ReadValue> new_expr = std::make_unique<UnaryOperation>(
+			std::move(expression), op_token, prefix);
+		expression = std::move(new_expr);
 
 		operators.erase(operators.begin() + j);
 
@@ -272,15 +268,15 @@ merge_un_ops_ltr(ReadValue *&expression,
  * @brief Merges unary operators with right-to-left associativity.
  */
 void
-merge_un_ops_rtl(ReadValue *&expression,
+merge_un_ops_rtl(std::unique_ptr<ReadValue> &expression,
 	std::vector<std::pair<Token, bool>> &operators,
 	const std::vector<Operator> &active_ops)
 {
 	for (size_t j = operators.size(); j != 0; j--)
 	{
-		Token &op_token  = operators[j - 1].first;
-		bool prefix      = operators[j - 1].second;
-		enum Operator op = str_to_operator(op_token.value, prefix);
+		Token &op_token = operators[j - 1].first;
+		bool prefix     = operators[j - 1].second;
+		Operator op     = str_to_operator(op_token.value, prefix);
 
 		// Check if this operator is mergeable.
 
@@ -301,9 +297,10 @@ merge_un_ops_rtl(ReadValue *&expression,
 
 	merge_op_1:
 
-		ReadValue *new_expr = new UnaryOperation(expression, op_token, prefix);
+		std::unique_ptr<ReadValue> new_expr = std::make_unique<UnaryOperation>(
+			std::move(expression), op_token, prefix);
 
-		expression = new_expr;
+		expression = std::move(new_expr);
 
 		operators.erase(operators.begin() + j - 1);
 	}
@@ -318,12 +315,6 @@ struct Parser
 	// Reference to the input tokens
 	// that were generated by the tokeniser.
 	std::vector<Token> &tokens;
-
-	// Output abstract syntax tree. Built by the `parse()` method.
-	// Will consist of the root nodes of all function declarations,
-	// class declarations and global variable declarations,
-	// in order of definition within the source code file.
-	std::vector<ASTNode *> statements;
 
 	// The index of the current token being parsed.
 	size_t i = 0;
@@ -409,81 +400,22 @@ struct Parser
 		: tokens(tokens) {}
 
 	/**
-	 * @brief Destructor. Deallocates all AST nodes.
-	 */
-	~Parser()
-	{
-		for (ASTNode *statement : statements)
-		{
-			auto cb = [](ASTNode *node, size_t depth)
-			{
-				if (node == NULL)
-				{
-					return;
-				}
-
-				// Weird hack that fixes memory leak
-				// I have no idea why this works.
-				// TODO: fix.
-
-				if (node->type == CODE_BLOCK)
-				{
-					CodeBlock *cb = (CodeBlock *) node;
-					cb->~CodeBlock();
-				}
-
-				delete node;
-				node = NULL;
-			};
-
-			statement->dfs(cb);
-		}
-	}
-
-	/**
 	 * @brief Parses the input tokens and builds an AST.
 	 * @returns The root nodes of all function declarations,
 	 * class declarations and global variable declarations,
 	 * in order of definition within the source code file.
 	 */
-	std::vector<ASTNode *>
+	std::vector<std::unique_ptr<ASTNode>>
 	parse()
 	{
+		std::vector<std::unique_ptr<ASTNode>> statements;
+
 		while (i < tokens.size())
 		{
-			ASTNode *statement = next_statement();
-			statements.push_back(statement);
+			statements.push_back(next_statement());
 		}
 
 		return statements;
-	}
-
-	/**
-	 * @brief Pretty-prints the AST to stdout.
-	 * The AST is printed in a depth-first post-order traversal.
-	 * TODO: Also support pre-order traversal.
-	 */
-	void
-	print_ast()
-	{
-		printf("\\\\\\ AST \\\\\\\n\n");
-
-		for (ASTNode *statement : statements)
-		{
-			auto cb = [](ASTNode *node, size_t depth)
-			{
-				for (size_t i = 0; i < depth; i++)
-				{
-					putc('\t', stdout);
-				}
-
-				node->print("\u279a");
-			};
-
-			statement->dfs(cb);
-		}
-
-		printf("\n/// AST ///\n");
 	}
 
 	/**
@@ -528,11 +460,10 @@ struct Parser
 	 * what kind of statement they represent. The statement
 	 * is then parsed and returned as an AST node.
 	 */
-	ASTNode *
+	std::unique_ptr<ASTNode>
 	next_statement()
 	{
 		Token token = get_token();
-		ASTNode *node;
 
 		// Look at the first token and figure out what
 		// statement this could be. If this is ambiguous,
@@ -557,7 +488,7 @@ struct Parser
 		case KEYWORD:
 			if (token.value == "return")
 			{
-				node = scan_return_statement();
+				std::unique_ptr<ASTNode> node = scan_return_statement();
 				expect_statement_terminator();
 				return node;
 			}
@@ -584,21 +515,21 @@ struct Parser
 
 			if (token.value == "syscall")
 			{
-				node = scan_syscall();
+				std::unique_ptr<ASTNode> node = scan_syscall();
 				expect_statement_terminator();
 				return node;
 			}
 
 			if (token.value == "break")
 			{
-				node = scan_break_statement();
+				std::unique_ptr<ASTNode> node = scan_break_statement();
 				expect_statement_terminator();
 				return node;
 			}
 
 			if (token.value == "continue")
 			{
-				node = scan_continue_statement();
+				std::unique_ptr<ASTNode> node = scan_continue_statement();
 				expect_statement_terminator();
 				return node;
 			}
@@ -608,9 +539,11 @@ struct Parser
 					token.value.c_str());
 
 		default:
-			node = scan_expression();
+		{
+			std::unique_ptr<ASTNode> node = scan_expression();
 			expect_statement_terminator();
 			return node;
+		}
 		}
 	}
 
@@ -664,7 +597,7 @@ struct Parser
 	 * * u8*
 	 * * u8*[10]****[7]**
 	 */
-	TypeName *
+	std::unique_ptr<TypeName>
 	scan_type_name()
 	{
 		Token type_name_token = next_token();
@@ -709,7 +642,7 @@ struct Parser
 				break;
 		}
 
-		return new TypeName(type_name_token, std::move(array_sizes));
+		return std::make_unique<TypeName>(type_name_token, std::move(array_sizes));
 	}
 
 	/**
@@ -718,15 +651,15 @@ struct Parser
 	 *
 	 * Useful when scanning a declaration.
 	 */
-	TypeIdentifierPair *
+	std::unique_ptr<TypeIdentifierPair>
 	scan_type_identifier_pair()
 	{
-		TypeName *type_name = scan_type_name();
+		std::unique_ptr<TypeName> type_name = scan_type_name();
 
 		Token identifier_token = next_token();
 		assert_token_type(identifier_token, IDENTIFIER);
 
-		return new TypeIdentifierPair(type_name, identifier_token);
+		return std::make_unique<TypeIdentifierPair>(std::move(type_name), identifier_token);
 	}
 
 	/**
@@ -736,7 +669,7 @@ struct Parser
 	 * method.
 	 * "{ any number of <statement> }"
 	 */
-	CodeBlock *
+	std::unique_ptr<CodeBlock>
 	scan_code_block()
 	{
 		// Expect a left curly brace "{".
@@ -745,7 +678,7 @@ struct Parser
 		assert_token_type(curly_brace_start, SPECIAL_CHARACTER);
 		assert_token_value(curly_brace_start, "{");
 
-		CodeBlock *code_block = new CodeBlock(curly_brace_start);
+		std::unique_ptr<CodeBlock> code_block = std::make_unique<CodeBlock>(curly_brace_start);
 
 		// Scan all statements.
 
@@ -775,18 +708,18 @@ struct Parser
 	 * to support single line statements instead of code blocks.
 	 * <statement>
 	 */
-	CodeBlock *
+	std::unique_ptr<CodeBlock>
 	scan_and_wrap_statement_inside_code_block()
 	{
 		// Scan the statement.
 
-		Token first_token  = get_token();
-		ASTNode *statement = next_statement();
+		Token first_token                  = get_token();
+		std::unique_ptr<ASTNode> statement = next_statement();
 
 		// Wrap it inside a code block.
 
-		CodeBlock *code_block = new CodeBlock(first_token);
-		code_block->add_statement(statement);
+		std::unique_ptr<CodeBlock> code_block = std::make_unique<CodeBlock>(first_token);
+		code_block->add_statement(std::move(statement));
 
 		return code_block;
 	}
@@ -798,7 +731,7 @@ struct Parser
 	 * Used to scan a statement or a code block that comes
 	 * after an if, while, for etc.
 	 */
-	CodeBlock *
+	std::unique_ptr<CodeBlock>
 	scan_code_block_or_statement()
 	{
 		Token first_token = get_token();
@@ -829,11 +762,11 @@ struct Parser
 	 * * x + y
 	 * * (x * y / z - a + b & c << (d >> e))
 	 */
-	ReadValue *
+	std::unique_ptr<ReadValue>
 	scan_expression()
 	{
 		// List of the expressions
-		std::vector<ReadValue *> expressions;
+		std::vector<std::unique_ptr<ReadValue>> expressions;
 
 		// List of all operators between the expressions
 		std::vector<Token> operators;
@@ -881,7 +814,8 @@ struct Parser
 			}
 		}
 
-		return expressions[0];
+		std::unique_ptr<ReadValue> expression = std::move(expressions[0]);
+		return expression;
 	}
 
 	/**
@@ -900,11 +834,11 @@ struct Parser
 	 * * (x + y) + z
 	 * * a + *b
 	 */
-	ReadValue *
+	std::unique_ptr<ReadValue>
 	scan_sub_expression()
 	{
 		std::vector<std::pair<Token, bool>> operators; // bool => true = prefix
-		ReadValue *expression;
+		std::unique_ptr<ReadValue> expression;
 
 		// Prefix unary operators
 
@@ -918,7 +852,7 @@ struct Parser
 				break;
 			}
 
-			enum Operator op = str_to_operator(maybe_operator_token.value, true);
+			Operator op = str_to_operator(maybe_operator_token.value, true);
 			if (!is_prefix_unary_operator(op))
 			{
 				break;
@@ -941,7 +875,9 @@ struct Parser
 			assert_token_type(left_parenthesis, SPECIAL_CHARACTER);
 			assert_token_value(left_parenthesis, "(");
 
-			expression = new CastExpression(new TypeName(expr_token, {}), scan_expression());
+			expression = std::make_unique<CastExpression>(
+				std::make_unique<TypeName>(expr_token, std::vector<size_t> {}),
+				scan_expression());
 
 			Token right_parenthesis = next_token();
 			assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
@@ -958,7 +894,7 @@ struct Parser
 
 		else if (expr_token.type == SPECIAL_CHARACTER && expr_token.value == "[")
 		{
-			TypeName *type_name = scan_type_name();
+			std::unique_ptr<TypeName> type_name = scan_type_name();
 
 			Token right_square_bracket = next_token();
 			assert_token_type(right_square_bracket, SPECIAL_CHARACTER);
@@ -968,7 +904,8 @@ struct Parser
 			assert_token_type(left_parenthesis, SPECIAL_CHARACTER);
 			assert_token_value(left_parenthesis, "(");
 
-			expression = new CastExpression(type_name, scan_expression());
+			expression = std::make_unique<CastExpression>(
+				std::move(type_name), scan_expression());
 
 			Token right_parenthesis = next_token();
 			assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
@@ -994,7 +931,7 @@ struct Parser
 
 		else if (expr_token.type == SPECIAL_CHARACTER && expr_token.value == "{")
 		{
-			std::vector<ReadValue *> items;
+			std::vector<std::unique_ptr<ReadValue>> items;
 			Token maybe_end_token = get_token();
 			Token seperator;
 
@@ -1013,7 +950,8 @@ struct Parser
 
 			seperator = next_token();
 
-			if (seperator.type != SPECIAL_CHARACTER || seperator.value != "}" && seperator.value != ",")
+			if (seperator.type != SPECIAL_CHARACTER
+				|| (seperator.value != "}" && seperator.value != ","))
 			{
 				err_at_token(seperator, "Syntax Error",
 					"Unexpected token \"%s\" of type %s\n"
@@ -1029,14 +967,15 @@ struct Parser
 			}
 
 		end_init_list:
-			expression = new InitList(expr_token, std::move(items));
+			expression = std::make_unique<InitList>(expr_token, std::move(items));
 		}
 
 		// Literal string
 
 		else if (expr_token.type == LITERAL_STRING)
 		{
-			expression = new LiteralStringExpression(expr_token, expr_token.value);
+			expression = std::make_unique<LiteralStringExpression>(
+				expr_token, expr_token.value);
 
 			// TODO: allow multiple literal strings next to each other.
 		}
@@ -1045,7 +984,7 @@ struct Parser
 
 		else if (expr_token.type == LITERAL_CHAR)
 		{
-			expression = new LiteralCharExpression(expr_token);
+			expression = std::make_unique<LiteralCharExpression>(expr_token);
 
 			// TODO: make a method that parses a char correctly.
 			// Currently, it will just parse the first char.
@@ -1055,7 +994,8 @@ struct Parser
 
 		else if (expr_token.type == LITERAL_NUMBER)
 		{
-			expression = new LiteralNumberExpression(expr_token, expr_token.value);
+			expression = std::make_unique<LiteralNumberExpression>(
+				expr_token, expr_token.value);
 		}
 
 		// IdentifierExpression, OffsetExpression or FunctionCall
@@ -1084,7 +1024,7 @@ struct Parser
 
 			else
 			{
-				expression = new IdentifierExpression(expr_token);
+				expression = std::make_unique<IdentifierExpression>(expr_token);
 			}
 		}
 
@@ -1107,7 +1047,7 @@ struct Parser
 				break;
 			}
 
-			enum Operator op = str_to_operator(maybe_operator_token.value);
+			Operator op = str_to_operator(maybe_operator_token.value);
 			if (!is_postfix_unary_operator(op))
 			{
 				break;
@@ -1144,11 +1084,10 @@ struct Parser
 	 * Scans a declaration. This can either be a function
 	 * declaration or a variable declaration.
 	 */
-	ASTNode *
+	std::unique_ptr<ASTNode>
 	scan_declaration()
 	{
-		ASTNode *declaration;
-		TypeIdentifierPair *type_id_pair = scan_type_identifier_pair();
+		std::unique_ptr<TypeIdentifierPair> type_id_pair = scan_type_identifier_pair();
 
 		Token maybe_left_parenthesis = next_token();
 
@@ -1157,19 +1096,16 @@ struct Parser
 		{
 			// This is a function declaration
 
-			declaration = scan_function_declaration(type_id_pair);
-		}
-		else
-		{
-			// This is a variable declaration
-
-			i--;
-			declaration = scan_variable_declaration(type_id_pair);
-
-			expect_statement_terminator();
+			return scan_function_declaration(std::move(type_id_pair));
 		}
 
-		return declaration;
+		// This is a variable declaration
+
+		i--;
+		std::unique_ptr<VariableDeclaration> var_decl =
+			scan_variable_declaration(std::move(type_id_pair));
+		expect_statement_terminator();
+		return var_decl;
 	}
 
 	/**
@@ -1179,11 +1115,11 @@ struct Parser
 	 * @param type_id_pair The type identifier pair of the function.
 	 * This was parsed by the `scan_declaration()` function.
 	 */
-	FunctionDeclaration *
+	std::unique_ptr<FunctionDeclaration>
 	scan_function_declaration(
-		TypeIdentifierPair *type_id_pair)
+		std::unique_ptr<TypeIdentifierPair> type_id_pair)
 	{
-		std::vector<TypeIdentifierPair *> params;
+		std::vector<std::unique_ptr<TypeIdentifierPair>> params;
 		Token next = get_token();
 
 		// Check if there are no parameters.
@@ -1224,16 +1160,17 @@ struct Parser
 
 		// Scan the function body.
 
-		CodeBlock *code_block = scan_code_block();
+		std::unique_ptr<CodeBlock> code_block = scan_code_block();
 
-		return new FunctionDeclaration(type_id_pair, params, code_block);
+		return std::make_unique<FunctionDeclaration>(
+			std::move(type_id_pair), std::move(params), std::move(code_block));
 	}
 
 	/**
 	 * Scans a function body.
 	 * <identifier>(<parameter_list>)
 	 */
-	FunctionCall *
+	std::unique_ptr<FunctionCall>
 	scan_function_call()
 	{
 		// Scan the function name.
@@ -1247,7 +1184,7 @@ struct Parser
 		assert_token_type(left_parenthesis_token, SPECIAL_CHARACTER);
 		assert_token_value(left_parenthesis_token, "(");
 
-		std::vector<ReadValue *> arguments;
+		std::vector<std::unique_ptr<ReadValue>> arguments;
 		Token next = get_token();
 
 		// Check if there are no arguments.
@@ -1286,14 +1223,15 @@ struct Parser
 
 	end_arguments:
 
-		return new FunctionCall(identifier_token, arguments);
+		return std::make_unique<FunctionCall>(
+			identifier_token, std::move(arguments));
 	}
 
 	/**
 	 * Scans an offset expression.
 	 * <identifier>[<expr>]
 	 */
-	OffsetExpression *
+	std::unique_ptr<OffsetExpression>
 	scan_offset_expression()
 	{
 		// Scan the identifier.
@@ -1309,7 +1247,7 @@ struct Parser
 
 		// Scan the expression.
 
-		ReadValue *offset = scan_expression();
+		std::unique_ptr<ReadValue> offset = scan_expression();
 
 		// Consume the right bracket "]".
 
@@ -1317,8 +1255,9 @@ struct Parser
 		assert_token_type(right_bracket_token, SPECIAL_CHARACTER);
 		assert_token_value(right_bracket_token, "]");
 
-		return new OffsetExpression(new IdentifierExpression(identifier_token),
-			offset, left_bracket_token);
+		return std::make_unique<OffsetExpression>(
+			std::make_unique<IdentifierExpression>(identifier_token),
+			std::move(offset), left_bracket_token);
 	}
 
 	/**
@@ -1328,9 +1267,8 @@ struct Parser
 	 * @param type_id_pair The type identifier pair of the function.
 	 * This was parsed by the `scan_declaration()` function.
 	 */
-	VariableDeclaration *
-	scan_variable_declaration(
-		TypeIdentifierPair *type_id_pair)
+	std::unique_ptr<VariableDeclaration>
+	scan_variable_declaration(std::unique_ptr<TypeIdentifierPair> type_id_pair)
 	{
 		Token next = get_token();
 
@@ -1342,13 +1280,15 @@ struct Parser
 		if (next.type == OPERATOR && next.value == "=")
 		{
 			i++;
-			return new VariableDeclaration(type_id_pair, scan_expression());
+			return std::make_unique<VariableDeclaration>(
+				std::move(type_id_pair), scan_expression());
 		}
 
 		// Only declaration
 
 		expect_statement_terminator();
-		return new VariableDeclaration(type_id_pair, NULL);
+		return std::make_unique<VariableDeclaration>(
+			std::move(type_id_pair), nullptr);
 	}
 
 	/**
@@ -1358,7 +1298,7 @@ struct Parser
 	 * The class body is parsed in the
 	 * `ClassDeclaration` constructor.
 	 */
-	ClassDeclaration *
+	std::unique_ptr<ClassDeclaration>
 	scan_class_declaration()
 	{
 		// Consume the "class" keyword.
@@ -1375,15 +1315,15 @@ struct Parser
 
 		// Scan the class body.
 
-		CodeBlock *body = scan_code_block();
-		return new ClassDeclaration(class_token, class_name_token.value, body);
+		return std::make_unique<ClassDeclaration>(
+			class_token, class_name_token.value, scan_code_block());
 	}
 
 	/**
 	 * Scans a return statement.
 	 * "return (optional <expr>)
 	 */
-	ReturnStatement *
+	std::unique_ptr<ReturnStatement>
 	scan_return_statement()
 	{
 		// Consume the "return" keyword.
@@ -1398,14 +1338,14 @@ struct Parser
 
 		if (next.type == SPECIAL_CHARACTER && next.value == ";")
 		{
-			return new ReturnStatement(return_token, NULL);
+			return std::make_unique<ReturnStatement>(return_token, nullptr);
 		}
 
 		// TODO: check if the expression is empty and there
 		// is no semicolon. I think it does not work yet.
 
-		ReturnStatement *return_statement = new ReturnStatement(
-			return_token, scan_expression());
+		std::unique_ptr<ReturnStatement> return_statement =
+			std::make_unique<ReturnStatement>(return_token, scan_expression());
 
 		return return_statement;
 	}
@@ -1414,7 +1354,7 @@ struct Parser
 	 * Scans an if-statement.
 	 * "if (<expr>) <code_block or statement>"
 	 */
-	IfStatement *
+	std::unique_ptr<IfStatement>
 	scan_if_statement()
 	{
 		// Consume the "if" keyword.
@@ -1431,7 +1371,7 @@ struct Parser
 
 		// Scan the test expression.
 
-		ReadValue *test = scan_expression();
+		std::unique_ptr<ReadValue> test = scan_expression();
 
 		// Consume the right parenthesis ")".
 
@@ -1441,7 +1381,7 @@ struct Parser
 
 		// Scan the then block.
 
-		CodeBlock *then_block = scan_code_block_or_statement();
+		std::unique_ptr<CodeBlock> then_block = scan_code_block_or_statement();
 
 		// Check if there is an else or else if block.
 
@@ -1452,7 +1392,7 @@ struct Parser
 			i++;
 			Token after_else_token = get_token();
 
-			CodeBlock *else_block;
+			std::unique_ptr<CodeBlock> else_block;
 
 			// Else if: wrap the block inside another
 			// if block in the else block.
@@ -1465,9 +1405,10 @@ struct Parser
 			if (after_else_token.type == KEYWORD
 				&& after_else_token.value == "if")
 			{
-				else_block                       = new CodeBlock(after_else_token);
-				IfStatement *nested_if_statement = scan_if_statement();
-				else_block->add_statement(nested_if_statement);
+				std::unique_ptr<IfStatement> nested_if_statement = scan_if_statement();
+
+				else_block = std::make_unique<CodeBlock>(after_else_token);
+				else_block->add_statement(std::move(nested_if_statement));
 			}
 
 			// Normal else: simply scan the else block.
@@ -1477,19 +1418,22 @@ struct Parser
 				else_block = scan_code_block_or_statement();
 			}
 
-			return new IfStatement(test, if_token, then_block, else_block);
+			return std::make_unique<IfStatement>(
+				std::move(test), if_token, std::move(then_block),
+				std::move(else_block));
 		}
 
 		// There is no else block.
 
-		return new IfStatement(test, if_token, then_block, NULL);
+		return std::make_unique<IfStatement>(
+			std::move(test), if_token, std::move(then_block), nullptr);
 	}
 
 	/**
 	 * Scans a syscall.
 	 * "syscall <syscall_name>(<arguments>)"
 	 */
-	SysCall *
+	std::unique_ptr<SysCall>
 	scan_syscall()
 	{
 		// Consume the "syscall" keyword.
@@ -1517,7 +1461,7 @@ struct Parser
 		assert_token_type(left_parethesis, SPECIAL_CHARACTER);
 		assert_token_value(left_parethesis, "(");
 
-		std::vector<ReadValue *> arguments;
+		std::vector<std::unique_ptr<ReadValue>> arguments;
 		Token next = get_token();
 
 		// Check if there are no arguments.
@@ -1556,7 +1500,7 @@ struct Parser
 
 	end_arguments:
 
-		return new SysCall(syscall_name_token, std::move(arguments));
+		return std::make_unique<SysCall>(syscall_name_token, std::move(arguments));
 	}
 
 	/**
@@ -1564,7 +1508,7 @@ struct Parser
 	 * "while (<expr>) <code_block or statement>"
 	 * TODO: maybe support python style while-else blocks?
 	 */
-	WhileStatement *
+	std::unique_ptr<WhileStatement>
 	scan_while_statement()
 	{
 		// Consume the "while" keyword.
@@ -1581,7 +1525,7 @@ struct Parser
 
 		// Scan the test expression.
 
-		ReadValue *test = scan_expression();
+		std::unique_ptr<ReadValue> test = scan_expression();
 
 		// Consume the right parenthesis ")".
 
@@ -1591,16 +1535,17 @@ struct Parser
 
 		// Scan body block.
 
-		CodeBlock *body = scan_code_block_or_statement();
+		std::unique_ptr<CodeBlock> body = scan_code_block_or_statement();
 
-		return new WhileStatement(test, while_token, body);
+		return std::make_unique<WhileStatement>(
+			std::move(test), while_token, std::move(body));
 	}
 
 	/**
 	 * Scans a for statement.
 	 * "for (<init> <test> <update>) <code_block or statement>"
 	 */
-	ForStatement *
+	std::unique_ptr<ForStatement>
 	scan_for_statement()
 	{
 		// Consume the "for" keyword.
@@ -1617,16 +1562,16 @@ struct Parser
 
 		// Scan the init statement.
 
-		ASTNode *init = next_statement();
+		std::unique_ptr<ASTNode> init = next_statement();
 
 		// Scan the test expression.
 
-		ReadValue *test = scan_expression();
+		std::unique_ptr<ReadValue> test = scan_expression();
 		expect_statement_terminator();
 
 		// Scan the update statement.
 
-		ReadValue *update = scan_expression();
+		std::unique_ptr<ReadValue> update = scan_expression();
 
 		// Consume the right parenthesis ")".
 
@@ -1636,16 +1581,17 @@ struct Parser
 
 		// Scan the body block.
 
-		CodeBlock *body = scan_code_block_or_statement();
+		std::unique_ptr<CodeBlock> body = scan_code_block_or_statement();
 
-		return new ForStatement(init, test, update, for_token, body);
+		return std::make_unique<ForStatement>(std::move(init), std::move(test),
+			std::move(update), for_token, std::move(body));
 	}
 
 	/**
 	 * Scans a break statement.
 	 * "break"
 	 */
-	BreakStatement *
+	std::unique_ptr<BreakStatement>
 	scan_break_statement()
 	{
 		Token break_token = next_token();
@@ -1653,13 +1599,13 @@ struct Parser
 		assert_token_value(break_token, "break");
 
 		expect_statement_terminator();
-		return new BreakStatement(break_token);
+		return std::make_unique<BreakStatement>(break_token);
 	}
 
 	/**
 	 * Scans a continue statement.
 	 */
-	ContinueStatement *
+	std::unique_ptr<ContinueStatement>
 	scan_continue_statement()
 	{
 		Token continue_token = next_token();
@@ -1667,7 +1613,7 @@ struct Parser
 		assert_token_value(continue_token, "continue");
 
 		expect_statement_terminator();
-		return new ContinueStatement(continue_token);
+		return std::make_unique<ContinueStatement>(continue_token);
 	}
 };
 

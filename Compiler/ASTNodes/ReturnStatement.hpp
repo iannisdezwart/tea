@@ -1,25 +1,25 @@
 #ifndef TEA_AST_NODE_RETURN_STATEMENT_HEADER
 #define TEA_AST_NODE_RETURN_STATEMENT_HEADER
 
-#include "ASTNode.hpp"
-#include "ReadValue.hpp"
-#include "../tokeniser.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../util.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Executable/byte-code.hpp"
+#include "Compiler/util.hpp"
 
-struct ReturnStatement : public ASTNode
+struct ReturnStatement final : public ASTNode
 {
-	Token return_token;
-	ReadValue *expression;
+	std::unique_ptr<ReadValue> expression;
 
-	ReturnStatement(Token return_token, ReadValue *expression)
-		: expression(expression), return_token(return_token),
-		  ASTNode(return_token, RETURN_STATEMENT) {}
+	ReturnStatement(Token return_token, std::unique_ptr<ReadValue> expression)
+		: ASTNode(std::move(return_token), RETURN_STATEMENT),
+		  expression(std::move(expression)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
-		if (expression != NULL)
+		if (expression)
 			expression->dfs(callback, depth + 1);
 
 		callback(this, depth);
@@ -27,28 +27,33 @@ struct ReturnStatement : public ASTNode
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s = "ReturnStatement {} @ " + to_hex((size_t) this);
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		if (expression == NULL)
-			return Type();
-		return expression->get_type(compiler_state);
+		if (!expression)
+			return;
+
+		expression->type_check(type_check_state);
+		type = expression->type;
 	}
 
 	void
-	compile(Assembler &assembler, CompilerState &compiler_state)
+	code_gen(Assembler &assembler)
+		const override
 	{
 		uint8_t res_reg = assembler.get_register();
 
 		// Store value in result register.
 
-		if (expression != NULL)
-			expression->get_value(assembler, compiler_state, res_reg);
+		if (expression)
+			expression->get_value(assembler, res_reg);
 
 		// Return value.
 

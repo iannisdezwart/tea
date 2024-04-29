@@ -1,30 +1,25 @@
 #ifndef TEA_AST_NODE_FUNCTION_CALL_HEADER
 #define TEA_AST_NODE_FUNCTION_CALL_HEADER
 
-#include "../util.hpp"
-#include "ASTNode.hpp"
-#include "ReadValue.hpp"
-#include "../../Assembler/assembler.hpp"
-#include "../compiler-state.hpp"
-#include "../tokeniser.hpp"
+#include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/code-gen/Assembler.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
+#include "Compiler/tokeniser.hpp"
 
-struct FunctionCall : public ReadValue
+struct FunctionCall final : public ReadValue
 {
-	Token fn_token;
-	std::vector<ReadValue *> arguments;
+	std::vector<std::unique_ptr<ReadValue>> arguments;
+	FunctionSignature fn_signature;
 
-	FunctionCall(Token &fn_token, std::vector<ReadValue *> &arguments)
-		: fn_token(fn_token), arguments(arguments),
-		  ReadValue(fn_token, FUNCTION_CALL) {}
-
-	std::string &
-	get_name()
-	{
-		return fn_token.value;
-	}
+	FunctionCall(Token fn_token, std::vector<std::unique_ptr<ReadValue>> &&arguments)
+		: ReadValue(std::move(fn_token), FUNCTION_CALL),
+		  arguments(std::move(arguments)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
 		for (size_t i = 0; i < arguments.size(); i++)
 		{
@@ -36,55 +31,51 @@ struct FunctionCall : public ReadValue
 
 	std::string
 	to_str()
+		override
 	{
-		std::string s = "FunctionCall { callee = \"" + get_name() + "\" } @ "
+		std::string s = "FunctionCall { callee = \"" + accountable_token.value + "\" } @ "
 			+ to_hex((size_t) this);
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
-	{
-		std::string &fn_name = get_name();
-
-		if (!compiler_state.functions.count(fn_name))
-		{
-			err_at_token(fn_token, "Call to undeclared function",
-				"Function %s was called, but not declared",
-				fn_name.c_str());
-		}
-
-		return compiler_state.functions[fn_name].id.type;
-	}
-
 	void
-	get_value(Assembler &assembler, CompilerState &compiler_state,
-		uint8_t result_reg)
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		uint8_t arg_reg;
 
-		std::string &fn_name = get_name();
-
-		if (!compiler_state.functions.count(fn_name))
+		if (!type_check_state.functions.count(accountable_token.value))
 		{
-			err_at_token(fn_token, "Call to undeclared function",
+			err_at_token(accountable_token, "Call to undeclared function",
 				"Function %s was called, but not declared",
-				fn_name.c_str());
+				accountable_token.value.c_str());
 		}
 
-		Function &fn                    = compiler_state.functions[fn_name];
-		std::vector<Identifier> &params = fn.parameters;
+		fn_signature = type_check_state.functions[accountable_token.value];
+		type         = fn_signature.id.type;
 
 		// Validate arguments
 
-		if (arguments.size() != params.size())
+		if (arguments.size() != fn_signature.parameters.size())
 		{
-			err_at_token(fn_token,
+			err_at_token(accountable_token,
 				"Type Error",
 				"Argument count does not equal parameter count"
 				"Function %s expects %ld arguments, got %ld",
-				fn_name.c_str(), params.size(), arguments.size());
+				fn_signature.id.name.c_str(), fn_signature.parameters.size(),
+				arguments.size());
 		}
+
+		for (std::unique_ptr<ReadValue> &arg : arguments)
+		{
+			arg->type_check(type_check_state);
+		}
+	}
+
+	void
+	get_value(Assembler &assembler, uint8_t result_reg)
+		const override
+	{
+		uint8_t arg_reg;
 
 		size_t args_size = 0;
 
@@ -93,15 +84,15 @@ struct FunctionCall : public ReadValue
 
 		for (size_t i = 0; i < arguments.size(); i++)
 		{
-			Type &param_type = params[i].type;
-			Type arg_type    = arguments[i]->get_type(compiler_state);
+			const Type &param_type = fn_signature.parameters[i].type;
+			const Type &arg_type   = arguments[i]->type;
 
 			std::string param = param_type.to_str();
 			std::string arg   = arg_type.to_str();
 
 			if (!arg_type.fits(param_type))
 			{
-				err_at_token(fn_token,
+				err_at_token(accountable_token,
 					"Type Error",
 					"Function call arguments list don't fit "
 					"function parameter type template\n"
@@ -113,7 +104,7 @@ struct FunctionCall : public ReadValue
 
 			// Put value into the argument register
 
-			arguments[i]->get_value(assembler, compiler_state, arg_reg);
+			arguments[i]->get_value(assembler, arg_reg);
 
 			switch (byte_size)
 			{
@@ -134,7 +125,7 @@ struct FunctionCall : public ReadValue
 				break;
 
 			default:
-				err_at_token(fn_token,
+				err_at_token(accountable_token,
 					"Type Error",
 					"Function call argument does not fit in a register\n"
 					"Behaviour is not implemented yet\n"
@@ -151,7 +142,7 @@ struct FunctionCall : public ReadValue
 		}
 
 		assembler.push_64(args_size);
-		assembler.call(fn_name);
+		assembler.call(fn_signature.id.name);
 		assembler.move_reg_into_reg(R_RET, result_reg);
 	}
 };

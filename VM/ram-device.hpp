@@ -3,8 +3,8 @@
 
 #include <iostream>
 
-#include "memory-device.hpp"
-#include "../Assembler/buffer.hpp"
+#include "VM/memory-device.hpp"
+#include "Shared/buffer.hpp"
 
 /**
  * @brief This class is not currently in use.

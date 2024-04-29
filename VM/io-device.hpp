@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "memory-device.hpp"
+#include "VM/memory-device.hpp"
 
 /**
  * @brief This class is not currently in use.

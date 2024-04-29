@@ -4,29 +4,36 @@ doxygen: Doxyfile
 	mkdir -p doxygen
 	doxygen Doxyfile
 
+COMMON_FLAGS = -std=c++17 -I./ -Wall
+DEBUG = -g
+FAST = -O3
+
 debug:
-	$(CXX) -std=c++17 VM/vm.cpp -o VM/vm -g
-	$(CXX) -std=c++17 Disassembler/disassemble.cpp -o Disassembler/disassemble -g
-	$(CXX) -std=c++17 Compiler/compile.cpp -o Compiler/compile -g
-	$(CXX) -std=c++17 Debugger/debug.cpp -o Debugger/debug -g
+	$(CXX) $(COMMON_FLAGS) VM/vm.cpp -o VM/vm $(DEBUG)
+	$(CXX) $(COMMON_FLAGS) Disassembler/disassemble.cpp -o Disassembler/disassemble $(DEBUG)
+	$(CXX) $(COMMON_FLAGS) Compiler/compile.cpp -o Compiler/compile $(DEBUG)
+	$(CXX) $(COMMON_FLAGS) Debugger/debug.cpp -o Debugger/debug $(DEBUG)
 
 VM/vm: VM/vm.cpp
-	$(CXX) -std=c++17 VM/vm.cpp -o VM/vm -O3
+	$(CXX) $(COMMON_FLAGS) VM/vm.cpp -o VM/vm $(FAST)
 
 Assembler/assemble: Assembler/assemble.cpp
-	$(CXX) -std=c++17 Assembler/assemble.cpp -o Assembler/assemble -O3
+	$(CXX) $(COMMON_FLAGS) Assembler/assemble.cpp -o Assembler/assemble $(FAST)
 
 Disassembler/disassemble: Disassembler/disassemble.cpp
-	$(CXX) -std=c++17 Disassembler/disassemble.cpp -o Disassembler/disassemble -O3
+	$(CXX) $(COMMON_FLAGS) Disassembler/disassemble.cpp -o Disassembler/disassemble $(FAST)
 
 Compiler/compile: Compiler/compile.cpp
-	$(CXX) -std=c++17 Compiler/compile.cpp -o Compiler/compile -O3
+	$(CXX) $(COMMON_FLAGS) Compiler/compile.cpp -o Compiler/compile $(FAST)
 
 Debugger/debug: Debugger/debug.cpp
-	$(CXX) -std=c++17 Debugger/debug.cpp -o Debugger/debug -O3
+	$(CXX) $(COMMON_FLAGS) Debugger/debug.cpp -o Debugger/debug $(FAST)
 
 clean:
 	rm -rf VM/vm Disassembler/disassemble Assembler/assemble Compiler/compile Debugger/debug
 
 format:
 	clang-format -i **/*.cpp **/*.hpp
+
+test:
+	./run-tests.sh

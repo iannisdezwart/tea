@@ -1,61 +1,65 @@
 #ifndef TEA_AST_NODE_CODE_BLOCK_HEADER
 #define TEA_AST_NODE_CODE_BLOCK_HEADER
 
-#include "../util.hpp"
-#include "ASTNode.hpp"
-#include "../tokeniser.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../../Assembler/assembler.hpp"
-#include "../compiler-state.hpp"
+#include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Executable/byte-code.hpp"
+#include "Compiler/code-gen/Assembler.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
 
-struct CodeBlock : public ASTNode
+struct CodeBlock final : public ASTNode
 {
-	std::vector<ASTNode *> statements;
-	Token start_token;
+	std::vector<std::unique_ptr<ASTNode>> statements;
 
 	CodeBlock(Token start_token)
-		: start_token(start_token),
-		  ASTNode(start_token, CODE_BLOCK) {}
+		: ASTNode(std::move(start_token), CODE_BLOCK) {}
 
 	~CodeBlock() {}
 
 	void
-	add_statement(ASTNode *statement)
-	{
-		statements.push_back(statement);
-	}
-
-	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
-		for (ASTNode *statement : statements)
+		for (const std::unique_ptr<ASTNode> &statement : statements)
 		{
-			if (statement != NULL)
-				statement->dfs(callback, depth + 1);
+			statement->dfs(callback, depth + 1);
 		}
 
 		callback(this, depth);
 	}
 
+	void
+	add_statement(std::unique_ptr<ASTNode> statement)
+	{
+		statements.push_back(std::move(statement));
+	}
+
 	std::string
 	to_str()
+		override
 	{
 		std::string s = "CodeBlock {} @ " + to_hex((size_t) this);
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		return Type();
+		for (const std::unique_ptr<ASTNode> &statement : statements)
+		{
+			statement->type_check(type_check_state);
+		}
 	}
 
 	void
-	compile(Assembler &assembler, CompilerState &compiler_state)
+	code_gen(Assembler &assembler)
+		const override
 	{
-		for (ASTNode *statement : statements)
+		for (const std::unique_ptr<ASTNode> &statement : statements)
 		{
-			statement->compile(assembler, compiler_state);
+			statement->code_gen(assembler);
 		}
 	}
 };

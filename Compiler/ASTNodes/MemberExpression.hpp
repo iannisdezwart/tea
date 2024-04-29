@@ -1,38 +1,34 @@
 #ifndef TEA_AST_NODES_MEMBER_EXPRESSION_HEADER
 #define TEA_AST_NODES_MEMBER_EXPRESSION_HEADER
 
-#include "../util.hpp"
-#include "ASTNode.hpp"
-#include "ReadValue.hpp"
-#include "WriteValue.hpp"
-#include "IdentifierExpression.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../../Assembler/assembler.hpp"
-#include "../compiler-state.hpp"
-#include "../tokeniser.hpp"
-#include "../../VM/cpu.hpp"
+#include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/WriteValue.hpp"
+#include "Compiler/ASTNodes/IdentifierExpression.hpp"
+#include "Executable/byte-code.hpp"
+#include "Compiler/code-gen/Assembler.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "VM/cpu.hpp"
 
-struct MemberExpression : public WriteValue
+struct MemberExpression final : public WriteValue
 {
-	IdentifierExpression *object;
-	IdentifierExpression *member;
-	Token op_token;
-	enum Operator op;
+	std::unique_ptr<IdentifierExpression> object;
+	std::unique_ptr<IdentifierExpression> member;
+	Operator op;
+	std::unique_ptr<ClassDefinition> class_definition;
 
-	MemberExpression(IdentifierExpression *object,
-		IdentifierExpression *member, const Token &op_token)
-		: object(object), member(member), op_token(op_token),
-		  op(str_to_operator(op_token.value)),
-		  WriteValue(op_token, MEMBER_EXPRESSION) {}
-
-	~MemberExpression()
-	{
-		delete object;
-		delete member;
-	}
+	MemberExpression(std::unique_ptr<IdentifierExpression> object,
+		std::unique_ptr<IdentifierExpression> member, Token op_token)
+		: WriteValue(std::move(op_token), MEMBER_EXPRESSION),
+		  object(std::move(object)),
+		  member(std::move(member)),
+		  op(str_to_operator(accountable_token.value)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
 		object->dfs(callback, depth + 1);
 		member->dfs(callback, depth + 1);
@@ -42,36 +38,43 @@ struct MemberExpression : public WriteValue
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s;
 
 		s += "MemberExpression { op = \"";
 		s += op_to_str(op);
 		s += "\", object = \"";
-		s += object->identifier_token.value;
+		s += object->accountable_token.value;
 		s += "\", member = \"";
-		s += member->identifier_token.value;
+		s += member->accountable_token.value;
 		s += "\" } @ ";
 		s += to_hex((size_t) this);
 
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		Type object_type        = object->get_type(compiler_state);
-		std::string member_name = member->identifier_token.value;
+		object->type_check(type_check_state);
+		member->type_check(type_check_state);
 
-		if (object_type != Type::USER_DEFINED_CLASS)
+		std::string member_name   = member->accountable_token.value;
+		std::string instance_name = object->accountable_token.value;
+
+		if (object->type != Type::USER_DEFINED_CLASS)
 		{
-			err_at_token(op_token, "Type Error",
+			err_at_token(accountable_token, "Type Error",
 				"Cannot access property %s from non-class type %s",
 				member_name.c_str(),
-				object->identifier_token.value.c_str());
+				instance_name.c_str());
 		}
 
-		std::string class_name = object_type.class_name;
+		std::string class_name = object->type.class_name;
+		class_definition       = std::make_unique<ClassDefinition>(
+                        type_check_state.classes[class_name]);
 
 		switch (op)
 		{
@@ -80,17 +83,18 @@ struct MemberExpression : public WriteValue
 		{
 			// Find class in compiler state
 
-			const Class &cl = compiler_state.classes[class_name];
+			const ClassDefinition &cl = type_check_state.classes[class_name];
 
 			for (size_t i = 0; i < cl.fields.size(); i++)
 			{
 				if (cl.fields[i].name == member_name)
 				{
-					return cl.fields[i].type;
+					type = cl.fields[i].type;
+					goto gather_location_data;
 				}
 			}
 
-			err_at_token(op_token, "Member error",
+			err_at_token(accountable_token, "Member error",
 				"Class %s has no member named %s",
 				class_name.c_str(), member_name.c_str());
 		}
@@ -101,42 +105,33 @@ struct MemberExpression : public WriteValue
 			abort();
 			break;
 		}
-	}
 
-	LocationData
-	get_location_data(CompilerState &compiler_state)
-	{
-		Type object_type          = object->get_type(compiler_state);
-		std::string instance_name = object->identifier_token.value;
-		std::string member_name   = member->identifier_token.value;
+	gather_location_data:
 
-		IdentifierKind id_kind = compiler_state.get_identifier_kind(instance_name);
-
-		Variable var;
+		IdentifierKind id_kind = type_check_state.get_identifier_kind(instance_name);
+		VariableDefinition var;
 
 		switch (id_kind)
 		{
 		case IdentifierKind::LOCAL:
-			var = compiler_state.locals[instance_name];
+			var = type_check_state.locals[instance_name];
 			break;
 
 		case IdentifierKind::PARAMETER:
-			var = compiler_state.parameters[instance_name];
+			var = type_check_state.parameters[instance_name];
 			break;
 
 		case IdentifierKind::GLOBAL:
-			var = compiler_state.globals[instance_name];
+			var = type_check_state.globals[instance_name];
 			break;
 
 		default:
-			err_at_token(op_token, "Invalid MemberExpression",
+			err_at_token(accountable_token, "Invalid MemberExpression",
 				"Cannot access a member of this type\n"
 				"Only members of locals and globals can be accessed");
 		}
 
-		std::string class_name  = object_type.class_name;
-		const Class &cl         = compiler_state.classes[class_name];
-		const Type &member_type = cl.get_field_type(member_name);
+		const Type &member_type = class_definition->get_field_type(member_name);
 
 		// Get the offset to the member
 
@@ -144,7 +139,7 @@ struct MemberExpression : public WriteValue
 
 		if (id_kind == IdentifierKind::PARAMETER)
 		{
-			offset = compiler_state.parameters_size - var.offset
+			offset = type_check_state.parameters_size - var.offset
 				+ 8 + CPU::stack_frame_size;
 		}
 		else
@@ -152,36 +147,34 @@ struct MemberExpression : public WriteValue
 			offset = var.offset;
 		}
 
-		for (size_t i = 0; i < cl.fields.size(); i++)
+		for (size_t i = 0; i < class_definition->fields.size(); i++)
 		{
-			if (cl.fields[i].name == member_name)
+			if (class_definition->fields[i].name == member_name)
 			{
 				break;
 			}
 
-			offset += cl.fields[i].type.byte_size();
+			offset += class_definition->fields[i].type.byte_size();
 		}
 
-		return LocationData(id_kind, offset, member_type.byte_size());
+		location_data = std::make_unique<LocationData>(
+			id_kind, offset, member_type.byte_size());
 	}
 
 	void
-	get_value(Assembler &assembler, CompilerState &compiler_state, uint8_t result_reg)
+	get_value(Assembler &assembler, uint8_t result_reg)
+		const override
 	{
-		Type object_type          = object->get_type(compiler_state);
-		std::string instance_name = object->identifier_token.value;
-		std::string member_name   = member->identifier_token.value;
-		std::string class_name    = object_type.class_name;
-		const Class &cl           = compiler_state.classes[class_name];
-		const Type &member_type   = cl.get_field_type(member_name);
-
-		LocationData location_data = get_location_data(compiler_state);
+		std::string instance_name = object->accountable_token.value;
+		std::string member_name   = member->accountable_token.value;
+		std::string class_name    = object->type.class_name;
+		const Type &member_type   = class_definition->get_field_type(member_name);
 
 		if (op == POINTER_TO_MEMBER)
 		{
-			if (object_type.pointer_depth() != 0)
+			if (object->type.pointer_depth() != 0)
 			{
-				err_at_token(op_token, "Invalid MemberExpression",
+				err_at_token(accountable_token, "Invalid MemberExpression",
 					"Cannot use %s.%s syntax on a pointer\n"
 					"Use %s->%s instead",
 					instance_name.c_str(), member_name.c_str(),
@@ -190,28 +183,28 @@ struct MemberExpression : public WriteValue
 
 			// Local variable or parameter
 
-			if (location_data.is_at_frame_top())
+			if (location_data->is_at_frame_top())
 			{
-				switch (location_data.var_size)
+				switch (location_data->var_size)
 				{
 				case 1:
 					assembler.move_frame_offset_8_into_reg(
-						location_data.offset, result_reg);
+						location_data->offset, result_reg);
 					break;
 
 				case 2:
 					assembler.move_frame_offset_16_into_reg(
-						location_data.offset, result_reg);
+						location_data->offset, result_reg);
 					break;
 
 				case 4:
 					assembler.move_frame_offset_32_into_reg(
-						location_data.offset, result_reg);
+						location_data->offset, result_reg);
 					break;
 
 				case 8:
 					assembler.move_frame_offset_64_into_reg(
-						location_data.offset, result_reg);
+						location_data->offset, result_reg);
 					break;
 
 				default:
@@ -226,26 +219,26 @@ struct MemberExpression : public WriteValue
 
 			// Global variable
 
-			switch (location_data.var_size)
+			switch (location_data->var_size)
 			{
 			case 1:
 				assembler.move_stack_top_offset_8_into_reg(
-					location_data.offset, result_reg);
+					location_data->offset, result_reg);
 				break;
 
 			case 2:
 				assembler.move_stack_top_offset_8_into_reg(
-					location_data.offset, result_reg);
+					location_data->offset, result_reg);
 				break;
 
 			case 4:
 				assembler.move_stack_top_offset_8_into_reg(
-					location_data.offset, result_reg);
+					location_data->offset, result_reg);
 				break;
 
 			case 8:
 				assembler.move_stack_top_offset_8_into_reg(
-					location_data.offset, result_reg);
+					location_data->offset, result_reg);
 				break;
 
 			default:
@@ -260,37 +253,37 @@ struct MemberExpression : public WriteValue
 
 		else if (op == DEREFERENCED_POINTER_TO_MEMBER)
 		{
-			if (object_type.pointer_depth() == 0)
+			if (object->type.pointer_depth() == 0)
 			{
-				err_at_token(op_token, "Invalid MemberExpression",
+				err_at_token(accountable_token, "Invalid MemberExpression",
 					"Cannot use %s->%s syntax on an instance\n"
 					"Use %s.%s instead",
 					instance_name.c_str(), member_name.c_str(),
 					instance_name.c_str(), member_name.c_str());
 			}
 
-			if (object_type.pointer_depth() != 1)
+			if (object->type.pointer_depth() != 1)
 			{
-				err_at_token(op_token, "Invalid MemberExpression",
+				err_at_token(accountable_token, "Invalid MemberExpression",
 					"Cannot use %s->%s syntax on a pointer of depth %lu\n",
 					instance_name.c_str(), member_name.c_str(),
-					object_type.pointer_depth());
+					object->type.pointer_depth());
 			}
 
 			// Moves the pointer to the class into the result register
 
-			object->get_value(assembler, compiler_state, result_reg);
+			object->get_value(assembler, result_reg);
 
 			uint64_t offset = 0;
 
-			for (size_t i = 0; i < cl.fields.size(); i++)
+			for (size_t i = 0; i < class_definition->fields.size(); i++)
 			{
-				if (cl.fields[i].name == member_name)
+				if (class_definition->fields[i].name == member_name)
 				{
 					break;
 				}
 
-				offset += cl.fields[i].type.byte_size();
+				offset += class_definition->fields[i].type.byte_size();
 			}
 
 			// Adds the correct offset to the field to the pointer
@@ -333,32 +326,29 @@ struct MemberExpression : public WriteValue
 
 		else
 		{
-			err_at_token(op_token, "Syntax Error",
+			err_at_token(accountable_token, "Syntax Error",
 				"Unexpected token \"%s\" of type %s\n"
 				"MemberExpressions only work with \".\" or \"->\" operators.",
-				op_token.value.c_str(), token_type_to_str(op_token.type));
+				accountable_token.value.c_str(), token_type_to_str(accountable_token.type));
 		}
 	}
 
 	void
-	store(Assembler &assembler, CompilerState &compiler_state, uint8_t value_reg)
+	store(Assembler &assembler, uint8_t value_reg)
+		const override
 	{
 		uint8_t this_ptr_reg;
 
-		Type object_type          = object->get_type(compiler_state);
-		std::string instance_name = object->identifier_token.value;
-		std::string member_name   = member->identifier_token.value;
-		std::string class_name    = object_type.class_name;
-		const Class &cl           = compiler_state.classes[class_name];
-		const Type &member_type   = cl.get_field_type(member_name);
-
-		LocationData location_data = get_location_data(compiler_state);
+		std::string instance_name = object->accountable_token.value;
+		std::string member_name   = member->accountable_token.value;
+		std::string class_name    = object->type.class_name;
+		const Type &member_type   = class_definition->get_field_type(member_name);
 
 		if (op == POINTER_TO_MEMBER)
 		{
-			if (object_type.pointer_depth() != 0)
+			if (object->type.pointer_depth() != 0)
 			{
-				err_at_token(op_token, "Invalid MemberExpression",
+				err_at_token(accountable_token, "Invalid MemberExpression",
 					"Cannot use %s.%s syntax on a pointer\n"
 					"Use %s->%s instead",
 					instance_name.c_str(), member_name.c_str(),
@@ -367,28 +357,28 @@ struct MemberExpression : public WriteValue
 
 			// Local variable or parameter
 
-			if (location_data.is_at_frame_top())
+			if (location_data->is_at_frame_top())
 			{
-				switch (location_data.var_size)
+				switch (location_data->var_size)
 				{
 				case 1:
 					assembler.move_reg_into_frame_offset_8(
-						value_reg, location_data.offset);
+						value_reg, location_data->offset);
 					break;
 
 				case 2:
 					assembler.move_reg_into_frame_offset_16(
-						value_reg, location_data.offset);
+						value_reg, location_data->offset);
 					break;
 
 				case 4:
 					assembler.move_reg_into_frame_offset_32(
-						value_reg, location_data.offset);
+						value_reg, location_data->offset);
 					break;
 
 				case 8:
 					assembler.move_reg_into_frame_offset_64(
-						value_reg, location_data.offset);
+						value_reg, location_data->offset);
 					break;
 
 				default:
@@ -403,26 +393,26 @@ struct MemberExpression : public WriteValue
 
 			// Global variable
 
-			switch (location_data.var_size)
+			switch (location_data->var_size)
 			{
 			case 1:
 				assembler.move_reg_into_stack_top_offset_8(
-					value_reg, location_data.offset);
+					value_reg, location_data->offset);
 				break;
 
 			case 2:
 				assembler.move_reg_into_stack_top_offset_16(
-					value_reg, location_data.offset);
+					value_reg, location_data->offset);
 				break;
 
 			case 4:
 				assembler.move_reg_into_stack_top_offset_32(
-					value_reg, location_data.offset);
+					value_reg, location_data->offset);
 				break;
 
 			case 8:
 				assembler.move_reg_into_stack_top_offset_64(
-					value_reg, location_data.offset);
+					value_reg, location_data->offset);
 				break;
 
 			default:
@@ -437,38 +427,38 @@ struct MemberExpression : public WriteValue
 
 		else if (op == DEREFERENCED_POINTER_TO_MEMBER)
 		{
-			if (object_type.pointer_depth() == 0)
+			if (object->type.pointer_depth() == 0)
 			{
-				err_at_token(op_token, "Invalid MemberExpression",
+				err_at_token(accountable_token, "Invalid MemberExpression",
 					"Cannot use %s->%s syntax on an instance\n"
 					"Use %s.%s instead",
 					instance_name.c_str(), member_name.c_str(),
 					instance_name.c_str(), member_name.c_str());
 			}
 
-			if (object_type.pointer_depth() != 1)
+			if (object->type.pointer_depth() != 1)
 			{
-				err_at_token(op_token, "Invalid MemberExpression",
+				err_at_token(accountable_token, "Invalid MemberExpression",
 					"Cannot use %s->%s syntax on a pointer of depth %lu\n",
 					instance_name.c_str(), member_name.c_str(),
-					object_type.pointer_depth());
+					object->type.pointer_depth());
 			}
 
 			// Moves the pointer to the class into the this ptr register
 
 			this_ptr_reg = assembler.get_register();
-			object->get_value(assembler, compiler_state, this_ptr_reg);
+			object->get_value(assembler, this_ptr_reg);
 
 			uint64_t offset = 0;
 
-			for (size_t i = 0; i < cl.fields.size(); i++)
+			for (size_t i = 0; i < class_definition->fields.size(); i++)
 			{
-				if (cl.fields[i].name == member_name)
+				if (class_definition->fields[i].name == member_name)
 				{
 					break;
 				}
 
-				offset += cl.fields[i].type.byte_size();
+				offset += class_definition->fields[i].type.byte_size();
 			}
 
 			// Adds the correct offset to the field to the pointer
@@ -513,10 +503,10 @@ struct MemberExpression : public WriteValue
 
 		else
 		{
-			err_at_token(op_token, "Syntax Error",
+			err_at_token(accountable_token, "Syntax Error",
 				"Unexpected token \"%s\" of type %s\n"
 				"MemberExpressions only work with \".\" or \"->\" operators.",
-				op_token.value.c_str(), token_type_to_str(op_token.type));
+				accountable_token.value.c_str(), token_type_to_str(accountable_token.type));
 		}
 	}
 };

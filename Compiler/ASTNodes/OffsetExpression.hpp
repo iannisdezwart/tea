@@ -1,21 +1,23 @@
 #ifndef TEA_AST_NODE_OFFSET_EXPRESSION_HEADER
 #define TEA_AST_NODE_OFFSET_EXPRESSION_HEADER
 
-#include "ReadValue.hpp"
-#include "WriteValue.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/WriteValue.hpp"
 
-struct OffsetExpression : public WriteValue
+struct OffsetExpression final : public WriteValue
 {
-	WriteValue *pointer;
-	ReadValue *offset;
+	std::unique_ptr<WriteValue> pointer;
+	std::unique_ptr<ReadValue> offset;
 
-	OffsetExpression(WriteValue *pointer, ReadValue *offset,
-		Token bracket_token)
-		: pointer(pointer), offset(offset),
-		  WriteValue(bracket_token, OFFSET_EXPRESSION) {}
+	OffsetExpression(std::unique_ptr<WriteValue> pointer,
+		std::unique_ptr<ReadValue> offset, Token bracket_token)
+		: WriteValue(std::move(bracket_token), OFFSET_EXPRESSION),
+		  pointer(std::move(pointer)),
+		  offset(std::move(offset)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
 		pointer->dfs(callback, depth + 1);
 		offset->dfs(callback, depth + 1);
@@ -25,6 +27,7 @@ struct OffsetExpression : public WriteValue
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s;
 
@@ -34,72 +37,68 @@ struct OffsetExpression : public WriteValue
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		Type offset_type = offset->get_type(compiler_state);
+		pointer->type_check(type_check_state);
+		offset->type_check(type_check_state);
 
-		if (offset_type.pointer_depth())
+		if (offset->type.pointer_depth())
 		{
 			err_at_token(accountable_token,
 				"Type Error",
 				"Offset provided in OffsetExpression is not an integer\n"
 				"Found type %s instead",
-				offset_type.to_str().c_str());
+				offset->type.to_str().c_str());
 		}
 
-		return pointer->get_type(compiler_state).pointed_type();
-	}
-
-	LocationData
-	get_location_data(CompilerState &compiler_state)
-	{
-		return pointer->get_location_data(compiler_state);
+		type          = pointer->type.pointed_type();
+		location_data = std::make_unique<LocationData>(*pointer->location_data);
 	}
 
 	void
-	store(Assembler &assembler, CompilerState &compiler_state,
-		uint8_t value_reg)
+	store(Assembler &assembler, uint8_t value_reg)
+		const override
 	{
-		Type pointed_type          = get_type(compiler_state);
-		uint8_t offset_reg         = assembler.get_register();
-		LocationData location_data = get_location_data(compiler_state);
+		Type pointed_type  = type;
+		uint8_t offset_reg = assembler.get_register();
 
 		// Local variable or parameter
 
-		if (location_data.is_at_frame_top())
+		if (location_data->is_at_frame_top())
 		{
-			switch (location_data.var_size)
+			switch (location_data->var_size)
 			{
 			case 1:
-				offset->get_value(assembler, compiler_state, offset_reg);
+				offset->get_value(assembler, offset_reg);
 				assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 				assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
-				assembler.add_64_into_reg(location_data.offset, offset_reg);
+				assembler.add_64_into_reg(location_data->offset, offset_reg);
 				assembler.move_reg_into_reg_pointer_8(value_reg, offset_reg);
 				break;
 
 			case 2:
-				offset->get_value(assembler, compiler_state, offset_reg);
+				offset->get_value(assembler, offset_reg);
 				assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 				assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
-				assembler.add_64_into_reg(location_data.offset, offset_reg);
+				assembler.add_64_into_reg(location_data->offset, offset_reg);
 				assembler.move_reg_into_reg_pointer_16(value_reg, offset_reg);
 				break;
 
 			case 4:
-				offset->get_value(assembler, compiler_state, offset_reg);
+				offset->get_value(assembler, offset_reg);
 				assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 				assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
-				assembler.add_64_into_reg(location_data.offset, offset_reg);
+				assembler.add_64_into_reg(location_data->offset, offset_reg);
 				assembler.move_reg_into_reg_pointer_32(value_reg, offset_reg);
 				break;
 
 			case 8:
-				offset->get_value(assembler, compiler_state, offset_reg);
+				offset->get_value(assembler, offset_reg);
 				assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 				assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
-				assembler.add_64_into_reg(location_data.offset, offset_reg);
+				assembler.add_64_into_reg(location_data->offset, offset_reg);
 				assembler.move_reg_into_reg_pointer_64(value_reg, offset_reg);
 				break;
 
@@ -116,37 +115,37 @@ struct OffsetExpression : public WriteValue
 
 		// Global variable
 
-		switch (location_data.var_size)
+		switch (location_data->var_size)
 		{
 		case 1:
-			offset->get_value(assembler, compiler_state, offset_reg);
+			offset->get_value(assembler, offset_reg);
 			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 			assembler.move_stack_top_address_into_reg(offset_reg);
-			assembler.add_64_into_reg(location_data.offset, offset_reg);
+			assembler.add_64_into_reg(location_data->offset, offset_reg);
 			assembler.move_reg_into_reg_pointer_8(value_reg, offset_reg);
 			break;
 
 		case 2:
-			offset->get_value(assembler, compiler_state, offset_reg);
+			offset->get_value(assembler, offset_reg);
 			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 			assembler.move_stack_top_address_into_reg(offset_reg);
-			assembler.add_64_into_reg(location_data.offset, offset_reg);
+			assembler.add_64_into_reg(location_data->offset, offset_reg);
 			assembler.move_reg_into_reg_pointer_16(value_reg, offset_reg);
 			break;
 
 		case 4:
-			offset->get_value(assembler, compiler_state, offset_reg);
+			offset->get_value(assembler, offset_reg);
 			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 			assembler.move_stack_top_address_into_reg(offset_reg);
-			assembler.add_64_into_reg(location_data.offset, offset_reg);
+			assembler.add_64_into_reg(location_data->offset, offset_reg);
 			assembler.move_reg_into_reg_pointer_32(value_reg, offset_reg);
 			break;
 
 		case 8:
-			offset->get_value(assembler, compiler_state, offset_reg);
+			offset->get_value(assembler, offset_reg);
 			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 			assembler.move_stack_top_address_into_reg(offset_reg);
-			assembler.add_64_into_reg(location_data.offset, offset_reg);
+			assembler.add_64_into_reg(location_data->offset, offset_reg);
 			assembler.move_reg_into_reg_pointer_64(value_reg, offset_reg);
 			break;
 
@@ -161,21 +160,22 @@ struct OffsetExpression : public WriteValue
 	}
 
 	void
-	get_value(Assembler &assembler, CompilerState &compiler_state, uint8_t result_reg)
+	get_value(Assembler &assembler, uint8_t result_reg)
+		const override
 	{
 		uint8_t offset_reg;
 
-		Type pointed_type = get_type(compiler_state);
+		Type pointed_type = type;
 
 		// Multiply the offset by the byte size.
 
 		offset_reg = assembler.get_register();
-		offset->get_value(assembler, compiler_state, offset_reg);
+		offset->get_value(assembler, offset_reg);
 		assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 
 		// Add the offset into the pointer.
 
-		pointer->get_value(assembler, compiler_state, result_reg);
+		pointer->get_value(assembler, result_reg);
 		assembler.add_reg_into_reg(offset_reg, result_reg);
 
 		assembler.free_register(offset_reg);

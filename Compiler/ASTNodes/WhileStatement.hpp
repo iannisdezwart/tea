@@ -1,25 +1,26 @@
 #ifndef TEA_AST_NODE_WHILE_STATEMENT_HEADER
 #define TEA_AST_NODE_WHILE_STATEMENT_HEADER
 
-#include "ASTNode.hpp"
-#include "ReadValue.hpp"
-#include "../tokeniser.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../util.hpp"
-#include "CodeBlock.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "Executable/byte-code.hpp"
+#include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/CodeBlock.hpp"
 
-struct WhileStatement : public ASTNode
+struct WhileStatement final : public ASTNode
 {
-	Token while_token;
-	ReadValue *test;
-	CodeBlock *body;
+	std::unique_ptr<ReadValue> test;
+	std::unique_ptr<CodeBlock> body;
 
-	WhileStatement(ReadValue *test, Token while_token, CodeBlock *body)
-		: test(test), body(body), while_token(while_token),
-		  ASTNode(while_token, WHILE_STATEMENT) {}
+	WhileStatement(std::unique_ptr<ReadValue> test, Token while_token, std::unique_ptr<CodeBlock> body)
+		: ASTNode(std::move(while_token), WHILE_STATEMENT),
+		  test(std::move(test)),
+		  body(std::move(body)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
 		test->dfs(callback, depth + 1);
 		body->dfs(callback, depth + 1);
@@ -29,25 +30,29 @@ struct WhileStatement : public ASTNode
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s = "WhileStatement {} @ " + to_hex((size_t) this);
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		return Type();
+		test->type_check(type_check_state);
+		body->type_check(type_check_state);
 	}
 
 	void
-	compile(Assembler &assembler, CompilerState &compiler_state)
+	code_gen(Assembler &assembler)
+		const override
 	{
 		uint8_t test_reg;
 
 		// Create labels
 
-		auto [start_label, end_label] = compiler_state.push_loop_scope();
+		auto [start_label, end_label] = assembler.push_loop_scope();
 
 		// Create the loop label
 
@@ -56,7 +61,7 @@ struct WhileStatement : public ASTNode
 		// Perform the check and move the result into the test register
 
 		test_reg = assembler.get_register();
-		test->get_value(assembler, compiler_state, test_reg);
+		test->get_value(assembler, test_reg);
 
 		// Break the loop if false
 
@@ -67,7 +72,7 @@ struct WhileStatement : public ASTNode
 
 		// Compile code for the body block
 
-		body->compile(assembler, compiler_state);
+		body->code_gen(assembler);
 
 		// Jump to the start of the loop again
 
@@ -77,7 +82,7 @@ struct WhileStatement : public ASTNode
 
 		assembler.add_label(end_label);
 
-		compiler_state.pop_loop_scope();
+		assembler.pop_loop_scope();
 	}
 };
 

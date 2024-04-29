@@ -1,9 +1,9 @@
 #ifndef TEA_DEBUGGER_COMMAND_HEADER
 #define TEA_DEBUGGER_COMMAND_HEADER
 
-#include "../ansi.hpp"
-#include "keypress.hpp"
-#include "util.hpp"
+#include "Shared/ansi.hpp"
+#include "Debugger/keypress.hpp"
+#include "Debugger/util.hpp"
 
 void
 print_shell_prompt(const char *file_path, uint8_t *addr)
@@ -150,8 +150,8 @@ struct Command
 			{
 				// Stop parsing the word if it ends and push the word.
 
-				if (command_line[i] == ' ' && !quotes
-					|| quotes && command_line[i] == quotes)
+				if ((command_line[i] == ' ' && !quotes)
+					|| (quotes && command_line[i] == quotes))
 				{
 					parsing = false;
 					args.push_back(command_line.substr(start, i - start));

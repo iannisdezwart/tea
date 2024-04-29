@@ -3,11 +3,10 @@
 
 #include <stack>
 
-#include "util.hpp"
-#include "../Assembler/assembler.hpp"
-#include "../VM/cpu.hpp"
-#include "debugger-symbols.hpp"
-#include "type.hpp"
+#include "Compiler/util.hpp"
+#include "VM/cpu.hpp"
+#include "Compiler/debugger-symbols.hpp"
+#include "Compiler/type.hpp"
 
 /**
  * @brief Enum for the different types of identifiers:
@@ -23,10 +22,10 @@ enum struct IdentifierKind
 };
 
 /**
- * @brief Structure for the identifiers.
+ * @brief Structure for an identifier definition.
  * Holds the name and type.
  */
-struct Identifier
+struct IdentifierDefinition
 {
 	// The name of this identifier.
 	std::string name;
@@ -34,19 +33,19 @@ struct Identifier
 	// The data type of this identifier.
 	Type type;
 
-	Identifier() {}
-	Identifier(const std::string &name, const Type &type)
-		: name(name), type(type) {}
+	IdentifierDefinition() {}
+	IdentifierDefinition(std::string name, Type type)
+		: name(std::move(name)), type(std::move(type)) {}
 };
 
 /**
- * @brief Structure for a variable type.
+ * @brief Structure for a variable definition.
  * Holds the name, type and offset.
  * Depending on whether the variable is a global, local or parameter,
  * the offset is either relative to the top of the stack,
  * or the start of the current stack frame.
  */
-struct Variable
+struct VariableDefinition
 {
 	// The offset of this variable.
 	// Depending on whether the variable is a global, local or parameter,
@@ -55,27 +54,28 @@ struct Variable
 	size_t offset;
 
 	// Holds the name and type of this variable.
-	Identifier id;
+	IdentifierDefinition id;
 
-	Variable() {}
-	Variable(const std::string &name, Type &type, size_t offset)
-		: id(name, type), offset(offset) {}
+	VariableDefinition() {}
+	VariableDefinition(const std::string &name, Type &type, size_t offset)
+		: offset(offset),
+		  id(name, type) {}
 };
 
 /**
- * @brief Structure for a function type.
+ * @brief Structure for a function signature.
  * Contains the name and return type, as well as the parameter identifiers.
  */
-struct Function
+struct FunctionSignature
 {
 	// Holds the name and return type of this function.
-	Identifier id;
+	IdentifierDefinition id;
 
 	// Holds the identifiers of the parameters of this function.
-	std::vector<Identifier> parameters;
+	std::vector<IdentifierDefinition> parameters;
 
-	Function() {}
-	Function(const std::string &fn_name, Type &return_type)
+	FunctionSignature() {}
+	FunctionSignature(const std::string &fn_name, Type &return_type)
 		: id(fn_name, return_type) {}
 
 	/**
@@ -86,30 +86,27 @@ struct Function
 	void
 	add_parameter(const std::string &param_name, const Type &param_type)
 	{
-		parameters.push_back(Identifier(param_name, param_type));
+		parameters.push_back(IdentifierDefinition(param_name, param_type));
 	}
 };
 
 /**
- * @brief Structure for a class type.
+ * @brief Structure for a class definition.
  * Holds the byte size of the class,
  * as well as the identifiers and methods of the class.
  * Does not contain the name of the class,
- * since that will be the key to the class in the `compiler_state.classes` map.
+ * since that will be the key to the class in the `type_check_state.classes` map.
  */
-struct Class
+struct ClassDefinition
 {
 	// The byte size of the class.
 	size_t byte_size;
 
 	// A list of all fields in the class.
-	std::vector<Identifier> fields;
+	std::vector<IdentifierDefinition> fields;
 
-	// A list of all methods in the class.
-	std::vector<Function> methods;
-
-	Class() {}
-	Class(size_t byte_size)
+	ClassDefinition() {}
+	ClassDefinition(size_t byte_size)
 		: byte_size(byte_size) {}
 
 	/**
@@ -120,23 +117,7 @@ struct Class
 	void
 	add_field(const std::string &field_name, const Type &field_type)
 	{
-		fields.push_back(Identifier(field_name, field_type));
-	}
-
-	/**
-	 * @param field_name The field name to look for.
-	 * @returns A boolean indicating whether a field with this name exists.
-	 */
-	bool
-	has_field(const std::string &field_name) const
-	{
-		for (const Identifier &field : fields)
-		{
-			if (field.name == field_name)
-				return true;
-		}
-
-		return false;
+		fields.push_back(IdentifierDefinition(field_name, field_type));
 	}
 
 	/**
@@ -146,56 +127,13 @@ struct Class
 	const Type &
 	get_field_type(const std::string &field_name) const
 	{
-		for (const Identifier &field : fields)
+		for (const IdentifierDefinition &field : fields)
 		{
 			if (field.name == field_name)
 				return field.type;
 		}
 
 		err("Class field \"%s\" not found", field_name.c_str());
-	}
-
-	/**
-	 * @brief Adds a method to this class.
-	 * @param method_name The name of the method.
-	 * @param method_type The type of the method.
-	 */
-	void
-	add_method(const std::string &method_name, const Function &method)
-	{
-		methods.push_back(method);
-	}
-
-	/**
-	 * @param method_name The method name to look for.
-	 * @returns A boolean indicating whether a method with this name exists.
-	 */
-	bool
-	has_method(const std::string &method_name) const
-	{
-		for (const Function &method : methods)
-		{
-			if (method.id.name == method_name)
-				return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * @param method_name The method name to look for.
-	 * @returns The type of a method.
-	 */
-	const Function &
-	get_method(const std::string &method_name) const
-	{
-		for (const Function &method : methods)
-		{
-			if (method.id.name == method_name)
-				return method;
-		}
-
-		err("Class method \"%s\" not found", method_name.c_str());
 	}
 };
 
@@ -247,26 +185,26 @@ struct LocationData
  * This includes all the identifiers, types, and functions in the current
  * compilation context, as well as the current stack frame.
  */
-struct CompilerState
+struct TypeCheckState
 {
 	// A map of all functions in the current compilation context.
-	std::unordered_map<std::string, Function> functions;
-
-	// The current function name being compiled.
-	std::string current_function_name;
+	std::unordered_map<std::string, FunctionSignature> functions;
 
 	// A map of all classes in the current compilation context.
-	std::unordered_map<std::string, Class> classes;
+	std::unordered_map<std::string, ClassDefinition> classes;
 
 	// A map of all global variables in the current compilation context.
-	std::unordered_map<std::string, Variable> globals;
+	std::unordered_map<std::string, VariableDefinition> globals;
 
 	// The size of all global variables combined
 	// in the current compilation context.
 	uint64_t globals_size = 0;
 
+	// The current function name being compiled.
+	std::optional<std::string> current_function_name;
+
 	// A map of all parameters in the current function being compiled.
-	std::unordered_map<std::string, Variable> parameters;
+	std::unordered_map<std::string, VariableDefinition> parameters;
 
 	// The names of the parameters in the current
 	// function being compiled, in order.
@@ -277,7 +215,7 @@ struct CompilerState
 	uint64_t parameters_size = 0;
 
 	// A map of all local variables in the current function being compiled.
-	std::unordered_map<std::string, Variable> locals;
+	std::unordered_map<std::string, VariableDefinition> locals;
 
 	// The names of the local variables in the current
 	// function being compiled, in order.
@@ -286,20 +224,6 @@ struct CompilerState
 	// The size of all local variables combined in the
 	// current function being compiled.
 	uint64_t locals_size = 0;
-
-	// The current scope depth.
-	// Might be useful in the future when we implement
-	// functions with nested scopes.
-	size_t scope_depth = 0;
-
-	// Generator for unique label identifiers.
-	// Used for generating unique labels for different
-	// code segments. Starts at 0.
-	uint64_t label_id = 0;
-
-	// A stack containing the current loop labels.
-	// Used for the break and continue statements.
-	std::stack<std::pair<std::string, std::string>> loop_labels;
 
 	// Whether debug symbols should be generated.
 	const bool debug;
@@ -311,7 +235,7 @@ struct CompilerState
 	 * @brief Constructs a new Compiler State object.
 	 * @param debug Whether debug symbols should be generated.
 	 */
-	CompilerState(bool debug)
+	TypeCheckState(bool debug)
 		: debug(debug) {}
 
 	/**
@@ -324,7 +248,7 @@ struct CompilerState
 	 * * Functions
 	 * * Globals
 	 */
-	enum IdentifierKind
+	IdentifierKind
 	get_identifier_kind(std::string id_name)
 	{
 		if (locals.count(id_name))
@@ -346,7 +270,7 @@ struct CompilerState
 	 * A class is only added if it does not already exist.
 	 */
 	bool
-	add_class(std::string class_name, Class class_type)
+	add_class(std::string class_name, ClassDefinition class_type)
 	{
 		if (classes.count(class_name))
 			return false;
@@ -357,9 +281,36 @@ struct CompilerState
 
 		if (debug)
 		{
-			// TODO: create
+			DebuggerClass debugger_class;
+
+			debugger_class.fields.reserve(class_type.fields.size());
+			for (const IdentifierDefinition &field : class_type.fields)
+				debugger_class.fields.push_back(
+					DebuggerSymbol(field.name, field.type.to_debug_type(),
+						field.type.class_name));
+
+			debugger_symbols.add_class(class_name, debugger_class);
 		}
 
+		return true;
+	}
+
+	/**
+	 * @brief Adds a local variable to the current compilation context.
+	 * @param local_name The name of the local variable.
+	 * @param local_type The type of the local variable.
+	 * @returns A boolean indicating whether the local variable was added.
+	 * A local variable is only added if it does not already exist.
+	 */
+	bool
+	add_local(std::string local_name, Type local_type)
+	{
+		if (locals.count(local_name))
+			return false;
+
+		locals[local_name] = VariableDefinition(local_name, local_type, locals_size);
+		local_names_in_order.push_back(local_name);
+		locals_size += local_type.storage_size();
 		return true;
 	}
 
@@ -376,17 +327,33 @@ struct CompilerState
 		if (globals.count(global_name) || functions.count(global_name))
 			return false;
 
-		globals[global_name] = Variable(global_name, global_type, globals_size);
+		globals[global_name] = VariableDefinition(global_name, global_type, globals_size);
 		globals_size += global_type.storage_size();
 
 		// Add the global to the debugger symbols
 
 		if (debug)
 		{
-			debugger_symbols.add_global(DebuggerSymbol(global_name, global_type.to_debug_type()));
+			debugger_symbols.add_global(DebuggerSymbol(global_name,
+				global_type.to_debug_type(), global_type.class_name));
 		}
 
 		return true;
+	}
+
+	/**
+	 * @brief Adds a variable to the current context being compiled.
+	 * @param decl_name The declaration name of the variable.
+	 * @param type The type of the variable.
+	 * @returns A boolean indicating whether the variable was added.
+	 * A variable is only added if it does not already exist.
+	 */
+	bool
+	add_var(std::string decl_name, Type type)
+	{
+		if (current_function_name.has_value())
+			return add_local(decl_name, type);
+		return add_global(decl_name, type);
 	}
 
 	/**
@@ -397,7 +364,7 @@ struct CompilerState
 	 * A function is only added if it does not already exist.
 	 */
 	bool
-	add_function(std::string function_name, Function function_type)
+	add_function(std::string function_name, FunctionSignature function_type)
 	{
 		if (functions.count(function_name) || globals.count(function_name))
 			return false;
@@ -419,40 +386,41 @@ struct CompilerState
 		if (parameters.count(param_name))
 			return false;
 
-		parameters[param_name] = Variable(param_name, param_type, parameters_size);
+		parameters[param_name] = VariableDefinition(param_name, param_type, parameters_size);
 		parameter_names_in_order.push_back(param_name);
 		parameters_size += param_type.byte_size();
 		return true;
 	}
 
 	/**
-	 * @brief Adds a local variable to the current function being compiled.
-	 * @param local_name The name of the local variable.
-	 * @param local_type The type of the local variable.
-	 * @returns A boolean indicating whether the local variable was added.
-	 * A local variable is only added if it does not already exist.
+	 * @brief Begins the scope of a new function being compiled.
+	 * @param function_name The name of the function.
 	 */
-	bool
-	add_local(std::string local_name, Type local_type)
+	void
+	begin_function_scope(std::string function_name)
 	{
-		if (locals.count(local_name))
-			return false;
+		if (current_function_name.has_value())
+		{
+			err("Cannot begin function scope while another function is being compiled");
+		}
 
-		locals[local_name] = Variable(local_name, local_type, locals_size);
-		local_names_in_order.push_back(local_name);
-		locals_size += local_type.storage_size();
-		return true;
+		current_function_name.emplace(std::move(function_name));
 	}
 
 	/**
 	 * @brief Ends the scope of the current function being compiled.
 	 * Clears all locals and parameters.
 	 * In debug mode, the function, as well as its locals and
-	 * parameters, arr also added to the debugger symbols.
+	 * parameters, are also added to the debugger symbols.
 	 */
 	void
 	end_function_scope()
 	{
+		if (!current_function_name.has_value())
+		{
+			err("Cannot end function scope while no function is being compiled");
+		}
+
 		// Add the function to the debugger symbols
 
 		if (debug)
@@ -463,20 +431,24 @@ struct CompilerState
 
 			for (const std::string &param_name : parameter_names_in_order)
 			{
-				DebuggerSymbolTypes fn_param_type = parameters[param_name].id.type.to_debug_type();
-				fn_symbols.params.push_back(DebuggerSymbol(param_name, fn_param_type));
+				DebuggerSymbolType fn_param_type = parameters[param_name].id.type.to_debug_type();
+				std::string class_name           = parameters[param_name].id.type.class_name;
+				fn_symbols.params.push_back(DebuggerSymbol(param_name, fn_param_type, class_name));
 			}
 
 			// Add locals
 
 			for (const std::string &local_name : local_names_in_order)
 			{
-				DebuggerSymbolTypes local_type = locals[local_name].id.type.to_debug_type();
-				fn_symbols.locals.push_back(DebuggerSymbol(local_name, local_type));
+				DebuggerSymbolType local_type = locals[local_name].id.type.to_debug_type();
+				std::string class_name        = locals[local_name].id.type.class_name;
+				fn_symbols.locals.push_back(DebuggerSymbol(local_name, local_type, class_name));
 			}
 
-			debugger_symbols.add_function(current_function_name, fn_symbols);
+			debugger_symbols.add_function(current_function_name.value(), fn_symbols);
 		}
+
+		current_function_name.reset();
 
 		locals.clear();
 		local_names_in_order.clear();
@@ -521,43 +493,6 @@ struct CompilerState
 		default:
 			return Type();
 		}
-	}
-
-	/**
-	 * @brief Generates a label name that can be used to jump to.
-	 * @param type The type of label to generate.
-	 * @returns The generated label name.
-	 */
-	std::string
-	generate_label(std::string type)
-	{
-		std::string label = "compiler-generated-label-";
-		label += std::to_string(label_id++);
-		label += "-for-";
-		label += type;
-		return label;
-	}
-
-	/**
-	 * @brief Starts a new scope within the current function being compiled.
-	 * @returns The start and end labels of the new scope.
-	 */
-	std::pair<std::string, std::string>
-	push_loop_scope()
-	{
-		std::pair<std::string, std::string> labels = std::make_pair<>(
-			generate_label("loop-start"), generate_label("loop-end"));
-		loop_labels.push(labels);
-		return labels;
-	}
-
-	/**
-	 * @brief Ends the current scope within the current function being compiled.
-	 */
-	void
-	pop_loop_scope()
-	{
-		loop_labels.pop();
 	}
 };
 

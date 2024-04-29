@@ -1,0 +1,28 @@
+functions
+	fib
+		parameters
+			U64 n
+	getc
+		locals
+			I16 c
+	main
+		locals
+			U64 i
+			U64 n
+	print_signed
+		parameters
+			I64 n
+	print_str
+		parameters
+			POINTER str
+	print_unsigned
+		parameters
+			U64 n
+	putc
+		parameters
+			U8 c
+	read_signed
+		locals
+			I64 n
+			I64 neg_mult
+			I16 c

@@ -1,10 +1,10 @@
 #ifndef TEA_DISASSEMBLER_HEADER
 #define TEA_DISASSEMBLER_HEADER
 
-#include "file-reader.hpp"
-#include "../ansi.hpp"
-#include "../Assembler/byte_code.hpp"
-#include "../VM/cpu.hpp"
+#include "Disassembler/file-reader.hpp"
+#include "Shared/ansi.hpp"
+#include "Executable/byte-code.hpp"
+#include "VM/cpu.hpp"
 
 /**
  * @brief Class that is responsible for disassembling a bytecode file.

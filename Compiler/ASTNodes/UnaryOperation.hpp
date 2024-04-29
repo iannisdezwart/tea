@@ -1,34 +1,35 @@
 #ifndef TEA_AST_NODES_UNARY_OPERATION_HEADER
 #define TEA_AST_NODES_UNARY_OPERATION_HEADER
 
-#include "../util.hpp"
-#include "ASTNode.hpp"
-#include "ReadValue.hpp"
-#include "WriteValue.hpp"
-#include "IdentifierExpression.hpp"
-#include "AssignmentExpression.hpp"
-#include "../../Assembler/byte_code.hpp"
-#include "../../Assembler/assembler.hpp"
-#include "../compiler-state.hpp"
-#include "../tokeniser.hpp"
-#include "../../VM/cpu.hpp"
+#include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/WriteValue.hpp"
+#include "Compiler/ASTNodes/IdentifierExpression.hpp"
+#include "Compiler/ASTNodes/AssignmentExpression.hpp"
+#include "Executable/byte-code.hpp"
+#include "Compiler/code-gen/Assembler.hpp"
+#include "Compiler/type-check/TypeCheckState.hpp"
+#include "Compiler/tokeniser.hpp"
+#include "VM/cpu.hpp"
 
-struct UnaryOperation : public WriteValue
+struct UnaryOperation final : public WriteValue
 {
-	ReadValue *expression;
-	Token op_token;
+	std::unique_ptr<ReadValue> expression;
+	Operator op;
 	bool prefix;
-	enum Operator op;
 
 	bool warned = false;
 
-	UnaryOperation(ReadValue *expression, const Token &op_token, bool prefix)
-		: expression(expression), op_token(op_token),
-		  op(str_to_operator(op_token.value, prefix)),
-		  prefix(prefix), WriteValue(op_token, UNARY_OPERATION) {}
+	UnaryOperation(std::unique_ptr<ReadValue> expression, Token op_token, bool prefix)
+		: WriteValue(std::move(op_token), UNARY_OPERATION),
+		  expression(std::move(expression)),
+		  op(str_to_operator(accountable_token.value, prefix)),
+		  prefix(prefix) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
+		override
 	{
 		expression->dfs(callback, depth + 1);
 		callback(this, depth);
@@ -36,6 +37,7 @@ struct UnaryOperation : public WriteValue
 
 	std::string
 	to_str()
+		override
 	{
 		std::string s;
 
@@ -47,10 +49,11 @@ struct UnaryOperation : public WriteValue
 		return s;
 	}
 
-	Type
-	get_type(CompilerState &compiler_state)
+	void
+	type_check(TypeCheckState &type_check_state)
+		override
 	{
-		Type type = expression->get_type(compiler_state);
+		expression->type_check(type_check_state);
 
 		switch (op)
 		{
@@ -63,61 +66,61 @@ struct UnaryOperation : public WriteValue
 		case BITWISE_NOT:
 		case LOGICAL_NOT:
 		{
-			return expression->get_type(compiler_state);
+			type = expression->type;
+			return;
 		}
 
 		case DEREFERENCE:
 		{
+			type = expression->type;
+
 			if (type.pointer_depth() == 0)
 			{
-				err_at_token(op_token,
+				err_at_token(accountable_token,
 					"Cannot dereference a non-pointer",
 					"type %s cannot be dereferenced",
 					type.to_str().c_str());
 			}
 
 			type.array_sizes.pop_back();
-			return type;
+			return;
 		}
 
 		case ADDRESS_OF:
 		{
+			type = expression->type;
 			type.array_sizes.insert(type.array_sizes.begin(), 1, 0);
-			return type;
+			return;
 		}
 
 		default:
 		{
-			err_at_token(op_token, "Invalid UnaryOperation",
+			err_at_token(accountable_token, "Invalid UnaryOperation",
 				"didn't find an operation to perform with operator %s",
-				op_token.value.c_str());
+				accountable_token.value.c_str());
 		}
 		}
-	}
 
-	LocationData
-	get_location_data(CompilerState &compiler_state)
-	{
-		// Todo: create.
+		// TODO: set location data.
 	}
 
 	void
-	store(Assembler &assembler, CompilerState &compiler_state,
-		uint8_t value_reg)
+	store(Assembler &assembler, uint8_t value_reg)
+		const override
 	{
 		switch (op)
 		{
 		case PREFIX_INCREMENT:
 		{
-			WriteValue *wr_expression = WriteValue::cast(expression);
-			wr_expression->store(assembler, compiler_state, value_reg);
+			WriteValue *wr_expression = WriteValue::cast(expression.get());
+			wr_expression->store(assembler, value_reg);
 			break;
 		}
 
 		case PREFIX_DECREMENT:
 		{
-			WriteValue *wr_expression = WriteValue::cast(expression);
-			wr_expression->store(assembler, compiler_state, value_reg);
+			WriteValue *wr_expression = WriteValue::cast(expression.get());
+			wr_expression->store(assembler, value_reg);
 			break;
 		}
 
@@ -125,24 +128,24 @@ struct UnaryOperation : public WriteValue
 		{
 			uint8_t ptr_reg = assembler.get_register();
 
-			size_t deref_dep = 0;
-			ReadValue *expr  = this;
+			size_t deref_dep      = 0;
+			const ReadValue *expr = this;
 
 			while (
-				expr->type == UNARY_OPERATION
+				expr->node_type == UNARY_OPERATION
 				&& ((UnaryOperation *) expr)->op == DEREFERENCE)
 			{
-				expr = ((UnaryOperation *) expr)->expression;
+				expr = ((UnaryOperation *) expr)->expression.get();
 				deref_dep++;
 			}
 
 			// Move the address of what to dereference into the pointer register.
 
-			expr->get_value(assembler, compiler_state, ptr_reg);
-
-			Type expr_type = expr->get_type(compiler_state);
+			expr->get_value(assembler, ptr_reg);
 
 			// Dereference.
+
+			Type expr_type = expr->type;
 
 			while (--deref_dep)
 			{
@@ -151,7 +154,7 @@ struct UnaryOperation : public WriteValue
 					ptr_reg, ptr_reg);
 			}
 
-			switch (expr_type.byte_size())
+			switch (expr->type.byte_size())
 			{
 			case 1:
 				assembler.move_reg_into_reg_pointer_8(
@@ -176,7 +179,7 @@ struct UnaryOperation : public WriteValue
 			default:
 				printf("Dereference assignment for "
 				       "	byte size %lu is not implemented\n",
-					expr->get_type(compiler_state).byte_size());
+					expr->type.byte_size());
 				abort();
 			}
 
@@ -186,7 +189,7 @@ struct UnaryOperation : public WriteValue
 		}
 
 		default:
-			err_at_token(op_token,
+			err_at_token(accountable_token,
 				"Value Type Error",
 				"Expected a WriteValue\n"
 				"This value is not writable");
@@ -194,18 +197,19 @@ struct UnaryOperation : public WriteValue
 	}
 
 	void
-	get_value(Assembler &assembler, CompilerState &compiler_state, uint8_t result_reg)
+	get_value(Assembler &assembler, uint8_t result_reg)
+		const override
 	{
 		switch (op)
 		{
 		case POSTFIX_INCREMENT:
 		{
-			WriteValue *wr_expression = WriteValue::cast(expression);
-			Type type                 = wr_expression->get_type(compiler_state);
+			WriteValue *wr_expression = WriteValue::cast(expression.get());
+			Type type                 = wr_expression->type;
 
 			// Move result into the result reg and increment it.
 
-			wr_expression->get_value(assembler, compiler_state, result_reg);
+			wr_expression->get_value(assembler, result_reg);
 
 			if (type.pointer_depth() > 0)
 			{
@@ -218,7 +222,7 @@ struct UnaryOperation : public WriteValue
 
 			// Store the value back into memory.
 
-			wr_expression->store(assembler, compiler_state, result_reg);
+			wr_expression->store(assembler, result_reg);
 
 			// Decrement the result reg.
 
@@ -236,12 +240,12 @@ struct UnaryOperation : public WriteValue
 
 		case POSTFIX_DECREMENT:
 		{
-			WriteValue *wr_expression = WriteValue::cast(expression);
-			Type type                 = wr_expression->get_type(compiler_state);
+			WriteValue *wr_expression = WriteValue::cast(expression.get());
+			Type type                 = wr_expression->type;
 
 			// Move result into the result reg and decrement it.
 
-			wr_expression->get_value(assembler, compiler_state, result_reg);
+			wr_expression->get_value(assembler, result_reg);
 
 			if (type.pointer_depth() > 0)
 			{
@@ -254,7 +258,7 @@ struct UnaryOperation : public WriteValue
 
 			// Store the value back into memory.
 
-			wr_expression->store(assembler, compiler_state, result_reg);
+			wr_expression->store(assembler, result_reg);
 
 			// Increment the result reg.
 
@@ -272,12 +276,12 @@ struct UnaryOperation : public WriteValue
 
 		case PREFIX_INCREMENT:
 		{
-			WriteValue *wr_expression = WriteValue::cast(expression);
-			Type type                 = wr_expression->get_type(compiler_state);
+			WriteValue *wr_expression = WriteValue::cast(expression.get());
+			Type type                 = wr_expression->type;
 
 			// Move result into the result reg and increment it.
 
-			wr_expression->get_value(assembler, compiler_state, result_reg);
+			wr_expression->get_value(assembler, result_reg);
 
 			if (type.pointer_depth() > 0)
 			{
@@ -290,18 +294,18 @@ struct UnaryOperation : public WriteValue
 
 			// Store the value back into memory.
 
-			wr_expression->store(assembler, compiler_state, result_reg);
+			wr_expression->store(assembler, result_reg);
 			break;
 		}
 
 		case PREFIX_DECREMENT:
 		{
-			WriteValue *wr_expression = WriteValue::cast(expression);
-			Type type                 = wr_expression->get_type(compiler_state);
+			WriteValue *wr_expression = WriteValue::cast(expression.get());
+			Type type                 = wr_expression->type;
 
 			// Move result into the result reg and decrement it.
 
-			wr_expression->get_value(assembler, compiler_state, result_reg);
+			wr_expression->get_value(assembler, result_reg);
 
 			if (type.pointer_depth() > 0)
 			{
@@ -314,7 +318,7 @@ struct UnaryOperation : public WriteValue
 
 			// Store the value back into memory.
 
-			wr_expression->store(assembler, compiler_state, result_reg);
+			wr_expression->store(assembler, result_reg);
 			break;
 		}
 
@@ -322,13 +326,13 @@ struct UnaryOperation : public WriteValue
 		{
 			// Todo: look up if this operator does anything interesting.
 
-			expression->get_value(assembler, compiler_state, result_reg);
+			expression->get_value(assembler, result_reg);
 			break;
 		}
 
 		case UNARY_MINUS:
 		{
-			expression->get_value(assembler, compiler_state, result_reg);
+			expression->get_value(assembler, result_reg);
 
 			// Invert the bits and add one.
 
@@ -339,7 +343,7 @@ struct UnaryOperation : public WriteValue
 
 		case BITWISE_NOT:
 		{
-			expression->get_value(assembler, compiler_state, result_reg);
+			expression->get_value(assembler, result_reg);
 
 			// Invert the bits.
 
@@ -349,7 +353,7 @@ struct UnaryOperation : public WriteValue
 
 		case LOGICAL_NOT:
 		{
-			expression->get_value(assembler, compiler_state, result_reg);
+			expression->get_value(assembler, result_reg);
 
 			// Invert the bits and mask.
 
@@ -362,8 +366,8 @@ struct UnaryOperation : public WriteValue
 		{
 			// Moves the address of what to dereference into the result reg.
 
-			expression->get_value(assembler, compiler_state, result_reg);
-			Type type = expression->get_type(compiler_state);
+			expression->get_value(assembler, result_reg);
+			Type type = expression->type;
 			type.array_sizes.pop_back();
 
 			// Move the dereferenced value into the result reg.
@@ -392,19 +396,20 @@ struct UnaryOperation : public WriteValue
 
 		case ADDRESS_OF:
 		{
-			WriteValue *wr_expression  = WriteValue::cast(expression);
-			LocationData location_data = wr_expression->get_location_data(compiler_state);
+			WriteValue *wr_expression = WriteValue::cast(expression.get());
 
-			if (location_data.is_at_frame_top())
+			if (wr_expression->location_data->is_at_frame_top())
 			{
 				assembler.move_reg_into_reg(R_FRAME_PTR, result_reg);
-				assembler.add_64_into_reg(location_data.offset, result_reg);
+				assembler.add_64_into_reg(
+					wr_expression->location_data->offset, result_reg);
 			}
 
 			else
 			{
 				assembler.move_stack_top_address_into_reg(result_reg);
-				assembler.add_64_into_reg(location_data.offset, result_reg);
+				assembler.add_64_into_reg(
+					wr_expression->location_data->offset, result_reg);
 			}
 
 			break;

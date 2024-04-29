@@ -3,10 +3,9 @@
 
 #include <unordered_map>
 
-#include "../VM/cpu.hpp"
-#include "byte_code.hpp"
-#include "buffer-builder.hpp"
-#include "buffer.hpp"
+#include "VM/cpu.hpp"
+#include "Executable/byte-code.hpp"
+#include "Compiler/code-gen/buffer-builder.hpp"
 
 /**
  * @brief Structure containing the location to an entry of static data.
@@ -18,7 +17,7 @@ struct StaticData
 	/**
 	 * @brief The offset of the entry in the static data segment.
 	 */
-	uint64_t offset;
+	int64_t offset;
 
 	/**
 	 * @brief The size of the entry in the static data segment.
@@ -60,6 +59,15 @@ struct Assembler : public BufferBuilder
 	 */
 	std::unordered_map<std::string /* id */, std::vector<uint64_t>> label_references;
 
+	// Generator for unique label identifiers.
+	// Used for generating unique labels for different
+	// code segments. Starts at 0.
+	uint64_t label_id = 0;
+
+	// A stack containing the current loop labels.
+	// Used for the break and continue statements.
+	std::stack<std::pair<std::string, std::string>> loop_labels;
+
 	/**
 	 * @brief Bit array used to check whether a register is free.
 	 */
@@ -71,14 +79,18 @@ struct Assembler : public BufferBuilder
 	 */
 	BufferBuilder static_data;
 
-	/**
-	 * @brief Construct a new Assembler object.
-	 */
-	Assembler()
-		: free_registers(CPU::general_purpose_register_count, true) {}
+	// Whether debug symbols should be generated.
+	const bool debug;
 
 	/**
-	 * @brief Destroy the Assembler object.
+	 * @brief Construct a new CodeGenState object.
+	 */
+	Assembler(bool debug)
+		: free_registers(CPU::general_purpose_register_count, true),
+		  debug(debug) {}
+
+	/**
+	 * @brief Destroy the CodeGenState object.
 	 * The program and static data buffers are freed.
 	 */
 	~Assembler()
@@ -139,7 +151,7 @@ struct Assembler : public BufferBuilder
 
 		// Combine static data and program instructions.
 
-		for (size_t j = 0; j < static_data.offset; j++)
+		for (ssize_t j = static_data.offset - 1; j >= 0; j--)
 		{
 			executable.push(static_data[j]);
 		}
@@ -159,7 +171,7 @@ struct Assembler : public BufferBuilder
 	 * @param instruction The instruction to add.
 	 */
 	void
-	push_instruction(enum Instruction instruction)
+	push_instruction(Instruction instruction)
 	{
 		push<uint16_t>(instruction);
 	}
@@ -1878,25 +1890,68 @@ struct Assembler : public BufferBuilder
 	}
 
 	/**
+	 * @brief Generates a label name that can be used to jump to.
+	 * @param type The type of label to generate.
+	 * @returns The generated label name.
+	 */
+	std::string
+	generate_label(std::string type)
+	{
+		std::string label = "compiler-generated-label-";
+		label += std::to_string(label_id++);
+		label += "-for-";
+		label += type;
+		return label;
+	}
+
+	/**
+	 * @brief Starts a new scope within the current function being compiled.
+	 * @returns The start and end labels of the new scope.
+	 */
+	std::pair<std::string, std::string>
+	push_loop_scope()
+	{
+		std::pair<std::string, std::string> labels = std::make_pair<>(
+			generate_label("loop-start"), generate_label("loop-end"));
+		loop_labels.push(labels);
+		return labels;
+	}
+
+	/**
+	 * @brief Ends the current scope within the current function being compiled.
+	 */
+	void
+	pop_loop_scope()
+	{
+		loop_labels.pop();
+	}
+
+	/**
 	 * @brief Adds a chunk of static data to the program.
 	 * @param data A pointer to the data. The data is copied.
 	 * @param size The size of the data.
 	 * @returns A StaticData structure containing the location of
 	 * the static data entry.
 	 */
-	struct StaticData
-	add_static_data(const uint8_t *data, size_t size)
+	StaticData
+	add_static_data(const std::string &data)
 	{
-		size_t offset = static_data.offset;
+		ssize_t offset = -(static_data.offset + data.size() + 1);
 
-		for (size_t i = 0; i < size; i++)
+		// Data is written in reverse, since in code it should be referenced
+		// with a negative offset from the stack top. This way we can compute
+		// the offset immediately, without having to know the size of the data.
+
+		static_data.push('\0');
+
+		for (ssize_t i = data.size() - 1; i >= 0; i--)
 		{
 			static_data.push(data[i]);
 		}
 
 		return {
 			.offset = offset,
-			.size   = size
+			.size   = data.size(),
 		};
 	}
 };
