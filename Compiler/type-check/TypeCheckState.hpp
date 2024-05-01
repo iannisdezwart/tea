@@ -18,7 +18,7 @@ enum struct IdentifierKind
 	GLOBAL,
 	FUNCTION,
 	PARAMETER,
-	LOCAL
+	LOCAL,
 };
 
 /**
@@ -135,6 +135,42 @@ struct ClassDefinition
 
 		err("Class field \"%s\" not found", field_name.c_str());
 	}
+
+	/**
+	 * @param field_name The field name to look for.
+	 * @returns The offset of a field.
+	 */
+	size_t
+	get_field_offset(const std::string &field_name) const
+	{
+		size_t offset = 0;
+
+		for (const IdentifierDefinition &field : fields)
+		{
+			if (field.name == field_name)
+				return offset;
+
+			offset += field.type.storage_size();
+		}
+
+		err("Class field \"%s\" not found", field_name.c_str());
+	}
+
+	/**
+	 * @param field_name The field name to look for.
+	 * @returns Whether a field exists in this class.
+	 */
+	bool
+	has_field(const std::string &field_name) const
+	{
+		for (const IdentifierDefinition &field : fields)
+		{
+			if (field.name == field_name)
+				return true;
+		}
+
+		return false;
+	}
 };
 
 /**
@@ -153,17 +189,17 @@ struct LocationData
 	// or the start of the current stack frame.
 	int64_t offset;
 
-	// The byte size of the identifier.
-	uint64_t var_size;
+	LocationData() {}
 
-	LocationData(IdentifierKind id_kind, int64_t offset, uint64_t var_size)
-		: id_kind(id_kind), offset(offset), var_size(var_size) {}
+	LocationData(IdentifierKind id_kind, int64_t offset)
+		: id_kind(id_kind), offset(offset) {}
 
 	/**
 	 * @returns A boolean indicating whether this location is a global.
 	 */
 	bool
 	is_at_stack_top()
+		const
 	{
 		return id_kind == IdentifierKind::GLOBAL;
 	}
@@ -174,6 +210,7 @@ struct LocationData
 	 */
 	bool
 	is_at_frame_top()
+		const
 	{
 		return id_kind == IdentifierKind::LOCAL || id_kind == IdentifierKind::PARAMETER;
 	}
@@ -345,7 +382,7 @@ struct TypeCheckState
 	 * @brief Adds a variable to the current context being compiled.
 	 * @param decl_name The declaration name of the variable.
 	 * @param type The type of the variable.
-	 * @returns A boolean indicating whether the variable was added.
+	 * @returns A boolean indicating whether the variable was succesfully added.
 	 * A variable is only added if it does not already exist.
 	 */
 	bool

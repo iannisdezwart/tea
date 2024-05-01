@@ -84,7 +84,7 @@ struct MemoryMapper
 
 		size_t next_device_id = find_device_index(device->from).first;
 
-		devices.push_back(NULL);
+		devices.push_back(nullptr);
 
 		// Shift devices after the insertion index to the right
 

@@ -23,7 +23,7 @@ is_write_value(ASTNode *node)
 
 struct WriteValue : public ReadValue
 {
-	std::unique_ptr<LocationData> location_data { nullptr };
+	LocationData location_data;
 
 	WriteValue(Token accountable_token, ASTNodeType type)
 		: ReadValue(std::move(accountable_token), type) {}

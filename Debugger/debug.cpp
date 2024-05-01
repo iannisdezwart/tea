@@ -43,7 +43,7 @@ struct VarEntry : public DebuggerSymbol
 struct Shell
 {
 	const char *file_path;
-	CPU *cpu = NULL;
+	CPU *cpu = nullptr;
 	PtrSet breakpoints;
 	std::vector<CallStackEntry> call_stack;
 	std::vector<std::vector<VarEntry>> locals;
@@ -355,7 +355,7 @@ struct Shell
 				conn_chars = "├─";
 			}
 
-			printf(ANSI_BRIGHT_MAGENTA ANSI_BOLD
+			printf(ANSI_BRIGHT_RED ANSI_BOLD
 				"    %s " ANSI_BLUE "%s" ANSI_RESET ANSI_BRIGHT_BLACK " = %s\n",
 				conn_chars, local.name.c_str(), pretty_val(local).c_str());
 		}
@@ -430,7 +430,7 @@ struct Shell
 			for (size_t i = 0; i < cls.fields.size(); i++)
 			{
 				const DebuggerSymbol &field = cls.fields[i];
-				out += ANSI_BRIGHT_BLACK + field.name
+				out += ANSI_BRIGHT_MAGENTA + field.name
 					+ ANSI_RESET ANSI_BRIGHT_BLACK " = "
 					+ pretty_val(VarEntry(field, var_entry.addr + offset))
 					+ ANSI_BRIGHT_BLACK + (i < cls.fields.size() - 1 ? ", " : "");
@@ -456,7 +456,7 @@ struct Shell
 
 		// Show the prompt and read the command from the user.
 
-		Command command = Command::read(file_path, cpu == NULL ? NULL : cpu->get_instr_ptr());
+		Command command = Command::read(file_path, cpu == nullptr ? nullptr : cpu->get_instr_ptr());
 
 		// If the command is empty, try again.
 
@@ -469,6 +469,11 @@ struct Shell
 
 		if (command[0] == "start")
 		{
+			call_stack.clear();
+			locals.clear();
+			globals.clear();
+			debugger_symbols = DebuggerSymbols();
+
 			std::string stack_size_flag = command.get_flag_value("stack-size").c_str();
 			size_t stack_size;
 
@@ -520,7 +525,7 @@ struct Shell
 
 		else if (command[0] == "step" || command[0] == "s")
 		{
-			if (cpu == NULL)
+			if (cpu == nullptr)
 			{
 				PROGRAM_NOT_STARTED_ERR();
 				goto shell;
@@ -533,7 +538,7 @@ struct Shell
 
 		else if (command[0] == "run" || command[0] == "r")
 		{
-			if (cpu == NULL)
+			if (cpu == nullptr)
 			{
 				PROGRAM_NOT_STARTED_ERR();
 				goto shell;
@@ -546,7 +551,7 @@ struct Shell
 
 		else if (command[0] == "list" || command[0] == "l")
 		{
-			if (cpu == NULL)
+			if (cpu == nullptr)
 			{
 				PROGRAM_NOT_STARTED_ERR();
 				goto shell;
@@ -583,14 +588,14 @@ struct Shell
 
 		else if (command[0] == "registers" || command[0] == "reg")
 		{
-			if (cpu == NULL)
+			if (cpu == nullptr)
 			{
 				PROGRAM_NOT_STARTED_ERR();
 				goto shell;
 			}
 
 #define REG_FMT_STR(reg) ANSI_BOLD ANSI_ITALIC reg ANSI_RESET " = " ANSI_GREEN \
-							      "0x" ANSI_BRIGHT_GREEN "%016llx" ANSI_RESET " = " ANSI_YELLOW "%020llu" ANSI_RESET "\n"
+							      "0x" ANSI_BRIGHT_GREEN "%016llx" ANSI_RESET " = " ANSI_YELLOW "%028llu" ANSI_RESET "\n"
 
 #define FLAG_FMT_STR(flag) ANSI_BOLD ANSI_ITALIC flag ANSI_RESET " = " ANSI_YELLOW "%hhu" ANSI_RESET "\n"
 
@@ -610,6 +615,14 @@ struct Shell
 				cpu->regs[R_2], cpu->regs[R_2]);
 			printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_3        "),
 				cpu->regs[R_3], cpu->regs[R_3]);
+			printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_4        "),
+				cpu->regs[R_4], cpu->regs[R_4]);
+			printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_5        "),
+				cpu->regs[R_5], cpu->regs[R_5]);
+			printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_6        "),
+				cpu->regs[R_6], cpu->regs[R_6]);
+			printf(REG_FMT_STR(ANSI_BRIGHT_YELLOW "r_7        "),
+				cpu->regs[R_7], cpu->regs[R_7]);
 			printf(FLAG_FMT_STR(ANSI_BRIGHT_GREEN "greater_flag"),
 				cpu->greater_flag);
 			printf(FLAG_FMT_STR(ANSI_BRIGHT_GREEN "equal_flag  "),
@@ -676,7 +689,7 @@ struct Shell
 
 		else if (command[0] == "ds")
 		{
-			if (cpu == NULL)
+			if (cpu == nullptr)
 			{
 				PROGRAM_NOT_STARTED_ERR();
 				goto shell;
@@ -739,7 +752,7 @@ struct Shell
 
 		else if (command[0] == "cs")
 		{
-			if (cpu == NULL)
+			if (cpu == nullptr)
 			{
 				PROGRAM_NOT_STARTED_ERR();
 				goto shell;

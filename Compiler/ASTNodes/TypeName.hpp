@@ -66,13 +66,13 @@ struct TypeName final : public ASTNode
 	{
 		if (type_check_state.classes.count(accountable_token.value))
 		{
-			ClassDefinition class_decl = type_check_state.classes[accountable_token.value];
-			size_t byte_size           = class_decl.byte_size;
+			const ClassDefinition &class_def = type_check_state.classes[accountable_token.value];
+			size_t byte_size           = class_def.byte_size;
 
 			type            = Type(Type::USER_DEFINED_CLASS, byte_size, array_sizes);
 			type.class_name = accountable_token.value;
 
-			for (const IdentifierDefinition &field : class_decl.fields)
+			for (const IdentifierDefinition &field : class_def.fields)
 			{
 				type.fields.push_back(field.type);
 			}

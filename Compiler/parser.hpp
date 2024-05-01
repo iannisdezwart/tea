@@ -98,16 +98,10 @@ merge_bin_ops_ltr(std::vector<std::unique_ptr<ReadValue>> &expressions,
 		case POINTER_TO_MEMBER:
 		case DEREFERENCED_POINTER_TO_MEMBER:
 		{
-			if (left_expr->node_type != IDENTIFIER_EXPRESSION)
-			{
-				err_at_token(left_expr->accountable_token, "Type Error",
-					"Cannot use pointer to member operator on a non-identifier");
-			}
-
 			if (right_expr->node_type == IDENTIFIER_EXPRESSION)
 			{
-				std::unique_ptr<IdentifierExpression> object =
-					static_unique_ptr_cast<IdentifierExpression>(std::move(left_expr));
+				std::unique_ptr<WriteValue> object =
+					static_unique_ptr_cast<WriteValue>(std::move(left_expr));
 				std::unique_ptr<IdentifierExpression> member =
 					static_unique_ptr_cast<IdentifierExpression>(std::move(right_expr));
 
@@ -1315,8 +1309,32 @@ struct Parser
 
 		// Scan the class body.
 
+		Token curly_brace_start = next_token();
+		assert_token_type(curly_brace_start, SPECIAL_CHARACTER);
+		assert_token_value(curly_brace_start, "{");
+
+		std::vector<std::unique_ptr<TypeIdentifierPair>> fields;
+
+		// Scan all fields.
+
+		while (true)
+		{
+			Token maybe_curly_brace_end = get_token();
+
+			if (maybe_curly_brace_end.type == SPECIAL_CHARACTER
+				&& maybe_curly_brace_end.value == "}")
+			{
+				// End of class declaration, consume the right curly brace "}".
+
+				i++;
+				break;
+			}
+
+			fields.push_back(scan_type_identifier_pair());
+		}
+
 		return std::make_unique<ClassDeclaration>(
-			class_token, class_name_token.value, scan_code_block());
+			class_token, class_name_token.value, std::move(fields));
 	}
 
 	/**

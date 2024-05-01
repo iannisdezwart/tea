@@ -3,6 +3,15 @@ void putc(u8 c)
 	syscall PRINT_CHAR(c)
 }
 
+void print_str(u8* str)
+{
+	while (*str != 0)
+	{
+		putc(*str)
+		str++
+	}
+}
+
 void print_unsigned(u64 n)
 {
 	if (n < 10)
@@ -16,9 +25,16 @@ void print_unsigned(u64 n)
 	}
 }
 
+class Baz
+{
+	u8[10] a
+	u64 b
+}
+
 class Bar
 {
 	u8 test
+	Baz baz
 }
 
 class Foo
@@ -26,13 +42,14 @@ class Foo
 	u64 a
 	u32 b
 	Bar c
+	u8[5] d
 }
 
 void Foo_op(Foo* foo)
 {
 	foo->a += 1
 	foo->b -= 1
-	// foo->c.test = 1
+	foo->c.test = 1
 }
 
 u64 main()
@@ -40,13 +57,22 @@ u64 main()
 	Foo foo
 	foo.a = 10
 	foo.b = 20
-	// foo.c.test = 0
+	foo.c.test = 0
+	foo.c.baz.b = 30
 
 	Foo_op(&foo)
 
+	print_str("foo.a = ")
 	print_unsigned(foo.a)
-	putc(',')
+	putc('\n')
+	print_str("foo.b = ")
 	print_unsigned(foo.b)
+	putc('\n')
+	print_str("foo.c.test = ")
+	print_unsigned(foo.c.test)
+	putc('\n')
+	print_str("foo.c.baz.b = ")
+	print_unsigned(foo.c.baz.b)
 	putc('\n')
 
 	return 0

@@ -1102,7 +1102,7 @@ struct Tokeniser
 
 				reader.reset();
 
-				return std::to_string(stoull(s, NULL, 16));
+				return std::to_string(stoull(s, nullptr, 16));
 			}
 
 			// Binary integer.
@@ -1119,7 +1119,7 @@ struct Tokeniser
 
 				reader.reset();
 
-				return std::to_string(stoull(s, NULL, 2));
+				return std::to_string(stoull(s, nullptr, 2));
 			}
 
 			// Unrecognised prefix.

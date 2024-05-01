@@ -42,7 +42,7 @@ struct Compiler
 	{
 		input_file = fopen(input_file_name, "r");
 
-		if (input_file == NULL)
+		if (input_file == nullptr)
 		{
 			err("Input file %s does not exist", input_file_name);
 		}

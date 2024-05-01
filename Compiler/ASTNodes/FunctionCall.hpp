@@ -125,12 +125,11 @@ struct FunctionCall final : public ReadValue
 				break;
 
 			default:
-				err_at_token(accountable_token,
-					"Type Error",
-					"Function call argument does not fit in a register\n"
-					"Behaviour is not implemented yet\n"
-					"argument[%lu] is of type %s (width = %lu)",
-					i, arg.c_str(), arg_type.byte_size());
+			{
+				assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(arg_reg, R_STACK_PTR, byte_size);
+				assembler.add_64_into_reg(R_STACK_PTR, byte_size);
+				break;
+			}
 			}
 
 			args_size += byte_size;

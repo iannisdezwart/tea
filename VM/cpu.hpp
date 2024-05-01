@@ -39,23 +39,27 @@ struct CPU
 	// ===== Registers =====
 
 	// An array that contains the registers of the virtual machine.
-	uint64_t regs[8];
+	uint64_t regs[12];
 
 	// === General purpose registers ===
 
 	// The number of general purpose registers (R_0, R_1, ...)
-	static constexpr size_t general_purpose_register_count = 4;
+	static constexpr size_t general_purpose_register_count = 8;
 
 #define R_0 0
 #define R_1 1
 #define R_2 2
 #define R_3 3
+#define R_4 4
+#define R_5 5
+#define R_6 6
+#define R_7 7
 
 	// === Special registers ===
 
 	// Instruction register
 
-#define R_INSTR_PTR 4
+#define R_INSTR_PTR 8
 
 	/**
 	 * @brief Sets the instruction pointer to a certain value.
@@ -78,7 +82,7 @@ struct CPU
 
 	// Stack pointer
 
-#define R_STACK_PTR 5
+#define R_STACK_PTR 9
 
 	/**
 	 * @brief Set the stack pointer to a certain value.
@@ -101,7 +105,7 @@ struct CPU
 
 	// Frame pointer
 
-#define R_FRAME_PTR 6
+#define R_FRAME_PTR 10
 
 	/**
 	 * @brief Sets the frame pointer to a certain value.
@@ -124,11 +128,7 @@ struct CPU
 
 	// Return value register
 
-#define R_RET 7
-
-	// Contains the current size of the stack frame.
-	// Is updated every time something is pushed or popped.
-	uint64_t current_stack_frame_size = 0;
+#define R_RET 11
 
 	// Holds the address of the current instruction being executed.
 	uint8_t *cur_instr_addr;
@@ -153,6 +153,18 @@ struct CPU
 
 		case R_3:
 			return "R_3";
+
+		case R_4:
+			return "R_4";
+
+		case R_5:
+			return "R_5";
+
+		case R_6:
+			return "R_6";
+
+		case R_7:
+			return "R_7";
 
 		case R_INSTR_PTR:
 			return "R_INSTR_PTR";
@@ -221,7 +233,7 @@ struct CPU
 	// four general purpose registers,
 	// the old instruction pointer (used as return address),
 	// and the size parameters in bytes.
-	static constexpr const ssize_t stack_frame_size = 48;
+	static constexpr const ssize_t stack_frame_size = 80;
 
 	/**
 	 * @param id The id of the register to get.
@@ -309,7 +321,6 @@ struct CPU
 	{
 		memory::set(get_stack_ptr(), value);
 		regs[R_STACK_PTR] += sizeof(intx_t);
-		current_stack_frame_size += sizeof(intx_t);
 	}
 
 	/**
@@ -323,7 +334,6 @@ struct CPU
 	{
 		regs[R_STACK_PTR] -= sizeof(intx_t);
 		intx_t value = memory::get<intx_t>(get_stack_ptr());
-		current_stack_frame_size -= sizeof(intx_t);
 		return value;
 	}
 
@@ -342,11 +352,14 @@ struct CPU
 		push(get_reg_by_id(R_1));
 		push(get_reg_by_id(R_2));
 		push(get_reg_by_id(R_3));
-		push(get_reg_by_id(R_INSTR_PTR));
-		push(current_stack_frame_size + 8);
+		push(get_reg_by_id(R_4));
+		push(get_reg_by_id(R_5));
+		push(get_reg_by_id(R_6));
+		push(get_reg_by_id(R_7));
+		push(get_instr_ptr());
+		push(get_frame_ptr());
 
 		set_frame_ptr(get_stack_ptr());
-		current_stack_frame_size = 0;
 	}
 
 	/**
@@ -362,20 +375,18 @@ struct CPU
 	{
 		set_stack_ptr(get_frame_ptr());
 
-		current_stack_frame_size        = pop<uint64_t>();
-		uint64_t saved_stack_frame_size = current_stack_frame_size;
-
+		set_frame_ptr(pop<uint8_t *>());
 		set_instr_ptr(pop<uint8_t *>());
-		regs[R_3] = pop<uint64_t>();
-		regs[R_2] = pop<uint64_t>();
-		regs[R_1] = pop<uint64_t>();
-		regs[R_0] = pop<uint64_t>();
+		set_reg_by_id(R_7, pop<uint64_t>());
+		set_reg_by_id(R_6, pop<uint64_t>());
+		set_reg_by_id(R_5, pop<uint64_t>());
+		set_reg_by_id(R_4, pop<uint64_t>());
+		set_reg_by_id(R_3, pop<uint64_t>());
+		set_reg_by_id(R_2, pop<uint64_t>());
+		set_reg_by_id(R_1, pop<uint64_t>());
+		set_reg_by_id(R_0, pop<uint64_t>());
 
-		uint64_t arguments_size = pop<uint64_t>();
-		current_stack_frame_size -= arguments_size + 8;
-
-		regs[R_FRAME_PTR] -= saved_stack_frame_size;
-		regs[R_STACK_PTR] -= arguments_size;
+		regs[R_STACK_PTR] -= pop<uint64_t>(); // Args size
 	}
 
 	/**
@@ -780,6 +791,24 @@ struct CPU
 		{
 			uint8_t reg_id = fetch<uint8_t>();
 			set_reg_by_id(reg_id, (uint64_t) stack_top);
+			break;
+		}
+
+		case MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8:
+		{
+			uint8_t reg_id_src = fetch<uint8_t>();
+			uint8_t reg_id_dst = fetch<uint8_t>();
+			uint64_t n_bytes   = fetch<uint64_t>();
+
+			uint8_t *src_address = (uint8_t *) get_reg_by_id(reg_id_src);
+			uint8_t *dst_address = (uint8_t *) get_reg_by_id(reg_id_dst);
+
+			for (uint64_t i = 0; i < n_bytes; i++)
+			{
+				uint8_t value = memory::get<uint8_t>(src_address + i);
+				memory::set(dst_address + i, value);
+			}
+
 			break;
 		}
 
@@ -1633,7 +1662,6 @@ struct CPU
 		{
 			uint64_t size = fetch<uint64_t>();
 			regs[R_STACK_PTR] += size;
-			current_stack_frame_size += size;
 			break;
 		}
 
@@ -1641,15 +1669,13 @@ struct CPU
 		{
 			uint64_t size = fetch<uint64_t>();
 			regs[R_STACK_PTR] -= size;
-			current_stack_frame_size -= size;
 			break;
 		}
 
 		case COMMENT:
 		case LABEL:
 		{
-			while (fetch<uint8_t>() != '\0')
-				;
+			while (fetch<uint8_t>() != '\0');
 			break;
 		}
 

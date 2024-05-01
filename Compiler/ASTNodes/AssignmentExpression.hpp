@@ -78,8 +78,6 @@ struct AssignmentExpression final : public ReadValue
 	get_value(Assembler &assembler, uint8_t result_reg)
 		const override
 	{
-		uint8_t prev_val_reg;
-
 		// Moves result into its register
 
 		value->get_value(assembler, result_reg);
@@ -96,7 +94,7 @@ struct AssignmentExpression final : public ReadValue
 		// We're doing some cool assignment,
 		// move the previous value into its register
 
-		prev_val_reg = assembler.get_register();
+		uint8_t prev_val_reg = assembler.get_register();
 		lhs_expr->get_value(assembler, prev_val_reg);
 
 		// Perform the correct operation
@@ -148,8 +146,8 @@ struct AssignmentExpression final : public ReadValue
 				"Internal Error", "Unknown assignment operator");
 		}
 
-		assembler.free_register(prev_val_reg);
 		lhs_expr->store(assembler, prev_val_reg);
+		assembler.free_register(prev_val_reg);
 	}
 };
 

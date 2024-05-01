@@ -398,18 +398,18 @@ struct UnaryOperation final : public WriteValue
 		{
 			WriteValue *wr_expression = WriteValue::cast(expression.get());
 
-			if (wr_expression->location_data->is_at_frame_top())
+			if (wr_expression->location_data.is_at_frame_top())
 			{
 				assembler.move_reg_into_reg(R_FRAME_PTR, result_reg);
 				assembler.add_64_into_reg(
-					wr_expression->location_data->offset, result_reg);
+					wr_expression->location_data.offset, result_reg);
 			}
 
 			else
 			{
 				assembler.move_stack_top_address_into_reg(result_reg);
 				assembler.add_64_into_reg(
-					wr_expression->location_data->offset, result_reg);
+					wr_expression->location_data.offset, result_reg);
 			}
 
 			break;

@@ -51,6 +51,21 @@ struct BinaryOperation final : public ReadValue
 		left->type_check(type_check_state);
 		right->type_check(type_check_state);
 
+		if (left->type.is_integer())
+		{
+			warn("binary operation on non-integer type x = %s\n"
+			     "At %ld:%ld\n",
+				left->type.to_str().c_str(), accountable_token.line,
+				accountable_token.col);
+		}
+		if (right->type.is_integer())
+		{
+			warn("binary operation on non-integer type y = %s\n"
+			     "At %ld:%ld\n",
+				right->type.to_str().c_str(), accountable_token.line,
+				accountable_token.col);
+		}
+
 		size_t left_size  = left->type.byte_size();
 		size_t right_size = right->type.byte_size();
 
@@ -163,20 +178,6 @@ struct BinaryOperation final : public ReadValue
 		case EQUAL:
 		case NOT_EQUAL:
 		{
-			if (left->type != Type::SIGNED_INTEGER && left->type != Type::UNSIGNED_INTEGER)
-			{
-				warn("comparing non-integer type x = %s\n"
-				     "At %ld:%ld\n",
-					left->type.to_str().c_str(), accountable_token.line,
-					accountable_token.col);
-			}
-			if (right->type != Type::SIGNED_INTEGER && right->type != Type::UNSIGNED_INTEGER)
-			{
-				warn("comparing non-integer type y = %s\n"
-				     "At %ld:%ld\n",
-					right->type.to_str().c_str(), accountable_token.line,
-					accountable_token.col);
-			}
 			if (left->type != right->type)
 			{
 				warn("comparing types of different signedness x = %s and y = %s\n"

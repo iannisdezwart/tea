@@ -137,6 +137,9 @@ enum Instruction : uint16_t
 	// Moves the address to the top of the stack into a register.
 	MOVE_STACK_TOP_ADDRESS_INTO_REG,
 
+	// Memory copying.
+	MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8,
+
 	// Mathematical operations
 
 	// Adds an 8-bit literal to a register.
@@ -514,6 +517,8 @@ instruction_to_str(Instruction instruction)
 		return "MOVE_REG_INTO_STACK_TOP_OFFSET_64";
 	case MOVE_STACK_TOP_ADDRESS_INTO_REG:
 		return "MOVE_STACK_TOP_ADDRESS_INTO_REG";
+	case MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8:
+		return "MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8";
 	case ADD_8_INTO_REG:
 		return "ADD_8_INTO_REG";
 	case ADD_16_INTO_REG:
@@ -807,6 +812,8 @@ instruction_arg_types(Instruction instruction)
 		return { REG, LIT_64 };
 	case MOVE_STACK_TOP_ADDRESS_INTO_REG:
 		return { REG };
+	case MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8:
+		return { REG, REG, LIT_64 };
 	case ADD_8_INTO_REG:
 		return { LIT_8, REG };
 	case ADD_16_INTO_REG:

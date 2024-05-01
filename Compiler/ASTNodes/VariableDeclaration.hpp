@@ -151,10 +151,14 @@ struct VariableDeclaration final : public ASTNode
 				break;
 
 			default:
-				err_at_token(item->accountable_token, "Type Error",
-					"Cannot put an item of %lu bytes into a class instance\n"
-					"This behaviour is not implemented yet",
-					field_type.byte_size());
+			{
+				uint8_t src_reg = assembler.get_register();
+				assembler.move_reg_into_reg(R_FRAME_PTR, src_reg);
+				assembler.add_64_into_reg(offset + sub_offset, src_reg);
+				assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
+					init_list_item_reg, src_reg, field_type.byte_size());
+				break;
+			}
 			}
 
 			break;
@@ -189,13 +193,17 @@ struct VariableDeclaration final : public ASTNode
 				break;
 
 			default:
-				err_at_token(item->accountable_token, "Type Error",
-					"Cannot put an item of %lu bytes into a class instance\n"
-					"This behaviour is not implemented yet",
-					field_type.byte_size());
+			{
+				uint8_t src_reg = assembler.get_register();
+				assembler.move_stack_top_address_into_reg(src_reg);
+				assembler.add_64_into_reg(offset + sub_offset, src_reg);
+				assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
+					init_list_item_reg, src_reg, field_type.byte_size());
+				break;
 			}
 
 			break;
+			}
 		}
 
 		default:
@@ -241,6 +249,16 @@ struct VariableDeclaration final : public ASTNode
 					init_list_item_reg, offset + sub_offset);
 				sub_offset += 8;
 				break;
+
+			default:
+			{
+				uint8_t src_reg = assembler.get_register();
+				assembler.move_reg_into_reg(R_FRAME_PTR, src_reg);
+				assembler.add_64_into_reg(offset + sub_offset, src_reg);
+				assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
+					init_list_item_reg, src_reg, array_item_type.byte_size());
+				break;
+			}
 			}
 
 			break;
@@ -273,6 +291,16 @@ struct VariableDeclaration final : public ASTNode
 					init_list_item_reg, offset + sub_offset);
 				sub_offset += 8;
 				break;
+
+			default:
+			{
+				uint8_t src_reg = assembler.get_register();
+				assembler.move_stack_top_address_into_reg(src_reg);
+				assembler.add_64_into_reg(offset + sub_offset, src_reg);
+				assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
+					init_list_item_reg, src_reg, array_item_type.byte_size());
+				break;
+			}
 			}
 
 			break;

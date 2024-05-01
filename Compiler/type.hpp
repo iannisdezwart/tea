@@ -270,6 +270,28 @@ struct Type
 	}
 
 	/**
+	 * @returns A boolean indicating whether this type is a class.
+	 * A pointer to a class is not a class.
+	 */
+	bool
+	is_class() const
+	{
+		if (value != Type::USER_DEFINED_CLASS)
+			return false;
+		return pointer_depth() == 0;
+	}
+
+	/**
+	 * @returns A boolean indicating whether this type is an integer.
+	 * This is done by checking if the type is a signed or unsigned integer.
+	 */
+	bool
+	is_integer() const
+	{
+		return value == Type::SIGNED_INTEGER || value == Type::UNSIGNED_INTEGER;
+	}
+
+	/**
 	 * @brief Converts a string to a type.
 	 * Only the standard primitive Tea types are supported:
 	 * u8, i8, u16, u32, i32, u64, i64, f32, f64, void.

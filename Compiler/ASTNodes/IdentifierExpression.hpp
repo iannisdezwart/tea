@@ -11,6 +11,9 @@
 
 struct IdentifierExpression final : public WriteValue
 {
+	// Set during type checking if the identifier is a class field.
+	std::optional<Type> object_type;
+
 	IdentifierExpression(Token identifier_token)
 		: WriteValue(std::move(identifier_token), IDENTIFIER_EXPRESSION) {}
 
@@ -36,6 +39,23 @@ struct IdentifierExpression final : public WriteValue
 	{
 		std::string id_name = accountable_token.value;
 
+		if (object_type.has_value())
+		{
+			const ClassDefinition &class_def = type_check_state.classes[object_type->class_name];
+
+			if (!class_def.has_field(id_name))
+			{
+				err_at_token(accountable_token,
+					"Class field not found",
+					"Field %s not found in class %s",
+					id_name.c_str(), object_type->class_name.c_str());
+			}
+
+			type          = class_def.get_field_type(id_name);
+			location_data = LocationData(IdentifierKind::UNDEFINED, class_def.get_field_offset(id_name));
+			return;
+		}
+
 		type = type_check_state.get_type_of_identifier(id_name);
 
 		if (type == Type::UNDEFINED)
@@ -57,35 +77,28 @@ struct IdentifierExpression final : public WriteValue
 		}
 
 		int64_t offset;
-		uint64_t var_size;
 
 		switch (id_kind)
 		{
 		case IdentifierKind::LOCAL:
 		{
 			VariableDefinition &var = type_check_state.locals[id_name];
-			Type &type              = var.id.type;
 			offset                  = var.offset;
-			var_size                = type.byte_size();
 			break;
 		}
 
 		case IdentifierKind::PARAMETER:
 		{
 			VariableDefinition &var = type_check_state.parameters[id_name];
-			Type &type              = var.id.type;
 			offset                  = -type_check_state.parameters_size + var.offset
 				- 8 - CPU::stack_frame_size;
-			var_size = type.byte_size();
 			break;
 		}
 
 		case IdentifierKind::GLOBAL:
 		{
 			VariableDefinition &var = type_check_state.globals[id_name];
-			Type &type              = var.id.type;
 			offset                  = var.offset;
-			var_size                = type.byte_size();
 			break;
 		}
 
@@ -96,7 +109,7 @@ struct IdentifierExpression final : public WriteValue
 				id_name.c_str());
 		}
 
-		location_data = std::make_unique<LocationData>(id_kind, offset, var_size);
+		location_data = LocationData(id_kind, offset);
 	}
 
 	void
@@ -105,43 +118,42 @@ struct IdentifierExpression final : public WriteValue
 	{
 		// Local variable or parameter
 
-		if (location_data->is_at_frame_top())
+		if (location_data.is_at_frame_top())
 		{
 			if (type.is_array())
 			{
 				assembler.move_reg_into_reg(R_FRAME_PTR, result_reg);
-				assembler.add_64_into_reg(location_data->offset, result_reg);
+				assembler.add_64_into_reg(location_data.offset, result_reg);
 
 				return;
 			}
 
-			switch (location_data->var_size)
+			switch (type.byte_size())
 			{
 			case 1:
 				assembler.move_frame_offset_8_into_reg(
-					location_data->offset, result_reg);
+					location_data.offset, result_reg);
 				break;
 
 			case 2:
 				assembler.move_frame_offset_16_into_reg(
-					location_data->offset, result_reg);
+					location_data.offset, result_reg);
 				break;
 
 			case 4:
 				assembler.move_frame_offset_32_into_reg(
-					location_data->offset, result_reg);
+					location_data.offset, result_reg);
 				break;
 
 			case 8:
 				assembler.move_frame_offset_64_into_reg(
-					location_data->offset, result_reg);
+					location_data.offset, result_reg);
 				break;
 
 			default:
-				err_at_token(accountable_token,
-					"Type Error",
-					"Variable doesn't fit in register\n"
-					"Support for this is not implemented yet");
+				assembler.move_reg_into_reg(R_FRAME_PTR, result_reg);
+				assembler.add_64_into_reg(location_data.offset, result_reg);
+				break;
 			}
 
 			return;
@@ -152,38 +164,37 @@ struct IdentifierExpression final : public WriteValue
 		if (type.is_array())
 		{
 			assembler.move_stack_top_address_into_reg(result_reg);
-			assembler.add_64_into_reg(location_data->offset, result_reg);
+			assembler.add_64_into_reg(location_data.offset, result_reg);
 
 			return;
 		}
 
-		switch (location_data->var_size)
+		switch (type.byte_size())
 		{
 		case 1:
 			assembler.move_stack_top_offset_8_into_reg(
-				location_data->offset, result_reg);
+				location_data.offset, result_reg);
 			break;
 
 		case 2:
 			assembler.move_stack_top_offset_16_into_reg(
-				location_data->offset, result_reg);
+				location_data.offset, result_reg);
 			break;
 
 		case 4:
 			assembler.move_stack_top_offset_32_into_reg(
-				location_data->offset, result_reg);
+				location_data.offset, result_reg);
 			break;
 
 		case 8:
 			assembler.move_stack_top_offset_64_into_reg(
-				location_data->offset, result_reg);
+				location_data.offset, result_reg);
 			break;
 
 		default:
-			err_at_token(accountable_token,
-				"Type Error",
-				"Variable doesn't fit in register\n"
-				"Support for this is not implemented yet");
+			assembler.move_stack_top_address_into_reg(result_reg);
+			assembler.add_64_into_reg(location_data.offset, result_reg);
+			break;
 		}
 	}
 
@@ -193,35 +204,39 @@ struct IdentifierExpression final : public WriteValue
 	{
 		// Local variable or parameter
 
-		if (location_data->is_at_frame_top())
+		if (location_data.is_at_frame_top())
 		{
-			switch (location_data->var_size)
+			switch (type.byte_size())
 			{
 			case 1:
 				assembler.move_reg_into_frame_offset_8(
-					value_reg, location_data->offset);
+					value_reg, location_data.offset);
 				break;
 
 			case 2:
 				assembler.move_reg_into_frame_offset_16(
-					value_reg, location_data->offset);
+					value_reg, location_data.offset);
 				break;
 
 			case 4:
 				assembler.move_reg_into_frame_offset_32(
-					value_reg, location_data->offset);
+					value_reg, location_data.offset);
 				break;
 
 			case 8:
 				assembler.move_reg_into_frame_offset_64(
-					value_reg, location_data->offset);
+					value_reg, location_data.offset);
 				break;
 
 			default:
-				err_at_token(accountable_token,
-					"Type Error",
-					"Variable doesn't fit in register\n"
-					"Support for this is not implemented yet");
+			{
+				uint8_t dst_ptr_reg = assembler.get_register();
+				assembler.move_reg_into_reg(R_FRAME_PTR, dst_ptr_reg);
+				assembler.add_64_into_reg(location_data.offset, dst_ptr_reg);
+				assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
+					value_reg, dst_ptr_reg, type.byte_size());
+				break;
+			}
 			}
 
 			return;
@@ -229,33 +244,37 @@ struct IdentifierExpression final : public WriteValue
 
 		// Global variable
 
-		switch (location_data->var_size)
+		switch (type.byte_size())
 		{
 		case 1:
 			assembler.move_reg_into_stack_top_offset_8(
-				value_reg, location_data->offset);
+				value_reg, location_data.offset);
 			break;
 
 		case 2:
 			assembler.move_reg_into_stack_top_offset_16(
-				value_reg, location_data->offset);
+				value_reg, location_data.offset);
 			break;
 
 		case 4:
 			assembler.move_reg_into_stack_top_offset_32(
-				value_reg, location_data->offset);
+				value_reg, location_data.offset);
 			break;
 
 		case 8:
 			assembler.move_reg_into_stack_top_offset_64(
-				value_reg, location_data->offset);
+				value_reg, location_data.offset);
 			break;
 
 		default:
-			err_at_token(accountable_token,
-				"Type Error",
-				"Variable doesn't fit in register\n"
-				"Support for this is not implemented yet");
+		{
+			uint8_t dst_ptr_reg = assembler.get_register();
+			assembler.move_stack_top_address_into_reg(dst_ptr_reg);
+			assembler.add_64_into_reg(location_data.offset, dst_ptr_reg);
+			assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
+				value_reg, dst_ptr_reg, type.byte_size());
+			break;
+		}
 		}
 	}
 };

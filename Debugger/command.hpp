@@ -10,7 +10,7 @@ print_shell_prompt(const char *file_path, uint8_t *addr)
 {
 	printf(ANSI_CYAN ANSI_BOLD "%s" ANSI_RESET, file_path);
 
-	if (addr != NULL)
+	if (addr != nullptr)
 	{
 		printf(ANSI_YELLOW " [ ");
 		printf(ANSI_GREEN ANSI_BOLD "0x" ANSI_BRIGHT_GREEN "%04llx" ANSI_RESET,

@@ -721,6 +721,21 @@ struct Assembler : public BufferBuilder
 	}
 
 	/**
+	 * @brief Adds a MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8 instruction to the program.
+	 * @param reg_id_src The source register that holds a pointer.
+	 * @param reg_id_dst The destination register that holds a pointer.
+	 * @param size The number of bytes to copy.
+	 */
+	void
+	mem_copy_reg_pointer_8_to_reg_pointer_8(uint8_t reg_id_src, uint8_t reg_id_dst, uint64_t size)
+	{
+		push_instruction(MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8);
+		push(reg_id_src);
+		push(reg_id_dst);
+		push(size);
+	}
+
+	/**
 	 * @brief Adds a ADD_8_INTO_REG instruction to the program.
 	 * @param lit The source literal.
 	 * @param reg_id The destination register.

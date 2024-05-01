@@ -54,7 +54,7 @@ struct OffsetExpression final : public WriteValue
 		}
 
 		type          = pointer->type.pointed_type();
-		location_data = std::make_unique<LocationData>(*pointer->location_data);
+		location_data = LocationData(pointer->location_data);
 	}
 
 	void
@@ -66,15 +66,15 @@ struct OffsetExpression final : public WriteValue
 
 		// Local variable or parameter
 
-		if (location_data->is_at_frame_top())
+		if (location_data.is_at_frame_top())
 		{
-			switch (location_data->var_size)
+			switch (type.byte_size())
 			{
 			case 1:
 				offset->get_value(assembler, offset_reg);
 				assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 				assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
-				assembler.add_64_into_reg(location_data->offset, offset_reg);
+				assembler.add_64_into_reg(location_data.offset, offset_reg);
 				assembler.move_reg_into_reg_pointer_8(value_reg, offset_reg);
 				break;
 
@@ -82,7 +82,7 @@ struct OffsetExpression final : public WriteValue
 				offset->get_value(assembler, offset_reg);
 				assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 				assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
-				assembler.add_64_into_reg(location_data->offset, offset_reg);
+				assembler.add_64_into_reg(location_data.offset, offset_reg);
 				assembler.move_reg_into_reg_pointer_16(value_reg, offset_reg);
 				break;
 
@@ -90,7 +90,7 @@ struct OffsetExpression final : public WriteValue
 				offset->get_value(assembler, offset_reg);
 				assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 				assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
-				assembler.add_64_into_reg(location_data->offset, offset_reg);
+				assembler.add_64_into_reg(location_data.offset, offset_reg);
 				assembler.move_reg_into_reg_pointer_32(value_reg, offset_reg);
 				break;
 
@@ -98,7 +98,7 @@ struct OffsetExpression final : public WriteValue
 				offset->get_value(assembler, offset_reg);
 				assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 				assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
-				assembler.add_64_into_reg(location_data->offset, offset_reg);
+				assembler.add_64_into_reg(location_data.offset, offset_reg);
 				assembler.move_reg_into_reg_pointer_64(value_reg, offset_reg);
 				break;
 
@@ -115,13 +115,13 @@ struct OffsetExpression final : public WriteValue
 
 		// Global variable
 
-		switch (location_data->var_size)
+		switch (type.byte_size())
 		{
 		case 1:
 			offset->get_value(assembler, offset_reg);
 			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 			assembler.move_stack_top_address_into_reg(offset_reg);
-			assembler.add_64_into_reg(location_data->offset, offset_reg);
+			assembler.add_64_into_reg(location_data.offset, offset_reg);
 			assembler.move_reg_into_reg_pointer_8(value_reg, offset_reg);
 			break;
 
@@ -129,7 +129,7 @@ struct OffsetExpression final : public WriteValue
 			offset->get_value(assembler, offset_reg);
 			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 			assembler.move_stack_top_address_into_reg(offset_reg);
-			assembler.add_64_into_reg(location_data->offset, offset_reg);
+			assembler.add_64_into_reg(location_data.offset, offset_reg);
 			assembler.move_reg_into_reg_pointer_16(value_reg, offset_reg);
 			break;
 
@@ -137,7 +137,7 @@ struct OffsetExpression final : public WriteValue
 			offset->get_value(assembler, offset_reg);
 			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 			assembler.move_stack_top_address_into_reg(offset_reg);
-			assembler.add_64_into_reg(location_data->offset, offset_reg);
+			assembler.add_64_into_reg(location_data.offset, offset_reg);
 			assembler.move_reg_into_reg_pointer_32(value_reg, offset_reg);
 			break;
 
@@ -145,7 +145,7 @@ struct OffsetExpression final : public WriteValue
 			offset->get_value(assembler, offset_reg);
 			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
 			assembler.move_stack_top_address_into_reg(offset_reg);
-			assembler.add_64_into_reg(location_data->offset, offset_reg);
+			assembler.add_64_into_reg(location_data.offset, offset_reg);
 			assembler.move_reg_into_reg_pointer_64(value_reg, offset_reg);
 			break;
 
