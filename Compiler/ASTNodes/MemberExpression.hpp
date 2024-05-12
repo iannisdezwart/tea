@@ -31,7 +31,7 @@ struct MemberExpression final : public WriteValue
 		if (this->object->node_type == MEMBER_EXPRESSION)
 		{
 			MemberExpression *member_expr = (MemberExpression *) this->object.get();
-			member_expr->is_ancestor = false;
+			member_expr->is_ancestor      = false;
 		}
 	}
 
@@ -161,7 +161,10 @@ struct MemberExpression final : public WriteValue
 		// Get address of the class field
 
 		object->get_value(assembler, result_reg);
-		assembler.add_64_into_reg(location_data.offset, result_reg);
+		uint8_t offset_reg = assembler.get_register();
+		assembler.move_lit(location_data.offset, offset_reg);
+		assembler.add_int_64(offset_reg, result_reg);
+		assembler.free_register(offset_reg);
 
 		// Dereference
 
@@ -173,16 +176,16 @@ struct MemberExpression final : public WriteValue
 		switch (type.byte_size())
 		{
 		case 1:
-			assembler.move_reg_pointer_8_into_reg(result_reg, result_reg);
+			assembler.load_ptr_8(result_reg, result_reg);
 			break;
 		case 2:
-			assembler.move_reg_pointer_16_into_reg(result_reg, result_reg);
+			assembler.load_ptr_16(result_reg, result_reg);
 			break;
 		case 4:
-			assembler.move_reg_pointer_32_into_reg(result_reg, result_reg);
+			assembler.load_ptr_32(result_reg, result_reg);
 			break;
 		case 8:
-			assembler.move_reg_pointer_64_into_reg(result_reg, result_reg);
+			assembler.load_ptr_64(result_reg, result_reg);
 			break;
 		default:
 			break;
@@ -198,27 +201,29 @@ struct MemberExpression final : public WriteValue
 		uint8_t dst_ptr_reg = assembler.get_register();
 
 		object->get_value(assembler, dst_ptr_reg);
-		assembler.add_64_into_reg(location_data.offset, dst_ptr_reg);
+		uint8_t offset_reg = assembler.get_register();
+		assembler.move_lit(location_data.offset, offset_reg);
+		assembler.add_int_64(offset_reg, dst_ptr_reg);
+		assembler.free_register(offset_reg);
 
 		// Store value
 
 		switch (type.byte_size())
 		{
 		case 1:
-			assembler.move_reg_into_reg_pointer_8(value_reg, dst_ptr_reg);
+			assembler.store_ptr_8(value_reg, dst_ptr_reg);
 			break;
 		case 2:
-			assembler.move_reg_into_reg_pointer_16(value_reg, dst_ptr_reg);
+			assembler.store_ptr_16(value_reg, dst_ptr_reg);
 			break;
 		case 4:
-			assembler.move_reg_into_reg_pointer_32(value_reg, dst_ptr_reg);
+			assembler.store_ptr_32(value_reg, dst_ptr_reg);
 			break;
 		case 8:
-			assembler.move_reg_into_reg_pointer_64(value_reg, dst_ptr_reg);
+			assembler.store_ptr_64(value_reg, dst_ptr_reg);
 			break;
 		default:
-			assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
-				value_reg, dst_ptr_reg, type.byte_size());
+			assembler.mem_copy(value_reg, dst_ptr_reg, type.byte_size());
 			break;
 		}
 

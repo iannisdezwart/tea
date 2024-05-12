@@ -65,8 +65,11 @@ struct WhileStatement final : public ASTNode
 
 		// Break the loop if false
 
-		assembler.compare_reg_to_8(test_reg, 0);
-		assembler.jump_if_equal(end_label);
+		uint8_t cmp_reg = assembler.get_register();
+		assembler.move_lit(0, cmp_reg);
+		assembler.cmp_int_8(test_reg, cmp_reg);
+		assembler.free_register(cmp_reg);
+		assembler.jump_if_eq(end_label);
 
 		assembler.free_register(test_reg);
 

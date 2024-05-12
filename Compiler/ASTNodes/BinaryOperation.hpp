@@ -13,6 +13,7 @@ struct BinaryOperation final : public ReadValue
 	std::unique_ptr<ReadValue> left;
 	std::unique_ptr<ReadValue> right;
 	Operator op;
+	Type cmp_type;
 
 	BinaryOperation(std::unique_ptr<ReadValue> left, std::unique_ptr<ReadValue> right, Token op_token)
 		: ReadValue(std::move(op_token), BINARY_OPERATION),
@@ -51,21 +52,6 @@ struct BinaryOperation final : public ReadValue
 		left->type_check(type_check_state);
 		right->type_check(type_check_state);
 
-		if (left->type.is_integer())
-		{
-			warn("binary operation on non-integer type x = %s\n"
-			     "At %ld:%ld\n",
-				left->type.to_str().c_str(), accountable_token.line,
-				accountable_token.col);
-		}
-		if (right->type.is_integer())
-		{
-			warn("binary operation on non-integer type y = %s\n"
-			     "At %ld:%ld\n",
-				right->type.to_str().c_str(), accountable_token.line,
-				accountable_token.col);
-		}
-
 		size_t left_size  = left->type.byte_size();
 		size_t right_size = right->type.byte_size();
 
@@ -74,11 +60,23 @@ struct BinaryOperation final : public ReadValue
 		case ADDITION:
 		case SUBTRACTION:
 		{
-			// intX + intY -> max(intX, intY)
+			// sizeX + sizeY -> max(sizeX, sizeY)
 
 			if (left->type.pointer_depth() == 0
 				&& right->type.pointer_depth() == 0)
 			{
+				if (left->type == Type::FLOATING_POINT && right->type != Type::FLOATING_POINT)
+				{
+					type = left->type;
+					return;
+				}
+
+				if (right->type == Type::FLOATING_POINT && left->type != Type::FLOATING_POINT)
+				{
+					type = right->type;
+					return;
+				}
+
 				if (left_size > right_size)
 				{
 					type = left->type;
@@ -87,6 +85,16 @@ struct BinaryOperation final : public ReadValue
 
 				type = right->type;
 				return;
+			}
+
+			if (!left->type.is_integer() || !right->type.is_integer())
+			{
+				warn("operator %s (%s) is not implemented for types x = %s and y = %s\n"
+				     "At %ld:%ld\n",
+					op_to_str(op), op_to_example_str(op),
+					left->type.to_str().c_str(),
+					right->type.to_str().c_str(), accountable_token.line,
+					accountable_token.col);
 			}
 
 			// pointer + int -> pointer
@@ -111,12 +119,25 @@ struct BinaryOperation final : public ReadValue
 		}
 
 		case MULTIPLICATION:
+		case DIVISION:
 		{
-			// intX * intY -> max(intX, intY)
+			// sizeX * sizeY -> max(sizeX, sizeY)
 
 			if (left->type.pointer_depth() == 0
 				&& right->type.pointer_depth() == 0)
 			{
+				if (left->type == Type::FLOATING_POINT && right->type != Type::FLOATING_POINT)
+				{
+					type = left->type;
+					return;
+				}
+
+				if (right->type == Type::FLOATING_POINT && left->type != Type::FLOATING_POINT)
+				{
+					type = right->type;
+					return;
+				}
+
 				if (left_size > right_size)
 				{
 					type = left->type;
@@ -130,22 +151,18 @@ struct BinaryOperation final : public ReadValue
 			break;
 		}
 
-		case DIVISION:
-		{
-			// intX / intY -> intX
-
-			if (left->type.pointer_depth() == 0
-				&& right->type.pointer_depth() == 0)
-			{
-				type = left->type;
-				return;
-			}
-
-			break;
-		}
-
 		case REMAINDER:
 		{
+			if (!left->type.is_integer() || !right->type.is_integer())
+			{
+				warn("operator %s (%s) is not implemented for types x = %s and y = %s\n"
+				     "At %ld:%ld\n",
+					op_to_str(op), op_to_example_str(op),
+					left->type.to_str().c_str(),
+					right->type.to_str().c_str(), accountable_token.line,
+					accountable_token.col);
+			}
+
 			// intX % intY -> intX
 
 			if (left->type.pointer_depth() == 0
@@ -160,6 +177,16 @@ struct BinaryOperation final : public ReadValue
 		case BITWISE_XOR:
 		case BITWISE_OR:
 		{
+			if (!left->type.is_integer() || !right->type.is_integer())
+			{
+				warn("operator %s (%s) is not implemented for types x = %s and y = %s\n"
+				     "At %ld:%ld\n",
+					op_to_str(op), op_to_example_str(op),
+					left->type.to_str().c_str(),
+					right->type.to_str().c_str(), accountable_token.line,
+					accountable_token.col);
+			}
+
 			// intX & intX
 
 			if (left->type.pointer_depth() == 0
@@ -180,14 +207,44 @@ struct BinaryOperation final : public ReadValue
 		{
 			if (left->type != right->type)
 			{
-				warn("comparing types of different signedness x = %s and y = %s\n"
+				warn("comparing different types x = %s and y = %s\n"
 				     "At %ld:%ld\n",
 					left->type.to_str().c_str(),
 					right->type.to_str().c_str(), accountable_token.line,
 					accountable_token.col);
 			}
 
-			type = Type(left->type, 1);
+			type = Type(left->type, 1); // Result of comparison is boolean
+
+			if (left->type.pointer_depth() == 0
+				&& right->type.pointer_depth() == 0)
+			{
+				if (left->type == Type::FLOATING_POINT && right->type != Type::FLOATING_POINT)
+				{
+					cmp_type = left->type;
+					return;
+				}
+
+				if (right->type == Type::FLOATING_POINT && left->type != Type::FLOATING_POINT)
+				{
+					cmp_type = right->type;
+					return;
+				}
+
+				if (left_size > right_size)
+				{
+					cmp_type = left->type;
+					return;
+				}
+
+				cmp_type = right->type;
+				return;
+			}
+			else
+			{
+				cmp_type = left->type;
+			}
+
 			return;
 		}
 
@@ -230,78 +287,318 @@ struct BinaryOperation final : public ReadValue
 		rhs_reg = assembler.get_register();
 		right->get_value(assembler, rhs_reg);
 
+		// Implicit type casting
+
+		Type::Fits left_fits  = left->type.fits(type);
+		Type::Fits right_fits = right->type.fits(type);
+
+		if (left_fits == Type::Fits::FLT_32_TO_INT_CAST_NEEDED)
+			assembler.cast_flt_32_to_int(result_reg);
+		else if (left_fits == Type::Fits::FLT_64_TO_INT_CAST_NEEDED)
+			assembler.cast_flt_64_to_int(result_reg);
+		else if (left_fits == Type::Fits::INT_TO_FLT_32_CAST_NEEDED)
+			assembler.cast_int_to_flt_32(result_reg);
+		else if (left_fits == Type::Fits::INT_TO_FLT_64_CAST_NEEDED)
+			assembler.cast_int_to_flt_64(result_reg);
+
+		if (right_fits == Type::Fits::FLT_32_TO_INT_CAST_NEEDED)
+			assembler.cast_flt_32_to_int(rhs_reg);
+		else if (right_fits == Type::Fits::FLT_64_TO_INT_CAST_NEEDED)
+			assembler.cast_flt_64_to_int(rhs_reg);
+		else if (right_fits == Type::Fits::INT_TO_FLT_32_CAST_NEEDED)
+			assembler.cast_int_to_flt_32(rhs_reg);
+		else if (right_fits == Type::Fits::INT_TO_FLT_64_CAST_NEEDED)
+			assembler.cast_int_to_flt_64(rhs_reg);
+
 		// Perform the operation.
+
+		auto compare_and_set = [&](std::function<void()> set_if_cb)
+		{
+			if (cmp_type == Type::SIGNED_INTEGER && cmp_type.byte_size() == 1)
+			{
+				assembler.cmp_int_8(result_reg, rhs_reg);
+			}
+			else if (cmp_type == Type::UNSIGNED_INTEGER && cmp_type.byte_size() == 1)
+			{
+				assembler.cmp_int_8_u(result_reg, rhs_reg);
+			}
+			if (cmp_type == Type::SIGNED_INTEGER && cmp_type.byte_size() == 2)
+			{
+				assembler.cmp_int_16(result_reg, rhs_reg);
+			}
+			else if (cmp_type == Type::UNSIGNED_INTEGER && cmp_type.byte_size() == 2)
+			{
+				assembler.cmp_int_16_u(result_reg, rhs_reg);
+			}
+			if (cmp_type == Type::SIGNED_INTEGER && cmp_type.byte_size() == 4)
+			{
+				assembler.cmp_int_32(result_reg, rhs_reg);
+			}
+			else if (cmp_type == Type::UNSIGNED_INTEGER && cmp_type.byte_size() == 4)
+			{
+				assembler.cmp_int_32_u(result_reg, rhs_reg);
+			}
+			if (cmp_type == Type::SIGNED_INTEGER && cmp_type.byte_size() == 8)
+			{
+				assembler.cmp_int_64(result_reg, rhs_reg);
+			}
+			else if (cmp_type == Type::UNSIGNED_INTEGER && cmp_type.byte_size() == 8)
+			{
+				assembler.cmp_int_64_u(result_reg, rhs_reg);
+			}
+			else if (cmp_type == Type::FLOATING_POINT && cmp_type.byte_size() == 4)
+			{
+				assembler.cmp_flt_32(result_reg, rhs_reg);
+			}
+			else if (cmp_type == Type::FLOATING_POINT && cmp_type.byte_size() == 8)
+			{
+				assembler.cmp_flt_64(result_reg, rhs_reg);
+			}
+			set_if_cb();
+		};
 
 		switch (op)
 		{
 			// Mathematical binary operations.
 
 		case DIVISION:
-			assembler.divide_reg_from_reg(rhs_reg, result_reg);
+		{
+			if (type.is_integer() && type.byte_size() == 1)
+			{
+				assembler.div_int_8(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 2)
+			{
+				assembler.div_int_16(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 4)
+			{
+				assembler.div_int_32(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 8)
+			{
+				assembler.div_int_64(rhs_reg, result_reg);
+			}
+			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			{
+				assembler.div_flt_32(rhs_reg, result_reg);
+			}
+			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			{
+				assembler.div_flt_64(rhs_reg, result_reg);
+			}
+
 			break;
+		}
 
 		case REMAINDER:
-			assembler.take_modulo_reg_of_reg(rhs_reg, result_reg);
+		{
+			if (type.is_integer() && type.byte_size() == 1)
+			{
+				assembler.mod_int_8(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 2)
+			{
+				assembler.mod_int_16(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 4)
+			{
+				assembler.mod_int_32(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 8)
+			{
+				assembler.mod_int_64(rhs_reg, result_reg);
+			}
+
 			break;
+		}
 
 		case MULTIPLICATION:
-			assembler.multiply_reg_into_reg(rhs_reg, result_reg);
+		{
+			if (type.is_integer() && type.byte_size() == 1)
+			{
+				assembler.mul_int_8(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 2)
+			{
+				assembler.mul_int_16(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 4)
+			{
+				assembler.mul_int_32(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 8)
+			{
+				assembler.mul_int_64(rhs_reg, result_reg);
+			}
+			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			{
+				assembler.mul_flt_32(rhs_reg, result_reg);
+			}
+			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			{
+				assembler.mul_flt_64(rhs_reg, result_reg);
+			}
+
 			break;
+		}
 
 		case ADDITION:
-			assembler.add_reg_into_reg(rhs_reg, result_reg);
+		{
+			if (type.is_integer() && type.byte_size() == 1)
+			{
+				assembler.add_int_8(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 2)
+			{
+				assembler.add_int_16(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 4)
+			{
+				assembler.add_int_32(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 8)
+			{
+				assembler.add_int_64(rhs_reg, result_reg);
+			}
+			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			{
+				assembler.add_flt_32(rhs_reg, result_reg);
+			}
+			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			{
+				assembler.add_flt_64(rhs_reg, result_reg);
+			}
+
 			break;
+		}
 
 		case SUBTRACTION:
-			assembler.subtract_reg_from_reg(rhs_reg, result_reg);
+		{
+			if (type.is_integer() && type.byte_size() == 1)
+			{
+				assembler.sub_int_8(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 2)
+			{
+				assembler.sub_int_16(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 4)
+			{
+				assembler.sub_int_32(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 8)
+			{
+				assembler.sub_int_64(rhs_reg, result_reg);
+			}
+			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			{
+				assembler.sub_flt_32(rhs_reg, result_reg);
+			}
+			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			{
+				assembler.sub_flt_64(rhs_reg, result_reg);
+			}
+
 			break;
+		}
 
 		case BITWISE_AND:
-			assembler.and_reg_into_reg(rhs_reg, result_reg);
+		{
+			if (type.is_integer() && type.byte_size() == 1)
+			{
+				assembler.and_int_8(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 2)
+			{
+				assembler.and_int_16(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 4)
+			{
+				assembler.and_int_32(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 8)
+			{
+				assembler.and_int_64(rhs_reg, result_reg);
+			}
+
 			break;
+		}
 
 		case BITWISE_XOR:
-			assembler.xor_reg_into_reg(rhs_reg, result_reg);
+		{
+			if (type.is_integer() && type.byte_size() == 1)
+			{
+				assembler.xor_int_8(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 2)
+			{
+				assembler.xor_int_16(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 4)
+			{
+				assembler.xor_int_32(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 8)
+			{
+				assembler.xor_int_64(rhs_reg, result_reg);
+			}
+
 			break;
+		}
 
 		case BITWISE_OR:
-			assembler.or_reg_into_reg(rhs_reg, result_reg);
+		{
+			if (type.is_integer() && type.byte_size() == 1)
+			{
+				assembler.or_int_8(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 2)
+			{
+				assembler.or_int_16(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 4)
+			{
+				assembler.or_int_32(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 8)
+			{
+				assembler.or_int_64(rhs_reg, result_reg);
+			}
+
 			break;
+		}
 
 			// Logical binary operations
 
-#define COMPARE_AND_SET(op)                                                         \
-	do                                                                          \
-	{                                                                           \
-		if (type == Type::SIGNED_INTEGER)                                   \
-			assembler.compare_reg_to_reg_signed(result_reg, rhs_reg);   \
-		else                                                                \
-			assembler.compare_reg_to_reg_unsigned(result_reg, rhs_reg); \
-		assembler.set_reg_if_##op(result_reg);                              \
-	} while (0)
-
 		case LESS:
-			COMPARE_AND_SET(less);
+			compare_and_set([&]()
+				{ assembler.set_if_lt(result_reg); });
 			break;
 
 		case LESS_OR_EQUAL:
-			COMPARE_AND_SET(less_or_equal);
+			compare_and_set([&]()
+				{ assembler.set_if_leq(result_reg); });
 			break;
 
 		case GREATER:
-			COMPARE_AND_SET(greater);
+			compare_and_set([&]()
+				{ assembler.set_if_gt(result_reg); });
 			break;
 
 		case GREATER_OR_EQUAL:
-			COMPARE_AND_SET(greater_or_equal);
+			compare_and_set([&]()
+				{ assembler.set_if_geq(result_reg); });
 			break;
 
 		case EQUAL:
-			COMPARE_AND_SET(equal);
+			compare_and_set([&]()
+				{ assembler.set_if_eq(result_reg); });
 			break;
 
 		case NOT_EQUAL:
-			COMPARE_AND_SET(not_equal);
+			compare_and_set([&]()
+				{ assembler.set_if_neq(result_reg); });
 			break;
 
 		default:

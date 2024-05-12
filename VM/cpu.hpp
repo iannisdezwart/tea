@@ -39,7 +39,7 @@ struct CPU
 	// ===== Registers =====
 
 	// An array that contains the registers of the virtual machine.
-	uint64_t regs[12];
+	uint64_t regs[13];
 
 	// === General purpose registers ===
 
@@ -103,9 +103,32 @@ struct CPU
 		return (uint8_t *) regs[R_STACK_PTR];
 	}
 
+	// Stack top pointer
+
+#define R_STACK_TOP_PTR 10
+
+	/**
+	 * @brief Sets the stack top pointer to a certain value.
+	 * @param val A memory address to store in the ST register.
+	 */
+	void
+	set_stack_top_ptr(uint8_t *val)
+	{
+		regs[R_STACK_TOP_PTR] = (uint64_t) val;
+	}
+
+	/**
+	 * @returns The memory address in the ST register.
+	 */
+	uint8_t *
+	get_stack_top_ptr()
+	{
+		return (uint8_t *) regs[R_STACK_TOP_PTR];
+	}
+
 	// Frame pointer
 
-#define R_FRAME_PTR 10
+#define R_FRAME_PTR 11
 
 	/**
 	 * @brief Sets the frame pointer to a certain value.
@@ -128,7 +151,7 @@ struct CPU
 
 	// Return value register
 
-#define R_RET 11
+#define R_RET 12
 
 	// Holds the address of the current instruction being executed.
 	uint8_t *cur_instr_addr;
@@ -171,6 +194,9 @@ struct CPU
 
 		case R_STACK_PTR:
 			return "R_STACK_PTR";
+
+		case R_STACK_TOP_PTR:
+			return "R_STACK_TOP_PTR";
 
 		case R_FRAME_PTR:
 			return "R_FRAME_PTR";
@@ -220,6 +246,7 @@ struct CPU
 		set_instr_ptr(program_location);
 		set_stack_ptr(stack_top);
 		set_frame_ptr(stack_top);
+		set_stack_top_ptr(stack_top);
 
 		// If the main function of a program does not return
 		// anything, returns 0 by default to indicate
@@ -418,31 +445,7 @@ struct CPU
 
 		switch (instruction)
 		{
-		case MOVE_8_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint8_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, lit);
-			break;
-		}
-
-		case MOVE_16_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint16_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, lit);
-			break;
-		}
-
-		case MOVE_32_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint32_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, lit);
-			break;
-		}
-
-		case MOVE_64_INTO_REG:
+		case MOVE_LIT:
 		{
 			uint64_t lit   = fetch<uint64_t>();
 			uint8_t reg_id = fetch<uint8_t>();
@@ -450,39 +453,7 @@ struct CPU
 			break;
 		}
 
-		case MOVE_8_INTO_MEM:
-		{
-			uint64_t lit     = fetch<uint8_t>();
-			uint8_t *address = fetch<uint8_t *>();
-			memory::set(address, lit);
-			break;
-		}
-
-		case MOVE_16_INTO_MEM:
-		{
-			uint64_t lit     = fetch<uint16_t>();
-			uint8_t *address = fetch<uint8_t *>();
-			memory::set(address, lit);
-			break;
-		}
-
-		case MOVE_32_INTO_MEM:
-		{
-			uint64_t lit     = fetch<uint32_t>();
-			uint8_t *address = fetch<uint8_t *>();
-			memory::set(address, lit);
-			break;
-		}
-
-		case MOVE_64_INTO_MEM:
-		{
-			uint64_t lit     = fetch<uint64_t>();
-			uint8_t *address = fetch<uint8_t *>();
-			memory::set(address, lit);
-			break;
-		}
-
-		case MOVE_REG_INTO_REG:
+		case MOVE:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
@@ -491,79 +462,7 @@ struct CPU
 			break;
 		}
 
-		case MOVE_REG_INTO_MEM_8:
-		{
-			uint8_t reg_id   = fetch<uint8_t>();
-			uint8_t *address = fetch<uint8_t *>();
-			uint8_t value    = get_reg_by_id(reg_id) & 0xFF;
-			memory::set(address, value);
-			break;
-		}
-
-		case MOVE_REG_INTO_MEM_16:
-		{
-			uint8_t reg_id   = fetch<uint8_t>();
-			uint8_t *address = fetch<uint8_t *>();
-			uint16_t value   = get_reg_by_id(reg_id) & 0xFFFF;
-			memory::set(address, value);
-			break;
-		}
-
-		case MOVE_REG_INTO_MEM_32:
-		{
-			uint8_t reg_id   = fetch<uint8_t>();
-			uint8_t *address = fetch<uint8_t *>();
-			uint32_t value   = get_reg_by_id(reg_id) & 0xFFFFFFFF;
-			memory::set(address, value);
-			break;
-		}
-
-		case MOVE_REG_INTO_MEM_64:
-		{
-			uint8_t reg_id   = fetch<uint8_t>();
-			uint8_t *address = fetch<uint8_t *>();
-			uint64_t value   = get_reg_by_id(reg_id);
-			memory::set(address, value);
-			break;
-		}
-
-		case MOVE_MEM_8_INTO_REG:
-		{
-			uint8_t *address = fetch<uint8_t *>();
-			uint8_t value    = memory::get<uint8_t>(address);
-			uint8_t reg_id   = fetch<uint8_t>();
-			set_reg_by_id(reg_id, value);
-			break;
-		}
-
-		case MOVE_MEM_16_INTO_REG:
-		{
-			uint8_t *address = fetch<uint8_t *>();
-			uint16_t value   = memory::get<uint16_t>(address);
-			uint8_t reg_id   = fetch<uint8_t>();
-			set_reg_by_id(reg_id, value);
-			break;
-		}
-
-		case MOVE_MEM_32_INTO_REG:
-		{
-			uint8_t *address = fetch<uint8_t *>();
-			uint32_t value   = memory::get<uint32_t>(address);
-			uint8_t reg_id   = fetch<uint8_t>();
-			set_reg_by_id(reg_id, value);
-			break;
-		}
-
-		case MOVE_MEM_64_INTO_REG:
-		{
-			uint8_t *address = fetch<uint8_t *>();
-			uint64_t value   = memory::get<uint64_t>(address);
-			uint8_t reg_id   = fetch<uint8_t>();
-			set_reg_by_id(reg_id, value);
-			break;
-		}
-
-		case MOVE_REG_POINTER_8_INTO_REG:
+		case LOAD_PTR_8:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
@@ -573,7 +472,7 @@ struct CPU
 			break;
 		}
 
-		case MOVE_REG_POINTER_16_INTO_REG:
+		case LOAD_PTR_16:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
@@ -583,7 +482,7 @@ struct CPU
 			break;
 		}
 
-		case MOVE_REG_POINTER_32_INTO_REG:
+		case LOAD_PTR_32:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
@@ -593,7 +492,7 @@ struct CPU
 			break;
 		}
 
-		case MOVE_REG_POINTER_64_INTO_REG:
+		case LOAD_PTR_64:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
@@ -603,7 +502,7 @@ struct CPU
 			break;
 		}
 
-		case MOVE_REG_INTO_REG_POINTER_8:
+		case STORE_PTR_8:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
@@ -613,7 +512,7 @@ struct CPU
 			break;
 		}
 
-		case MOVE_REG_INTO_REG_POINTER_16:
+		case STORE_PTR_16:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
@@ -623,7 +522,7 @@ struct CPU
 			break;
 		}
 
-		case MOVE_REG_INTO_REG_POINTER_32:
+		case STORE_PTR_32:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
@@ -633,7 +532,7 @@ struct CPU
 			break;
 		}
 
-		case MOVE_REG_INTO_REG_POINTER_64:
+		case STORE_PTR_64:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
@@ -643,158 +542,7 @@ struct CPU
 			break;
 		}
 
-		case MOVE_FRAME_OFFSET_8_INTO_REG:
-		{
-			int64_t offset = fetch<int64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			uint8_t value  = memory::get<uint8_t>(get_frame_ptr() + offset);
-			set_reg_by_id(reg_id, value);
-			break;
-		}
-
-		case MOVE_FRAME_OFFSET_16_INTO_REG:
-		{
-			int64_t offset = fetch<int64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			uint16_t value = memory::get<uint16_t>(get_frame_ptr() + offset);
-			set_reg_by_id(reg_id, value);
-			break;
-		}
-
-		case MOVE_FRAME_OFFSET_32_INTO_REG:
-		{
-			int64_t offset = fetch<int64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			uint32_t value = memory::get<uint32_t>(get_frame_ptr() + offset);
-			set_reg_by_id(reg_id, value);
-			break;
-		}
-
-		case MOVE_FRAME_OFFSET_64_INTO_REG:
-		{
-			int64_t offset = fetch<int64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			uint64_t value = memory::get<uint64_t>(get_frame_ptr() + offset);
-			set_reg_by_id(reg_id, value);
-			break;
-		}
-
-		case MOVE_REG_INTO_FRAME_OFFSET_8:
-		{
-			uint8_t reg_id = fetch<uint8_t>();
-			int64_t offset = fetch<uint64_t>();
-			uint8_t value  = get_reg_by_id(reg_id) & 0xFF;
-			memory::set(get_frame_ptr() + offset, value);
-			break;
-		}
-
-		case MOVE_REG_INTO_FRAME_OFFSET_16:
-		{
-			uint8_t reg_id = fetch<uint8_t>();
-			int64_t offset = fetch<uint64_t>();
-			uint16_t value = get_reg_by_id(reg_id) & 0xFFFF;
-			memory::set(get_frame_ptr() + offset, value);
-			break;
-		}
-
-		case MOVE_REG_INTO_FRAME_OFFSET_32:
-		{
-			uint8_t reg_id = fetch<uint8_t>();
-			int64_t offset = fetch<uint64_t>();
-			uint32_t value = get_reg_by_id(reg_id) & 0xFFFFFFFF;
-			memory::set(get_frame_ptr() + offset, value);
-			break;
-		}
-
-		case MOVE_REG_INTO_FRAME_OFFSET_64:
-		{
-			uint8_t reg_id = fetch<uint8_t>();
-			int64_t offset = fetch<uint64_t>();
-			uint64_t value = get_reg_by_id(reg_id);
-			memory::set(get_frame_ptr() + offset, value);
-			break;
-		}
-
-		case MOVE_STACK_TOP_OFFSET_8_INTO_REG:
-		{
-			int64_t offset = fetch<int64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			uint8_t value  = memory::get<uint8_t>(stack_top + offset);
-			set_reg_by_id(reg_id, value);
-			break;
-		}
-
-		case MOVE_STACK_TOP_OFFSET_16_INTO_REG:
-		{
-			int64_t offset = fetch<int64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			uint16_t value = memory::get<uint16_t>(stack_top + offset);
-			set_reg_by_id(reg_id, value);
-			break;
-		}
-
-		case MOVE_STACK_TOP_OFFSET_32_INTO_REG:
-		{
-			int64_t offset = fetch<int64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			uint32_t value = memory::get<uint32_t>(stack_top + offset);
-			set_reg_by_id(reg_id, value);
-			break;
-		}
-
-		case MOVE_STACK_TOP_OFFSET_64_INTO_REG:
-		{
-			int64_t offset = fetch<int64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			uint64_t value = memory::get<uint64_t>(stack_top + offset);
-			set_reg_by_id(reg_id, value);
-			break;
-		}
-
-		case MOVE_REG_INTO_STACK_TOP_OFFSET_8:
-		{
-			uint8_t reg_id = fetch<uint8_t>();
-			int64_t offset = fetch<int64_t>();
-			uint8_t value  = get_reg_by_id(reg_id) & 0xFF;
-			memory::set(stack_top + offset, value);
-			break;
-		}
-
-		case MOVE_REG_INTO_STACK_TOP_OFFSET_16:
-		{
-			uint8_t reg_id = fetch<uint8_t>();
-			int64_t offset = fetch<int64_t>();
-			uint16_t value = get_reg_by_id(reg_id) & 0xFFFF;
-			memory::set(stack_top + offset, value);
-			break;
-		}
-
-		case MOVE_REG_INTO_STACK_TOP_OFFSET_32:
-		{
-			uint8_t reg_id = fetch<uint8_t>();
-			int64_t offset = fetch<int64_t>();
-			uint32_t value = get_reg_by_id(reg_id) & 0xFFFFFFFF;
-			memory::set(stack_top + offset, value);
-			break;
-		}
-
-		case MOVE_REG_INTO_STACK_TOP_OFFSET_64:
-		{
-			uint8_t reg_id = fetch<uint8_t>();
-			int64_t offset = fetch<int64_t>();
-			uint64_t value = get_reg_by_id(reg_id);
-			memory::set(stack_top + offset, value);
-			break;
-		}
-
-		case MOVE_STACK_TOP_ADDRESS_INTO_REG:
-		{
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, (uint64_t) stack_top);
-			break;
-		}
-
-		case MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8:
+		case MEM_COPY:
 		{
 			uint8_t reg_id_src = fetch<uint8_t>();
 			uint8_t reg_id_dst = fetch<uint8_t>();
@@ -812,239 +560,383 @@ struct CPU
 			break;
 		}
 
-		case ADD_8_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint8_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) + lit);
-			break;
-		}
-
-		case ADD_16_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint16_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) + lit);
-			break;
-		}
-
-		case ADD_32_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint32_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) + lit);
-			break;
-		}
-
-		case ADD_64_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) + lit);
-			break;
-		}
-
-		case ADD_REG_INTO_REG:
+		case ADD_INT_8:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
-			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) + get_reg_by_id(reg_id_1));
+			set_reg_by_id(reg_id_2,
+				static_cast<uint8_t>(get_reg_by_id(reg_id_1))
+					+ static_cast<uint8_t>(get_reg_by_id(reg_id_2)));
 			break;
 		}
 
-		case SUBTRACT_8_FROM_REG:
-		{
-			uint64_t lit   = fetch<uint8_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) - lit);
-			break;
-		}
-
-		case SUBTRACT_16_FROM_REG:
-		{
-			uint64_t lit   = fetch<uint16_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) - lit);
-			break;
-		}
-
-		case SUBTRACT_32_FROM_REG:
-		{
-			uint64_t lit   = fetch<uint32_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) - lit);
-			break;
-		}
-
-		case SUBTRACT_64_FROM_REG:
-		{
-			uint64_t lit   = fetch<uint64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) - lit);
-			break;
-		}
-
-		case SUBTRACT_REG_FROM_REG:
+		case ADD_INT_16:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
-			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) - get_reg_by_id(reg_id_1));
+			set_reg_by_id(reg_id_2,
+				static_cast<uint16_t>(get_reg_by_id(reg_id_1))
+					+ static_cast<uint16_t>(get_reg_by_id(reg_id_2)));
 			break;
 		}
 
-		case MULTIPLY_8_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint8_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) * lit);
-			break;
-		}
-
-		case MULTIPLY_16_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint16_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) * lit);
-			break;
-		}
-
-		case MULTIPLY_32_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint32_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) * lit);
-			break;
-		}
-
-		case MULTIPLY_64_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) * lit);
-			break;
-		}
-
-		case MULTIPLY_REG_INTO_REG:
+		case ADD_INT_32:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
-			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) * get_reg_by_id(reg_id_1));
+			set_reg_by_id(reg_id_2,
+				static_cast<uint32_t>(get_reg_by_id(reg_id_1))
+					+ static_cast<uint32_t>(get_reg_by_id(reg_id_2)));
 			break;
 		}
 
-		case DIVIDE_8_FROM_REG:
-		{
-			uint64_t lit   = fetch<uint8_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) / lit);
-			break;
-		}
-
-		case DIVIDE_16_FROM_REG:
-		{
-			uint64_t lit   = fetch<uint16_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) / lit);
-			break;
-		}
-
-		case DIVIDE_32_FROM_REG:
-		{
-			uint64_t lit   = fetch<uint32_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) / lit);
-			break;
-		}
-
-		case DIVIDE_64_FROM_REG:
-		{
-			uint64_t lit   = fetch<uint64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) / lit);
-			break;
-		}
-
-		case DIVIDE_REG_FROM_REG:
+		case ADD_INT_64:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
-			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) / get_reg_by_id(reg_id_1));
+			set_reg_by_id(reg_id_2,
+				static_cast<uint64_t>(get_reg_by_id(reg_id_1))
+					+ static_cast<uint64_t>(get_reg_by_id(reg_id_2)));
 			break;
 		}
 
-		case TAKE_MODULO_8_OF_REG:
-		{
-			uint8_t lit    = fetch<uint8_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) % lit);
-			break;
-		}
-
-		case TAKE_MODULO_16_OF_REG:
-		{
-			uint16_t lit   = fetch<uint16_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) % lit);
-			break;
-		}
-
-		case TAKE_MODULO_32_OF_REG:
-		{
-			uint32_t lit   = fetch<uint32_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) % lit);
-			break;
-		}
-
-		case TAKE_MODULO_64_OF_REG:
-		{
-			uint64_t lit   = fetch<uint64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) % lit);
-			break;
-		}
-
-		case TAKE_MODULO_REG_OF_REG:
+		case ADD_FLT_32:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
-			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) % get_reg_by_id(reg_id_1));
+			uint32_t value_1 = static_cast<uint32_t>(get_reg_by_id(reg_id_1));
+			uint32_t value_2 = static_cast<uint32_t>(get_reg_by_id(reg_id_2));
+			set_reg_by_id(reg_id_2,
+				*reinterpret_cast<float *>(&value_1)
+					+ *reinterpret_cast<float *>(&value_2));
 			break;
 		}
 
-		case AND_8_INTO_REG:
+		case ADD_FLT_64:
 		{
-			uint64_t lit   = fetch<uint8_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) & lit);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint64_t value_1 = get_reg_by_id(reg_id_1);
+			uint64_t value_2 = get_reg_by_id(reg_id_2);
+			set_reg_by_id(reg_id_2,
+				*reinterpret_cast<double *>(&value_1)
+					+ *reinterpret_cast<double *>(&value_2));
 			break;
 		}
 
-		case AND_16_INTO_REG:
+		case SUB_INT_8:
 		{
-			uint64_t lit   = fetch<uint16_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) & lit);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2,
+				static_cast<uint8_t>(get_reg_by_id(reg_id_2))
+					- static_cast<uint8_t>(get_reg_by_id(reg_id_1)));
 			break;
 		}
 
-		case AND_32_INTO_REG:
+		case SUB_INT_16:
 		{
-			uint64_t lit   = fetch<uint32_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) & lit);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2,
+				static_cast<uint16_t>(get_reg_by_id(reg_id_2))
+					- static_cast<uint16_t>(get_reg_by_id(reg_id_1)));
 			break;
 		}
 
-		case AND_64_INTO_REG:
+		case SUB_INT_32:
 		{
-			uint64_t lit   = fetch<uint64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) & lit);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2,
+				static_cast<uint32_t>(get_reg_by_id(reg_id_2))
+					- static_cast<uint32_t>(get_reg_by_id(reg_id_1)));
 			break;
 		}
 
-		case AND_REG_INTO_REG:
+		case SUB_INT_64:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2,
+				static_cast<uint64_t>(get_reg_by_id(reg_id_2))
+					- static_cast<uint64_t>(get_reg_by_id(reg_id_1)));
+			break;
+		}
+
+		case SUB_FLT_32:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint32_t value_1 = static_cast<uint32_t>(get_reg_by_id(reg_id_1));
+			uint32_t value_2 = static_cast<uint32_t>(get_reg_by_id(reg_id_2));
+			set_reg_by_id(reg_id_2,
+				*reinterpret_cast<float *>(&value_2)
+					- *reinterpret_cast<float *>(&value_1));
+			break;
+		}
+
+		case SUB_FLT_64:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint64_t value_1 = get_reg_by_id(reg_id_1);
+			uint64_t value_2 = get_reg_by_id(reg_id_2);
+			set_reg_by_id(reg_id_2,
+				*reinterpret_cast<double *>(&value_2)
+					- *reinterpret_cast<double *>(&value_1));
+			break;
+		}
+
+		case MUL_INT_8:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2,
+				static_cast<uint8_t>(get_reg_by_id(reg_id_1))
+					* static_cast<uint8_t>(get_reg_by_id(reg_id_2)));
+			break;
+		}
+
+		case MUL_INT_16:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2,
+				static_cast<uint16_t>(get_reg_by_id(reg_id_1))
+					* static_cast<uint16_t>(get_reg_by_id(reg_id_2)));
+			break;
+		}
+
+		case MUL_INT_32:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2,
+				static_cast<uint32_t>(get_reg_by_id(reg_id_1))
+					* static_cast<uint32_t>(get_reg_by_id(reg_id_2)));
+			break;
+		}
+
+		case MUL_INT_64:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2,
+				static_cast<uint64_t>(get_reg_by_id(reg_id_1))
+					* static_cast<uint64_t>(get_reg_by_id(reg_id_2)));
+			break;
+		}
+
+		case MUL_FLT_32:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint32_t value_1 = static_cast<uint32_t>(get_reg_by_id(reg_id_1));
+			uint32_t value_2 = static_cast<uint32_t>(get_reg_by_id(reg_id_2));
+			set_reg_by_id(reg_id_2,
+				*reinterpret_cast<float *>(&value_1)
+					* *reinterpret_cast<float *>(&value_2));
+			break;
+		}
+
+		case MUL_FLT_64:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint64_t value_1 = get_reg_by_id(reg_id_1);
+			uint64_t value_2 = get_reg_by_id(reg_id_2);
+			set_reg_by_id(reg_id_2,
+				*reinterpret_cast<double *>(&value_1)
+					* *reinterpret_cast<double *>(&value_2));
+			break;
+		}
+
+		case DIV_INT_8:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+
+			uint8_t value_1 = static_cast<uint8_t>(get_reg_by_id(reg_id_1));
+			uint8_t value_2 = static_cast<uint8_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 == 0)
+			{
+				division_error_flag = true;
+				break;
+			}
+
+			set_reg_by_id(reg_id_2, value_2 / value_1);
+			break;
+		}
+
+		case DIV_INT_16:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+
+			uint16_t value_1 = static_cast<uint16_t>(get_reg_by_id(reg_id_1));
+			uint16_t value_2 = static_cast<uint16_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 == 0)
+			{
+				division_error_flag = true;
+				break;
+			}
+
+			set_reg_by_id(reg_id_2, value_2 / value_1);
+			break;
+		}
+
+		case DIV_INT_32:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+
+			uint32_t value_1 = static_cast<uint32_t>(get_reg_by_id(reg_id_1));
+			uint32_t value_2 = static_cast<uint32_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 == 0)
+			{
+				division_error_flag = true;
+				break;
+			}
+
+			set_reg_by_id(reg_id_2, value_2 / value_1);
+			break;
+		}
+
+		case DIV_INT_64:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+
+			uint64_t value_1 = get_reg_by_id(reg_id_1);
+			uint64_t value_2 = get_reg_by_id(reg_id_2);
+
+			if (value_1 == 0)
+			{
+				division_error_flag = true;
+				break;
+			}
+
+			set_reg_by_id(reg_id_2, value_2 / value_1);
+			break;
+		}
+
+		case DIV_FLT_32:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+
+			uint32_t value_1 = static_cast<uint32_t>(get_reg_by_id(reg_id_1));
+			uint32_t value_2 = static_cast<uint32_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 == 0)
+			{
+				division_error_flag = true;
+				break;
+			}
+
+			set_reg_by_id(reg_id_2,
+				*reinterpret_cast<float *>(&value_2)
+					/ *reinterpret_cast<float *>(&value_1));
+			break;
+		}
+
+		case DIV_FLT_64:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+
+			uint64_t value_1 = get_reg_by_id(reg_id_1);
+			uint64_t value_2 = get_reg_by_id(reg_id_2);
+
+			if (value_1 == 0)
+			{
+				division_error_flag = true;
+				break;
+			}
+
+			set_reg_by_id(reg_id_2,
+				*reinterpret_cast<double *>(&value_2)
+					/ *reinterpret_cast<double *>(&value_1));
+			break;
+		}
+
+		case MOD_INT_8:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+
+			uint8_t value_1 = static_cast<uint8_t>(get_reg_by_id(reg_id_1));
+			uint8_t value_2 = static_cast<uint8_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 == 0)
+			{
+				division_error_flag = true;
+				break;
+			}
+
+			set_reg_by_id(reg_id_2, value_2 % value_1);
+			break;
+		}
+
+		case MOD_INT_16:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+
+			uint16_t value_1 = static_cast<uint16_t>(get_reg_by_id(reg_id_1));
+			uint16_t value_2 = static_cast<uint16_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 == 0)
+			{
+				division_error_flag = true;
+				break;
+			}
+
+			set_reg_by_id(reg_id_2, value_2 % value_1);
+			break;
+		}
+
+		case MOD_INT_32:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+
+			uint32_t value_1 = static_cast<uint32_t>(get_reg_by_id(reg_id_1));
+			uint32_t value_2 = static_cast<uint32_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 == 0)
+			{
+				division_error_flag = true;
+				break;
+			}
+
+			set_reg_by_id(reg_id_2, value_2 % value_1);
+			break;
+		}
+
+		case MOD_INT_64:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+
+			uint64_t value_1 = get_reg_by_id(reg_id_1);
+			uint64_t value_2 = get_reg_by_id(reg_id_2);
+
+			if (value_1 == 0)
+			{
+				division_error_flag = true;
+				break;
+			}
+
+			set_reg_by_id(reg_id_2, value_2 % value_1);
+			break;
+		}
+
+		case AND_INT_8:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
@@ -1052,39 +944,31 @@ struct CPU
 			break;
 		}
 
-		case OR_8_INTO_REG:
+		case AND_INT_16:
 		{
-			uint64_t lit   = fetch<uint8_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) | lit);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) & get_reg_by_id(reg_id_1));
 			break;
 		}
 
-		case OR_16_INTO_REG:
+		case AND_INT_32:
 		{
-			uint64_t lit   = fetch<uint16_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) | lit);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) & get_reg_by_id(reg_id_1));
 			break;
 		}
 
-		case OR_32_INTO_REG:
+		case AND_INT_64:
 		{
-			uint64_t lit   = fetch<uint32_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) | lit);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) & get_reg_by_id(reg_id_1));
 			break;
 		}
 
-		case OR_64_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) | lit);
-			break;
-		}
-
-		case OR_REG_INTO_REG:
+		case OR_INT_8:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
@@ -1092,39 +976,31 @@ struct CPU
 			break;
 		}
 
-		case XOR_8_INTO_REG:
+		case OR_INT_16:
 		{
-			uint64_t lit   = fetch<uint8_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) ^ lit);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) | get_reg_by_id(reg_id_1));
 			break;
 		}
 
-		case XOR_16_INTO_REG:
+		case OR_INT_32:
 		{
-			uint64_t lit   = fetch<uint16_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) ^ lit);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) | get_reg_by_id(reg_id_1));
 			break;
 		}
 
-		case XOR_32_INTO_REG:
+		case OR_INT_64:
 		{
-			uint64_t lit   = fetch<uint32_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) ^ lit);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) | get_reg_by_id(reg_id_1));
 			break;
 		}
 
-		case XOR_64_INTO_REG:
-		{
-			uint64_t lit   = fetch<uint64_t>();
-			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) ^ lit);
-			break;
-		}
-
-		case XOR_REG_INTO_REG:
+		case XOR_INT_8:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
@@ -1132,71 +1008,258 @@ struct CPU
 			break;
 		}
 
-		case LEFT_SHIFT_REG_BY_8:
-		{
-			uint8_t reg_id = fetch<uint8_t>();
-			uint8_t lit    = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) << lit);
-			break;
-		}
-
-		case LEFT_SHIFT_REG_BY_REG:
+		case XOR_INT_16:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
-			set_reg_by_id(reg_id_1, get_reg_by_id(reg_id_1) << get_reg_by_id(reg_id_2));
+			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) ^ get_reg_by_id(reg_id_1));
 			break;
 		}
 
-		case RIGHT_SHIFT_REG_BY_8:
-		{
-			uint8_t reg_id = fetch<uint8_t>();
-			uint8_t lit    = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) >> lit);
-			break;
-		}
-
-		case RIGHT_SHIFT_REG_BY_REG:
+		case XOR_INT_32:
 		{
 			uint8_t reg_id_1 = fetch<uint8_t>();
 			uint8_t reg_id_2 = fetch<uint8_t>();
-			set_reg_by_id(reg_id_1, get_reg_by_id(reg_id_1) >> get_reg_by_id(reg_id_2));
+			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) ^ get_reg_by_id(reg_id_1));
 			break;
 		}
 
-		case INCREMENT_REG:
+		case XOR_INT_64:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			set_reg_by_id(reg_id_2, get_reg_by_id(reg_id_2) ^ get_reg_by_id(reg_id_1));
+			break;
+		}
+
+		case SHL_INT_8:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint8_t value    = static_cast<uint8_t>(get_reg_by_id(reg_id_2));
+			uint8_t shift    = static_cast<uint8_t>(get_reg_by_id(reg_id_1));
+			set_reg_by_id(reg_id_2, value << shift);
+			break;
+		}
+
+		case SHL_INT_16:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint16_t value   = static_cast<uint16_t>(get_reg_by_id(reg_id_2));
+			uint16_t shift   = static_cast<uint16_t>(get_reg_by_id(reg_id_1));
+			set_reg_by_id(reg_id_2, value << shift);
+			break;
+		}
+
+		case SHL_INT_32:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint32_t value   = static_cast<uint32_t>(get_reg_by_id(reg_id_2));
+			uint32_t shift   = static_cast<uint32_t>(get_reg_by_id(reg_id_1));
+			set_reg_by_id(reg_id_2, value << shift);
+			break;
+		}
+
+		case SHL_INT_64:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint64_t value   = static_cast<uint64_t>(get_reg_by_id(reg_id_2));
+			uint64_t shift   = static_cast<uint64_t>(get_reg_by_id(reg_id_1));
+			set_reg_by_id(reg_id_2, value << shift);
+			break;
+		}
+
+		case SHR_INT_8:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint8_t value    = static_cast<uint8_t>(get_reg_by_id(reg_id_2));
+			uint8_t shift    = static_cast<uint8_t>(get_reg_by_id(reg_id_1));
+			set_reg_by_id(reg_id_2, value >> shift);
+			break;
+		}
+
+		case SHR_INT_16:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint16_t value   = static_cast<uint16_t>(get_reg_by_id(reg_id_2));
+			uint16_t shift   = static_cast<uint16_t>(get_reg_by_id(reg_id_1));
+			set_reg_by_id(reg_id_2, value >> shift);
+			break;
+		}
+
+		case SHR_INT_32:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint32_t value   = static_cast<uint32_t>(get_reg_by_id(reg_id_2));
+			uint32_t shift   = static_cast<uint32_t>(get_reg_by_id(reg_id_1));
+			set_reg_by_id(reg_id_2, value >> shift);
+			break;
+		}
+
+		case SHR_INT_64:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+			uint64_t value   = static_cast<uint64_t>(get_reg_by_id(reg_id_2));
+			uint64_t shift   = static_cast<uint64_t>(get_reg_by_id(reg_id_1));
+			set_reg_by_id(reg_id_2, value >> shift);
+			break;
+		}
+
+		case INC_INT_8:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) + 1);
+			uint8_t value = get_reg_by_id(reg_id);
+			value++;
+			set_reg_by_id(reg_id, value);
 			break;
 		}
 
-		case DECREMENT_REG:
+		case INC_INT_16:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, get_reg_by_id(reg_id) - 1);
+			uint16_t value = get_reg_by_id(reg_id);
+			value++;
+			set_reg_by_id(reg_id, value);
 			break;
 		}
 
-		case NOT_REG:
+		case INC_INT_32:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
-			set_reg_by_id(reg_id, ~get_reg_by_id(reg_id));
+			uint32_t value = get_reg_by_id(reg_id);
+			value++;
+			set_reg_by_id(reg_id, value);
 			break;
 		}
 
-		case COMPARE_8_TO_REG:
+		case INC_INT_64:
 		{
-			uint64_t lit       = fetch<uint8_t>();
-			uint8_t reg_id     = fetch<uint8_t>();
-			uint64_t reg_value = get_reg_by_id(reg_id);
+			uint8_t reg_id = fetch<uint8_t>();
+			uint64_t value = get_reg_by_id(reg_id);
+			value++;
+			set_reg_by_id(reg_id, value);
+			break;
+		}
 
-			if (lit > reg_value)
+		case DEC_INT_8:
+		{
+			uint8_t reg_id = fetch<uint8_t>();
+			uint8_t value = get_reg_by_id(reg_id);
+			value--;
+			set_reg_by_id(reg_id, value);
+			break;
+		}
+
+		case DEC_INT_16:
+		{
+			uint8_t reg_id = fetch<uint8_t>();
+			uint8_t value = get_reg_by_id(reg_id);
+			value--;
+			set_reg_by_id(reg_id, value);
+			break;
+		}
+
+		case DEC_INT_32:
+		{
+			uint8_t reg_id = fetch<uint8_t>();
+			uint8_t value = get_reg_by_id(reg_id);
+			value--;
+			set_reg_by_id(reg_id, value);
+			break;
+		}
+
+		case DEC_INT_64:
+		{
+			uint8_t reg_id = fetch<uint8_t>();
+			uint8_t value = get_reg_by_id(reg_id);
+			value--;
+			set_reg_by_id(reg_id, value);
+			break;
+		}
+
+		case NEG_INT_8:
+		{
+			uint8_t reg_id = fetch<uint8_t>();
+			set_reg_by_id(reg_id, -static_cast<int8_t>(get_reg_by_id(reg_id)));
+			break;
+		}
+
+		case NEG_INT_16:
+		{
+			uint8_t reg_id = fetch<uint8_t>();
+			set_reg_by_id(reg_id, -static_cast<int16_t>(get_reg_by_id(reg_id)));
+			break;
+		}
+
+		case NEG_INT_32:
+		{
+			uint8_t reg_id = fetch<uint8_t>();
+			set_reg_by_id(reg_id, -static_cast<int32_t>(get_reg_by_id(reg_id)));
+			break;
+		}
+
+		case NEG_INT_64:
+		{
+			uint8_t reg_id = fetch<uint8_t>();
+			set_reg_by_id(reg_id, -static_cast<int64_t>(get_reg_by_id(reg_id)));
+			break;
+		}
+
+		case CAST_INT_TO_FLT_32:
+		{
+			uint8_t reg_id = fetch<uint8_t>();
+			float value    = static_cast<float>(get_reg_by_id(reg_id));
+			set_reg_by_id(reg_id, *reinterpret_cast<int32_t *>(&value));
+			break;
+		}
+
+		case CAST_INT_TO_FLT_64:
+		{
+			uint8_t reg_id = fetch<uint8_t>();
+			double value   = static_cast<double>(get_reg_by_id(reg_id));
+			set_reg_by_id(reg_id, *reinterpret_cast<int64_t *>(&value));
+			break;
+		}
+
+		case CAST_FLT_32_TO_INT:
+		{
+			uint8_t reg_id = fetch<uint8_t>();
+			uint32_t value = get_reg_by_id(reg_id);
+			float f_value  = *reinterpret_cast<float *>(&value);
+			set_reg_by_id(reg_id, static_cast<int64_t>(f_value));
+			break;
+		}
+
+		case CAST_FLT_64_TO_INT:
+		{
+			uint8_t reg_id = fetch<uint8_t>();
+			uint64_t value = get_reg_by_id(reg_id);
+			double f_value = *reinterpret_cast<double *>(&value);
+			set_reg_by_id(reg_id, static_cast<int64_t>(f_value));
+			break;
+		}
+
+		case CMP_INT_8:
+		{
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
+
+			int8_t value_1 = static_cast<int8_t>(get_reg_by_id(reg_id_1));
+			int8_t value_2 = static_cast<int8_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 > value_2)
 			{
 				greater_flag = true;
 				equal_flag   = false;
 			}
-			else if (lit == reg_value)
+			else if (value_1 == value_2)
 			{
 				greater_flag = false;
 				equal_flag   = true;
@@ -1210,18 +1273,20 @@ struct CPU
 			break;
 		}
 
-		case COMPARE_16_TO_REG:
+		case CMP_INT_8_U:
 		{
-			uint64_t lit       = fetch<uint16_t>();
-			uint8_t reg_id     = fetch<uint8_t>();
-			uint64_t reg_value = get_reg_by_id(reg_id);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
 
-			if (lit > reg_value)
+			uint8_t value_1 = static_cast<uint8_t>(get_reg_by_id(reg_id_1));
+			uint8_t value_2 = static_cast<uint8_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 > value_2)
 			{
 				greater_flag = true;
 				equal_flag   = false;
 			}
-			else if (lit == reg_value)
+			else if (value_1 == value_2)
 			{
 				greater_flag = false;
 				equal_flag   = true;
@@ -1235,18 +1300,20 @@ struct CPU
 			break;
 		}
 
-		case COMPARE_32_TO_REG:
+		case CMP_INT_16:
 		{
-			uint64_t lit       = fetch<uint32_t>();
-			uint8_t reg_id     = fetch<uint8_t>();
-			uint64_t reg_value = get_reg_by_id(reg_id);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
 
-			if (lit > reg_value)
+			int16_t value_1 = static_cast<int16_t>(get_reg_by_id(reg_id_1));
+			int16_t value_2 = static_cast<int16_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 > value_2)
 			{
 				greater_flag = true;
 				equal_flag   = false;
 			}
-			else if (lit == reg_value)
+			else if (value_1 == value_2)
 			{
 				greater_flag = false;
 				equal_flag   = true;
@@ -1260,18 +1327,20 @@ struct CPU
 			break;
 		}
 
-		case COMPARE_64_TO_REG:
+		case CMP_INT_16_U:
 		{
-			uint64_t lit       = fetch<uint64_t>();
-			uint8_t reg_id     = fetch<uint8_t>();
-			uint64_t reg_value = get_reg_by_id(reg_id);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
 
-			if (lit > reg_value)
+			uint16_t value_1 = static_cast<uint16_t>(get_reg_by_id(reg_id_1));
+			uint16_t value_2 = static_cast<uint16_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 > value_2)
 			{
 				greater_flag = true;
 				equal_flag   = false;
 			}
-			else if (lit == reg_value)
+			else if (value_1 == value_2)
 			{
 				greater_flag = false;
 				equal_flag   = true;
@@ -1285,18 +1354,20 @@ struct CPU
 			break;
 		}
 
-		case COMPARE_REG_TO_8:
+		case CMP_INT_32:
 		{
-			uint8_t reg_id     = fetch<uint8_t>();
-			uint64_t reg_value = get_reg_by_id(reg_id);
-			uint64_t lit       = fetch<uint8_t>();
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
 
-			if (reg_value > lit)
+			int32_t value_1 = static_cast<int32_t>(get_reg_by_id(reg_id_1));
+			int32_t value_2 = static_cast<int32_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 > value_2)
 			{
 				greater_flag = true;
 				equal_flag   = false;
 			}
-			else if (reg_value == lit)
+			else if (value_1 == value_2)
 			{
 				greater_flag = false;
 				equal_flag   = true;
@@ -1310,18 +1381,20 @@ struct CPU
 			break;
 		}
 
-		case COMPARE_REG_TO_16:
+		case CMP_INT_32_U:
 		{
-			uint8_t reg_id     = fetch<uint8_t>();
-			uint64_t reg_value = get_reg_by_id(reg_id);
-			uint64_t lit       = fetch<uint16_t>();
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
 
-			if (reg_value > lit)
+			uint32_t value_1 = static_cast<uint32_t>(get_reg_by_id(reg_id_1));
+			uint32_t value_2 = static_cast<uint32_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 > value_2)
 			{
 				greater_flag = true;
 				equal_flag   = false;
 			}
-			else if (reg_value == lit)
+			else if (value_1 == value_2)
 			{
 				greater_flag = false;
 				equal_flag   = true;
@@ -1335,18 +1408,20 @@ struct CPU
 			break;
 		}
 
-		case COMPARE_REG_TO_32:
+		case CMP_INT_64:
 		{
-			uint8_t reg_id     = fetch<uint8_t>();
-			uint64_t reg_value = get_reg_by_id(reg_id);
-			uint64_t lit       = fetch<uint32_t>();
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
 
-			if (reg_value > lit)
+			int64_t value_1 = static_cast<int64_t>(get_reg_by_id(reg_id_1));
+			int64_t value_2 = static_cast<int64_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 > value_2)
 			{
 				greater_flag = true;
 				equal_flag   = false;
 			}
-			else if (reg_value == lit)
+			else if (value_1 == value_2)
 			{
 				greater_flag = false;
 				equal_flag   = true;
@@ -1360,18 +1435,20 @@ struct CPU
 			break;
 		}
 
-		case COMPARE_REG_TO_64:
+		case CMP_INT_64_U:
 		{
-			uint8_t reg_id     = fetch<uint8_t>();
-			uint64_t reg_value = get_reg_by_id(reg_id);
-			uint64_t lit       = fetch<uint64_t>();
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
 
-			if (reg_value > lit)
+			uint64_t value_1 = static_cast<uint64_t>(get_reg_by_id(reg_id_1));
+			uint64_t value_2 = static_cast<uint64_t>(get_reg_by_id(reg_id_2));
+
+			if (value_1 > value_2)
 			{
 				greater_flag = true;
 				equal_flag   = false;
 			}
-			else if (reg_value == lit)
+			else if (value_1 == value_2)
 			{
 				greater_flag = false;
 				equal_flag   = true;
@@ -1385,19 +1462,23 @@ struct CPU
 			break;
 		}
 
-		case COMPARE_REG_TO_REG_SIGNED:
+		case CMP_FLT_32:
 		{
-			uint8_t reg_id_1    = fetch<uint8_t>();
-			int64_t reg_value_1 = get_reg_by_id(reg_id_1);
-			uint8_t reg_id_2    = fetch<uint8_t>();
-			int64_t reg_value_2 = get_reg_by_id(reg_id_2);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
 
-			if (reg_value_1 > reg_value_2)
+			uint32_t value_1 = static_cast<uint32_t>(get_reg_by_id(reg_id_1));
+			uint32_t value_2 = static_cast<uint32_t>(get_reg_by_id(reg_id_2));
+
+			float f_value_1 = *reinterpret_cast<float *>(&value_1);
+			float f_value_2 = *reinterpret_cast<float *>(&value_2);
+
+			if (f_value_1 > f_value_2)
 			{
 				greater_flag = true;
 				equal_flag   = false;
 			}
-			else if (reg_value_1 == reg_value_2)
+			else if (f_value_1 == f_value_2)
 			{
 				greater_flag = false;
 				equal_flag   = true;
@@ -1411,19 +1492,23 @@ struct CPU
 			break;
 		}
 
-		case COMPARE_REG_TO_REG_UNSIGNED:
+		case CMP_FLT_64:
 		{
-			uint8_t reg_id_1     = fetch<uint8_t>();
-			uint64_t reg_value_1 = get_reg_by_id(reg_id_1);
-			uint8_t reg_id_2     = fetch<uint8_t>();
-			uint64_t reg_value_2 = get_reg_by_id(reg_id_2);
+			uint8_t reg_id_1 = fetch<uint8_t>();
+			uint8_t reg_id_2 = fetch<uint8_t>();
 
-			if (reg_value_1 > reg_value_2)
+			uint64_t value_1 = get_reg_by_id(reg_id_1);
+			uint64_t value_2 = get_reg_by_id(reg_id_2);
+
+			double f_value_1 = *reinterpret_cast<double *>(&value_1);
+			double f_value_2 = *reinterpret_cast<double *>(&value_2);
+
+			if (f_value_1 > f_value_2)
 			{
 				greater_flag = true;
 				equal_flag   = false;
 			}
-			else if (reg_value_1 == reg_value_2)
+			else if (f_value_1 == f_value_2)
 			{
 				greater_flag = false;
 				equal_flag   = true;
@@ -1437,7 +1522,7 @@ struct CPU
 			break;
 		}
 
-		case SET_REG_IF_GREATER:
+		case SET_IF_GT:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
 			if (greater_flag)
@@ -1447,7 +1532,7 @@ struct CPU
 			break;
 		}
 
-		case SET_REG_IF_GREATER_OR_EQUAL:
+		case SET_IF_GEQ:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
 			if (greater_flag | equal_flag)
@@ -1457,7 +1542,7 @@ struct CPU
 			break;
 		}
 
-		case SET_REG_IF_LESS:
+		case SET_IF_LT:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
 			if (!greater_flag & !equal_flag)
@@ -1467,7 +1552,7 @@ struct CPU
 			break;
 		}
 
-		case SET_REG_IF_LESS_OR_EQUAL:
+		case SET_IF_LEQ:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
 			if (!greater_flag)
@@ -1477,7 +1562,7 @@ struct CPU
 			break;
 		}
 
-		case SET_REG_IF_EQUAL:
+		case SET_IF_EQ:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
 			if (equal_flag)
@@ -1487,7 +1572,7 @@ struct CPU
 			break;
 		}
 
-		case SET_REG_IF_NOT_EQUAL:
+		case SET_IF_NEQ:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
 			if (!equal_flag)
@@ -1504,7 +1589,7 @@ struct CPU
 			break;
 		}
 
-		case JUMP_IF_GREATER:
+		case JUMP_IF_GT:
 		{
 			int64_t offset = fetch<int64_t>();
 			if (greater_flag)
@@ -1512,7 +1597,7 @@ struct CPU
 			break;
 		}
 
-		case JUMP_IF_GREATER_OR_EQUAL:
+		case JUMP_IF_GEQ:
 		{
 			int64_t offset = fetch<int64_t>();
 			if (greater_flag | equal_flag)
@@ -1520,7 +1605,7 @@ struct CPU
 			break;
 		}
 
-		case JUMP_IF_LESS:
+		case JUMP_IF_LT:
 		{
 			int64_t offset = fetch<int64_t>();
 			if (!greater_flag & !equal_flag)
@@ -1528,7 +1613,7 @@ struct CPU
 			break;
 		}
 
-		case JUMP_IF_LESS_OR_EQUAL:
+		case JUMP_IF_LEQ:
 		{
 			int64_t offset = fetch<int64_t>();
 			if (!greater_flag)
@@ -1536,7 +1621,7 @@ struct CPU
 			break;
 		}
 
-		case JUMP_IF_EQUAL:
+		case JUMP_IF_EQ:
 		{
 			int64_t offset = fetch<int64_t>();
 			if (equal_flag)
@@ -1544,7 +1629,7 @@ struct CPU
 			break;
 		}
 
-		case JUMP_IF_NOT_EQUAL:
+		case JUMP_IF_NEQ:
 		{
 			int64_t offset = fetch<int64_t>();
 			if (!equal_flag)
@@ -1552,38 +1637,10 @@ struct CPU
 			break;
 		}
 
-		case PUSH_8:
-		{
-			uint8_t lit = fetch<uint8_t>();
-			push(lit);
-			break;
-		}
-
-		case PUSH_16:
-		{
-			uint16_t lit = fetch<uint16_t>();
-			push(lit);
-			break;
-		}
-
-		case PUSH_32:
-		{
-			uint32_t lit = fetch<uint32_t>();
-			push(lit);
-			break;
-		}
-
-		case PUSH_64:
-		{
-			uint64_t lit = fetch<uint64_t>();
-			push(lit);
-			break;
-		}
-
 		case PUSH_REG_8:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
-			uint8_t value  = get_reg_by_id(reg_id) & 0xFF;
+			uint8_t value  = get_reg_by_id(reg_id);
 			push(value);
 			break;
 		}
@@ -1591,7 +1648,7 @@ struct CPU
 		case PUSH_REG_16:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
-			uint16_t value = get_reg_by_id(reg_id) & 0xFFFF;
+			uint16_t value = get_reg_by_id(reg_id);
 			push(value);
 			break;
 		}
@@ -1599,7 +1656,7 @@ struct CPU
 		case PUSH_REG_32:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
-			uint32_t value = get_reg_by_id(reg_id) & 0xFFFFFFFF;
+			uint32_t value = get_reg_by_id(reg_id);
 			push(value);
 			break;
 		}
@@ -1675,7 +1732,8 @@ struct CPU
 		case COMMENT:
 		case LABEL:
 		{
-			while (fetch<uint8_t>() != '\0');
+			while (fetch<uint8_t>() != '\0')
+				;
 			break;
 		}
 

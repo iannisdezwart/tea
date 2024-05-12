@@ -12,7 +12,7 @@
  * * the size of the type in bytes
  * * the "pointeryness" of the type, specified by the `array_sizes` field
  *
- * This class has lot's of handy methods to get additional information about
+ * This class has lots of handy methods to get additional information about
  * the data type it corresponds.
  */
 struct Type
@@ -25,8 +25,8 @@ struct Type
 		UNDEFINED,
 		UNSIGNED_INTEGER,
 		SIGNED_INTEGER,
+		FLOATING_POINT,
 		USER_DEFINED_CLASS,
-		INIT_LIST
 	};
 
 	// The subtype of the type.
@@ -54,17 +54,6 @@ struct Type
 	// If the subtype is a user-defined class,
 	// this field will hold the name of the class.
 	std::string class_name;
-
-	// If the subtype is a user-defined class or an init list,
-	// this field will hold the children types.
-	std::vector<Type> fields;
-
-	// This boolean indicates if the type is a literal.
-	// In other words, if it had a specified value at compile time.
-	bool is_literal = false;
-
-	// If the type is a literal, this field will hold the value.
-	std::string *literal_value;
 
 	/**
 	 * @brief Default constructor.
@@ -132,7 +121,7 @@ struct Type
 	}
 
 	/**
-	 * @brief Compares two types with each other for unequality.
+	 * @brief Compares two types with each other for inequality.
 	 * @param other The other type.
 	 * @returns True if the types don't have the same subtype
 	 * and array dimensions, false otherwise.
@@ -326,10 +315,26 @@ struct Type
 		if (str == "i64")
 			return Type(Type::SIGNED_INTEGER, 8, array_sizes);
 
-		if (str == "void")
+		if (str == "f32")
+			return Type(Type::FLOATING_POINT, 4, array_sizes);
+
+		if (str == "f64")
+			return Type(Type::FLOATING_POINT, 8, array_sizes);
+
+		if (str == "v0")
 			return Type(Type::UNSIGNED_INTEGER, 0, array_sizes);
 
 		err("Wasn't able to convert \"%s\" to a Type", str.c_str());
+	}
+
+	/**
+	 * @returns A boolean indicating whether the type is a primitive type.
+	 */
+	bool
+	is_primitive() const
+	{
+		return value == Type::UNSIGNED_INTEGER || value == Type::SIGNED_INTEGER
+			|| value == Type::FLOATING_POINT;
 	}
 
 	/**
@@ -340,91 +345,68 @@ struct Type
 	bool
 	fits_in_register()
 	{
-		return (value == Type::SIGNED_INTEGER || value == Type::UNSIGNED_INTEGER)
-			&& size <= 8;
+		return is_primitive() && size <= 8;
 	}
 
+	enum struct Fits
+	{
+		YES,
+		NO,
+		FLT_32_TO_INT_CAST_NEEDED,
+		FLT_64_TO_INT_CAST_NEEDED,
+		INT_TO_FLT_32_CAST_NEEDED,
+		INT_TO_FLT_64_CAST_NEEDED,
+	};
+
 	/**
-	 * @returns A boolean indicating whether the type fits within
+	 * @returns A value indicating whether the type fits within
 	 * another type. This means that this type can be promoted
 	 * to the other type.
 	 * @param type The other type.
 	 */
-	bool
+	Fits
 	fits(const Type &type) const
 	{
 		// Primitives
 
-		if (value == Type::UNSIGNED_INTEGER || value == Type::SIGNED_INTEGER)
+		if (is_primitive())
 		{
 			// If the other type is not a primitive,
 			// it will definitely not fit.
 
-			if (type.value != Type::UNSIGNED_INTEGER && type.value != Type::SIGNED_INTEGER)
+			if (!type.is_primitive())
 			{
-				return false;
+				return Fits::NO;
 			}
 
-			// If this type is a literal, check if we can
-			// fit it without overflowing the type.
-
-			if (is_literal)
-			{
-				if (type.value == Type::UNSIGNED_INTEGER && type.size == 1)
-				{
-					return fits_uint8(*literal_value);
-				}
-
-				if (type.value == Type::SIGNED_INTEGER && type.size == 1)
-				{
-					return fits_int8(*literal_value);
-				}
-
-				if (type.value == Type::UNSIGNED_INTEGER && type.size == 2)
-				{
-					return fits_uint16(*literal_value);
-				}
-
-				if (type.value == Type::SIGNED_INTEGER && type.size == 2)
-				{
-					return fits_int16(*literal_value);
-				}
-
-				if (type.value == Type::UNSIGNED_INTEGER && type.size == 4)
-				{
-					return fits_uint32(*literal_value);
-				}
-
-				if (type.value == Type::SIGNED_INTEGER && type.size == 4)
-				{
-					return fits_int32(*literal_value);
-				}
-
-				if (type.value == Type::UNSIGNED_INTEGER && type.size == 8)
-				{
-					return fits_uint64(*literal_value);
-				}
-
-				if (type.value == Type::SIGNED_INTEGER && type.size == 8)
-				{
-					return fits_int64(*literal_value);
-				}
-			}
-
-			// The type will only fit if it is smaller
-			// than or equal to the other type.
-			// Note that this does allow overflow if the
-			// types are of equal size but one is signed
-			// and the other is unsigned.
-			// TODO: think about whether this should
-			// throw a warning or not.
+			// Type won't fit if it is larger than the other type.
 
 			if (byte_size() > type.byte_size())
 			{
-				return false;
+				return Fits::NO;
 			}
 
-			return true;
+			// Floating point types can only fit in other floating point types.
+
+			if (value == Type::FLOATING_POINT && type.is_integer())
+			{
+				if (size == 4)
+					return Fits::FLT_32_TO_INT_CAST_NEEDED;
+				else
+					return Fits::FLT_64_TO_INT_CAST_NEEDED;
+			}
+
+			// Integer types can only fit in other integer types.
+
+			if (is_integer() && type.value == Type::FLOATING_POINT)
+			{
+				if (type.size == 4)
+					return Fits::INT_TO_FLT_32_CAST_NEEDED;
+				else
+					return Fits::INT_TO_FLT_64_CAST_NEEDED;
+			}
+
+			return Fits::YES;
 		}
 
 		// If we're dealing with a user defined class, we can
@@ -434,75 +416,20 @@ struct Type
 		{
 			if (type.value != Type::USER_DEFINED_CLASS)
 			{
-				return false;
+				return Fits::NO;
 			}
 
 			if (class_name != type.class_name)
 			{
-				return false;
+				return Fits::NO;
 			}
 
-			return true;
-		}
-
-		// If we're dealing with an init list, we can only
-		// fit if the other type is a user defined class
-		// and the type list matches the class field list,
-		// or if the other type is an array and the items on
-		// the init list all fit the array type.
-
-		if (value == Type::INIT_LIST)
-		{
-			if (type.value == Type::USER_DEFINED_CLASS)
-			{
-				// The type list must have the same
-				// number of elements as the class
-				// field list.
-
-				if (fields.size() > type.fields.size())
-					return false;
-
-				// Recursively check if each field fits.
-
-				for (size_t i = 0; i < fields.size(); i++)
-				{
-					if (!fields[i].fits(type.fields[i]))
-						return false;
-				}
-
-				return true;
-			}
-
-			if (type.is_array())
-			{
-				// Get the array type.
-
-				Type array_item_type = type;
-				array_item_type.array_sizes.pop_back();
-
-				// If the number of items on the init
-				// list is larger than the number of
-				// elements on the array, it will not
-				// fit.
-
-				if (fields.size() > type.array_sizes.back())
-					return false;
-
-				// Recursively check if each item fits.
-
-				for (size_t i = 0; i < fields.size(); i++)
-				{
-					if (!fields[i].fits(array_item_type))
-						return false;
-				}
-
-				return true;
-			}
+			return Fits::YES;
 		}
 
 		// In all other cases, the type does not fit.
 
-		return false;
+		return Fits::NO;
 	}
 
 	/**
@@ -532,28 +459,12 @@ struct Type
 			s += "uint" + std::to_string(size * 8);
 			break;
 
-		case Type::USER_DEFINED_CLASS:
-			s += class_name;
+		case Type::FLOATING_POINT:
+			s += "float" + std::to_string(size * 8);
 			break;
 
-		case Type::INIT_LIST:
-			if (fields.size() == 0)
-			{
-				s += "{}";
-				break;
-			}
-
-			s += "{ ";
-
-			for (size_t i = 0; i < fields.size(); i++)
-			{
-				s += fields[i].to_str();
-				if (i != fields.size() - 1)
-					s += ", ";
-			}
-
-			s += " }";
-
+		case Type::USER_DEFINED_CLASS:
+			s += class_name;
 			break;
 		}
 
@@ -569,15 +480,6 @@ struct Type
 			{
 				s += '[' + std::to_string(array_sizes[i]) + ']';
 			}
-		}
-
-		// If the type is a literal, add the literal value.
-
-		if (is_literal)
-		{
-			s += " (";
-			s += *literal_value;
-			s += ")";
 		}
 
 		return s;
@@ -623,6 +525,18 @@ struct Type
 				return DebuggerSymbolType::I32;
 			case 8:
 				return DebuggerSymbolType::I64;
+			default:
+				return DebuggerSymbolType::UNDEFINED;
+			}
+		}
+		else if (value == Type::FLOATING_POINT)
+		{
+			switch (size)
+			{
+			case 4:
+				return DebuggerSymbolType::F32;
+			case 8:
+				return DebuggerSymbolType::F64;
 			default:
 				return DebuggerSymbolType::UNDEFINED;
 			}

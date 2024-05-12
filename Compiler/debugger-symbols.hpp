@@ -213,6 +213,8 @@ enum struct DebuggerSymbolType : uint8_t
 	I32,
 	U64,
 	I64,
+	F32,
+	F64,
 	USER_DEFINED_CLASS,
 	UNDEFINED
 };
@@ -245,6 +247,10 @@ debugger_symbol_type_to_str(DebuggerSymbolType type)
 		return "U64";
 	case DebuggerSymbolType::I64:
 		return "I64";
+	case DebuggerSymbolType::F32:
+		return "F32";
+	case DebuggerSymbolType::F64:
+		return "F64";
 	case DebuggerSymbolType::USER_DEFINED_CLASS:
 		return "CLASS";
 	default:

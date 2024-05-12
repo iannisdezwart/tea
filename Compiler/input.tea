@@ -1,4 +1,4 @@
-void putc(u8 c)
+v0 putc(u8 c)
 {
 	syscall PRINT_CHAR(c)
 }
@@ -10,7 +10,7 @@ i16 getc()
 	return c
 }
 
-void print_str(u8* str)
+v0 print_str(u8* str)
 {
 	while (*str != 0)
 	{
@@ -19,7 +19,7 @@ void print_str(u8* str)
 	}
 }
 
-void print_unsigned(u64 n)
+v0 print_unsigned(u64 n)
 {
 	if (n < 10)
 	{
@@ -32,7 +32,7 @@ void print_unsigned(u64 n)
 	}
 }
 
-void print_signed(i64 n)
+v0 print_signed(i64 n)
 {
 	if (n < 0)
 	{

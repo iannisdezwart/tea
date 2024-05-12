@@ -57,7 +57,7 @@ struct ReturnStatement final : public ASTNode
 
 		// Return value.
 
-		assembler.move_reg_into_reg(res_reg, R_RET);
+		assembler.move(res_reg, R_RET);
 		assembler.free_register(res_reg);
 		assembler.return_();
 	}

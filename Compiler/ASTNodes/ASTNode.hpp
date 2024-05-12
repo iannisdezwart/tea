@@ -13,7 +13,6 @@ enum ASTNodeType
 	FUNCTION_DECLARATION,
 	VARIABLE_DECLARATION,
 	CLASS_DECLARATION,
-	INIT_LIST,
 	RETURN_STATEMENT,
 	CODE_BLOCK,
 	LITERAL_STRING_EXPRESSION,
@@ -48,8 +47,6 @@ ast_node_type_to_str(ASTNodeType type)
 		return "FunctionDeclaration";
 	case VARIABLE_DECLARATION:
 		return "VariableDeclaration";
-	case INIT_LIST:
-		return "InitList";
 	case CLASS_DECLARATION:
 		return "ClassDeclaration";
 	case RETURN_STATEMENT:

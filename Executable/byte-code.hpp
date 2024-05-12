@@ -9,390 +9,184 @@
  */
 enum Instruction : uint16_t
 {
-	// Move instructions
-
-	// Moves an 8-bit literal into a register.
-	MOVE_8_INTO_REG,
-
-	// Moves a 16-bit literal into a register.
-	MOVE_16_INTO_REG,
-
-	// Moves a 32-bit literal into a register.
-	MOVE_32_INTO_REG,
+	// ===========================
+	// === Memory instructions ===
+	// ===========================
 
 	// Moves a 64-bit literal into a register.
-	MOVE_64_INTO_REG,
-
-	// Moves an 8-bit literal into a memory location.
-	MOVE_8_INTO_MEM,
-
-	// Moves a 16-bit literal into a memory location.
-	MOVE_16_INTO_MEM,
-
-	// Moves a 32-bit literal into a memory location.
-	MOVE_32_INTO_MEM,
-
-	// Moves a 64-bit literal into a memory location.
-	MOVE_64_INTO_MEM,
+	MOVE_LIT,
 
 	// Moves the contents of a 64-bit register into a 64-bit register.
-	MOVE_REG_INTO_REG,
+	MOVE,
 
-	// Moves the contents of an 8-bit register into a memory location.
-	MOVE_REG_INTO_MEM_8,
+	// Dereference pointer stored register into register.
+	LOAD_PTR_8,
+	LOAD_PTR_16,
+	LOAD_PTR_32,
+	LOAD_PTR_64,
 
-	// Moves the contents of a 16-bit register into a memory location.
-	MOVE_REG_INTO_MEM_16,
+	// Store register value into dereferenced pointer.
+	STORE_PTR_8,
+	STORE_PTR_16,
+	STORE_PTR_32,
+	STORE_PTR_64,
 
-	// Moves the contents of a 32-bit register into a memory location.
-	MOVE_REG_INTO_MEM_32,
+	// Memory copy register pointer into register pointer.
+	MEM_COPY,
 
-	// Moves the contents of a 64-bit register into a memory location.
-	MOVE_REG_INTO_MEM_64,
-
-	// Moves 8 bits from a memory location into a register.
-	MOVE_MEM_8_INTO_REG,
-
-	// Moves 16 bits from a memory location into a register.
-	MOVE_MEM_16_INTO_REG,
-
-	// Moves 32 bits from a memory location into a register.
-	MOVE_MEM_32_INTO_REG,
-
-	// Moves 64 bits from a memory location into a register.
-	MOVE_MEM_64_INTO_REG,
-
-	// Moves 8 bits at a memory location specified by a register into a register.
-	MOVE_REG_POINTER_8_INTO_REG,
-
-	// Moves 16 bits at a memory location specified by a register into a register.
-	MOVE_REG_POINTER_16_INTO_REG,
-
-	// Moves 32 bits at a memory location specified by a register into a register.
-	MOVE_REG_POINTER_32_INTO_REG,
-
-	// Moves 64 bits at a memory location specified by a register into a register.
-	MOVE_REG_POINTER_64_INTO_REG,
-
-	// Moves 8 bits from register into a memory location specified by a register.
-	MOVE_REG_INTO_REG_POINTER_8,
-
-	// Moves 16 bits from register into a memory location specified by a register.
-	MOVE_REG_INTO_REG_POINTER_16,
-
-	// Moves 32 bits from register into a memory location specified by a register.
-	MOVE_REG_INTO_REG_POINTER_32,
-
-	// Moves 64 bits from register into a memory location specified by a register.
-	MOVE_REG_INTO_REG_POINTER_64,
-
-	// Moves 8 bits from an offset to the current stack frame into a register.
-	MOVE_FRAME_OFFSET_8_INTO_REG,
-
-	// Moves 16 bits from an offset to the current stack frame into a register.
-	MOVE_FRAME_OFFSET_16_INTO_REG,
-
-	// Moves 32 bits from an offset to the current stack frame into a register.
-	MOVE_FRAME_OFFSET_32_INTO_REG,
-
-	// Moves 64 bits from an offset to the current stack frame into a register.
-	MOVE_FRAME_OFFSET_64_INTO_REG,
-
-	// Moves 8 bits from a register into an offset to the current stack frame.
-	MOVE_REG_INTO_FRAME_OFFSET_8,
-
-	// Moves 16 bits from a register into an offset to the current stack frame.
-	MOVE_REG_INTO_FRAME_OFFSET_16,
-
-	// Moves 32 bits from a register into an offset to the current stack frame.
-	MOVE_REG_INTO_FRAME_OFFSET_32,
-
-	// Moves 64 bits from a register into an offset to the current stack frame.
-	MOVE_REG_INTO_FRAME_OFFSET_64,
-
-	// Moves 8 bits from an offset to the stack top into a register.
-	MOVE_STACK_TOP_OFFSET_8_INTO_REG,
-
-	// Moves 16 bits from an offset to the stack top into a register.
-	MOVE_STACK_TOP_OFFSET_16_INTO_REG,
-
-	// Moves 32 bits from an offset to the stack top into a register.
-	MOVE_STACK_TOP_OFFSET_32_INTO_REG,
-
-	// Moves 64 bits from an offset to the stack top into a register.
-	MOVE_STACK_TOP_OFFSET_64_INTO_REG,
-
-	// Moves 8 bits from a register into an offset to the stack top.
-	MOVE_REG_INTO_STACK_TOP_OFFSET_8,
-
-	// Moves 16 bits from a register into an offset to the stack top.
-	MOVE_REG_INTO_STACK_TOP_OFFSET_16,
-
-	// Moves 32 bits from a register into an offset to the stack top.
-	MOVE_REG_INTO_STACK_TOP_OFFSET_32,
-
-	// Moves 64 bits from a register into an offset to the stack top.
-	MOVE_REG_INTO_STACK_TOP_OFFSET_64,
-
-	// Moves the address to the top of the stack into a register.
-	MOVE_STACK_TOP_ADDRESS_INTO_REG,
-
-	// Memory copying.
-	MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8,
-
-	// Mathematical operations
-
-	// Adds an 8-bit literal to a register.
-	ADD_8_INTO_REG,
-
-	// Adds a 16-bit literal to a register.
-	ADD_16_INTO_REG,
-
-	// Adds a 32-bit literal to a register.
-	ADD_32_INTO_REG,
-
-	// Adds a 64-bit literal to a register.
-	ADD_64_INTO_REG,
+	// ===============================
+	// === Mathematical operations ===
+	// ===============================
 
 	// Adds the contents of a register to a register.
-	ADD_REG_INTO_REG,
-
-	// Subtracts an 8-bit literal from a register.
-	SUBTRACT_8_FROM_REG,
-
-	// Subtracts a 16-bit literal from a register.
-	SUBTRACT_16_FROM_REG,
-
-	// Subtracts a 32-bit literal from a register.
-	SUBTRACT_32_FROM_REG,
-
-	// Subtracts a 64-bit literal from a register.
-	SUBTRACT_64_FROM_REG,
+	ADD_INT_8,
+	ADD_INT_16,
+	ADD_INT_32,
+	ADD_INT_64,
+	ADD_FLT_32,
+	ADD_FLT_64,
 
 	// Subtracts the contents of a register from a register.
-	SUBTRACT_REG_FROM_REG,
-
-	// Multiplies an 8-bit literal with a register.
-	MULTIPLY_8_INTO_REG,
-
-	// Multiplies a 16-bit literal with a register.
-	MULTIPLY_16_INTO_REG,
-
-	// Multiplies a 32-bit literal with a register.
-	MULTIPLY_32_INTO_REG,
-
-	// Multiplies a 64-bit literal with a register.
-	MULTIPLY_64_INTO_REG,
+	SUB_INT_8,
+	SUB_INT_16,
+	SUB_INT_32,
+	SUB_INT_64,
+	SUB_FLT_32,
+	SUB_FLT_64,
 
 	// Multiplies the contents of a register with a register.
-	MULTIPLY_REG_INTO_REG,
+	MUL_INT_8,
+	MUL_INT_16,
+	MUL_INT_32,
+	MUL_INT_64,
+	MUL_FLT_32,
+	MUL_FLT_64,
 
-	// Divides a register by an 8-bit literal.
-	DIVIDE_8_FROM_REG,
+	// Divides the contents of a register by a register.
+	DIV_INT_8,
+	DIV_INT_16,
+	DIV_INT_32,
+	DIV_INT_64,
+	DIV_FLT_32,
+	DIV_FLT_64,
 
-	// Divides a register by a 16-bit literal.
-	DIVIDE_16_FROM_REG,
+	// Takes the modulo of a register by a register.
+	MOD_INT_8,
+	MOD_INT_16,
+	MOD_INT_32,
+	MOD_INT_64,
 
-	// Divides a register by a 32-bit literal.
-	DIVIDE_32_FROM_REG,
+	// Performs bitwise AND on a register with a register.
+	AND_INT_8,
+	AND_INT_16,
+	AND_INT_32,
+	AND_INT_64,
 
-	// Divides a register by a 64-bit literal.
-	DIVIDE_64_FROM_REG,
+	// Performs bitwise OR on a register with a register.
+	OR_INT_8,
+	OR_INT_16,
+	OR_INT_32,
+	OR_INT_64,
 
-	// Divides a register by the contents of another register.
-	DIVIDE_REG_FROM_REG,
+	// Performs bitwise XOR on a register with a register.
+	XOR_INT_8,
+	XOR_INT_16,
+	XOR_INT_32,
+	XOR_INT_64,
 
-	// Modulo a register by an 8-bit literal.
-	TAKE_MODULO_8_OF_REG,
+	// Left shifts a register by a register.
+	SHL_INT_8,
+	SHL_INT_16,
+	SHL_INT_32,
+	SHL_INT_64,
 
-	// Modulo a register by a 16-bit literal.
-	TAKE_MODULO_16_OF_REG,
-
-	// Modulo a register by a 32-bit literal.
-	TAKE_MODULO_32_OF_REG,
-
-	// Modulo a register by a 64-bit literal.
-	TAKE_MODULO_64_OF_REG,
-
-	// Modulo a register by the contents of another register.
-	TAKE_MODULO_REG_OF_REG,
-
-	// ANDs a register with an 8-bit literal.
-	AND_8_INTO_REG,
-
-	// ANDs a register with a 16-bit literal.
-	AND_16_INTO_REG,
-
-	// ANDs a register with a 32-bit literal.
-	AND_32_INTO_REG,
-
-	// ANDs a register with a 64-bit literal.
-	AND_64_INTO_REG,
-
-	// ANDs a register with the contents of another register.
-	AND_REG_INTO_REG,
-
-	// ORs a register with an 8-bit literal.
-	OR_8_INTO_REG,
-
-	// ORs a register with a 16-bit literal.
-	OR_16_INTO_REG,
-
-	// ORs a register with a 32-bit literal.
-	OR_32_INTO_REG,
-
-	// ORs a register with a 64-bit literal.
-	OR_64_INTO_REG,
-
-	// ORs a register with the contents of another register.
-	OR_REG_INTO_REG,
-
-	// XORs a register with an 8-bit literal.
-	XOR_8_INTO_REG,
-
-	// XORs a register with a 16-bit literal.
-	XOR_16_INTO_REG,
-
-	// XORs a register with a 32-bit literal.
-	XOR_32_INTO_REG,
-
-	// XORs a register with a 64-bit literal.
-	XOR_64_INTO_REG,
-
-	// XORs a register with the contents of another register.
-	XOR_REG_INTO_REG,
-
-	// Shifts a register left by an 8-bit literal.
-	LEFT_SHIFT_REG_BY_8,
-
-	// Shifts a register left by the contents of another register.
-	LEFT_SHIFT_REG_BY_REG,
-
-	// Shifts a register right by a 8-bit literal.
-	RIGHT_SHIFT_REG_BY_8,
-
-	// Shifts a register right by the contents of another register.
-	RIGHT_SHIFT_REG_BY_REG,
+	// Right shifts a register by a register.
+	SHR_INT_8,
+	SHR_INT_16,
+	SHR_INT_32,
+	SHR_INT_64,
 
 	// Increments a register by one.
-	INCREMENT_REG,
+	INC_INT_8,
+	INC_INT_16,
+	INC_INT_32,
+	INC_INT_64,
 
 	// Decrements a register by one.
-	DECREMENT_REG,
+	DEC_INT_8,
+	DEC_INT_16,
+	DEC_INT_32,
+	DEC_INT_64,
 
 	// Flips the bits in a register.
-	NOT_REG,
+	NEG_INT_8,
+	NEG_INT_16,
+	NEG_INT_32,
+	NEG_INT_64,
 
-	// Comparison and branching
+	// ================================
+	// === Cast and type operations ===
+	// ================================
 
-	// Compares an 8-bit literal with a register.
-	COMPARE_8_TO_REG,
+	CAST_INT_TO_FLT_32,
+	CAST_INT_TO_FLT_64,
+	CAST_FLT_32_TO_INT,
+	CAST_FLT_64_TO_INT,
 
-	// Compares a 16-bit literal with a register.
-	COMPARE_16_TO_REG,
+	// ================================
+	// === Comparison and branching ===
+	// ================================
 
-	// Compares a 32-bit literal with a register.
-	COMPARE_32_TO_REG,
+	// Compare register with register.
+	CMP_INT_8,
+	CMP_INT_8_U,
+	CMP_INT_16,
+	CMP_INT_16_U,
+	CMP_INT_32,
+	CMP_INT_32_U,
+	CMP_INT_64,
+	CMP_INT_64_U,
+	CMP_FLT_32,
+	CMP_FLT_64,
 
-	// Compares a 64-bit literal with a register.
-	COMPARE_64_TO_REG,
+	// Sets a register based on a comparison.
+	SET_IF_GT,
+	SET_IF_GEQ,
+	SET_IF_LT,
+	SET_IF_LEQ,
+	SET_IF_EQ,
+	SET_IF_NEQ,
 
-	// Compares a register to an 8-bit literal.
-	COMPARE_REG_TO_8,
-
-	// Compares a register to a 16-bit literal.
-	COMPARE_REG_TO_16,
-
-	// Compares a register to a 32-bit literal.
-	COMPARE_REG_TO_32,
-
-	// Compares a register to a 64-bit literal.
-	COMPARE_REG_TO_64,
-
-	// Compares a register to a register (signed).
-	COMPARE_REG_TO_REG_SIGNED,
-
-	// Compares a register to a register (unsigned).
-	COMPARE_REG_TO_REG_UNSIGNED,
-
-	// Sets a register to 1 if LHS > RHS.
-	SET_REG_IF_GREATER,
-
-	// Sets a register to 1 if LHS >= RHS.
-	SET_REG_IF_GREATER_OR_EQUAL,
-
-	// Sets a register to 1 if LHS < RHS.
-	SET_REG_IF_LESS,
-
-	// Sets a register to 1 if LHS <= RHS.
-	SET_REG_IF_LESS_OR_EQUAL,
-
-	// Sets a register to 1 if LHS == RHS.
-	SET_REG_IF_EQUAL,
-
-	// Sets a register to 1 if LHS != RHS.
-	SET_REG_IF_NOT_EQUAL,
-
-	// Jumps to a label.
+	// Unconditional jump.
 	JUMP,
 
-	// Jumps to a label if LHS > RHS.
-	JUMP_IF_GREATER,
+	// Conditional jumps.
+	JUMP_IF_GT,
+	JUMP_IF_GEQ,
+	JUMP_IF_LT,
+	JUMP_IF_LEQ,
+	JUMP_IF_EQ,
+	JUMP_IF_NEQ,
 
-	// Jumps to a label if LHS >= RHS.
-	JUMP_IF_GREATER_OR_EQUAL,
+	// ========================
+	// === Stack operations ===
+	// ========================
 
-	// Jumps to a label if LHS < RHS.
-	JUMP_IF_LESS,
-
-	// Jumps to a label if LHS <= RHS.
-	JUMP_IF_LESS_OR_EQUAL,
-
-	// Jumps to a label if LHS == RHS.
-	JUMP_IF_EQUAL,
-
-	// Jumps to a label if LHS != RHS.
-	JUMP_IF_NOT_EQUAL,
-
-	// Pushing to and popping from stack
-
-	// Pushes an 8-bit literal onto the stack.
-	PUSH_8,
-
-	// Pushes a 16-bit literal onto the stack.
-	PUSH_16,
-
-	// Pushes a 32-bit literal onto the stack.
-	PUSH_32,
-
-	// Pushes a 64-bit literal onto the stack.
-	PUSH_64,
-
-	// Pushes 8 bits of a register onto the stack.
+	// Pushing to the stack.
 	PUSH_REG_8,
-
-	// Pushes 16 bits of a register onto the stack.
 	PUSH_REG_16,
-
-	// Pushes 32 bits of a register onto the stack.
 	PUSH_REG_32,
-
-	// Pushes 64 bits of a register onto the stack.
 	PUSH_REG_64,
 
-	// Pops an 8-bit literal from the stack into a register.
+	// Popping from the stack.
 	POP_8_INTO_REG,
-
-	// Pops a 16-bit literal from the stack into a register.
 	POP_16_INTO_REG,
-
-	// Pops a 32-bit literal from the stack into a register.
 	POP_32_INTO_REG,
-
-	// Pops a 64-bit literal from the stack into a register.
 	POP_64_INTO_REG,
 
-	// Functions
+	// ======================
+	// === Function calls ===
+	// ======================
 
 	// Calls a function.
 	CALL,
@@ -406,7 +200,9 @@ enum Instruction : uint16_t
 	// Deallocate a number of bytes on the stack.
 	DEALLOCATE_STACK,
 
-	// For debugging purposes
+	// ======================
+	// === Miscellaneous ===
+	// ======================
 
 	// A comment that is ignored by the VM.
 	COMMENT,
@@ -414,7 +210,9 @@ enum Instruction : uint16_t
 	// A label that is used for debugging.
 	LABEL,
 
-	// System calls
+	// ======================
+	// === I/O operations ===
+	// ======================
 
 	// Prints a character to stdout.
 	PRINT_CHAR,
@@ -433,240 +231,202 @@ instruction_to_str(Instruction instruction)
 {
 	switch (instruction)
 	{
-	case MOVE_8_INTO_REG:
-		return "MOVE_8_INTO_REG";
-	case MOVE_16_INTO_REG:
-		return "MOVE_16_INTO_REG";
-	case MOVE_32_INTO_REG:
-		return "MOVE_32_INTO_REG";
-	case MOVE_64_INTO_REG:
-		return "MOVE_64_INTO_REG";
-	case MOVE_8_INTO_MEM:
-		return "MOVE_8_INTO_MEM";
-	case MOVE_16_INTO_MEM:
-		return "MOVE_16_INTO_MEM";
-	case MOVE_32_INTO_MEM:
-		return "MOVE_32_INTO_MEM";
-	case MOVE_64_INTO_MEM:
-		return "MOVE_64_INTO_MEM";
-	case MOVE_REG_INTO_REG:
-		return "MOVE_REG_INTO_REG";
-	case MOVE_REG_INTO_MEM_8:
-		return "MOVE_REG_INTO_MEM_8";
-	case MOVE_REG_INTO_MEM_16:
-		return "MOVE_REG_INTO_MEM_16";
-	case MOVE_REG_INTO_MEM_32:
-		return "MOVE_REG_INTO_MEM_32";
-	case MOVE_REG_INTO_MEM_64:
-		return "MOVE_REG_INTO_MEM_64";
-	case MOVE_MEM_8_INTO_REG:
-		return "MOVE_MEM_8_INTO_REG";
-	case MOVE_MEM_16_INTO_REG:
-		return "MOVE_MEM_16_INTO_REG";
-	case MOVE_MEM_32_INTO_REG:
-		return "MOVE_MEM_32_INTO_REG";
-	case MOVE_MEM_64_INTO_REG:
-		return "MOVE_MEM_64_INTO_REG";
-	case MOVE_REG_POINTER_8_INTO_REG:
-		return "MOVE_REG_POINTER_8_INTO_REG";
-	case MOVE_REG_POINTER_16_INTO_REG:
-		return "MOVE_REG_POINTER_16_INTO_REG";
-	case MOVE_REG_POINTER_32_INTO_REG:
-		return "MOVE_REG_POINTER_32_INTO_REG";
-	case MOVE_REG_POINTER_64_INTO_REG:
-		return "MOVE_REG_POINTER_64_INTO_REG";
-	case MOVE_REG_INTO_REG_POINTER_8:
-		return "MOVE_REG_INTO_REG_POINTER_8";
-	case MOVE_REG_INTO_REG_POINTER_16:
-		return "MOVE_REG_INTO_REG_POINTER_16";
-	case MOVE_REG_INTO_REG_POINTER_32:
-		return "MOVE_REG_INTO_REG_POINTER_32";
-	case MOVE_REG_INTO_REG_POINTER_64:
-		return "MOVE_REG_INTO_REG_POINTER_64";
-	case MOVE_FRAME_OFFSET_8_INTO_REG:
-		return "MOVE_FRAME_OFFSET_8_INTO_REG";
-	case MOVE_FRAME_OFFSET_16_INTO_REG:
-		return "MOVE_FRAME_OFFSET_16_INTO_REG";
-	case MOVE_FRAME_OFFSET_32_INTO_REG:
-		return "MOVE_FRAME_OFFSET_32_INTO_REG";
-	case MOVE_FRAME_OFFSET_64_INTO_REG:
-		return "MOVE_FRAME_OFFSET_64_INTO_REG";
-	case MOVE_REG_INTO_FRAME_OFFSET_8:
-		return "MOVE_REG_INTO_FRAME_OFFSET_8";
-	case MOVE_REG_INTO_FRAME_OFFSET_16:
-		return "MOVE_REG_INTO_FRAME_OFFSET_16";
-	case MOVE_REG_INTO_FRAME_OFFSET_32:
-		return "MOVE_REG_INTO_FRAME_OFFSET_32";
-	case MOVE_REG_INTO_FRAME_OFFSET_64:
-		return "MOVE_REG_INTO_FRAME_OFFSET_64";
-	case MOVE_STACK_TOP_OFFSET_8_INTO_REG:
-		return "MOVE_STACK_TOP_OFFSET_8_INTO_REG";
-	case MOVE_STACK_TOP_OFFSET_16_INTO_REG:
-		return "MOVE_STACK_TOP_OFFSET_16_INTO_REG";
-	case MOVE_STACK_TOP_OFFSET_32_INTO_REG:
-		return "MOVE_STACK_TOP_OFFSET_32_INTO_REG";
-	case MOVE_STACK_TOP_OFFSET_64_INTO_REG:
-		return "MOVE_STACK_TOP_OFFSET_64_INTO_REG";
-	case MOVE_REG_INTO_STACK_TOP_OFFSET_8:
-		return "MOVE_REG_INTO_STACK_TOP_OFFSET_8";
-	case MOVE_REG_INTO_STACK_TOP_OFFSET_16:
-		return "MOVE_REG_INTO_STACK_TOP_OFFSET_16";
-	case MOVE_REG_INTO_STACK_TOP_OFFSET_32:
-		return "MOVE_REG_INTO_STACK_TOP_OFFSET_32";
-	case MOVE_REG_INTO_STACK_TOP_OFFSET_64:
-		return "MOVE_REG_INTO_STACK_TOP_OFFSET_64";
-	case MOVE_STACK_TOP_ADDRESS_INTO_REG:
-		return "MOVE_STACK_TOP_ADDRESS_INTO_REG";
-	case MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8:
-		return "MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8";
-	case ADD_8_INTO_REG:
-		return "ADD_8_INTO_REG";
-	case ADD_16_INTO_REG:
-		return "ADD_16_INTO_REG";
-	case ADD_32_INTO_REG:
-		return "ADD_32_INTO_REG";
-	case ADD_64_INTO_REG:
-		return "ADD_64_INTO_REG";
-	case ADD_REG_INTO_REG:
-		return "ADD_REG_INTO_REG";
-	case SUBTRACT_8_FROM_REG:
-		return "SUBTRACT_8_FROM_REG";
-	case SUBTRACT_16_FROM_REG:
-		return "SUBTRACT_16_FROM_REG";
-	case SUBTRACT_32_FROM_REG:
-		return "SUBTRACT_32_FROM_REG";
-	case SUBTRACT_64_FROM_REG:
-		return "SUBTRACT_64_FROM_REG";
-	case SUBTRACT_REG_FROM_REG:
-		return "SUBTRACT_REG_FROM_REG";
-	case MULTIPLY_8_INTO_REG:
-		return "MULTIPLY_8_INTO_REG";
-	case MULTIPLY_16_INTO_REG:
-		return "MULTIPLY_16_INTO_REG";
-	case MULTIPLY_32_INTO_REG:
-		return "MULTIPLY_32_INTO_REG";
-	case MULTIPLY_64_INTO_REG:
-		return "MULTIPLY_64_INTO_REG";
-	case MULTIPLY_REG_INTO_REG:
-		return "MULTIPLY_REG_INTO_REG";
-	case DIVIDE_8_FROM_REG:
-		return "DIVIDE_8_FROM_REG";
-	case DIVIDE_16_FROM_REG:
-		return "DIVIDE_16_FROM_REG";
-	case DIVIDE_32_FROM_REG:
-		return "DIVIDE_32_FROM_REG";
-	case DIVIDE_64_FROM_REG:
-		return "DIVIDE_64_FROM_REG";
-	case DIVIDE_REG_FROM_REG:
-		return "DIVIDE_REG_FROM_REG";
-	case TAKE_MODULO_8_OF_REG:
-		return "TAKE_MODULO_8_OF_REG";
-	case TAKE_MODULO_16_OF_REG:
-		return "TAKE_MODULO_16_OF_REG";
-	case TAKE_MODULO_32_OF_REG:
-		return "TAKE_MODULO_32_OF_REG";
-	case TAKE_MODULO_64_OF_REG:
-		return "TAKE_MODULO_64_OF_REG";
-	case TAKE_MODULO_REG_OF_REG:
-		return "TAKE_MODULO_REG_OF_REG";
-	case AND_8_INTO_REG:
-		return "AND_8_INTO_REG";
-	case AND_16_INTO_REG:
-		return "AND_16_INTO_REG";
-	case AND_32_INTO_REG:
-		return "AND_32_INTO_REG";
-	case AND_64_INTO_REG:
-		return "AND_64_INTO_REG";
-	case AND_REG_INTO_REG:
-		return "AND_REG_INTO_REG";
-	case OR_8_INTO_REG:
-		return "OR_8_INTO_REG";
-	case OR_16_INTO_REG:
-		return "OR_16_INTO_REG";
-	case OR_32_INTO_REG:
-		return "OR_32_INTO_REG";
-	case OR_64_INTO_REG:
-		return "OR_64_INTO_REG";
-	case OR_REG_INTO_REG:
-		return "OR_REG_INTO_REG";
-	case XOR_8_INTO_REG:
-		return "XOR_8_INTO_REG";
-	case XOR_16_INTO_REG:
-		return "XOR_16_INTO_REG";
-	case XOR_32_INTO_REG:
-		return "XOR_32_INTO_REG";
-	case XOR_64_INTO_REG:
-		return "XOR_64_INTO_REG";
-	case XOR_REG_INTO_REG:
-		return "XOR_REG_INTO_REG";
-	case LEFT_SHIFT_REG_BY_8:
-		return "LEFT_SHIFT_REG_BY_8";
-	case LEFT_SHIFT_REG_BY_REG:
-		return "LEFT_SHIFT_REG_BY_REG";
-	case RIGHT_SHIFT_REG_BY_8:
-		return "RIGHT_SHIFT_REG_BY_8";
-	case RIGHT_SHIFT_REG_BY_REG:
-		return "RIGHT_SHIFT_REG_BY_REG";
-	case INCREMENT_REG:
-		return "INCREMENT_REG";
-	case DECREMENT_REG:
-		return "DECREMENT_REG";
-	case NOT_REG:
-		return "NOT_REG";
-	case COMPARE_8_TO_REG:
-		return "COMPARE_8_TO_REG";
-	case COMPARE_16_TO_REG:
-		return "COMPARE_16_TO_REG";
-	case COMPARE_32_TO_REG:
-		return "COMPARE_32_TO_REG";
-	case COMPARE_64_TO_REG:
-		return "COMPARE_64_TO_REG";
-	case COMPARE_REG_TO_8:
-		return "COMPARE_REG_TO_8";
-	case COMPARE_REG_TO_16:
-		return "COMPARE_REG_TO_16";
-	case COMPARE_REG_TO_32:
-		return "COMPARE_REG_TO_32";
-	case COMPARE_REG_TO_64:
-		return "COMPARE_REG_TO_64";
-	case COMPARE_REG_TO_REG_SIGNED:
-		return "COMPARE_REG_TO_REG_SIGNED";
-	case COMPARE_REG_TO_REG_UNSIGNED:
-		return "COMPARE_REG_TO_REG_UNSIGNED";
-	case SET_REG_IF_GREATER:
-		return "SET_REG_IF_GREATER";
-	case SET_REG_IF_GREATER_OR_EQUAL:
-		return "SET_REG_IF_GREATER_OR_EQUAL";
-	case SET_REG_IF_LESS:
-		return "SET_REG_IF_LESS";
-	case SET_REG_IF_LESS_OR_EQUAL:
-		return "SET_REG_IF_LESS_OR_EQUAL";
-	case SET_REG_IF_EQUAL:
-		return "SET_REG_IF_EQUAL";
-	case SET_REG_IF_NOT_EQUAL:
-		return "SET_REG_IF_NOT_EQUAL";
+	case MOVE_LIT:
+		return "MOVE_LIT";
+	case MOVE:
+		return "MOVE";
+	case LOAD_PTR_8:
+		return "LOAD_PTR_8";
+	case LOAD_PTR_16:
+		return "LOAD_PTR_16";
+	case LOAD_PTR_32:
+		return "LOAD_PTR_32";
+	case LOAD_PTR_64:
+		return "LOAD_PTR_64";
+	case STORE_PTR_8:
+		return "STORE_PTR_8";
+	case STORE_PTR_16:
+		return "STORE_PTR_16";
+	case STORE_PTR_32:
+		return "STORE_PTR_32";
+	case STORE_PTR_64:
+		return "STORE_PTR_64";
+	case MEM_COPY:
+		return "MEM_COPY";
+	case ADD_INT_8:
+		return "ADD_INT_8";
+	case ADD_INT_16:
+		return "ADD_INT_16";
+	case ADD_INT_32:
+		return "ADD_INT_32";
+	case ADD_INT_64:
+		return "ADD_INT_64";
+	case ADD_FLT_32:
+		return "ADD_FLT_32";
+	case ADD_FLT_64:
+		return "ADD_FLT_64";
+	case SUB_INT_8:
+		return "SUB_INT_8";
+	case SUB_INT_16:
+		return "SUB_INT_16";
+	case SUB_INT_32:
+		return "SUB_INT_32";
+	case SUB_INT_64:
+		return "SUB_INT_64";
+	case SUB_FLT_32:
+		return "SUB_FLT_32";
+	case SUB_FLT_64:
+		return "SUB_FLT_64";
+	case MUL_INT_8:
+		return "MUL_INT_8";
+	case MUL_INT_16:
+		return "MUL_INT_16";
+	case MUL_INT_32:
+		return "MUL_INT_32";
+	case MUL_INT_64:
+		return "MUL_INT_64";
+	case MUL_FLT_32:
+		return "MUL_FLT_32";
+	case MUL_FLT_64:
+		return "MUL_FLT_64";
+	case DIV_INT_8:
+		return "DIV_INT_8";
+	case DIV_INT_16:
+		return "DIV_INT_16";
+	case DIV_INT_32:
+		return "DIV_INT_32";
+	case DIV_INT_64:
+		return "DIV_INT_64";
+	case DIV_FLT_32:
+		return "DIV_FLT_32";
+	case DIV_FLT_64:
+		return "DIV_FLT_64";
+	case MOD_INT_8:
+		return "MOD_INT_8";
+	case MOD_INT_16:
+		return "MOD_INT_16";
+	case MOD_INT_32:
+		return "MOD_INT_32";
+	case MOD_INT_64:
+		return "MOD_INT_64";
+	case AND_INT_8:
+		return "AND_INT_8";
+	case AND_INT_16:
+		return "AND_INT_16";
+	case AND_INT_32:
+		return "AND_INT_32";
+	case AND_INT_64:
+		return "AND_INT_64";
+	case OR_INT_8:
+		return "OR_INT_8";
+	case OR_INT_16:
+		return "OR_INT_16";
+	case OR_INT_32:
+		return "OR_INT_32";
+	case OR_INT_64:
+		return "OR_INT_64";
+	case XOR_INT_8:
+		return "XOR_INT_8";
+	case XOR_INT_16:
+		return "XOR_INT_16";
+	case XOR_INT_32:
+		return "XOR_INT_32";
+	case XOR_INT_64:
+		return "XOR_INT_64";
+	case SHL_INT_8:
+		return "SHL_INT_8";
+	case SHL_INT_16:
+		return "SHL_INT_16";
+	case SHL_INT_32:
+		return "SHL_INT_32";
+	case SHL_INT_64:
+		return "SHL_INT_64";
+	case SHR_INT_8:
+		return "SHR_INT_8";
+	case SHR_INT_16:
+		return "SHR_INT_16";
+	case SHR_INT_32:
+		return "SHR_INT_32";
+	case SHR_INT_64:
+		return "SHR_INT_64";
+	case INC_INT_8:
+		return "INC_INT_8";
+	case INC_INT_16:
+		return "INC_INT_16";
+	case INC_INT_32:
+		return "INC_INT_32";
+	case INC_INT_64:
+		return "INC_INT_64";
+	case DEC_INT_8:
+		return "DEC_INT_8";
+	case DEC_INT_16:
+		return "DEC_INT_16";
+	case DEC_INT_32:
+		return "DEC_INT_32";
+	case DEC_INT_64:
+		return "DEC_INT_64";
+	case NEG_INT_8:
+		return "NEG_INT_8";
+	case NEG_INT_16:
+		return "NEG_INT_16";
+	case NEG_INT_32:
+		return "NEG_INT_32";
+	case NEG_INT_64:
+		return "NEG_INT_64";
+	case CAST_INT_TO_FLT_32:
+		return "CAST_INT_TO_FLT_32";
+	case CAST_INT_TO_FLT_64:
+		return "CAST_INT_TO_FLT_64";
+	case CAST_FLT_32_TO_INT:
+		return "CAST_FLT_32_TO_INT";
+	case CAST_FLT_64_TO_INT:
+		return "CAST_FLT_64_TO_INT";
+	case CMP_INT_8:
+		return "CMP_INT_8";
+	case CMP_INT_8_U:
+		return "CMP_INT_8_U";
+	case CMP_INT_16:
+		return "CMP_INT_16";
+	case CMP_INT_16_U:
+		return "CMP_INT_16_U";
+	case CMP_INT_32:
+		return "CMP_INT_32";
+	case CMP_INT_32_U:
+		return "CMP_INT_32_U";
+	case CMP_INT_64:
+		return "CMP_INT_64";
+	case CMP_INT_64_U:
+		return "CMP_INT_64_U";
+	case CMP_FLT_32:
+		return "CMP_FLT_32";
+	case CMP_FLT_64:
+		return "CMP_FLT_64";
+	case SET_IF_GT:
+		return "SET_IF_GT";
+	case SET_IF_GEQ:
+		return "SET_IF_GEQ";
+	case SET_IF_LT:
+		return "SET_IF_LT";
+	case SET_IF_LEQ:
+		return "SET_IF_LEQ";
+	case SET_IF_EQ:
+		return "SET_IF_EQ";
+	case SET_IF_NEQ:
+		return "SET_IF_NEQ";
 	case JUMP:
 		return "JUMP";
-	case JUMP_IF_GREATER:
-		return "JUMP_IF_GREATER";
-	case JUMP_IF_GREATER_OR_EQUAL:
-		return "JUMP_IF_GREATER_OR_EQUAL";
-	case JUMP_IF_LESS:
-		return "JUMP_IF_LESS";
-	case JUMP_IF_LESS_OR_EQUAL:
-		return "JUMP_IF_LESS_OR_EQUAL";
-	case JUMP_IF_EQUAL:
-		return "JUMP_IF_EQUAL";
-	case JUMP_IF_NOT_EQUAL:
-		return "JUMP_IF_NOT_EQUAL";
-	case PUSH_8:
-		return "PUSH_8";
-	case PUSH_16:
-		return "PUSH_16";
-	case PUSH_32:
-		return "PUSH_32";
-	case PUSH_64:
-		return "PUSH_64";
+	case JUMP_IF_GT:
+		return "JUMP_IF_GT";
+	case JUMP_IF_GEQ:
+		return "JUMP_IF_GEQ";
+	case JUMP_IF_LT:
+		return "JUMP_IF_LT";
+	case JUMP_IF_LEQ:
+		return "JUMP_IF_LEQ";
+	case JUMP_IF_EQ:
+		return "JUMP_IF_EQ";
+	case JUMP_IF_NEQ:
+		return "JUMP_IF_NEQ";
 	case PUSH_REG_8:
 		return "PUSH_REG_8";
 	case PUSH_REG_16:
@@ -710,7 +470,6 @@ instruction_to_str(Instruction instruction)
 enum ArgumentType : uint8_t
 {
 	REG,
-	ABS_ADDR,
 	REL_ADDR,
 	LIT_8,
 	LIT_16,
@@ -728,254 +487,119 @@ instruction_arg_types(Instruction instruction)
 {
 	switch (instruction)
 	{
-	case MOVE_8_INTO_REG:
-		return { LIT_8, REG };
-	case MOVE_16_INTO_REG:
-		return { LIT_16, REG };
-	case MOVE_32_INTO_REG:
-		return { LIT_32, REG };
-	case MOVE_64_INTO_REG:
+	case MOVE_LIT:
 		return { LIT_64, REG };
-	case MOVE_8_INTO_MEM:
-		return { LIT_8, ABS_ADDR };
-	case MOVE_16_INTO_MEM:
-		return { LIT_16, ABS_ADDR };
-	case MOVE_32_INTO_MEM:
-		return { LIT_32, ABS_ADDR };
-	case MOVE_64_INTO_MEM:
-		return { LIT_64, ABS_ADDR };
-	case MOVE_REG_INTO_REG:
+	case MOVE:
+	case LOAD_PTR_8:
+	case LOAD_PTR_16:
+	case LOAD_PTR_32:
+	case LOAD_PTR_64:
+	case STORE_PTR_8:
+	case STORE_PTR_16:
+	case STORE_PTR_32:
+	case STORE_PTR_64:
 		return { REG, REG };
-	case MOVE_REG_INTO_MEM_8:
-		return { REG, ABS_ADDR };
-	case MOVE_REG_INTO_MEM_16:
-		return { REG, ABS_ADDR };
-	case MOVE_REG_INTO_MEM_32:
-		return { REG, ABS_ADDR };
-	case MOVE_REG_INTO_MEM_64:
-		return { REG, ABS_ADDR };
-	case MOVE_MEM_8_INTO_REG:
-		return { ABS_ADDR, REG };
-	case MOVE_MEM_16_INTO_REG:
-		return { ABS_ADDR, REG };
-	case MOVE_MEM_32_INTO_REG:
-		return { ABS_ADDR, REG };
-	case MOVE_MEM_64_INTO_REG:
-		return { ABS_ADDR, REG };
-	case MOVE_REG_POINTER_8_INTO_REG:
-		return { REG, REG };
-	case MOVE_REG_POINTER_16_INTO_REG:
-		return { REG, REG };
-	case MOVE_REG_POINTER_32_INTO_REG:
-		return { REG, REG };
-	case MOVE_REG_POINTER_64_INTO_REG:
-		return { REG, REG };
-	case MOVE_REG_INTO_REG_POINTER_8:
-		return { REG, REG };
-	case MOVE_REG_INTO_REG_POINTER_16:
-		return { REG, REG };
-	case MOVE_REG_INTO_REG_POINTER_32:
-		return { REG, REG };
-	case MOVE_REG_INTO_REG_POINTER_64:
-		return { REG, REG };
-	case MOVE_FRAME_OFFSET_8_INTO_REG:
-		return { LIT_64, REG };
-	case MOVE_FRAME_OFFSET_16_INTO_REG:
-		return { LIT_64, REG };
-	case MOVE_FRAME_OFFSET_32_INTO_REG:
-		return { LIT_64, REG };
-	case MOVE_FRAME_OFFSET_64_INTO_REG:
-		return { LIT_64, REG };
-	case MOVE_REG_INTO_FRAME_OFFSET_8:
-		return { REG, LIT_64 };
-	case MOVE_REG_INTO_FRAME_OFFSET_16:
-		return { REG, LIT_64 };
-	case MOVE_REG_INTO_FRAME_OFFSET_32:
-		return { REG, LIT_64 };
-	case MOVE_REG_INTO_FRAME_OFFSET_64:
-		return { REG, LIT_64 };
-	case MOVE_STACK_TOP_OFFSET_8_INTO_REG:
-		return { LIT_64, REG };
-	case MOVE_STACK_TOP_OFFSET_16_INTO_REG:
-		return { LIT_64, REG };
-	case MOVE_STACK_TOP_OFFSET_32_INTO_REG:
-		return { LIT_64, REG };
-	case MOVE_STACK_TOP_OFFSET_64_INTO_REG:
-		return { LIT_64, REG };
-	case MOVE_REG_INTO_STACK_TOP_OFFSET_8:
-		return { REG, LIT_64 };
-	case MOVE_REG_INTO_STACK_TOP_OFFSET_16:
-		return { REG, LIT_64 };
-	case MOVE_REG_INTO_STACK_TOP_OFFSET_32:
-		return { REG, LIT_64 };
-	case MOVE_REG_INTO_STACK_TOP_OFFSET_64:
-		return { REG, LIT_64 };
-	case MOVE_STACK_TOP_ADDRESS_INTO_REG:
-		return { REG };
-	case MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8:
+	case MEM_COPY:
 		return { REG, REG, LIT_64 };
-	case ADD_8_INTO_REG:
-		return { LIT_8, REG };
-	case ADD_16_INTO_REG:
-		return { LIT_16, REG };
-	case ADD_32_INTO_REG:
-		return { LIT_32, REG };
-	case ADD_64_INTO_REG:
-		return { LIT_64, REG };
-	case ADD_REG_INTO_REG:
+	case ADD_INT_8:
+	case ADD_INT_16:
+	case ADD_INT_32:
+	case ADD_INT_64:
+	case ADD_FLT_32:
+	case ADD_FLT_64:
+	case SUB_INT_8:
+	case SUB_INT_16:
+	case SUB_INT_32:
+	case SUB_INT_64:
+	case SUB_FLT_32:
+	case SUB_FLT_64:
+	case MUL_INT_8:
+	case MUL_INT_16:
+	case MUL_INT_32:
+	case MUL_INT_64:
+	case MUL_FLT_32:
+	case MUL_FLT_64:
+	case DIV_INT_8:
+	case DIV_INT_16:
+	case DIV_INT_32:
+	case DIV_INT_64:
+	case DIV_FLT_32:
+	case DIV_FLT_64:
+	case MOD_INT_8:
+	case MOD_INT_16:
+	case MOD_INT_32:
+	case MOD_INT_64:
+	case AND_INT_8:
+	case AND_INT_16:
+	case AND_INT_32:
+	case AND_INT_64:
+	case OR_INT_8:
+	case OR_INT_16:
+	case OR_INT_32:
+	case OR_INT_64:
+	case XOR_INT_8:
+	case XOR_INT_16:
+	case XOR_INT_32:
+	case XOR_INT_64:
+	case SHL_INT_8:
+	case SHL_INT_16:
+	case SHL_INT_32:
+	case SHL_INT_64:
+	case SHR_INT_8:
+	case SHR_INT_16:
+	case SHR_INT_32:
+	case SHR_INT_64:
 		return { REG, REG };
-	case SUBTRACT_8_FROM_REG:
-		return { LIT_8, REG };
-	case SUBTRACT_16_FROM_REG:
-		return { LIT_16, REG };
-	case SUBTRACT_32_FROM_REG:
-		return { LIT_32, REG };
-	case SUBTRACT_64_FROM_REG:
-		return { LIT_64, REG };
-	case SUBTRACT_REG_FROM_REG:
-		return { REG, REG };
-	case MULTIPLY_8_INTO_REG:
-		return { LIT_8, REG };
-	case MULTIPLY_16_INTO_REG:
-		return { LIT_16, REG };
-	case MULTIPLY_32_INTO_REG:
-		return { LIT_32, REG };
-	case MULTIPLY_64_INTO_REG:
-		return { LIT_64, REG };
-	case MULTIPLY_REG_INTO_REG:
-		return { REG, REG };
-	case DIVIDE_8_FROM_REG:
-		return { LIT_8, REG };
-	case DIVIDE_16_FROM_REG:
-		return { LIT_16, REG };
-	case DIVIDE_32_FROM_REG:
-		return { LIT_32, REG };
-	case DIVIDE_64_FROM_REG:
-		return { LIT_64, REG };
-	case DIVIDE_REG_FROM_REG:
-		return { REG, REG };
-	case TAKE_MODULO_8_OF_REG:
-		return { LIT_8, REG };
-	case TAKE_MODULO_16_OF_REG:
-		return { LIT_16, REG };
-	case TAKE_MODULO_32_OF_REG:
-		return { LIT_32, REG };
-	case TAKE_MODULO_64_OF_REG:
-		return { LIT_64, REG };
-	case TAKE_MODULO_REG_OF_REG:
-		return { REG, REG };
-	case AND_8_INTO_REG:
-		return { LIT_8, REG };
-	case AND_16_INTO_REG:
-		return { LIT_16, REG };
-	case AND_32_INTO_REG:
-		return { LIT_32, REG };
-	case AND_64_INTO_REG:
-		return { LIT_64, REG };
-	case AND_REG_INTO_REG:
-		return { REG, REG };
-	case OR_8_INTO_REG:
-		return { LIT_8, REG };
-	case OR_16_INTO_REG:
-		return { LIT_16, REG };
-	case OR_32_INTO_REG:
-		return { LIT_32, REG };
-	case OR_64_INTO_REG:
-		return { LIT_64, REG };
-	case OR_REG_INTO_REG:
-		return { REG, REG };
-	case XOR_8_INTO_REG:
-		return { LIT_8, REG };
-	case XOR_16_INTO_REG:
-		return { LIT_16, REG };
-	case XOR_32_INTO_REG:
-		return { LIT_32, REG };
-	case XOR_64_INTO_REG:
-		return { LIT_64, REG };
-	case XOR_REG_INTO_REG:
-		return { REG, REG };
-	case LEFT_SHIFT_REG_BY_8:
-		return { REG, LIT_8 };
-	case LEFT_SHIFT_REG_BY_REG:
-		return { REG, REG };
-	case RIGHT_SHIFT_REG_BY_8:
-		return { REG, LIT_8 };
-	case RIGHT_SHIFT_REG_BY_REG:
-		return { REG, REG };
-	case INCREMENT_REG:
+	case INC_INT_8:
+	case INC_INT_16:
+	case INC_INT_32:
+	case INC_INT_64:
+	case DEC_INT_8:
+	case DEC_INT_16:
+	case DEC_INT_32:
+	case DEC_INT_64:
+	case NEG_INT_8:
+	case NEG_INT_16:
+	case NEG_INT_32:
+	case NEG_INT_64:
+	case CAST_INT_TO_FLT_32:
+	case CAST_INT_TO_FLT_64:
+	case CAST_FLT_32_TO_INT:
+	case CAST_FLT_64_TO_INT:
 		return { REG };
-	case DECREMENT_REG:
-		return { REG };
-	case NOT_REG:
-		return { REG };
-	case COMPARE_8_TO_REG:
-		return { LIT_8, REG };
-	case COMPARE_16_TO_REG:
-		return { LIT_16, REG };
-	case COMPARE_32_TO_REG:
-		return { LIT_32, REG };
-	case COMPARE_64_TO_REG:
-		return { LIT_64, REG };
-	case COMPARE_REG_TO_8:
-		return { REG, LIT_8 };
-	case COMPARE_REG_TO_16:
-		return { REG, LIT_16 };
-	case COMPARE_REG_TO_32:
-		return { REG, LIT_32 };
-	case COMPARE_REG_TO_64:
-		return { REG, LIT_64 };
-	case COMPARE_REG_TO_REG_SIGNED:
+	case CMP_INT_8:
+	case CMP_INT_8_U:
+	case CMP_INT_16:
+	case CMP_INT_16_U:
+	case CMP_INT_32:
+	case CMP_INT_32_U:
+	case CMP_INT_64:
+	case CMP_INT_64_U:
+	case CMP_FLT_32:
+	case CMP_FLT_64:
 		return { REG, REG };
-	case COMPARE_REG_TO_REG_UNSIGNED:
-		return { REG, REG };
-	case SET_REG_IF_GREATER:
-		return { REG };
-	case SET_REG_IF_GREATER_OR_EQUAL:
-		return { REG };
-	case SET_REG_IF_LESS:
-		return { REG };
-	case SET_REG_IF_LESS_OR_EQUAL:
-		return { REG };
-	case SET_REG_IF_EQUAL:
-		return { REG };
-	case SET_REG_IF_NOT_EQUAL:
+	case SET_IF_GT:
+	case SET_IF_GEQ:
+	case SET_IF_LT:
+	case SET_IF_LEQ:
+	case SET_IF_EQ:
+	case SET_IF_NEQ:
 		return { REG };
 	case JUMP:
+	case JUMP_IF_GT:
+	case JUMP_IF_GEQ:
+	case JUMP_IF_LT:
+	case JUMP_IF_LEQ:
+	case JUMP_IF_EQ:
+	case JUMP_IF_NEQ:
 		return { REL_ADDR };
-	case JUMP_IF_GREATER:
-		return { REL_ADDR };
-	case JUMP_IF_GREATER_OR_EQUAL:
-		return { REL_ADDR };
-	case JUMP_IF_LESS:
-		return { REL_ADDR };
-	case JUMP_IF_LESS_OR_EQUAL:
-		return { REL_ADDR };
-	case JUMP_IF_EQUAL:
-		return { REL_ADDR };
-	case JUMP_IF_NOT_EQUAL:
-		return { REL_ADDR };
-	case PUSH_8:
-		return { LIT_8 };
-	case PUSH_16:
-		return { LIT_16 };
-	case PUSH_32:
-		return { LIT_32 };
-	case PUSH_64:
-		return { LIT_64 };
 	case PUSH_REG_8:
-		return { REG };
 	case PUSH_REG_16:
-		return { REG };
 	case PUSH_REG_32:
-		return { REG };
 	case PUSH_REG_64:
-		return { REG };
 	case POP_8_INTO_REG:
-		return { REG };
 	case POP_16_INTO_REG:
-		return { REG };
 	case POP_32_INTO_REG:
-		return { REG };
 	case POP_64_INTO_REG:
 		return { REG };
 	case CALL:
@@ -983,17 +607,14 @@ instruction_arg_types(Instruction instruction)
 	case RETURN:
 		return {};
 	case ALLOCATE_STACK:
-		return { LIT_64 };
 	case DEALLOCATE_STACK:
 		return { LIT_64 };
 	case COMMENT:
-		return { NULL_TERMINATED_STRING };
 	case LABEL:
 		return { NULL_TERMINATED_STRING };
 	case PRINT_CHAR:
-		return { REG };
 	case GET_CHAR:
-		return { ABS_ADDR };
+		return { REG };
 	default:
 		return {};
 	}

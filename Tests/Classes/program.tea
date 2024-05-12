@@ -1,9 +1,9 @@
-void putc(u8 c)
+v0 putc(u8 c)
 {
 	syscall PRINT_CHAR(c)
 }
 
-void print_str(u8* str)
+v0 print_str(u8* str)
 {
 	while (*str != 0)
 	{
@@ -12,7 +12,7 @@ void print_str(u8* str)
 	}
 }
 
-void print_unsigned(u64 n)
+v0 print_unsigned(u64 n)
 {
 	if (n < 10)
 	{
@@ -45,11 +45,12 @@ class Foo
 	u8[5] d
 }
 
-void Foo_op(Foo* foo)
+v0 Foo_op(Foo* foo)
 {
 	foo->a += 1
 	foo->b -= 1
 	foo->c.test = 1
+	foo->c.baz.b += 40
 }
 
 u64 main()

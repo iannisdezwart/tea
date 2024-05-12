@@ -103,7 +103,7 @@ struct SysCall final : public ASTNode
 
 			uint8_t addr_reg = assembler.get_register();
 			char_pointer->get_value(assembler, addr_reg);
-			assembler.move_reg_into_reg_pointer_16(char_reg, addr_reg);
+			assembler.store_ptr_16(char_reg, addr_reg);
 
 			assembler.free_register(char_reg);
 			assembler.free_register(addr_reg);

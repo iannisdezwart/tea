@@ -51,11 +51,6 @@ struct CastExpression final : public ReadValue
 			type            = Type(Type::USER_DEFINED_CLASS, byte_size, type_name->array_sizes);
 			type.class_name = accountable_token.value;
 
-			for (const IdentifierDefinition &field : class_def.fields)
-			{
-				type.fields.push_back(field.type);
-			}
-
 			return;
 		}
 

@@ -331,6 +331,44 @@ fits_int64(const std::string &str)
 }
 
 /**
+ * @brief Checks if a given literal fits in a 32-bit floating point number.
+ * @param str The literal string.
+ * @returns A boolean indicating whether the literal fits in an f32.
+ */
+bool
+fits_float32(const std::string &str)
+{
+	try
+	{
+		std::stof(str);
+		return true;
+	}
+	catch (std::invalid_argument &e)
+	{
+		return false;
+	}
+}
+
+/**
+ * @brief Checks if a given literal fits in a 64-bit floating point number.
+ * @param str The literal string.
+ * @returns A boolean indicating whether the literal fits in an f64.
+ */
+bool
+fits_float64(const std::string &str)
+{
+	try
+	{
+		std::stod(str);
+		return true;
+	}
+	catch (std::invalid_argument &e)
+	{
+		return false;
+	}
+}
+
+/**
  * Cast std::unique_ptr<T> to std::unique_ptr<U>.
  */
 template <typename To, typename From>

@@ -50,7 +50,7 @@ struct Disassembler
 
 		// Print instruction in orange.
 
-		fprintf(file_out, ANSI_YELLOW "%-33s" ANSI_RESET, instruction);
+		fprintf(file_out, ANSI_YELLOW "%-18s" ANSI_RESET, instruction);
 
 		// Print arguments.
 
@@ -87,10 +87,6 @@ struct Disassembler
 
 		case REL_ADDR:
 			print_arg_rel_address(file_reader.read<int64_t>());
-			break;
-
-		case ABS_ADDR:
-			print_arg_address(file_reader.read<uint64_t>());
 			break;
 
 		case LIT_8:
@@ -163,18 +159,6 @@ struct Disassembler
 		fprintf(file_out,
 			"(" ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%llx" ANSI_RESET ")",
 			addr);
-	}
-
-	/**
-	 * @brief Pretty-prints an address argument to the output file.
-	 * @param str The address to print.
-	 */
-	void
-	print_arg_address(uint64_t address)
-	{
-		fprintf(file_out,
-			ANSI_GREEN "0x" ANSI_BRIGHT_GREEN "%llx" ANSI_RESET,
-			address);
 	}
 
 	/**

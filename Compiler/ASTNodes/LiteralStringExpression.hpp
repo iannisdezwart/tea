@@ -44,8 +44,8 @@ struct LiteralStringExpression final : public ReadValue
 	{
 		StaticData static_data = assembler.add_static_data(value);
 
-		assembler.move_stack_top_address_into_reg(result_reg);
-		assembler.add_64_into_reg(static_data.offset, result_reg);
+		assembler.move_lit(static_data.offset, result_reg);
+		assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
 	}
 };
 

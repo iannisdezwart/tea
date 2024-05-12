@@ -8,7 +8,6 @@
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/TypeIdentifierPair.hpp"
-#include "Compiler/ASTNodes/InitList.hpp"
 
 struct VariableDeclaration final : public ASTNode
 {
@@ -72,11 +71,19 @@ struct VariableDeclaration final : public ASTNode
 			return;
 		}
 
+		if (type == Type::USER_DEFINED_CLASS || type.is_array())
+		{
+			err_at_token(assignment->accountable_token, "Semantic Error",
+				"Expected no assignment on the right hand side of array/object declaration\n"
+				"Found an expression of type \"%s\"",
+				ast_node_type_to_str(assignment->node_type));
+		}
+
 		assignment->type_check(type_check_state);
 
 		// Match types
 
-		if (!assignment->type.fits(type))
+		if (assignment->type.fits(type) == Type::Fits::NO)
 		{
 			err_at_token(assignment->accountable_token,
 				"Type Error",
@@ -115,278 +122,13 @@ struct VariableDeclaration final : public ASTNode
 	}
 
 	void
-	put_item_into_class_instance(Assembler &assembler, IdentifierKind id_kind,
-		uint8_t init_list_item_reg, const Type &type, const Type &field_type,
-		uint64_t offset, uint64_t &sub_offset, std::unique_ptr<ReadValue> &item)
-		const
-	{
-		switch (id_kind)
-		{
-		case IdentifierKind::LOCAL:
-		{
-			switch (field_type.byte_size())
-			{
-			case 1:
-				assembler.move_reg_into_frame_offset_8(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 1;
-				break;
-
-			case 2:
-				assembler.move_reg_into_frame_offset_16(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 2;
-				break;
-
-			case 4:
-				assembler.move_reg_into_frame_offset_32(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 4;
-				break;
-
-			case 8:
-				assembler.move_reg_into_frame_offset_64(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 8;
-				break;
-
-			default:
-			{
-				uint8_t src_reg = assembler.get_register();
-				assembler.move_reg_into_reg(R_FRAME_PTR, src_reg);
-				assembler.add_64_into_reg(offset + sub_offset, src_reg);
-				assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
-					init_list_item_reg, src_reg, field_type.byte_size());
-				break;
-			}
-			}
-
-			break;
-		}
-
-		case IdentifierKind::GLOBAL:
-		{
-			switch (field_type.byte_size())
-			{
-			case 1:
-				assembler.move_reg_into_stack_top_offset_8(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 1;
-				break;
-
-			case 2:
-				assembler.move_reg_into_stack_top_offset_16(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 2;
-				break;
-
-			case 4:
-				assembler.move_reg_into_stack_top_offset_32(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 4;
-				break;
-
-			case 8:
-				assembler.move_reg_into_stack_top_offset_64(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 8;
-				break;
-
-			default:
-			{
-				uint8_t src_reg = assembler.get_register();
-				assembler.move_stack_top_address_into_reg(src_reg);
-				assembler.add_64_into_reg(offset + sub_offset, src_reg);
-				assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
-					init_list_item_reg, src_reg, field_type.byte_size());
-				break;
-			}
-
-			break;
-			}
-		}
-
-		default:
-		{
-			err_at_token(item->accountable_token, "Internal Error",
-				"Unknown identifier kind %d", id_kind);
-		} // default
-		} // switch
-	}
-
-	void
-	put_item_into_array(Assembler &assembler, IdentifierKind id_kind,
-		uint8_t init_list_item_reg, const Type &array_item_type,
-		uint64_t offset, uint64_t &sub_offset, std::unique_ptr<ReadValue> &item)
-		const
-	{
-		switch (id_kind)
-		{
-		case IdentifierKind::LOCAL:
-		{
-			switch (array_item_type.byte_size())
-			{
-			case 1:
-				assembler.move_reg_into_frame_offset_8(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 1;
-				break;
-
-			case 2:
-				assembler.move_reg_into_frame_offset_16(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 2;
-				break;
-
-			case 4:
-				assembler.move_reg_into_frame_offset_32(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 4;
-				break;
-
-			case 8:
-				assembler.move_reg_into_frame_offset_64(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 8;
-				break;
-
-			default:
-			{
-				uint8_t src_reg = assembler.get_register();
-				assembler.move_reg_into_reg(R_FRAME_PTR, src_reg);
-				assembler.add_64_into_reg(offset + sub_offset, src_reg);
-				assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
-					init_list_item_reg, src_reg, array_item_type.byte_size());
-				break;
-			}
-			}
-
-			break;
-		}
-
-		case IdentifierKind::GLOBAL:
-		{
-			switch (array_item_type.byte_size())
-			{
-			case 1:
-				assembler.move_reg_into_stack_top_offset_8(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 1;
-				break;
-
-			case 2:
-				assembler.move_reg_into_stack_top_offset_16(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 2;
-				break;
-
-			case 4:
-				assembler.move_reg_into_stack_top_offset_32(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 4;
-				break;
-
-			case 8:
-				assembler.move_reg_into_stack_top_offset_64(
-					init_list_item_reg, offset + sub_offset);
-				sub_offset += 8;
-				break;
-
-			default:
-			{
-				uint8_t src_reg = assembler.get_register();
-				assembler.move_stack_top_address_into_reg(src_reg);
-				assembler.add_64_into_reg(offset + sub_offset, src_reg);
-				assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
-					init_list_item_reg, src_reg, array_item_type.byte_size());
-				break;
-			}
-			}
-
-			break;
-		}
-
-		default:
-		{
-			err_at_token(item->accountable_token, "Internal Error",
-				"Unknown identifier kind %d", id_kind);
-		} // default
-		} // switch
-	}
-
-	void
 	code_gen(Assembler &assembler)
 		const override
 	{
-		uint8_t init_list_item_reg;
 		uint8_t init_value_reg;
-
-		// Class instance declaration
 
 		if (type == Type::USER_DEFINED_CLASS)
 		{
-			if (!assignment)
-			{
-				// TODO: Implement default constructor
-			}
-			else if (assignment->node_type == INIT_LIST)
-			{
-				InitList *init_list = (InitList *) assignment.get();
-
-				// Check type compatibility
-
-				if (init_list->items.size() > class_definition->fields.size())
-				{
-					err_at_token(init_list->accountable_token, "Type Error",
-						"InitList for %s class instance holds %lu members, "
-						"but %s has only %lu fields",
-						type.class_name.c_str(), init_list->items.size(),
-						type.class_name.c_str(), class_definition->fields.size());
-				}
-
-				uint64_t sub_offset = 0;
-
-				if (init_list->items.size())
-					init_list_item_reg = assembler.get_register();
-
-				for (size_t i = 0; i < init_list->items.size(); i++)
-				{
-					std::unique_ptr<ReadValue> &item = init_list->items[i];
-					const Type item_type             = item->type;
-					const Type &field_type           = class_definition->fields[i].type;
-
-					// Type compatibility
-
-					if (!item_type.fits(field_type))
-					{
-						// Todo: elaborate
-
-						err_at_token(item->accountable_token, "Type Error",
-							"Item %lu of InitList does not fit the corresponding field "
-							"of class \"%s\"",
-							i, type.class_name.c_str());
-					}
-
-					// Put item into class instance
-
-					item->get_value(assembler, init_list_item_reg);
-					put_item_into_class_instance(assembler,
-						id_kind, init_list_item_reg, type, field_type,
-						variable_definition.offset, sub_offset, item);
-				}
-
-				if (init_list->items.size())
-					assembler.free_register(init_list_item_reg);
-			}
-			else
-			{
-				err_at_token(assignment->accountable_token, "Semantic Error",
-					"Unexpected expression of type \"%s\" at the right hand "
-					"side of a class instance declaration\n"
-					"Expected an initialiser list or a constructor call",
-					ast_node_type_to_str(assignment->node_type));
-			}
-
 			return;
 		}
 
@@ -394,55 +136,10 @@ struct VariableDeclaration final : public ASTNode
 
 		else if (type.is_array())
 		{
-			if (!assignment)
-				return;
-
-			if (assignment->node_type != INIT_LIST)
-			{
-				err_at_token(assignment->accountable_token, "Semantic Error",
-					"Expected an initialiser list or nothing on the right hand side "
-					"of an array declaration\n"
-					"Found an expression of type \"%s\"",
-					ast_node_type_to_str(assignment->node_type));
-			}
-
-			InitList *init_list = (InitList *) assignment.get();
-
-			// Check type compatibility
-
-			if (init_list->items.size() > type.array_sizes.back())
-			{
-				err_at_token(init_list->accountable_token, "Type Error",
-					"InitList for %s array holds %lu members, "
-					"but the array only fits %lu elements",
-					type.class_name.c_str(), init_list->items.size(),
-					type.array_sizes.back());
-			}
-
-			Type array_item_type = type;
-			array_item_type.array_sizes.pop_back();
-			uint64_t sub_offset = 0;
-
-			if (init_list->items.size())
-				init_list_item_reg = assembler.get_register();
-
-			for (size_t i = 0; i < init_list->items.size(); i++)
-			{
-				// Put item into array
-
-				init_list->items[i]->get_value(assembler, init_list_item_reg);
-				put_item_into_array(assembler, id_kind,
-					init_list_item_reg, array_item_type,
-					variable_definition.offset, sub_offset, init_list->items[i]);
-			}
-
-			if (init_list->items.size())
-				assembler.free_register(init_list_item_reg);
-
 			return;
 		}
 
-		// Built-in type declaration
+		// Primitive type declaration
 		// Get the expression value into a register and store it in memory
 
 		if (!assignment)

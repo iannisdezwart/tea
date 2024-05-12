@@ -65,9 +65,21 @@ struct FunctionCall final : public ReadValue
 				arguments.size());
 		}
 
-		for (std::unique_ptr<ReadValue> &arg : arguments)
+		for (size_t i = 0; i < arguments.size(); i++)
 		{
+			const std::unique_ptr<ReadValue> &arg = arguments[i];
+			const Type &param_type                = fn_signature.parameters[i].type;
 			arg->type_check(type_check_state);
+
+			if (arg->type.fits(param_type) == Type::Fits::NO)
+			{
+				err_at_token(accountable_token,
+					"Type Error",
+					"Function call arguments list don't fit "
+					"function parameter type template\n"
+					"argument[%lu] is of type %s. Expected type %s",
+					i + 1, arg->type.to_str().c_str(), param_type.to_str().c_str());
+			}
 		}
 	}
 
@@ -90,21 +102,23 @@ struct FunctionCall final : public ReadValue
 			std::string param = param_type.to_str();
 			std::string arg   = arg_type.to_str();
 
-			if (!arg_type.fits(param_type))
-			{
-				err_at_token(accountable_token,
-					"Type Error",
-					"Function call arguments list don't fit "
-					"function parameter type template\n"
-					"argument[%lu] is of type %s. Expected type %s",
-					i, arg.c_str(), param.c_str());
-			}
-
 			size_t byte_size = param_type.byte_size();
 
 			// Put value into the argument register
 
 			arguments[i]->get_value(assembler, arg_reg);
+
+			// Implicit type casting
+
+			Type::Fits type_fits = param_type.fits(arg_type);
+			if (type_fits == Type::Fits::FLT_32_TO_INT_CAST_NEEDED)
+				assembler.cast_flt_32_to_int(result_reg);
+			else if (type_fits == Type::Fits::FLT_64_TO_INT_CAST_NEEDED)
+				assembler.cast_flt_64_to_int(result_reg);
+			else if (type_fits == Type::Fits::INT_TO_FLT_32_CAST_NEEDED)
+				assembler.cast_int_to_flt_32(result_reg);
+			else if (type_fits == Type::Fits::INT_TO_FLT_64_CAST_NEEDED)
+				assembler.cast_int_to_flt_64(result_reg);
 
 			switch (byte_size)
 			{
@@ -126,8 +140,11 @@ struct FunctionCall final : public ReadValue
 
 			default:
 			{
-				assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(arg_reg, R_STACK_PTR, byte_size);
-				assembler.add_64_into_reg(R_STACK_PTR, byte_size);
+				assembler.mem_copy(arg_reg, R_STACK_PTR, byte_size);
+				uint8_t byte_size_reg = assembler.get_register();
+				assembler.move_lit(byte_size, byte_size_reg);
+				assembler.add_int_64(byte_size_reg, R_STACK_PTR);
+				assembler.free_register(byte_size_reg);
 				break;
 			}
 			}
@@ -140,9 +157,12 @@ struct FunctionCall final : public ReadValue
 			assembler.free_register(arg_reg);
 		}
 
-		assembler.push_64(args_size);
+		uint8_t args_size_reg = assembler.get_register();
+		assembler.move_lit(args_size, args_size_reg);
+		assembler.push_reg_64(args_size_reg);
+		assembler.free_register(args_size_reg);
 		assembler.call(fn_signature.id.name);
-		assembler.move_reg_into_reg(R_RET, result_reg);
+		assembler.move(R_RET, result_reg);
 	}
 };
 

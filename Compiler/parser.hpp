@@ -26,7 +26,6 @@
 #include "Compiler/ASTNodes/WhileStatement.hpp"
 #include "Compiler/ASTNodes/ForStatement.hpp"
 #include "Compiler/ASTNodes/ClassDeclaration.hpp"
-#include "Compiler/ASTNodes/InitList.hpp"
 #include "Compiler/ASTNodes/CastExpression.hpp"
 #include "Compiler/ASTNodes/OffsetExpression.hpp"
 #include "Compiler/ASTNodes/SysCall.hpp"
@@ -422,6 +421,7 @@ struct Parser
 	{
 		if (i + offset >= tokens.size())
 		{
+			fprintf(stderr, "[ Parser Error ]: Unexpected end of file.\n");
 			abort();
 		}
 
@@ -920,50 +920,6 @@ struct Parser
 			assert_token_value(right_parenthesis, ")");
 		}
 
-		// Init list
-		// { any number of <expr> seperated by "," }
-
-		else if (expr_token.type == SPECIAL_CHARACTER && expr_token.value == "{")
-		{
-			std::vector<std::unique_ptr<ReadValue>> items;
-			Token maybe_end_token = get_token();
-			Token seperator;
-
-			// Empty init list
-
-			if (maybe_end_token.type == SPECIAL_CHARACTER && maybe_end_token.value == "}")
-			{
-				i++;
-				goto end_init_list;
-			}
-
-			// Add all items in the init list
-
-		next_init_list_item:
-			items.push_back(scan_expression());
-
-			seperator = next_token();
-
-			if (seperator.type != SPECIAL_CHARACTER
-				|| (seperator.value != "}" && seperator.value != ","))
-			{
-				err_at_token(seperator, "Syntax Error",
-					"Unexpected token \"%s\" of type %s\n"
-					"Expected a \",\" or a \"}\" token instead\n"
-					"At %lu:%lu\n",
-					seperator.value.c_str(),
-					token_type_to_str(seperator.type), seperator.line, seperator.col);
-			}
-
-			if (seperator.value == ",")
-			{
-				goto next_init_list_item;
-			}
-
-		end_init_list:
-			expression = std::make_unique<InitList>(expr_token, std::move(items));
-		}
-
 		// Literal string
 
 		else if (expr_token.type == LITERAL_STRING)
@@ -1331,7 +1287,10 @@ struct Parser
 			}
 
 			fields.push_back(scan_type_identifier_pair());
+			expect_statement_terminator();
 		}
+
+		expect_statement_terminator();
 
 		return std::make_unique<ClassDeclaration>(
 			class_token, class_name_token.value, std::move(fields));

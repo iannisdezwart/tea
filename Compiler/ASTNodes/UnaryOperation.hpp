@@ -54,6 +54,7 @@ struct UnaryOperation final : public WriteValue
 		override
 	{
 		expression->type_check(type_check_state);
+		type = expression->type;
 
 		switch (op)
 		{
@@ -66,14 +67,18 @@ struct UnaryOperation final : public WriteValue
 		case BITWISE_NOT:
 		case LOGICAL_NOT:
 		{
-			type = expression->type;
-			return;
+			if (!type.is_primitive())
+			{
+				err_at_token(accountable_token, "Internal Error",
+					"Unsupported type (%s) for operator %s.\n"
+					"Expected a primitive type",
+					type.to_str().c_str(), op_to_str(op));
+			}
+			break;
 		}
 
 		case DEREFERENCE:
 		{
-			type = expression->type;
-
 			if (type.pointer_depth() == 0)
 			{
 				err_at_token(accountable_token,
@@ -83,14 +88,13 @@ struct UnaryOperation final : public WriteValue
 			}
 
 			type.array_sizes.pop_back();
-			return;
+			break;
 		}
 
 		case ADDRESS_OF:
 		{
-			type = expression->type;
 			type.array_sizes.insert(type.array_sizes.begin(), 1, 0);
-			return;
+			break;
 		}
 
 		default:
@@ -100,8 +104,6 @@ struct UnaryOperation final : public WriteValue
 				accountable_token.value.c_str());
 		}
 		}
-
-		// TODO: set location data.
 	}
 
 	void
@@ -147,44 +149,37 @@ struct UnaryOperation final : public WriteValue
 
 			Type expr_type = expr->type;
 
-			while (--deref_dep)
+			while (--deref_dep > 0)
 			{
 				expr_type.array_sizes.pop_back();
-				assembler.move_reg_pointer_64_into_reg(
-					ptr_reg, ptr_reg);
+				assembler.load_ptr_64(ptr_reg, ptr_reg);
 			}
 
 			switch (expr->type.byte_size())
 			{
 			case 1:
-				assembler.move_reg_into_reg_pointer_8(
-					value_reg, ptr_reg);
+				assembler.store_ptr_8(value_reg, ptr_reg);
 				break;
 
 			case 2:
-				assembler.move_reg_into_reg_pointer_16(
-					value_reg, ptr_reg);
+				assembler.store_ptr_16(value_reg, ptr_reg);
 				break;
 
 			case 4:
-				assembler.move_reg_into_reg_pointer_32(
-					value_reg, ptr_reg);
+				assembler.store_ptr_32(value_reg, ptr_reg);
 				break;
 
 			case 8:
-				assembler.move_reg_into_reg_pointer_64(
-					value_reg, ptr_reg);
+				assembler.store_ptr_64(value_reg, ptr_reg);
 				break;
 
 			default:
-				printf("Dereference assignment for "
-				       "	byte size %lu is not implemented\n",
-					expr->type.byte_size());
-				abort();
+				// TODO: Test if this works.
+				assembler.mem_copy(value_reg, ptr_reg, expr->type.byte_size());
+				break;
 			}
 
 			assembler.free_register(ptr_reg);
-
 			break;
 		}
 
@@ -193,6 +188,96 @@ struct UnaryOperation final : public WriteValue
 				"Value Type Error",
 				"Expected a WriteValue\n"
 				"This value is not writable");
+		}
+	}
+
+	void
+	increment(Assembler &assembler, const Type &type, uint8_t result_reg)
+		const
+	{
+		if (type.pointer_depth() > 0)
+		{
+			uint8_t temp_reg = assembler.get_register();
+			assembler.move_lit(type.pointed_byte_size(), temp_reg);
+			assembler.add_int_64(temp_reg, result_reg);
+			assembler.free_register(temp_reg);
+		}
+		else if (type.is_integer() && type.byte_size() == 1)
+		{
+			assembler.inc_int_8(result_reg);
+		}
+		else if (type.is_integer() && type.byte_size() == 2)
+		{
+			assembler.inc_int_16(result_reg);
+		}
+		else if (type.is_integer() && type.byte_size() == 4)
+		{
+			assembler.inc_int_32(result_reg);
+		}
+		else if (type.is_integer() && type.byte_size() == 8)
+		{
+			assembler.inc_int_64(result_reg);
+		}
+		else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+		{
+			uint8_t temp_reg = assembler.get_register();
+			float one        = 1.0f;
+			assembler.move_lit(*reinterpret_cast<uint32_t *>(&one), temp_reg);
+			assembler.add_flt_32(temp_reg, result_reg);
+			assembler.free_register(temp_reg);
+		}
+		else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+		{
+			uint8_t temp_reg = assembler.get_register();
+			double one       = 1.0;
+			assembler.move_lit(*reinterpret_cast<uint64_t *>(&one), temp_reg);
+			assembler.add_flt_64(temp_reg, result_reg);
+			assembler.free_register(temp_reg);
+		}
+	}
+
+	void
+	decrement(Assembler &assembler, const Type &type, uint8_t result_reg)
+		const
+	{
+		if (type.pointer_depth() > 0)
+		{
+			uint8_t temp_reg = assembler.get_register();
+			assembler.move_lit(type.pointed_byte_size(), temp_reg);
+			assembler.sub_int_64(temp_reg, result_reg);
+			assembler.free_register(temp_reg);
+		}
+		else if (type.is_integer() && type.byte_size() == 1)
+		{
+			assembler.dec_int_8(result_reg);
+		}
+		else if (type.is_integer() && type.byte_size() == 2)
+		{
+			assembler.dec_int_16(result_reg);
+		}
+		else if (type.is_integer() && type.byte_size() == 4)
+		{
+			assembler.dec_int_32(result_reg);
+		}
+		else if (type.is_integer() && type.byte_size() == 8)
+		{
+			assembler.dec_int_64(result_reg);
+		}
+		else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+		{
+			uint8_t temp_reg = assembler.get_register();
+			float one        = 1.0f;
+			assembler.move_lit(*reinterpret_cast<uint32_t *>(&one), temp_reg);
+			assembler.sub_flt_32(temp_reg, result_reg);
+			assembler.free_register(temp_reg);
+		}
+		else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+		{
+			uint8_t temp_reg = assembler.get_register();
+			double one       = 1.0;
+			assembler.move_lit(*reinterpret_cast<uint64_t *>(&one), temp_reg);
+			assembler.sub_flt_64(temp_reg, result_reg);
+			assembler.free_register(temp_reg);
 		}
 	}
 
@@ -207,33 +292,10 @@ struct UnaryOperation final : public WriteValue
 			WriteValue *wr_expression = WriteValue::cast(expression.get());
 			Type type                 = wr_expression->type;
 
-			// Move result into the result reg and increment it.
-
 			wr_expression->get_value(assembler, result_reg);
-
-			if (type.pointer_depth() > 0)
-			{
-				assembler.add_64_into_reg(type.pointed_byte_size(), result_reg);
-			}
-			else
-			{
-				assembler.increment_reg(result_reg);
-			}
-
-			// Store the value back into memory.
-
+			increment(assembler, type, result_reg);
 			wr_expression->store(assembler, result_reg);
-
-			// Decrement the result reg.
-
-			if (type.pointer_depth() > 0)
-			{
-				assembler.subtract_64_from_reg(type.pointed_byte_size(), result_reg);
-			}
-			else
-			{
-				assembler.decrement_reg(result_reg);
-			}
+			decrement(assembler, type, result_reg);
 
 			break;
 		}
@@ -243,33 +305,10 @@ struct UnaryOperation final : public WriteValue
 			WriteValue *wr_expression = WriteValue::cast(expression.get());
 			Type type                 = wr_expression->type;
 
-			// Move result into the result reg and decrement it.
-
 			wr_expression->get_value(assembler, result_reg);
-
-			if (type.pointer_depth() > 0)
-			{
-				assembler.subtract_64_from_reg(type.pointed_byte_size(), result_reg);
-			}
-			else
-			{
-				assembler.decrement_reg(result_reg);
-			}
-
-			// Store the value back into memory.
-
+			decrement(assembler, type, result_reg);
 			wr_expression->store(assembler, result_reg);
-
-			// Increment the result reg.
-
-			if (type.pointer_depth() > 0)
-			{
-				assembler.add_64_into_reg(type.pointed_byte_size(), result_reg);
-			}
-			else
-			{
-				assembler.increment_reg(result_reg);
-			}
+			increment(assembler, type, result_reg);
 
 			break;
 		}
@@ -279,22 +318,10 @@ struct UnaryOperation final : public WriteValue
 			WriteValue *wr_expression = WriteValue::cast(expression.get());
 			Type type                 = wr_expression->type;
 
-			// Move result into the result reg and increment it.
-
 			wr_expression->get_value(assembler, result_reg);
-
-			if (type.pointer_depth() > 0)
-			{
-				assembler.add_64_into_reg(type.pointed_byte_size(), result_reg);
-			}
-			else
-			{
-				assembler.increment_reg(result_reg);
-			}
-
-			// Store the value back into memory.
-
+			increment(assembler, type, result_reg);
 			wr_expression->store(assembler, result_reg);
+
 			break;
 		}
 
@@ -303,29 +330,15 @@ struct UnaryOperation final : public WriteValue
 			WriteValue *wr_expression = WriteValue::cast(expression.get());
 			Type type                 = wr_expression->type;
 
-			// Move result into the result reg and decrement it.
-
 			wr_expression->get_value(assembler, result_reg);
-
-			if (type.pointer_depth() > 0)
-			{
-				assembler.subtract_64_from_reg(type.pointed_byte_size(), result_reg);
-			}
-			else
-			{
-				assembler.decrement_reg(result_reg);
-			}
-
-			// Store the value back into memory.
-
+			decrement(assembler, type, result_reg);
 			wr_expression->store(assembler, result_reg);
+
 			break;
 		}
 
 		case UNARY_PLUS:
 		{
-			// Todo: look up if this operator does anything interesting.
-
 			expression->get_value(assembler, result_reg);
 			break;
 		}
@@ -334,31 +347,70 @@ struct UnaryOperation final : public WriteValue
 		{
 			expression->get_value(assembler, result_reg);
 
-			// Invert the bits and add one.
+			// Two's complement for ints and XOR for floats.
 
-			assembler.not_reg(result_reg);
-			assembler.increment_reg(result_reg);
+			if (type.is_integer() && type.byte_size() == 1)
+			{
+				assembler.neg_int_8(result_reg);
+				assembler.inc_int_8(result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 2)
+			{
+				assembler.neg_int_16(result_reg);
+				assembler.inc_int_16(result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 4)
+			{
+				assembler.neg_int_32(result_reg);
+				assembler.inc_int_32(result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 8)
+			{
+				assembler.neg_int_64(result_reg);
+				assembler.inc_int_64(result_reg);
+			}
+			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			{
+				uint8_t temp_reg  = assembler.get_register();
+				uint32_t sign_bit = 0x80000000;
+				assembler.move_lit(sign_bit, temp_reg);
+				assembler.xor_int_32(temp_reg, result_reg);
+				assembler.free_register(temp_reg);
+			}
+			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			{
+				uint8_t temp_reg  = assembler.get_register();
+				uint64_t sign_bit = 0x8000000000000000;
+				assembler.move_lit(sign_bit, temp_reg);
+				assembler.xor_int_64(temp_reg, result_reg);
+				assembler.free_register(temp_reg);
+			}
+
 			break;
 		}
 
 		case BITWISE_NOT:
-		{
-			expression->get_value(assembler, result_reg);
-
-			// Invert the bits.
-
-			assembler.not_reg(result_reg);
-			break;
-		}
-
 		case LOGICAL_NOT:
 		{
 			expression->get_value(assembler, result_reg);
 
-			// Invert the bits and mask.
+			if (type.is_integer() && type.byte_size() == 1)
+			{
+				assembler.neg_int_8(result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 2)
+			{
+				assembler.neg_int_16(result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 4)
+			{
+				assembler.neg_int_32(result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 8)
+			{
+				assembler.neg_int_64(result_reg);
+			}
 
-			assembler.not_reg(result_reg);
-			assembler.and_64_into_reg(1, result_reg);
 			break;
 		}
 
@@ -375,19 +427,22 @@ struct UnaryOperation final : public WriteValue
 			switch (type.byte_size())
 			{
 			case 1:
-				assembler.move_reg_pointer_8_into_reg(result_reg, result_reg);
+				assembler.load_ptr_8(result_reg, result_reg);
 				break;
 
 			case 2:
-				assembler.move_reg_pointer_16_into_reg(result_reg, result_reg);
+				assembler.load_ptr_16(result_reg, result_reg);
 				break;
 
 			case 4:
-				assembler.move_reg_pointer_32_into_reg(result_reg, result_reg);
+				assembler.load_ptr_32(result_reg, result_reg);
 				break;
 
 			case 8:
-				assembler.move_reg_pointer_64_into_reg(result_reg, result_reg);
+				assembler.load_ptr_64(result_reg, result_reg);
+				break;
+
+			default:
 				break;
 			}
 
@@ -400,16 +455,14 @@ struct UnaryOperation final : public WriteValue
 
 			if (wr_expression->location_data.is_at_frame_top())
 			{
-				assembler.move_reg_into_reg(R_FRAME_PTR, result_reg);
-				assembler.add_64_into_reg(
-					wr_expression->location_data.offset, result_reg);
+				assembler.move_lit(wr_expression->location_data.offset, result_reg);
+				assembler.add_int_64(R_FRAME_PTR, result_reg);
 			}
 
 			else
 			{
-				assembler.move_stack_top_address_into_reg(result_reg);
-				assembler.add_64_into_reg(
-					wr_expression->location_data.offset, result_reg);
+				assembler.move_lit(wr_expression->location_data.offset, result_reg);
+				assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
 			}
 
 			break;
@@ -417,8 +470,9 @@ struct UnaryOperation final : public WriteValue
 
 		default:
 		{
-			err_at_token(expression->accountable_token, "Internal Error",
-				"Unsupported unary operator");
+			err_at_token(accountable_token, "Invalid UnaryOperation",
+				"didn't find an operation to perform with operator %s",
+				accountable_token.value.c_str());
 		}
 		}
 	}

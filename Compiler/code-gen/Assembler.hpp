@@ -177,1361 +177,1144 @@ struct Assembler : public BufferBuilder
 	}
 
 	/**
-	 * @brief Adds a MOVE_8_INTO_REG instruction to the program.
+	 * @brief Adds a MOVE_LIT instruction to the program.
 	 * @param lit The source literal.
 	 * @param reg_id The destination register.
 	 */
 	void
-	move_8_into_reg(uint8_t lit, uint8_t reg_id)
+	move_lit(uint64_t lit, uint8_t reg_id)
 	{
-		push_instruction(MOVE_8_INTO_REG);
+		push_instruction(MOVE_LIT);
 		push(lit);
 		push(reg_id);
 	}
 
 	/**
-	 * @brief Adds a MOVE_16_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_16_into_reg(uint16_t lit, uint8_t reg_id)
-	{
-		push_instruction(MOVE_16_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_32_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_32_into_reg(uint32_t lit, uint8_t reg_id)
-	{
-		push_instruction(MOVE_32_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_64_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_64_into_reg(uint64_t lit, uint8_t reg_id)
-	{
-		push_instruction(MOVE_64_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_8_INTO_MEM instruction to the program.
-	 * @param lit The source literal.
-	 * @param mem_id The destination memory address.
-	 */
-	void
-	move_8_into_mem(uint8_t lit, uint64_t address)
-	{
-		push_instruction(MOVE_8_INTO_MEM);
-		push(lit);
-		push(address);
-	}
-
-	/**
-	 * @brief Adds a MOVE_16_INTO_MEM instruction to the program.
-	 * @param lit The source literal.
-	 * @param mem_id The destination memory address.
-	 */
-	void
-	move_16_into_mem(uint16_t lit, uint64_t address)
-	{
-		push_instruction(MOVE_16_INTO_MEM);
-		push(lit);
-		push(address);
-	}
-
-	/**
-	 * @brief Adds a MOVE_32_INTO_MEM instruction to the program.
-	 * @param lit The source literal.
-	 * @param mem_id The destination memory address.
-	 */
-	void
-	move_32_into_mem(uint32_t lit, uint64_t address)
-	{
-		push_instruction(MOVE_32_INTO_MEM);
-		push(lit);
-		push(address);
-	}
-
-	/**
-	 * @brief Adds a MOVE_64_INTO_MEM instruction to the program.
-	 * @param lit The source literal.
-	 * @param mem_id The destination memory address.
-	 */
-	void
-	move_64_into_mem(uint64_t lit, uint64_t address)
-	{
-		push_instruction(MOVE_64_INTO_MEM);
-		push(lit);
-		push(address);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_INTO_REG instruction to the program.
+	 * @brief Adds a MOVE instruction to the program.
 	 * @param reg_id_1 The source register.
 	 * @param reg_id_2 The destination register.
 	 */
 	void
-	move_reg_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+	move(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(MOVE_REG_INTO_REG);
+		push_instruction(MOVE);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a MOVE_REG_INTO_MEM_8 instruction to the program.
-	 * @param reg_id The source register.
-	 * @param address The destination memory address.
-	 */
-	void
-	move_reg_into_mem_8(uint8_t reg_id, uint64_t address)
-	{
-		push_instruction(MOVE_REG_INTO_MEM_8);
-		push(reg_id);
-		push(address);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_INTO_MEM_16 instruction to the program.
-	 * @param reg_id The source register.
-	 * @param address The destination memory address.
-	 */
-	void
-	move_reg_into_mem_16(uint8_t reg_id, uint64_t address)
-	{
-		push_instruction(MOVE_REG_INTO_MEM_16);
-		push(reg_id);
-		push(address);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_INTO_MEM_32 instruction to the program.
-	 * @param reg_id The source register.
-	 * @param address The destination memory address.
-	 */
-	void
-	move_reg_into_mem_32(uint8_t reg_id, uint64_t address)
-	{
-		push_instruction(MOVE_REG_INTO_MEM_32);
-		push(reg_id);
-		push(address);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_INTO_MEM_64 instruction to the program.
-	 * @param reg_id The source register.
-	 * @param address The destination memory address.
-	 */
-	void
-	move_reg_into_mem_64(uint8_t reg_id, uint64_t address)
-	{
-		push_instruction(MOVE_REG_INTO_MEM_64);
-		push(reg_id);
-		push(address);
-	}
-
-	/**
-	 * @brief Adds a MOVE_MEM_8_INTO_REG instruction to the program.
-	 * @param address The source memory address.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_mem_8_into_reg(uint64_t address, uint8_t reg_id)
-	{
-		push_instruction(MOVE_MEM_8_INTO_REG);
-		push(address);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_MEM_16_INTO_REG instruction to the program.
-	 * @param address The source memory address.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_mem_16_into_reg(uint64_t address, uint8_t reg_id)
-	{
-		push_instruction(MOVE_MEM_16_INTO_REG);
-		push(address);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_MEM_32_INTO_REG instruction to the program.
-	 * @param address The source memory address.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_mem_32_into_reg(uint64_t address, uint8_t reg_id)
-	{
-		push_instruction(MOVE_MEM_32_INTO_REG);
-		push(address);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_MEM_64_INTO_REG instruction to the program.
-	 * @param address The source memory address.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_mem_64_into_reg(uint64_t address, uint8_t reg_id)
-	{
-		push_instruction(MOVE_MEM_64_INTO_REG);
-		push(address);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_POINTER_8_INTO_REG instruction to the program.
+	 * @brief Adds a LOAD_PTR_8 instruction to the program.
 	 * @param reg_id_1 The source register that holds a pointer.
 	 * @param reg_id_2 The destination register.
 	 */
 	void
-	move_reg_pointer_8_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+	load_ptr_8(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(MOVE_REG_POINTER_8_INTO_REG);
+		push_instruction(LOAD_PTR_8);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a MOVE_REG_POINTER_16_INTO_REG instruction to the program.
+	 * @brief Adds a LOAD_PTR_16 instruction to the program.
 	 * @param reg_id_1 The source register that holds a pointer.
 	 * @param reg_id_2 The destination register.
 	 */
 	void
-	move_reg_pointer_16_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+	load_ptr_16(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(MOVE_REG_POINTER_16_INTO_REG);
+		push_instruction(LOAD_PTR_16);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a MOVE_REG_POINTER_32_INTO_REG instruction to the program.
+	 * @brief Adds a LOAD_PTR_32 instruction to the program.
 	 * @param reg_id_1 The source register that holds a pointer.
 	 * @param reg_id_2 The destination register.
 	 */
 	void
-	move_reg_pointer_32_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+	load_ptr_32(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(MOVE_REG_POINTER_32_INTO_REG);
+		push_instruction(LOAD_PTR_32);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a MOVE_REG_POINTER_64_INTO_REG instruction to the program.
+	 * @brief Adds a LOAD_PTR_64 instruction to the program.
 	 * @param reg_id_1 The source register that holds a pointer.
 	 * @param reg_id_2 The destination register.
 	 */
 	void
-	move_reg_pointer_64_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+	load_ptr_64(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(MOVE_REG_POINTER_64_INTO_REG);
+		push_instruction(LOAD_PTR_64);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a MOVE_REG_INTO_REG_POINTER_8 instruction to the program.
+	 * @brief Adds a STORE_PTR_8 instruction to the program.
 	 * @param reg_id_1 The source register.
 	 * @param reg_id_2 The destination register that holds a pointer.
 	 */
 	void
-	move_reg_into_reg_pointer_8(uint8_t reg_id_1, uint8_t reg_id_2)
+	store_ptr_8(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(MOVE_REG_INTO_REG_POINTER_8);
+		push_instruction(STORE_PTR_8);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a MOVE_REG_INTO_REG_POINTER_16 instruction to the program.
+	 * @brief Adds a STORE_PTR_16 instruction to the program.
 	 * @param reg_id_1 The source register.
 	 * @param reg_id_2 The destination register that holds a pointer.
 	 */
 	void
-	move_reg_into_reg_pointer_16(uint8_t reg_id_1, uint8_t reg_id_2)
+	store_ptr_16(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(MOVE_REG_INTO_REG_POINTER_16);
+		push_instruction(STORE_PTR_16);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a MOVE_REG_INTO_REG_POINTER_32 instruction to the program.
+	 * @brief Adds a STORE_PTR_32 instruction to the program.
 	 * @param reg_id_1 The source register.
 	 * @param reg_id_2 The destination register that holds a pointer.
 	 */
 	void
-	move_reg_into_reg_pointer_32(uint8_t reg_id_1, uint8_t reg_id_2)
+	store_ptr_32(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(MOVE_REG_INTO_REG_POINTER_32);
+		push_instruction(STORE_PTR_32);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a MOVE_REG_INTO_REG_POINTER_64 instruction to the program.
+	 * @brief Adds a STORE_PTR_64 instruction to the program.
 	 * @param reg_id_1 The source register.
 	 * @param reg_id_2 The destination register that holds a pointer.
 	 */
 	void
-	move_reg_into_reg_pointer_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	store_ptr_64(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(MOVE_REG_INTO_REG_POINTER_64);
+		push_instruction(STORE_PTR_64);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a MOVE_FRAME_OFFSET_8_INTO_REG instruction to the program.
-	 * @param offset The source offset to the start of the stack frame.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_frame_offset_8_into_reg(int64_t offset, uint8_t reg_id)
-	{
-		push_instruction(MOVE_FRAME_OFFSET_8_INTO_REG);
-		push(offset);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_FRAME_OFFSET_16_INTO_REG instruction to the program.
-	 * @param offset The source offset to the start of the stack frame.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_frame_offset_16_into_reg(int64_t offset, uint8_t reg_id)
-	{
-		push_instruction(MOVE_FRAME_OFFSET_16_INTO_REG);
-		push(offset);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_FRAME_OFFSET_32_INTO_REG instruction to the program.
-	 * @param offset The source offset to the start of the stack frame.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_frame_offset_32_into_reg(int64_t offset, uint8_t reg_id)
-	{
-		push_instruction(MOVE_FRAME_OFFSET_32_INTO_REG);
-		push(offset);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_FRAME_OFFSET_64_INTO_REG instruction to the program.
-	 * @param offset The source offset to the start of the stack frame.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_frame_offset_64_into_reg(int64_t offset, uint8_t reg_id)
-	{
-		push_instruction(MOVE_FRAME_OFFSET_64_INTO_REG);
-		push(offset);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_INTO_FRAME_OFFSET_8 instruction to the program.
-	 * @param reg_id The source register.
-	 * @param offset The destination offset to the start of the stack frame.
-	 */
-	void
-	move_reg_into_frame_offset_8(uint8_t reg_id, int64_t offset)
-	{
-		push_instruction(MOVE_REG_INTO_FRAME_OFFSET_8);
-		push(reg_id);
-		push(offset);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_INTO_FRAME_OFFSET_16 instruction to the program.
-	 * @param reg_id The source register.
-	 * @param offset The destination offset to the start of the stack frame.
-	 */
-	void
-	move_reg_into_frame_offset_16(uint8_t reg_id, int64_t offset)
-	{
-		push_instruction(MOVE_REG_INTO_FRAME_OFFSET_32);
-		push(reg_id);
-		push(offset);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_INTO_FRAME_OFFSET_32 instruction to the program.
-	 * @param reg_id The source register.
-	 * @param offset The destination offset to the start of the stack frame.
-	 */
-	void
-	move_reg_into_frame_offset_32(uint8_t reg_id, int64_t offset)
-	{
-		push_instruction(MOVE_REG_INTO_FRAME_OFFSET_32);
-		push(reg_id);
-		push(offset);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_INTO_FRAME_OFFSET_64 instruction to the program.
-	 * @param reg_id The source register.
-	 * @param offset The destination offset to the start of the stack frame.
-	 */
-	void
-	move_reg_into_frame_offset_64(uint8_t reg_id, int64_t offset)
-	{
-		push_instruction(MOVE_REG_INTO_FRAME_OFFSET_64);
-		push(reg_id);
-		push(offset);
-	}
-
-	/**
-	 * @brief Adds a MOVE_STACK_TOP_OFFSET_8_INTO_REG instruction to the program.
-	 * @param offset The source offset to the top of the stack.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_stack_top_offset_8_into_reg(int64_t offset, uint8_t reg_id)
-	{
-		push_instruction(MOVE_STACK_TOP_OFFSET_8_INTO_REG);
-		push(offset);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_STACK_TOP_OFFSET_16_INTO_REG instruction to the program.
-	 * @param offset The source offset to the top of the stack.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_stack_top_offset_16_into_reg(int64_t offset, uint8_t reg_id)
-	{
-		push_instruction(MOVE_STACK_TOP_OFFSET_16_INTO_REG);
-		push(offset);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_STACK_TOP_OFFSET_32_INTO_REG instruction to the program.
-	 * @param offset The source offset to the top of the stack.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_stack_top_offset_32_into_reg(int64_t offset, uint8_t reg_id)
-	{
-		push_instruction(MOVE_STACK_TOP_OFFSET_32_INTO_REG);
-		push(offset);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_STACK_TOP_OFFSET_64_INTO_REG instruction to the program.
-	 * @param offset The source offset to the top of the stack.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_stack_top_offset_64_into_reg(int64_t offset, uint8_t reg_id)
-	{
-		push_instruction(MOVE_STACK_TOP_OFFSET_64_INTO_REG);
-		push(offset);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_INTO_STACK_TOP_OFFSET_8 instruction to the program.
-	 * @param reg_id The source register.
-	 * @param offset The destination offset to the top of the stack.
-	 */
-	void
-	move_reg_into_stack_top_offset_8(uint8_t reg_id, int64_t offset)
-	{
-		push_instruction(MOVE_REG_INTO_STACK_TOP_OFFSET_8);
-		push(reg_id);
-		push(offset);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_INTO_STACK_TOP_OFFSET_16 instruction to the program.
-	 * @param reg_id The source register.
-	 * @param offset The destination offset to the top of the stack.
-	 */
-	void
-	move_reg_into_stack_top_offset_16(uint8_t reg_id, int64_t offset)
-	{
-		push_instruction(MOVE_REG_INTO_STACK_TOP_OFFSET_32);
-		push(reg_id);
-		push(offset);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_INTO_STACK_TOP_OFFSET_32 instruction to the program.
-	 * @param reg_id The source register.
-	 * @param offset The destination offset to the top of the stack.
-	 */
-	void
-	move_reg_into_stack_top_offset_32(uint8_t reg_id, int64_t offset)
-	{
-		push_instruction(MOVE_REG_INTO_STACK_TOP_OFFSET_32);
-		push(reg_id);
-		push(offset);
-	}
-
-	/**
-	 * @brief Adds a MOVE_REG_INTO_STACK_TOP_OFFSET_64 instruction to the program.
-	 * @param reg_id The source register.
-	 * @param offset The destination offset to the top of the stack.
-	 */
-	void
-	move_reg_into_stack_top_offset_64(uint8_t reg_id, int64_t offset)
-	{
-		push_instruction(MOVE_REG_INTO_STACK_TOP_OFFSET_64);
-		push(reg_id);
-		push(offset);
-	}
-
-	/**
-	 * @brief Adds a MOVE_STACK_TOP_ADDRESS_INTO_REG instruction to the program.
-	 * @param reg_id The destination register.
-	 */
-	void
-	move_stack_top_address_into_reg(uint8_t reg_id)
-	{
-		push_instruction(MOVE_STACK_TOP_ADDRESS_INTO_REG);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8 instruction to the program.
+	 * @brief Adds a MEM_COPY instruction to the program.
 	 * @param reg_id_src The source register that holds a pointer.
 	 * @param reg_id_dst The destination register that holds a pointer.
 	 * @param size The number of bytes to copy.
 	 */
 	void
-	mem_copy_reg_pointer_8_to_reg_pointer_8(uint8_t reg_id_src, uint8_t reg_id_dst, uint64_t size)
+	mem_copy(uint8_t reg_id_src, uint8_t reg_id_dst, uint64_t size)
 	{
-		push_instruction(MEM_COPY_REG_POINTER_8_TO_REG_POINTER_8);
+		push_instruction(MEM_COPY);
 		push(reg_id_src);
 		push(reg_id_dst);
 		push(size);
 	}
 
 	/**
-	 * @brief Adds a ADD_8_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	add_8_into_reg(uint8_t lit, uint8_t reg_id)
-	{
-		push_instruction(ADD_8_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a ADD_16_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	add_16_into_reg(uint16_t lit, uint8_t reg_id)
-	{
-		push_instruction(ADD_16_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a ADD_32_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	add_32_into_reg(uint32_t lit, uint8_t reg_id)
-	{
-		push_instruction(ADD_32_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a ADD_64_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	add_64_into_reg(uint64_t lit, uint8_t reg_id)
-	{
-		push_instruction(ADD_64_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a ADD_REG_INTO_REG instruction to the program.
-	 * @param lit The source register.
-	 * @param reg_id The destination register.
-	 */
-	void
-	add_reg_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
-	{
-		push_instruction(ADD_REG_INTO_REG);
-		push(reg_id_1);
-		push(reg_id_2);
-	}
-
-	/**
-	 * @brief Adds a SUBTRACT_8_FROM_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	subtract_8_from_reg(uint8_t lit, uint8_t reg_id)
-	{
-		push_instruction(SUBTRACT_8_FROM_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a SUBTRACT_16_FROM_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	subtract_16_from_reg(uint16_t lit, uint8_t reg_id)
-	{
-		push_instruction(SUBTRACT_16_FROM_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a SUBTRACT_32_FROM_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	subtract_32_from_reg(uint32_t lit, uint8_t reg_id)
-	{
-		push_instruction(SUBTRACT_32_FROM_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a SUBTRACT_64_FROM_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	subtract_64_from_reg(uint64_t lit, uint8_t reg_id)
-	{
-		push_instruction(SUBTRACT_64_FROM_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a SUBTRACT_REG_FROM_REG instruction to the program.
-	 * @param lit The source register.
-	 * @param reg_id The destination register.
-	 */
-	void
-	subtract_reg_from_reg(uint8_t reg_id_1, uint8_t reg_id_2)
-	{
-		push_instruction(SUBTRACT_REG_FROM_REG);
-		push(reg_id_1);
-		push(reg_id_2);
-	}
-
-	/**
-	 * @brief Adds a MULTIPLY_8_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	multiply_8_into_reg(uint8_t lit, uint8_t reg_id)
-	{
-		push_instruction(MULTIPLY_8_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MULTIPLY_16_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	multiply_16_into_reg(uint16_t lit, uint8_t reg_id)
-	{
-		push_instruction(MULTIPLY_16_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MULTIPLY_32_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	multiply_32_into_reg(uint32_t lit, uint8_t reg_id)
-	{
-		push_instruction(MULTIPLY_32_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MULTIPLY_64_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	multiply_64_into_reg(uint64_t lit, uint8_t reg_id)
-	{
-		push_instruction(MULTIPLY_64_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a MULTIPLY_REG_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	multiply_reg_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
-	{
-		push_instruction(MULTIPLY_REG_INTO_REG);
-		push(reg_id_1);
-		push(reg_id_2);
-	}
-
-	/**
-	 * @brief Adds a DIVIDE_8_FROM_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	divide_8_from_reg(uint8_t lit, uint8_t reg_id)
-	{
-		push_instruction(DIVIDE_8_FROM_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a DIVIDE_16_FROM_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	divide_16_from_reg(uint16_t lit, uint8_t reg_id)
-	{
-		push_instruction(DIVIDE_16_FROM_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a DIVIDE_32_FROM_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	divide_32_from_reg(uint32_t lit, uint8_t reg_id)
-	{
-		push_instruction(DIVIDE_32_FROM_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a DIVIDE_64_FROM_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	divide_64_from_reg(uint64_t lit, uint8_t reg_id)
-	{
-		push_instruction(DIVIDE_64_FROM_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a DIVIDE_REG_INTO_REG instruction to the program.
+	 * @brief Adds a ADD_INT_8 instruction to the program.
 	 * @param reg_id_1 The source register.
 	 * @param reg_id_2 The destination register.
 	 */
 	void
-	divide_reg_from_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+	add_int_8(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(DIVIDE_REG_FROM_REG);
+		push_instruction(ADD_INT_8);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a TAKE_MODULO_8_FROM_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	take_modulo_8_of_reg(uint8_t lit, uint8_t reg_id)
-	{
-		push_instruction(TAKE_MODULO_8_OF_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a TAKE_MODULO_16_FROM_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	take_modulo_16_of_reg(uint16_t lit, uint8_t reg_id)
-	{
-		push_instruction(TAKE_MODULO_16_OF_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a TAKE_MODULO_32_FROM_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	take_modulo_32_of_reg(uint32_t lit, uint8_t reg_id)
-	{
-		push_instruction(TAKE_MODULO_32_OF_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a TAKE_MODULO_64_FROM_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	take_modulo_64_of_reg(uint64_t lit, uint8_t reg_id)
-	{
-		push_instruction(TAKE_MODULO_64_OF_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a TAKE_MODULO_REG_OF_REG instruction to the program.
+	 * @brief Adds a ADD_INT_16 instruction to the program.
 	 * @param reg_id_1 The source register.
 	 * @param reg_id_2 The destination register.
 	 */
 	void
-	take_modulo_reg_of_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+	add_int_16(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(TAKE_MODULO_REG_OF_REG);
+		push_instruction(ADD_INT_16);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a AND_8_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	and_8_into_reg(uint8_t lit, uint8_t reg_id)
-	{
-		push_instruction(AND_8_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a AND_16_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	and_16_into_reg(uint16_t lit, uint8_t reg_id)
-	{
-		push_instruction(AND_16_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a AND_32_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	and_32_into_reg(uint32_t lit, uint8_t reg_id)
-	{
-		push_instruction(AND_32_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a AND_64_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	and_64_into_reg(uint64_t lit, uint8_t reg_id)
-	{
-		push_instruction(AND_64_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a AND_REG_INTO_REG instruction to the program.
+	 * @brief Adds a ADD_INT_32 instruction to the program.
 	 * @param reg_id_1 The source register.
 	 * @param reg_id_2 The destination register.
 	 */
 	void
-	and_reg_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+	add_int_32(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(AND_REG_INTO_REG);
+		push_instruction(ADD_INT_32);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a OR_8_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	or_8_into_reg(uint8_t lit, uint8_t reg_id)
-	{
-		push_instruction(OR_8_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a OR_16_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	or_16_into_reg(uint16_t lit, uint8_t reg_id)
-	{
-		push_instruction(OR_16_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a OR_32_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	or_32_into_reg(uint32_t lit, uint8_t reg_id)
-	{
-		push_instruction(OR_32_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a OR_64_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	or_64_into_reg(uint64_t lit, uint8_t reg_id)
-	{
-		push_instruction(OR_64_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a OR_REG_INTO_REG instruction to the program.
-	 * @param reg_id_1 The source literal.
+	 * @brief Adds a ADD_INT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
 	 * @param reg_id_2 The destination register.
 	 */
 	void
-	or_reg_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+	add_int_64(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(OR_REG_INTO_REG);
+		push_instruction(ADD_INT_64);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a XOR_8_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	xor_8_into_reg(uint8_t lit, uint8_t reg_id)
-	{
-		push_instruction(XOR_8_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a XOR_16_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	xor_16_into_reg(uint16_t lit, uint8_t reg_id)
-	{
-		push_instruction(XOR_16_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a XOR_32_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	xor_32_into_reg(uint32_t lit, uint8_t reg_id)
-	{
-		push_instruction(XOR_32_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a XOR_64_INTO_REG instruction to the program.
-	 * @param lit The source literal.
-	 * @param reg_id The destination register.
-	 */
-	void
-	xor_64_into_reg(uint64_t lit, uint8_t reg_id)
-	{
-		push_instruction(XOR_64_INTO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a XOR_REG_INTO_REG instruction to the program.
-	 * @param red_id_1 The source literal.
+	 * @brief Adds a ADD_FLT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
 	 * @param reg_id_2 The destination register.
 	 */
 	void
-	xor_reg_into_reg(uint8_t reg_id_1, uint8_t reg_id_2)
+	add_flt_32(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(XOR_REG_INTO_REG);
+		push_instruction(ADD_FLT_32);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a LEFT_SHIFT_REG_BY_8 instruction to the program.
-	 * @param reg_id The destination register.
-	 * @param shift_size The source shift size.
+	 * @brief Adds a ADD_FLT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
 	 */
 	void
-	left_shift_reg_by_8(uint8_t reg_id, uint8_t shift_size)
+	add_flt_64(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(LEFT_SHIFT_REG_BY_8);
-		push(reg_id);
-		push(shift_size);
-	}
-
-	/**
-	 * @brief Adds a LEFT_SHIFT_REG_BY_REG instruction to the program.
-	 * @param reg_id_1 The destination register.
-	 * @param reg_id_2 The source register.
-	 */
-	void
-	left_shift_reg_by_reg(uint8_t reg_id_1, uint8_t reg_id_2)
-	{
-		push_instruction(LEFT_SHIFT_REG_BY_REG);
+		push_instruction(ADD_FLT_64);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a RIGHT_SHIFT_REG_BY_8 instruction to the program.
-	 * @param reg_id The destination register.
-	 * @param shift_size The source shift size.
+	 * @brief Adds a SUB_INT_8 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
 	 */
 	void
-	right_shift_reg_by_8(uint8_t reg_id, uint8_t shift_size)
+	sub_int_8(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(RIGHT_SHIFT_REG_BY_8);
-		push(reg_id);
-		push(shift_size);
-	}
-	/**
-	 * @brief Adds a RIGHT_SHIFT_REG_BY_REG instruction to the program.
-	 * @param reg_id_1 The destination register.
-	 * @param reg_id_2 The source register.
-	 */
-	void
-	right_shift_reg_by_reg(uint8_t reg_id_1, uint8_t reg_id_2)
-	{
-		push_instruction(RIGHT_SHIFT_REG_BY_REG);
+		push_instruction(SUB_INT_8);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a INCREMENT_REG instruction to the program.
-	 * @param reg_id The destination register.
+	 * @brief Adds a SUB_INT_16 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
 	 */
 	void
-	increment_reg(uint8_t reg_id)
+	sub_int_16(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(INCREMENT_REG);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a DECREMENT_REG instruction to the program.
-	 * @param reg_id The destination register.
-	 */
-	void
-	decrement_reg(uint8_t reg_id)
-	{
-		push_instruction(DECREMENT_REG);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a NOT_REG instruction to the program.
-	 * @param reg_id The destination register.
-	 */
-	void
-	not_reg(uint8_t reg_id)
-	{
-		push_instruction(NOT_REG);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a COMPARE_8_TO_REG instruction to the program.
-	 * @param lit The LHS literal.
-	 * @param reg_id The RHS register.
-	 */
-	void
-	compare_8_to_reg(uint8_t lit, uint8_t reg_id)
-	{
-		push_instruction(COMPARE_8_TO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a COMPARE_16_TO_REG instruction to the program.
-	 * @param lit The LHS literal.
-	 * @param reg_id The RHS register.
-	 */
-	void
-	compare_16_to_reg(uint16_t lit, uint8_t reg_id)
-	{
-		push_instruction(COMPARE_16_TO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a COMPARE_32_TO_REG instruction to the program.
-	 * @param lit The LHS literal.
-	 * @param reg_id The RHS register.
-	 */
-	void
-	compare_32_to_reg(uint32_t lit, uint8_t reg_id)
-	{
-		push_instruction(COMPARE_32_TO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a COMPARE_64_TO_REG instruction to the program.
-	 * @param lit The LHS literal.
-	 * @param reg_id The RHS register.
-	 */
-	void
-	compare_64_to_reg(uint64_t lit, uint8_t reg_id)
-	{
-		push_instruction(COMPARE_64_TO_REG);
-		push(lit);
-		push(reg_id);
-	}
-
-	/**
-	 * @brief Adds a COMPARE_REG_TO_8 instruction to the program.
-	 * @param reg_id The LHS register.
-	 * @param lit The RHS literal.
-	 */
-	void
-	compare_reg_to_8(uint8_t reg_id, uint8_t lit)
-	{
-		push_instruction(COMPARE_REG_TO_8);
-		push(reg_id);
-		push(lit);
-	}
-
-	/**
-	 * @brief Adds a COMPARE_REG_TO_16 instruction to the program.
-	 * @param reg_id The LHS register.
-	 * @param lit The RHS literal.
-	 */
-	void
-	compare_reg_to_16(uint8_t reg_id, uint16_t lit)
-	{
-		push_instruction(COMPARE_REG_TO_16);
-		push(reg_id);
-		push(lit);
-	}
-
-	/**
-	 * @brief Adds a COMPARE_REG_TO_32 instruction to the program.
-	 * @param reg_id The LHS register.
-	 * @param lit The RHS literal.
-	 */
-	void
-	compare_reg_to_32(uint8_t reg_id, uint32_t lit)
-	{
-		push_instruction(COMPARE_REG_TO_32);
-		push(reg_id);
-		push(lit);
-	}
-
-	/**
-	 * @brief Adds a COMPARE_REG_TO_64 instruction to the program.
-	 * @param reg_id The LHS register.
-	 * @param lit The RHS literal.
-	 */
-	void
-	compare_reg_to_64(uint8_t reg_id, uint64_t lit)
-	{
-		push_instruction(COMPARE_REG_TO_64);
-		push(reg_id);
-		push(lit);
-	}
-
-	/**
-	 * @brief Adds a COMPARE_REG_TO_REG_SIGNED instruction to the program.
-	 * @param reg_id The LHS register.
-	 * @param reg_id The RHS register.
-	 */
-	void
-	compare_reg_to_reg_signed(uint8_t reg_id_1, uint8_t reg_id_2)
-	{
-		push_instruction(COMPARE_REG_TO_REG_SIGNED);
+		push_instruction(SUB_INT_16);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a COMPARE_REG_TO_REG_UNSIGNED instruction to the program.
-	 * @param reg_id The LHS register.
-	 * @param reg_id The RHS register.
+	 * @brief Adds a SUB_INT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
 	 */
 	void
-	compare_reg_to_reg_unsigned(uint8_t reg_id_1, uint8_t reg_id_2)
+	sub_int_32(uint8_t reg_id_1, uint8_t reg_id_2)
 	{
-		push_instruction(COMPARE_REG_TO_REG_UNSIGNED);
+		push_instruction(SUB_INT_32);
 		push(reg_id_1);
 		push(reg_id_2);
 	}
 
 	/**
-	 * @brief Adds a SET_REG_IF_GREATER instruction to the program.
+	 * @brief Adds a SUB_INT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	sub_int_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(SUB_INT_64);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a SUB_FLT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	sub_flt_32(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(SUB_FLT_32);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a SUB_FLT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	sub_flt_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(SUB_FLT_64);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a MUL_INT_8 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	mul_int_8(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(MUL_INT_8);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a MUL_INT_16 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	mul_int_16(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(MUL_INT_16);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a MUL_INT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	mul_int_32(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(MUL_INT_32);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a MUL_INT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	mul_int_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(MUL_INT_64);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a MUL_FLT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	mul_flt_32(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(MUL_FLT_32);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a MUL_FLT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	mul_flt_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(MUL_FLT_64);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a DIV_INT_8 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	div_int_8(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(DIV_INT_8);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a DIV_INT_16 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	div_int_16(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(DIV_INT_16);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a DIV_INT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	div_int_32(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(DIV_INT_32);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a DIV_INT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	div_int_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(DIV_INT_64);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a DIV_FLT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	div_flt_32(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(DIV_FLT_32);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a DIV_FLT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	div_flt_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(DIV_FLT_64);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a MOD_INT_8 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	mod_int_8(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(MOD_INT_8);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a MOD_INT_16 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	mod_int_16(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(MOD_INT_16);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a MOD_INT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	mod_int_32(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(MOD_INT_32);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a MOD_INT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	mod_int_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(MOD_INT_64);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a AND_INT_8 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	and_int_8(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(AND_INT_8);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a AND_INT_16 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	and_int_16(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(AND_INT_16);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a AND_INT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	and_int_32(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(AND_INT_32);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a AND_INT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	and_int_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(AND_INT_64);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a OR_INT_8 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	or_int_8(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(OR_INT_8);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a OR_INT_16 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	or_int_16(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(OR_INT_16);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a OR_INT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	or_int_32(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(OR_INT_32);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a OR_INT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	or_int_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(OR_INT_64);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a XOR_INT_8 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	xor_int_8(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(XOR_INT_8);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a XOR_INT_16 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	xor_int_16(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(XOR_INT_16);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a XOR_INT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	xor_int_32(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(XOR_INT_32);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a XOR_INT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+
+	void
+	xor_int_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(XOR_INT_64);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a SHL_INT_8 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	shl_int_8(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(SHL_INT_8);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a SHL_INT_16 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	shl_int_16(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(SHL_INT_16);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a SHL_INT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	shl_int_32(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(SHL_INT_32);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a SHL_INT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	shl_int_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(SHL_INT_64);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a SHR_INT_8 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	shr_int_8(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(SHR_INT_8);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a SHR_INT_16 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	shr_int_16(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(SHR_INT_16);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a SHR_INT_32 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	shr_int_32(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(SHR_INT_32);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a SHR_INT_64 instruction to the program.
+	 * @param reg_id_1 The source register.
+	 * @param reg_id_2 The destination register.
+	 */
+	void
+	shr_int_64(uint8_t reg_id_1, uint8_t reg_id_2)
+	{
+		push_instruction(SHR_INT_64);
+		push(reg_id_1);
+		push(reg_id_2);
+	}
+
+	/**
+	 * @brief Adds a INC_INT_8 instruction to the program.
 	 * @param reg_id The destination register.
 	 */
 	void
-	set_reg_if_greater(uint8_t reg_id)
+	inc_int_8(uint8_t reg_id)
 	{
-		push_instruction(SET_REG_IF_GREATER);
+		push_instruction(INC_INT_8);
 		push(reg_id);
 	}
 
 	/**
-	 * @brief Adds a SET_REG_IF_GREATER_OR_EQUAL instruction to the program.
+	 * @brief Adds a INC_INT_16 instruction to the program.
 	 * @param reg_id The destination register.
 	 */
 	void
-	set_reg_if_greater_or_equal(uint8_t reg_id)
+	inc_int_16(uint8_t reg_id)
 	{
-		push_instruction(SET_REG_IF_GREATER_OR_EQUAL);
+		push_instruction(INC_INT_16);
 		push(reg_id);
 	}
 
 	/**
-	 * @brief Adds a SET_REG_IF_LESS instruction to the program.
+	 * @brief Adds a INC_INT_32 instruction to the program.
 	 * @param reg_id The destination register.
 	 */
 	void
-	set_reg_if_less(uint8_t reg_id)
+	inc_int_32(uint8_t reg_id)
 	{
-		push_instruction(SET_REG_IF_LESS);
+		push_instruction(INC_INT_32);
 		push(reg_id);
 	}
 
 	/**
-	 * @brief Adds a SET_REG_IF_LESS_OR_EQUAL instruction to the program.
+	 * @brief Adds a INC_INT_64 instruction to the program.
 	 * @param reg_id The destination register.
 	 */
 	void
-	set_reg_if_less_or_equal(uint8_t reg_id)
+	inc_int_64(uint8_t reg_id)
 	{
-		push_instruction(SET_REG_IF_LESS_OR_EQUAL);
+		push_instruction(INC_INT_64);
 		push(reg_id);
 	}
 
 	/**
-	 * @brief Adds a SET_REG_IF_EQUAL instruction to the program.
+	 * @brief Adds a DEC_INT_8 instruction to the program.
 	 * @param reg_id The destination register.
 	 */
 	void
-	set_reg_if_equal(uint8_t reg_id)
+	dec_int_8(uint8_t reg_id)
 	{
-		push_instruction(SET_REG_IF_EQUAL);
+		push_instruction(DEC_INT_8);
 		push(reg_id);
 	}
 
 	/**
-	 * @brief Adds a SET_REG_IF_NOT_EQUAL instruction to the program.
+	 * @brief Adds a DEC_INT_16 instruction to the program.
 	 * @param reg_id The destination register.
 	 */
 	void
-	set_reg_if_not_equal(uint8_t reg_id)
+	dec_int_16(uint8_t reg_id)
 	{
-		push_instruction(SET_REG_IF_NOT_EQUAL);
+		push_instruction(DEC_INT_16);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a DEC_INT_32 instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	dec_int_32(uint8_t reg_id)
+	{
+		push_instruction(DEC_INT_32);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a DEC_INT_64 instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	dec_int_64(uint8_t reg_id)
+	{
+		push_instruction(DEC_INT_64);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a NEG_INT_8 instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	neg_int_8(uint8_t reg_id)
+	{
+		push_instruction(NEG_INT_8);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a NEG_INT_16 instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	neg_int_16(uint8_t reg_id)
+	{
+		push_instruction(NEG_INT_16);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a NEG_INT_32 instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	neg_int_32(uint8_t reg_id)
+	{
+		push_instruction(NEG_INT_32);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a NEG_INT_64 instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	neg_int_64(uint8_t reg_id)
+	{
+		push_instruction(NEG_INT_64);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CAST_INT_TO_FLT_32 instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	cast_int_to_flt_32(uint8_t reg_id)
+	{
+		push_instruction(CAST_INT_TO_FLT_32);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CAST_INT_TO_FLT_64 instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	cast_int_to_flt_64(uint8_t reg_id)
+	{
+		push_instruction(CAST_INT_TO_FLT_64);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CAST_FLT_32_TO_INT instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	cast_flt_32_to_int(uint8_t reg_id)
+	{
+		push_instruction(CAST_FLT_32_TO_INT);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CAST_FLT_64_TO_INT instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	cast_flt_64_to_int(uint8_t reg_id)
+	{
+		push_instruction(CAST_FLT_64_TO_INT);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CMP_INT_8 instruction to the program.
+	 * @param reg_id_1 The register with the compared value.
+	 * @param reg_id_2 The register to compare against.
+	 */
+	void
+	cmp_int_8(uint8_t reg_id_1, uint8_t reg_id)
+	{
+		push_instruction(CMP_INT_8);
+		push(reg_id_1);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CMP_INT_8_U instruction to the program.
+	 * @param reg_id_1 The register with the compared value.
+	 * @param reg_id_2 The register to compare against.
+	 */
+	void
+	cmp_int_8_u(uint8_t reg_id_1, uint8_t reg_id)
+	{
+		push_instruction(CMP_INT_8_U);
+		push(reg_id_1);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CMP_INT_16 instruction to the program.
+	 * @param reg_id_1 The register with the compared value.
+	 * @param reg_id_2 The register to compare against.
+	 */
+	void
+	cmp_int_16(uint8_t reg_id_1, uint8_t reg_id)
+	{
+		push_instruction(CMP_INT_16);
+		push(reg_id_1);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CMP_INT_16_U instruction to the program.
+	 * @param reg_id_1 The register with the compared value.
+	 * @param reg_id_2 The register to compare against.
+	 */
+	void
+	cmp_int_16_u(uint8_t reg_id_1, uint8_t reg_id)
+	{
+		push_instruction(CMP_INT_16_U);
+		push(reg_id_1);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CMP_INT_32 instruction to the program.
+	 * @param reg_id_1 The register with the compared value.
+	 * @param reg_id_2 The register to compare against.
+	 */
+	void
+	cmp_int_32(uint8_t reg_id_1, uint8_t reg_id)
+	{
+		push_instruction(CMP_INT_32);
+		push(reg_id_1);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CMP_INT_32_U instruction to the program.
+	 * @param reg_id_1 The register with the compared value.
+	 * @param reg_id_2 The register to compare against.
+	 */
+	void
+	cmp_int_32_u(uint8_t reg_id_1, uint8_t reg_id)
+	{
+		push_instruction(CMP_INT_32_U);
+		push(reg_id_1);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CMP_INT_64 instruction to the program.
+	 * @param reg_id_1 The register with the compared value.
+	 * @param reg_id_2 The register to compare against.
+	 */
+	void
+	cmp_int_64(uint8_t reg_id_1, uint8_t reg_id)
+	{
+		push_instruction(CMP_INT_64);
+		push(reg_id_1);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CMP_INT_64_U instruction to the program.
+	 * @param reg_id_1 The register with the compared value.
+	 * @param reg_id_2 The register to compare against.
+	 */
+	void
+	cmp_int_64_u(uint8_t reg_id_1, uint8_t reg_id)
+	{
+		push_instruction(CMP_INT_64_U);
+		push(reg_id_1);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CMP_FLT_32 instruction to the program.
+	 * @param reg_id_1 The register with the compared value.
+	 * @param reg_id_2 The register to compare against.
+	 */
+	void
+	cmp_flt_32(uint8_t reg_id_1, uint8_t reg_id)
+	{
+		push_instruction(CMP_FLT_32);
+		push(reg_id_1);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a CMP_FLT_64 instruction to the program.
+	 * @param reg_id_1 The register with the compared value.
+	 * @param reg_id_2 The register to compare against.
+	 */
+	void
+	cmp_flt_64(uint8_t reg_id_1, uint8_t reg_id)
+	{
+		push_instruction(CMP_FLT_64);
+		push(reg_id_1);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a SET_IF_GT instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	set_if_gt(uint8_t reg_id)
+	{
+		push_instruction(SET_IF_GT);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a SET_IF_GEQ instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	set_if_geq(uint8_t reg_id)
+	{
+		push_instruction(SET_IF_GEQ);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a SET_IF_LT instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	set_if_lt(uint8_t reg_id)
+	{
+		push_instruction(SET_IF_LT);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a SET_IF_LEQ instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	set_if_leq(uint8_t reg_id)
+	{
+		push_instruction(SET_IF_LEQ);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a SET_IF_EQ instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	set_if_eq(uint8_t reg_id)
+	{
+		push_instruction(SET_IF_EQ);
+		push(reg_id);
+	}
+
+	/**
+	 * @brief Adds a SET_IF_NEQ instruction to the program.
+	 * @param reg_id The destination register.
+	 */
+	void
+	set_if_neq(uint8_t reg_id)
+	{
+		push_instruction(SET_IF_NEQ);
 		push(reg_id);
 	}
 
@@ -1548,119 +1331,75 @@ struct Assembler : public BufferBuilder
 	}
 
 	/**
-	 * @brief Adds a JUMP_IF_GREATER instruction to the program.
+	 * @brief Adds a JUMP_IF_GT instruction to the program.
 	 * @param label The label to jump to.
 	 */
 	void
-	jump_if_greater(const std::string &label)
+	jump_if_gt(const std::string &label)
 	{
-		push_instruction(JUMP_IF_GREATER);
+		push_instruction(JUMP_IF_GT);
 		add_label_reference(label);
 		push<uint64_t>(0); // This will be updated later
 	}
 
 	/**
-	 * @brief Adds a JUMP_IF_GREATER_OR_EQUAL instruction to the program.
+	 * @brief Adds a JUMP_IF_GEQ instruction to the program.
 	 * @param label The label to jump to.
 	 */
 	void
-	jump_if_greater_or_equal(const std::string &label)
+	jump_if_geq(const std::string &label)
 	{
-		push_instruction(JUMP_IF_GREATER_OR_EQUAL);
+		push_instruction(JUMP_IF_GEQ);
 		add_label_reference(label);
 		push<uint64_t>(0); // This will be updated later
 	}
 
 	/**
-	 * @brief Adds a JUMP_IF_LESS instruction to the program.
+	 * @brief Adds a JUMP_IF_LT instruction to the program.
 	 * @param label The label to jump to.
 	 */
 	void
-	jump_if_less(const std::string &label)
+	jump_if_lt(const std::string &label)
 	{
-		push_instruction(JUMP_IF_LESS);
+		push_instruction(JUMP_IF_LT);
 		add_label_reference(label);
 		push<uint64_t>(0); // This will be updated later
 	}
 
 	/**
-	 * @brief Adds a JUMP_IF_LESS_OR_EQUAL instruction to the program.
+	 * @brief Adds a JUMP_IF_LEQ instruction to the program.
 	 * @param label The label to jump to.
 	 */
 	void
-	jump_if_less_or_equal(const std::string &label)
+	jump_if_leq(const std::string &label)
 	{
-		push_instruction(JUMP_IF_LESS_OR_EQUAL);
+		push_instruction(JUMP_IF_LEQ);
 		add_label_reference(label);
 		push<uint64_t>(0); // This will be updated later
 	}
 
 	/**
-	 * @brief Adds a JUMP_IF_EQUAL instruction to the program.
+	 * @brief Adds a JUMP_IF_EQ instruction to the program.
 	 * @param label The label to jump to.
 	 */
 	void
-	jump_if_equal(const std::string &label)
+	jump_if_eq(const std::string &label)
 	{
-		push_instruction(JUMP_IF_EQUAL);
+		push_instruction(JUMP_IF_EQ);
 		add_label_reference(label);
 		push<uint64_t>(0); // This will be updated later
 	}
 
 	/**
-	 * @brief Adds a JUMP_IF_NOT_EQUAL instruction to the program.
+	 * @brief Adds a JUMP_IF_NEQ instruction to the program.
 	 * @param label The label to jump to.
 	 */
 	void
-	jump_if_not_equal(const std::string &label)
+	jump_if_neq(const std::string &label)
 	{
-		push_instruction(JUMP_IF_NOT_EQUAL);
+		push_instruction(JUMP_IF_NEQ);
 		add_label_reference(label);
 		push<uint64_t>(0); // This will be updated later
-	}
-
-	/**
-	 * @brief Adds a PUSH_8 instruction to the program.
-	 * @param lit The source literal to push.
-	 */
-	void
-	push_8(uint8_t lit)
-	{
-		push_instruction(PUSH_8);
-		push(lit);
-	}
-
-	/**
-	 * @brief Adds a PUSH_16 instruction to the program.
-	 * @param lit The source literal to push.
-	 */
-	void
-	push_16(uint16_t lit)
-	{
-		push_instruction(PUSH_16);
-		push(lit);
-	}
-
-	/**
-	 * @brief Adds a PUSH_32 instruction to the program.
-	 * @param lit The source literal to push.
-	 */
-	void
-	push_32(uint32_t lit)
-	{
-		push_instruction(PUSH_32);
-		push(lit);
-	}
-
-	/**
-	 * @brief Adds a PUSH_64 instruction to the program.
-	 * @param lit The source literal to push.
-	 */
-	void
-	push_64(uint64_t lit)
-	{
-		push_instruction(PUSH_64);
-		push(lit);
 	}
 
 	/**

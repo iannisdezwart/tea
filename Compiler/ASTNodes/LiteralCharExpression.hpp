@@ -43,7 +43,7 @@ struct LiteralCharExpression final : public ReadValue
 	get_value(Assembler &assembler, uint8_t result_reg)
 		const override
 	{
-		assembler.move_8_into_reg(value, result_reg);
+		assembler.move_lit(value, result_reg);
 	}
 };
 

@@ -157,8 +157,11 @@ struct Compiler
 		// Allocate space for globals & update stack and frame pointer.
 
 		assembler.allocate_stack(type_check_state.globals_size);
-		assembler.add_64_into_reg(type_check_state.globals_size, R_STACK_PTR);
-		assembler.add_64_into_reg(type_check_state.globals_size, R_FRAME_PTR);
+		uint8_t init_alloc_reg = assembler.get_register();
+		assembler.move_lit(type_check_state.globals_size, init_alloc_reg);
+		assembler.add_int_64(init_alloc_reg, R_STACK_PTR);
+		assembler.add_int_64(init_alloc_reg, R_FRAME_PTR);
+		assembler.free_register(init_alloc_reg);
 
 		// Compile intitialisation values for global variables.
 
@@ -169,7 +172,10 @@ struct Compiler
 
 		// Push parameter count and call main.
 
-		assembler.push_64(0);
+		uint8_t main_param_cnt_reg = assembler.get_register();
+		assembler.move_lit(0, main_param_cnt_reg);
+		assembler.push_reg_64(main_param_cnt_reg);
+		assembler.free_register(main_param_cnt_reg);
 		assembler.call("main");
 		assembler.jump("exit");
 

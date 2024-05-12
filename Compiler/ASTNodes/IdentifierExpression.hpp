@@ -122,8 +122,8 @@ struct IdentifierExpression final : public WriteValue
 		{
 			if (type.is_array())
 			{
-				assembler.move_reg_into_reg(R_FRAME_PTR, result_reg);
-				assembler.add_64_into_reg(location_data.offset, result_reg);
+				assembler.move_lit(location_data.offset, result_reg);
+				assembler.add_int_64(R_FRAME_PTR, result_reg);
 
 				return;
 			}
@@ -131,28 +131,32 @@ struct IdentifierExpression final : public WriteValue
 			switch (type.byte_size())
 			{
 			case 1:
-				assembler.move_frame_offset_8_into_reg(
-					location_data.offset, result_reg);
+				assembler.move_lit(location_data.offset, result_reg);
+				assembler.add_int_64(R_FRAME_PTR, result_reg);
+				assembler.load_ptr_8(result_reg, result_reg);
 				break;
 
 			case 2:
-				assembler.move_frame_offset_16_into_reg(
-					location_data.offset, result_reg);
+				assembler.move_lit(location_data.offset, result_reg);
+				assembler.add_int_64(R_FRAME_PTR, result_reg);
+				assembler.load_ptr_16(result_reg, result_reg);
 				break;
 
 			case 4:
-				assembler.move_frame_offset_32_into_reg(
-					location_data.offset, result_reg);
+				assembler.move_lit(location_data.offset, result_reg);
+				assembler.add_int_64(R_FRAME_PTR, result_reg);
+				assembler.load_ptr_32(result_reg, result_reg);
 				break;
 
 			case 8:
-				assembler.move_frame_offset_64_into_reg(
-					location_data.offset, result_reg);
+				assembler.move_lit(location_data.offset, result_reg);
+				assembler.add_int_64(R_FRAME_PTR, result_reg);
+				assembler.load_ptr_64(result_reg, result_reg);
 				break;
 
 			default:
-				assembler.move_reg_into_reg(R_FRAME_PTR, result_reg);
-				assembler.add_64_into_reg(location_data.offset, result_reg);
+				assembler.move_lit(location_data.offset, result_reg);
+				assembler.add_int_64(R_FRAME_PTR, result_reg);
 				break;
 			}
 
@@ -163,8 +167,8 @@ struct IdentifierExpression final : public WriteValue
 
 		if (type.is_array())
 		{
-			assembler.move_stack_top_address_into_reg(result_reg);
-			assembler.add_64_into_reg(location_data.offset, result_reg);
+			assembler.move_lit(location_data.offset, result_reg);
+			assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
 
 			return;
 		}
@@ -172,28 +176,32 @@ struct IdentifierExpression final : public WriteValue
 		switch (type.byte_size())
 		{
 		case 1:
-			assembler.move_stack_top_offset_8_into_reg(
-				location_data.offset, result_reg);
+			assembler.move_lit(location_data.offset, result_reg);
+			assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+			assembler.load_ptr_8(result_reg, result_reg);
 			break;
 
 		case 2:
-			assembler.move_stack_top_offset_16_into_reg(
-				location_data.offset, result_reg);
+			assembler.move_lit(location_data.offset, result_reg);
+			assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+			assembler.load_ptr_16(result_reg, result_reg);
 			break;
 
 		case 4:
-			assembler.move_stack_top_offset_32_into_reg(
-				location_data.offset, result_reg);
+			assembler.move_lit(location_data.offset, result_reg);
+			assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+			assembler.load_ptr_32(result_reg, result_reg);
 			break;
 
 		case 8:
-			assembler.move_stack_top_offset_64_into_reg(
-				location_data.offset, result_reg);
+			assembler.move_lit(location_data.offset, result_reg);
+			assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+			assembler.load_ptr_64(result_reg, result_reg);
 			break;
 
 		default:
-			assembler.move_stack_top_address_into_reg(result_reg);
-			assembler.add_64_into_reg(location_data.offset, result_reg);
+			assembler.move_lit(location_data.offset, result_reg);
+			assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
 			break;
 		}
 	}
@@ -209,32 +217,52 @@ struct IdentifierExpression final : public WriteValue
 			switch (type.byte_size())
 			{
 			case 1:
-				assembler.move_reg_into_frame_offset_8(
-					value_reg, location_data.offset);
+			{
+				uint8_t dst_ptr_reg = assembler.get_register();
+				assembler.move_lit(location_data.offset, dst_ptr_reg);
+				assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
+				assembler.store_ptr_8(value_reg, dst_ptr_reg);
+				assembler.free_register(dst_ptr_reg);
 				break;
+			}
 
 			case 2:
-				assembler.move_reg_into_frame_offset_16(
-					value_reg, location_data.offset);
+			{
+				uint8_t dst_ptr_reg = assembler.get_register();
+				assembler.move_lit(location_data.offset, dst_ptr_reg);
+				assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
+				assembler.store_ptr_16(value_reg, dst_ptr_reg);
+				assembler.free_register(dst_ptr_reg);
 				break;
+			}
 
 			case 4:
-				assembler.move_reg_into_frame_offset_32(
-					value_reg, location_data.offset);
+			{
+				uint8_t dst_ptr_reg = assembler.get_register();
+				assembler.move_lit(location_data.offset, dst_ptr_reg);
+				assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
+				assembler.store_ptr_32(value_reg, dst_ptr_reg);
+				assembler.free_register(dst_ptr_reg);
 				break;
+			}
 
 			case 8:
-				assembler.move_reg_into_frame_offset_64(
-					value_reg, location_data.offset);
+			{
+				uint8_t dst_ptr_reg = assembler.get_register();
+				assembler.move_lit(location_data.offset, dst_ptr_reg);
+				assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
+				assembler.store_ptr_64(value_reg, dst_ptr_reg);
+				assembler.free_register(dst_ptr_reg);
 				break;
+			}
 
 			default:
 			{
 				uint8_t dst_ptr_reg = assembler.get_register();
-				assembler.move_reg_into_reg(R_FRAME_PTR, dst_ptr_reg);
-				assembler.add_64_into_reg(location_data.offset, dst_ptr_reg);
-				assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
-					value_reg, dst_ptr_reg, type.byte_size());
+				assembler.move_lit(location_data.offset, dst_ptr_reg);
+				assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
+				assembler.mem_copy(value_reg, dst_ptr_reg, type.byte_size());
+				assembler.free_register(dst_ptr_reg);
 				break;
 			}
 			}
@@ -247,32 +275,52 @@ struct IdentifierExpression final : public WriteValue
 		switch (type.byte_size())
 		{
 		case 1:
-			assembler.move_reg_into_stack_top_offset_8(
-				value_reg, location_data.offset);
+		{
+			uint8_t dst_ptr_reg = assembler.get_register();
+			assembler.move_lit(location_data.offset, dst_ptr_reg);
+			assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+			assembler.store_ptr_8(value_reg, dst_ptr_reg);
+			assembler.free_register(dst_ptr_reg);
 			break;
+		}
 
 		case 2:
-			assembler.move_reg_into_stack_top_offset_16(
-				value_reg, location_data.offset);
+		{
+			uint8_t dst_ptr_reg = assembler.get_register();
+			assembler.move_lit(location_data.offset, dst_ptr_reg);
+			assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+			assembler.store_ptr_16(value_reg, dst_ptr_reg);
+			assembler.free_register(dst_ptr_reg);
 			break;
+		}
 
 		case 4:
-			assembler.move_reg_into_stack_top_offset_32(
-				value_reg, location_data.offset);
+		{
+			uint8_t dst_ptr_reg = assembler.get_register();
+			assembler.move_lit(location_data.offset, dst_ptr_reg);
+			assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+			assembler.store_ptr_32(value_reg, dst_ptr_reg);
+			assembler.free_register(dst_ptr_reg);
 			break;
+		}
 
 		case 8:
-			assembler.move_reg_into_stack_top_offset_64(
-				value_reg, location_data.offset);
+		{
+			uint8_t dst_ptr_reg = assembler.get_register();
+			assembler.move_lit(location_data.offset, dst_ptr_reg);
+			assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+			assembler.store_ptr_64(value_reg, dst_ptr_reg);
+			assembler.free_register(dst_ptr_reg);
 			break;
+		}
 
 		default:
 		{
 			uint8_t dst_ptr_reg = assembler.get_register();
-			assembler.move_stack_top_address_into_reg(dst_ptr_reg);
-			assembler.add_64_into_reg(location_data.offset, dst_ptr_reg);
-			assembler.mem_copy_reg_pointer_8_to_reg_pointer_8(
-				value_reg, dst_ptr_reg, type.byte_size());
+			assembler.move_lit(location_data.offset, dst_ptr_reg);
+			assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+			assembler.mem_copy(value_reg, dst_ptr_reg, type.byte_size());
+			assembler.free_register(dst_ptr_reg);
 			break;
 		}
 		}

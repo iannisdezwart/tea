@@ -1,0 +1,17 @@
+functions
+	fib
+		parameters
+			U64 n
+	main
+		locals
+			U64 i
+			U64 n
+	print_str
+		parameters
+			POINTER str
+	print_unsigned
+		parameters
+			U64 n
+	putc
+		parameters
+			U8 c

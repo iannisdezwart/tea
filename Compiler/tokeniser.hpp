@@ -152,7 +152,7 @@ std::unordered_set<char> operator_chars = {
 
 // A set of all basic types in the Tea language.
 std::unordered_set<std::string> types = {
-	"u8", "i8", "u16", "i16", "u32", "i32", "u64", "i64", "void"
+	"u8", "i8", "u16", "i16", "u32", "i32", "u64", "i64", "f32", "f64", "v0"
 };
 
 // A set of all keywords in the Tea language.

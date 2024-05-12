@@ -128,10 +128,6 @@ struct InstructionLister
 				print_arg_rel_address(reader.read<int64_t>());
 				break;
 
-			case ABS_ADDR:
-				print_arg_address(reader.read<uint64_t>());
-				break;
-
 			case LIT_8:
 				print_arg_literal_number(reader.read<uint8_t>());
 				break;

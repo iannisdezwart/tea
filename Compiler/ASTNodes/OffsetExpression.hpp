@@ -63,6 +63,9 @@ struct OffsetExpression final : public WriteValue
 	{
 		Type pointed_type  = type;
 		uint8_t offset_reg = assembler.get_register();
+		offset->get_value(assembler, offset_reg);
+
+		uint8_t temp_reg = assembler.get_register();
 
 		// Local variable or parameter
 
@@ -71,35 +74,40 @@ struct OffsetExpression final : public WriteValue
 			switch (type.byte_size())
 			{
 			case 1:
-				offset->get_value(assembler, offset_reg);
-				assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
-				assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
-				assembler.add_64_into_reg(location_data.offset, offset_reg);
-				assembler.move_reg_into_reg_pointer_8(value_reg, offset_reg);
+				assembler.move_lit(pointed_type.byte_size(), temp_reg);
+				assembler.mul_int_64(offset_reg, temp_reg);
+				assembler.add_int_64(R_FRAME_PTR, offset_reg);
+				assembler.move_lit(location_data.offset, temp_reg);
+				assembler.add_int_64(temp_reg, offset_reg);
+				assembler.store_ptr_8(value_reg, offset_reg);
 				break;
 
 			case 2:
-				offset->get_value(assembler, offset_reg);
-				assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
-				assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
-				assembler.add_64_into_reg(location_data.offset, offset_reg);
-				assembler.move_reg_into_reg_pointer_16(value_reg, offset_reg);
+
+				assembler.move_lit(pointed_type.byte_size(), temp_reg);
+				assembler.mul_int_64(offset_reg, temp_reg);
+				assembler.add_int_64(R_FRAME_PTR, offset_reg);
+				assembler.move_lit(location_data.offset, temp_reg);
+				assembler.add_int_64(temp_reg, offset_reg);
+				assembler.store_ptr_16(value_reg, offset_reg);
 				break;
 
 			case 4:
-				offset->get_value(assembler, offset_reg);
-				assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
-				assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
-				assembler.add_64_into_reg(location_data.offset, offset_reg);
-				assembler.move_reg_into_reg_pointer_32(value_reg, offset_reg);
+				assembler.move_lit(pointed_type.byte_size(), temp_reg);
+				assembler.mul_int_64(offset_reg, temp_reg);
+				assembler.add_int_64(R_FRAME_PTR, offset_reg);
+				assembler.move_lit(location_data.offset, temp_reg);
+				assembler.add_int_64(temp_reg, offset_reg);
+				assembler.store_ptr_32(value_reg, offset_reg);
 				break;
 
 			case 8:
-				offset->get_value(assembler, offset_reg);
-				assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
-				assembler.add_reg_into_reg(R_FRAME_PTR, offset_reg);
-				assembler.add_64_into_reg(location_data.offset, offset_reg);
-				assembler.move_reg_into_reg_pointer_64(value_reg, offset_reg);
+				assembler.move_lit(pointed_type.byte_size(), temp_reg);
+				assembler.mul_int_64(offset_reg, temp_reg);
+				assembler.add_int_64(R_FRAME_PTR, offset_reg);
+				assembler.move_lit(location_data.offset, temp_reg);
+				assembler.add_int_64(temp_reg, offset_reg);
+				assembler.store_ptr_64(value_reg, offset_reg);
 				break;
 
 			default:
@@ -108,75 +116,80 @@ struct OffsetExpression final : public WriteValue
 					"Variable doesn't fit in register\n"
 					"Support for this is not implemented yet");
 			}
-
-			assembler.free_register(offset_reg);
-			return;
 		}
-
-		// Global variable
-
-		switch (type.byte_size())
+		else
 		{
-		case 1:
-			offset->get_value(assembler, offset_reg);
-			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
-			assembler.move_stack_top_address_into_reg(offset_reg);
-			assembler.add_64_into_reg(location_data.offset, offset_reg);
-			assembler.move_reg_into_reg_pointer_8(value_reg, offset_reg);
-			break;
+			// Global variable
 
-		case 2:
-			offset->get_value(assembler, offset_reg);
-			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
-			assembler.move_stack_top_address_into_reg(offset_reg);
-			assembler.add_64_into_reg(location_data.offset, offset_reg);
-			assembler.move_reg_into_reg_pointer_16(value_reg, offset_reg);
-			break;
+			switch (type.byte_size())
+			{
+			case 1:
+				assembler.move_lit(pointed_type.byte_size(), temp_reg);
+				assembler.mul_int_64(offset_reg, temp_reg);
+				assembler.add_int_64(R_STACK_TOP_PTR, offset_reg);
+				assembler.move_lit(location_data.offset, temp_reg);
+				assembler.add_int_64(temp_reg, offset_reg);
+				assembler.store_ptr_8(value_reg, offset_reg);
+				break;
 
-		case 4:
-			offset->get_value(assembler, offset_reg);
-			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
-			assembler.move_stack_top_address_into_reg(offset_reg);
-			assembler.add_64_into_reg(location_data.offset, offset_reg);
-			assembler.move_reg_into_reg_pointer_32(value_reg, offset_reg);
-			break;
+			case 2:
+				assembler.move_lit(pointed_type.byte_size(), temp_reg);
+				assembler.mul_int_64(offset_reg, temp_reg);
+				assembler.add_int_64(R_STACK_TOP_PTR, offset_reg);
+				assembler.move_lit(location_data.offset, temp_reg);
+				assembler.add_int_64(temp_reg, offset_reg);
+				assembler.store_ptr_16(value_reg, offset_reg);
+				break;
 
-		case 8:
-			offset->get_value(assembler, offset_reg);
-			assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
-			assembler.move_stack_top_address_into_reg(offset_reg);
-			assembler.add_64_into_reg(location_data.offset, offset_reg);
-			assembler.move_reg_into_reg_pointer_64(value_reg, offset_reg);
-			break;
+			case 4:
+				assembler.move_lit(pointed_type.byte_size(), temp_reg);
+				assembler.mul_int_64(offset_reg, temp_reg);
+				assembler.add_int_64(R_STACK_TOP_PTR, offset_reg);
+				assembler.move_lit(location_data.offset, temp_reg);
+				assembler.add_int_64(temp_reg, offset_reg);
+				assembler.store_ptr_32(value_reg, offset_reg);
+				break;
 
-		default:
-			err_at_token(pointer->accountable_token,
-				"Type Error",
-				"Variable doesn't fit in register\n"
-				"Support for this is not implemented yet");
+			case 8:
+				assembler.move_lit(pointed_type.byte_size(), temp_reg);
+				assembler.mul_int_64(offset_reg, temp_reg);
+				assembler.add_int_64(R_STACK_TOP_PTR, offset_reg);
+				assembler.move_lit(location_data.offset, temp_reg);
+				assembler.add_int_64(temp_reg, offset_reg);
+				assembler.store_ptr_64(value_reg, offset_reg);
+				break;
+
+			default:
+				err_at_token(pointer->accountable_token,
+					"Type Error",
+					"Variable doesn't fit in register\n"
+					"Support for this is not implemented yet");
+			}
 		}
 
 		assembler.free_register(offset_reg);
+		assembler.free_register(temp_reg);
 	}
 
 	void
 	get_value(Assembler &assembler, uint8_t result_reg)
 		const override
 	{
-		uint8_t offset_reg;
-
 		Type pointed_type = type;
 
 		// Multiply the offset by the byte size.
 
-		offset_reg = assembler.get_register();
+		uint8_t offset_reg = assembler.get_register();
+		uint8_t temp_reg   = assembler.get_register();
 		offset->get_value(assembler, offset_reg);
-		assembler.multiply_8_into_reg(pointed_type.byte_size(), offset_reg);
+		assembler.move_lit(pointed_type.byte_size(), temp_reg);
+		assembler.mul_int_64(offset_reg, temp_reg);
+		assembler.free_register(temp_reg);
 
 		// Add the offset into the pointer.
 
 		pointer->get_value(assembler, result_reg);
-		assembler.add_reg_into_reg(offset_reg, result_reg);
+		assembler.add_int_64(offset_reg, result_reg);
 
 		assembler.free_register(offset_reg);
 
@@ -185,19 +198,19 @@ struct OffsetExpression final : public WriteValue
 		switch (pointed_type.byte_size())
 		{
 		case 1:
-			assembler.move_reg_pointer_8_into_reg(result_reg, result_reg);
+			assembler.load_ptr_8(result_reg, result_reg);
 			break;
 
 		case 2:
-			assembler.move_reg_pointer_16_into_reg(result_reg, result_reg);
+			assembler.load_ptr_16(result_reg, result_reg);
 			break;
 
 		case 4:
-			assembler.move_reg_pointer_32_into_reg(result_reg, result_reg);
+			assembler.load_ptr_32(result_reg, result_reg);
 			break;
 
 		case 8:
-			assembler.move_reg_pointer_64_into_reg(result_reg, result_reg);
+			assembler.load_ptr_64(result_reg, result_reg);
 			break;
 
 		default:
