@@ -138,9 +138,11 @@ struct Compiler
 		// Type checking.
 
 		for (const std::unique_ptr<ASTNode> &statement : statements)
-		{
+			statement->pre_type_check(type_check_state);
+		for (const std::unique_ptr<ASTNode> &statement : statements)
 			statement->type_check(type_check_state);
-		}
+		for (const std::unique_ptr<ASTNode> &statement : statements)
+			statement->post_type_check(type_check_state);
 
 		// Collect declarations.
 

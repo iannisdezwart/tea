@@ -2,6 +2,7 @@
 #define TEA_ASSEMBLER_HEADER
 
 #include <unordered_map>
+#include <stack>
 
 #include "VM/cpu.hpp"
 #include "Executable/byte-code.hpp"

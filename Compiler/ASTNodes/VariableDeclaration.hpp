@@ -71,25 +71,16 @@ struct VariableDeclaration final : public ASTNode
 			return;
 		}
 
-		if (type == Type::USER_DEFINED_CLASS || type.is_array())
-		{
-			err_at_token(assignment->accountable_token, "Semantic Error",
-				"Expected no assignment on the right hand side of array/object declaration\n"
-				"Found an expression of type \"%s\"",
-				ast_node_type_to_str(assignment->node_type));
-		}
-
 		assignment->type_check(type_check_state);
 
 		// Match types
 
 		if (assignment->type.fits(type) == Type::Fits::NO)
 		{
-			err_at_token(assignment->accountable_token,
-				"Type Error",
-				"Initial value of VariableDeclaration does not fit into "
-				"specified type\n"
-				"type = %s, assignment_value = %s",
+			warn("At %s, Initial value of VariableDeclaration does not"
+			     "fit into specified type\n"
+			     "lhs_type = %s, rhs_type = %s",
+				assignment->accountable_token.to_str().c_str(),
 				type.to_str().c_str(), assignment->type.to_str().c_str());
 		}
 
@@ -99,7 +90,7 @@ struct VariableDeclaration final : public ASTNode
 		switch (id_kind)
 		{
 		case IdentifierKind::LOCAL:
-			variable_definition = type_check_state.locals[id_name];
+			variable_definition = type_check_state.get_local(id_name);
 			break;
 
 		case IdentifierKind::GLOBAL:

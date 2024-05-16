@@ -59,7 +59,6 @@ struct FunctionDeclaration final : public ASTNode
 	{
 		type_and_id_pair->type_check(type_check_state);
 
-		const std::string &fn_name = type_and_id_pair->get_identifier_name();
 		Type return_type           = type_and_id_pair->type;
 		fn_signature               = FunctionSignature(
                         type_and_id_pair->get_identifier_name(), return_type);
@@ -73,9 +72,9 @@ struct FunctionDeclaration final : public ASTNode
 			std::string param_name = param->get_identifier_name();
 			fn_signature.parameters.push_back(
 				IdentifierDefinition(param_name, param->type));
-			type_check_state.add_parameter(param_name, param->type);
 		}
 
+		const std::string &fn_name = type_and_id_pair->get_identifier_name();
 		if (!type_check_state.add_function(fn_name, fn_signature))
 		{
 			err_at_token(accountable_token,
@@ -83,9 +82,21 @@ struct FunctionDeclaration final : public ASTNode
 				"Identifier %s is already declared",
 				fn_name.c_str());
 		}
+	}
+
+	void
+	post_type_check(TypeCheckState &type_check_state)
+		override
+	{
+		for (std::unique_ptr<TypeIdentifierPair> &param : params)
+		{
+			std::string param_name = param->get_identifier_name();
+			type_check_state.add_parameter(param_name, param->type);
+		}
 
 		// Type check the function body
 
+		const std::string &fn_name = type_and_id_pair->get_identifier_name();
 		type_check_state.begin_function_scope(fn_name);
 
 		body->type_check(type_check_state);

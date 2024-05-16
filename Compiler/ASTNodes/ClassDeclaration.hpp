@@ -46,6 +46,18 @@ struct ClassDeclaration final : public ASTNode
 	}
 
 	void
+	pre_type_check(TypeCheckState &type_check_state)
+		override
+	{
+		if (!type_check_state.def_class(class_name))
+		{
+			err_at_token(accountable_token, "Type Error",
+				"Class %s has already been declared",
+				class_name.c_str());
+		}
+	}
+
+	void
 	type_check(TypeCheckState &type_check_state)
 		override
 	{
@@ -64,12 +76,7 @@ struct ClassDeclaration final : public ASTNode
 			class_def.add_field(field->get_identifier_name(), field->type);
 		}
 
-		if (!type_check_state.add_class(class_name, class_def))
-		{
-			err_at_token(accountable_token, "Type Error",
-				"Class %s has already been declared",
-				class_name.c_str());
-		}
+		type_check_state.add_class(class_name, class_def);
 	}
 
 	void

@@ -82,23 +82,23 @@ struct IdentifierExpression final : public WriteValue
 		{
 		case IdentifierKind::LOCAL:
 		{
-			VariableDefinition &var = type_check_state.locals[id_name];
-			offset                  = var.offset;
+			const VariableDefinition &var = type_check_state.get_local(id_name);
+			offset                        = var.offset;
 			break;
 		}
 
 		case IdentifierKind::PARAMETER:
 		{
-			VariableDefinition &var = type_check_state.parameters[id_name];
-			offset                  = -type_check_state.parameters_size + var.offset
+			const VariableDefinition &var = type_check_state.parameters[id_name];
+			offset                        = -type_check_state.parameters_size + var.offset
 				- 8 - CPU::stack_frame_size;
 			break;
 		}
 
 		case IdentifierKind::GLOBAL:
 		{
-			VariableDefinition &var = type_check_state.globals[id_name];
-			offset                  = var.offset;
+			const VariableDefinition &var = type_check_state.globals[id_name];
+			offset                        = var.offset;
 			break;
 		}
 

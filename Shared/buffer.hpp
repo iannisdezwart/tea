@@ -64,7 +64,7 @@ struct Buffer
 	write_to_file(const char *file_path)
 	{
 		FILE *file = fopen(file_path, "w");
-		fwrite(data, 1, size, file);
+		fwrite(data, size, 1, file);
 		fclose(file);
 	}
 

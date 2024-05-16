@@ -63,11 +63,10 @@ struct AssignmentExpression final : public ReadValue
 		type_fits = value->type.fits(lhs_expr->type);
 
 		if (type_fits == Type::Fits::NO)
-			err_at_token(lhs_expr->accountable_token,
-				"Type Error",
-				"Right hand side value of AssignmentExpression does not fit into "
-				"left hand side value\n"
-				"lhs_type = %s, rhs_type = %s",
+			warn("At %s, Right hand side value of AssignmentExpression does not "
+			     "fit into left hand side value\n"
+			     "lhs_type = %s, rhs_type = %s",
+				lhs_expr->accountable_token.to_str().c_str(),
 				lhs_expr->type.to_str().c_str(), value->type.to_str().c_str());
 
 		type = lhs_expr->type;
@@ -233,6 +232,8 @@ struct AssignmentExpression final : public ReadValue
 			{
 				assembler.mul_flt_64(result_reg, prev_val_reg);
 			}
+
+			break;
 		}
 
 		case QUOTIENT_ASSIGNMENT:
@@ -261,6 +262,8 @@ struct AssignmentExpression final : public ReadValue
 			{
 				assembler.div_flt_64(result_reg, prev_val_reg);
 			}
+
+			break;
 		}
 
 		case REMAINDER_ASSIGNMENT:
@@ -281,6 +284,8 @@ struct AssignmentExpression final : public ReadValue
 			{
 				assembler.mod_int_64(result_reg, prev_val_reg);
 			}
+
+			break;
 		}
 
 		case LEFT_SHIFT_ASSIGNMENT:
@@ -301,6 +306,8 @@ struct AssignmentExpression final : public ReadValue
 			{
 				assembler.shl_int_64(result_reg, prev_val_reg);
 			}
+
+			break;
 		}
 
 		case RIGHT_SHIFT_ASSIGNMENT:
@@ -322,6 +329,8 @@ struct AssignmentExpression final : public ReadValue
 			{
 				assembler.shr_int_64(result_reg, prev_val_reg);
 			}
+
+			break;
 		}
 
 		case BITWISE_AND_ASSIGNMENT:
@@ -342,6 +351,8 @@ struct AssignmentExpression final : public ReadValue
 			{
 				assembler.and_int_64(result_reg, prev_val_reg);
 			}
+
+			break;
 		}
 
 		case BITWISE_OR_ASSIGNMENT:
@@ -362,6 +373,8 @@ struct AssignmentExpression final : public ReadValue
 			{
 				assembler.or_int_64(result_reg, prev_val_reg);
 			}
+
+			break;
 		}
 
 		case BITWISE_XOR_ASSIGNMENT:
@@ -382,6 +395,8 @@ struct AssignmentExpression final : public ReadValue
 			{
 				assembler.xor_int_64(result_reg, prev_val_reg);
 			}
+
+			break;
 		}
 
 		default:

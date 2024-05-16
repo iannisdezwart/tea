@@ -1,7 +1,7 @@
 #ifndef TEA_COMPILER_STATE_HEADER
 #define TEA_COMPILER_STATE_HEADER
 
-#include <stack>
+#include <deque>
 
 #include "Compiler/util.hpp"
 #include "VM/cpu.hpp"
@@ -252,11 +252,11 @@ struct TypeCheckState
 	uint64_t parameters_size = 0;
 
 	// A map of all local variables in the current function being compiled.
-	std::unordered_map<std::string, VariableDefinition> locals;
+	std::deque<std::unordered_map<std::string, VariableDefinition>> locals;
 
-	// The names of the local variables in the current
-	// function being compiled, in order.
-	std::vector<std::string> local_names_in_order;
+	// Debugger symbols for the local variables in the current function being
+	// compiled, in order.
+	std::vector<DebuggerSymbol> local_symbols;
 
 	// The size of all local variables combined in the
 	// current function being compiled.
@@ -288,8 +288,11 @@ struct TypeCheckState
 	IdentifierKind
 	get_identifier_kind(std::string id_name)
 	{
-		if (locals.count(id_name))
-			return IdentifierKind::LOCAL;
+		for (const std::unordered_map<std::string, VariableDefinition> &frame : locals)
+		{
+			if (frame.count(id_name))
+				return IdentifierKind::LOCAL;
+		}
 		if (parameters.count(id_name))
 			return IdentifierKind::PARAMETER;
 		if (functions.count(id_name))
@@ -300,19 +303,30 @@ struct TypeCheckState
 	}
 
 	/**
-	 * @brief Adds a class to the current compilation context.
+	 * @brief Defines a class to the current compilation context.
 	 * @param class_name The name of the class.
-	 * @param class_type The type of the class.
 	 * @returns A boolean indicating whether the class was added.
 	 * A class is only added if it does not already exist.
 	 */
 	bool
-	add_class(std::string class_name, ClassDefinition class_type)
+	def_class(const std::string &class_name)
 	{
 		if (classes.count(class_name))
 			return false;
 
-		classes[class_name] = class_type;
+		classes[class_name] = ClassDefinition();
+		return true;
+	}
+
+	/**
+	 * @brief Adds a defined class to the current compilation context.
+	 * @param class_name The name of the class.
+	 * @param class_definition The type of the class.
+	 */
+	void
+	add_class(const std::string &class_name, ClassDefinition class_def)
+	{
+		classes[class_name] = class_def;
 
 		// Add the class to the debugger symbols
 
@@ -320,16 +334,32 @@ struct TypeCheckState
 		{
 			DebuggerClass debugger_class;
 
-			debugger_class.fields.reserve(class_type.fields.size());
-			for (const IdentifierDefinition &field : class_type.fields)
+			debugger_class.fields.reserve(class_def.fields.size());
+			for (const IdentifierDefinition &field : class_def.fields)
 				debugger_class.fields.push_back(
 					DebuggerSymbol(field.name, field.type.to_debug_type(),
 						field.type.class_name));
 
 			debugger_symbols.add_class(class_name, debugger_class);
 		}
+	}
 
-		return true;
+	/**
+	 * @brief Introduces a new local scope to the current compilation context.
+	 */
+	void
+	begin_local_scope()
+	{
+		locals.push_back(std::unordered_map<std::string, VariableDefinition>());
+	}
+
+	/**
+	 * @brief Ends the current local scope in the compilation context.
+	 */
+	void
+	end_local_scope()
+	{
+		locals.pop_back();
 	}
 
 	/**
@@ -342,13 +372,36 @@ struct TypeCheckState
 	bool
 	add_local(std::string local_name, Type local_type)
 	{
-		if (locals.count(local_name))
+		if (locals.back().count(local_name))
 			return false;
 
-		locals[local_name] = VariableDefinition(local_name, local_type, locals_size);
-		local_names_in_order.push_back(local_name);
+		locals.back()[local_name] = VariableDefinition(local_name, local_type, locals_size);
+
+		if (debug)
+		{
+			local_symbols.push_back(DebuggerSymbol(
+				local_name, local_type.to_debug_type(), local_type.class_name));
+		}
 		locals_size += local_type.storage_size();
 		return true;
+	}
+
+	/**
+	 * @brief Retrieves a local variable from the current compilation context.
+	 * Follows scoped lookup order.
+	 * @param local_name The name of the local variable.
+	 * @returns The `VariableDefinition` of the local variable.
+	 */
+	VariableDefinition
+	get_local(std::string local_name)
+	{
+		for (const std::unordered_map<std::string, VariableDefinition> &frame : locals)
+		{
+			if (frame.count(local_name))
+				return frame.at(local_name);
+		}
+
+		err("Local variable \"%s\" not found", local_name.c_str());
 	}
 
 	/**
@@ -475,12 +528,7 @@ struct TypeCheckState
 
 			// Add locals
 
-			for (const std::string &local_name : local_names_in_order)
-			{
-				DebuggerSymbolType local_type = locals[local_name].id.type.to_debug_type();
-				std::string class_name        = locals[local_name].id.type.class_name;
-				fn_symbols.locals.push_back(DebuggerSymbol(local_name, local_type, class_name));
-			}
+			fn_symbols.locals = local_symbols;
 
 			debugger_symbols.add_function(current_function_name.value(), fn_symbols);
 		}
@@ -488,7 +536,7 @@ struct TypeCheckState
 		current_function_name.reset();
 
 		locals.clear();
-		local_names_in_order.clear();
+		local_symbols.clear();
 		locals_size = 0;
 
 		parameters.clear();
@@ -519,7 +567,11 @@ struct TypeCheckState
 		switch (id_kind)
 		{
 		case IdentifierKind::LOCAL:
-			return locals[id_name].id.type;
+			for (const std::unordered_map<std::string, VariableDefinition> &frame : locals)
+			{
+				if (frame.count(id_name))
+					return frame.at(id_name).id.type;
+			}
 
 		case IdentifierKind::PARAMETER:
 			return parameters[id_name].id.type;

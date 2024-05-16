@@ -1,5 +1,15 @@
 #include <cstdio>
 
+struct FilePos
+{
+	size_t pos;
+	size_t line;
+	size_t col;
+
+	FilePos()
+		: pos(0), line(1), col(1) {}
+};
+
 /**
  * @brief Class that is used to read source files.
  * Allows peeking arbitrary bytes from the file.
@@ -10,95 +20,45 @@ struct FileStreamReader
 	FILE *file;
 
 	// The current position in the file.
-	// Peeking does not change this.
-	size_t pos = 0;
-
-	// The current line number.
-	size_t cur_line = 1;
-
-	// The current column number.
-	size_t cur_col = 1;
-
-	// The old line number.
-	size_t line = 1;
-
-	// The old column number.
-	size_t col = 1;
+	FilePos pos;
 
 	/**
 	 * @brief Constructs a new File Stream Reader object.
 	 * @param file The file to read from.
 	 */
 	FileStreamReader(FILE *file)
-		: file(file) {}
+		: file(file), pos() {}
 
 	/**
-	 * @brief Reads the previous byte from the file.
-	 * Does not change the current position.
-	 * @returns The previous byte.
+	 * @brief Reads a character and returns the position before reading.
 	 */
-	int
-	prev_byte()
+	FilePos
+	read_char(int &c)
 	{
-		fseek(file, -1, SEEK_CUR);
-		return fgetc(file);
-	}
+		FilePos p = pos;
+		c         = fgetc(file);
+		pos.pos++;
 
-	/**
-	 * @brief Reads a single byte from the file.
-	 * @returns The read byte.
-	 */
-	int
-	read_byte()
-	{
-		int byte = peek_byte();
-		advance();
-		return byte;
-	}
-
-	/**
-	 * @brief Peeks a single byte from the file.
-	 * Reads the byte, but does not advance the file pointer.
-	 * @returns The peeked byte.
-	 */
-	int
-	peek_byte()
-	{
-		int byte = fgetc(file);
-
-		if (prev_byte() == '\n')
+		if (c == '\n')
 		{
-			cur_line++;
-			cur_col = 1;
+			pos.line++;
+			pos.col = 1;
 		}
 		else
 		{
-			cur_col++;
+			pos.col++;
 		}
 
-		return byte;
+		return p;
 	}
 
 	/**
-	 * @brief Returns the file pointer to its original position
-	 * before peeking.
+	 * Restores the file position to the given position.
 	 */
 	void
-	reset()
+	restore(FilePos p)
 	{
-		cur_line = line;
-		cur_col  = col;
-		fseek(file, pos, SEEK_SET);
-	}
-
-	/**
-	 * @brief Advances the file pointer to after the peeked bytes.
-	 */
-	void
-	advance()
-	{
-		pos  = ftell(file);
-		line = cur_line;
-		col  = cur_col;
+		pos = p;
+		fseek(file, p.pos, SEEK_SET);
 	}
 };

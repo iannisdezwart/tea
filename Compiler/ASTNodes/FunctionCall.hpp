@@ -57,15 +57,14 @@ struct FunctionCall final : public ReadValue
 
 		if (arguments.size() != fn_signature.parameters.size())
 		{
-			err_at_token(accountable_token,
-				"Type Error",
-				"Argument count does not equal parameter count"
-				"Function %s expects %ld arguments, got %ld",
+			warn("At %s, Argument count does not equal parameter count"
+			     "Function %s expects %ld arguments, got %ld",
+				accountable_token.to_str().c_str(),
 				fn_signature.id.name.c_str(), fn_signature.parameters.size(),
 				arguments.size());
 		}
 
-		for (size_t i = 0; i < arguments.size(); i++)
+		for (size_t i = 0; i < std::min(fn_signature.parameters.size(), arguments.size()); i++)
 		{
 			const std::unique_ptr<ReadValue> &arg = arguments[i];
 			const Type &param_type                = fn_signature.parameters[i].type;
@@ -73,11 +72,10 @@ struct FunctionCall final : public ReadValue
 
 			if (arg->type.fits(param_type) == Type::Fits::NO)
 			{
-				err_at_token(accountable_token,
-					"Type Error",
-					"Function call arguments list don't fit "
-					"function parameter type template\n"
-					"argument[%lu] is of type %s. Expected type %s",
+				warn("At %s, Function call arguments list don't fit "
+				     "function parameter type template\n"
+				     "argument %lu is of type %s. Expected type %s",
+					accountable_token.to_str().c_str(),
 					i + 1, arg->type.to_str().c_str(), param_type.to_str().c_str());
 			}
 		}
@@ -91,10 +89,10 @@ struct FunctionCall final : public ReadValue
 
 		size_t args_size = 0;
 
-		if (arguments.size())
+		if (std::min(fn_signature.parameters.size(), arguments.size()))
 			arg_reg = assembler.get_register();
 
-		for (size_t i = 0; i < arguments.size(); i++)
+		for (size_t i = 0; i < std::min(fn_signature.parameters.size(), arguments.size()); i++)
 		{
 			const Type &param_type = fn_signature.parameters[i].type;
 			const Type &arg_type   = arguments[i]->type;
@@ -152,7 +150,7 @@ struct FunctionCall final : public ReadValue
 			args_size += byte_size;
 		}
 
-		if (arguments.size())
+		if (std::min(fn_signature.parameters.size(), arguments.size()))
 		{
 			assembler.free_register(arg_reg);
 		}

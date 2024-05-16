@@ -403,12 +403,35 @@ struct Parser
 	{
 		std::vector<std::unique_ptr<ASTNode>> statements;
 
+		scan_class_names();
+
 		while (i < tokens.size())
 		{
 			statements.push_back(next_statement());
 		}
 
 		return statements;
+	}
+
+	/**
+	 * @brief Scans all class names in the input tokens.
+	 * This is needed to check whether an identifier is a type name.
+	 */
+	void
+	scan_class_names()
+	{
+		for (size_t j = 0; j < tokens.size(); j++)
+		{
+			Token token = tokens[j];
+
+			if (token.type == KEYWORD && token.value == "class")
+			{
+				Token class_name_token = tokens[j + 1];
+				assert_token_type(class_name_token, IDENTIFIER);
+
+				class_names.insert(class_name_token.value);
+			}
+		}
 	}
 
 	/**
@@ -809,6 +832,17 @@ struct Parser
 		}
 
 		std::unique_ptr<ReadValue> expression = std::move(expressions[0]);
+
+		// OffsetExpression
+
+		for (Token next = get_token();
+			next.type == SPECIAL_CHARACTER && next.value == "[";
+			next = get_token())
+		{
+			expression = scan_offset_expression(std::unique_ptr<WriteValue>(
+				WriteValue::cast(expression.release())));
+		}
+
 		return expression;
 	}
 
@@ -948,7 +982,7 @@ struct Parser
 				expr_token, expr_token.value);
 		}
 
-		// IdentifierExpression, OffsetExpression or FunctionCall
+		// IdentifierExpression or FunctionCall
 
 		else if (expr_token.type == IDENTIFIER)
 		{
@@ -960,14 +994,6 @@ struct Parser
 			{
 				i--;
 				expression = scan_function_call();
-			}
-
-			// OffsetExpression
-
-			else if (next.type == SPECIAL_CHARACTER && next.value == "[")
-			{
-				i--;
-				expression = scan_offset_expression();
 			}
 
 			// IdentifierExpression
@@ -1182,13 +1208,8 @@ struct Parser
 	 * <identifier>[<expr>]
 	 */
 	std::unique_ptr<OffsetExpression>
-	scan_offset_expression()
+	scan_offset_expression(std::unique_ptr<WriteValue> left)
 	{
-		// Scan the identifier.
-
-		Token identifier_token = next_token();
-		assert_token_type(identifier_token, IDENTIFIER);
-
 		// Consume the left bracket "[".
 
 		Token left_bracket_token = next_token();
@@ -1206,8 +1227,7 @@ struct Parser
 		assert_token_value(right_bracket_token, "]");
 
 		return std::make_unique<OffsetExpression>(
-			std::make_unique<IdentifierExpression>(identifier_token),
-			std::move(offset), left_bracket_token);
+			std::move(left), std::move(offset), left_bracket_token);
 	}
 
 	/**
@@ -1260,8 +1280,7 @@ struct Parser
 		// Scan the class name.
 
 		Token class_name_token = next_token();
-		assert_token_type(class_name_token, IDENTIFIER);
-		class_names.insert(class_name_token.value);
+		assert_token_type(class_name_token, TYPE);
 
 		// Scan the class body.
 

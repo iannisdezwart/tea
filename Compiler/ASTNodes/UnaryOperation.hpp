@@ -65,13 +65,23 @@ struct UnaryOperation final : public WriteValue
 		case UNARY_PLUS:
 		case UNARY_MINUS:
 		case BITWISE_NOT:
-		case LOGICAL_NOT:
 		{
 			if (!type.is_primitive())
 			{
 				err_at_token(accountable_token, "Internal Error",
 					"Unsupported type (%s) for operator %s.\n"
 					"Expected a primitive type",
+					type.to_str().c_str(), op_to_str(op));
+			}
+			break;
+		}
+		case LOGICAL_NOT:
+		{
+			if (!type.is_primitive() && type.pointer_depth() == 0)
+			{
+				err_at_token(accountable_token, "Internal Error",
+					"Unsupported type (%s) for operator %s.\n"
+					"Expected a primitive type or pointer",
 					type.to_str().c_str(), op_to_str(op));
 			}
 			break;
@@ -394,6 +404,10 @@ struct UnaryOperation final : public WriteValue
 		{
 			expression->get_value(assembler, result_reg);
 
+			if (type.pointer_depth() > 0)
+			{
+				assembler.neg_int_64(result_reg);
+			}
 			if (type.is_integer() && type.byte_size() == 1)
 			{
 				assembler.neg_int_8(result_reg);

@@ -47,10 +47,12 @@ struct CodeBlock final : public ASTNode
 	type_check(TypeCheckState &type_check_state)
 		override
 	{
+		type_check_state.begin_local_scope();
 		for (const std::unique_ptr<ASTNode> &statement : statements)
 		{
 			statement->type_check(type_check_state);
 		}
+		type_check_state.end_local_scope();
 	}
 
 	void

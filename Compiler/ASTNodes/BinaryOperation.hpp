@@ -176,6 +176,8 @@ struct BinaryOperation final : public ReadValue
 		case BITWISE_AND:
 		case BITWISE_XOR:
 		case BITWISE_OR:
+		case LEFT_SHIFT:
+		case RIGHT_SHIFT:
 		{
 			if (!left->type.is_integer() || !right->type.is_integer())
 			{
@@ -564,6 +566,50 @@ struct BinaryOperation final : public ReadValue
 			else if (type.is_integer() && type.byte_size() == 8)
 			{
 				assembler.or_int_64(rhs_reg, result_reg);
+			}
+
+			break;
+		}
+
+		case LEFT_SHIFT:
+		{
+			if (type.is_integer() && type.byte_size() == 1)
+			{
+				assembler.shl_int_8(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 2)
+			{
+				assembler.shl_int_16(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 4)
+			{
+				assembler.shl_int_32(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 8)
+			{
+				assembler.shl_int_64(rhs_reg, result_reg);
+			}
+
+			break;
+		}
+
+		case RIGHT_SHIFT:
+		{
+			if (type.is_integer() && type.byte_size() == 1)
+			{
+				assembler.shr_int_8(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 2)
+			{
+				assembler.shr_int_16(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 4)
+			{
+				assembler.shr_int_32(rhs_reg, result_reg);
+			}
+			else if (type.is_integer() && type.byte_size() == 8)
+			{
+				assembler.shr_int_64(rhs_reg, result_reg);
 			}
 
 			break;

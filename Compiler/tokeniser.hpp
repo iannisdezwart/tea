@@ -585,7 +585,7 @@ std::vector<OperatorPrecedencePair> operator_precedence = {
  * or not. Ignored if the operator is a non-unary operator.
  * @returns The operator type.
  */
-enum Operator
+Operator
 str_to_operator(const std::string &str, bool prefix = false)
 {
 	if (str.size() > 3)
@@ -731,7 +731,7 @@ struct Tokeniser
 	do                                                                           \
 	{                                                                            \
 		fprintf(stderr, "[ Tokenise Error ]: " message "\n", ##__VA_ARGS__); \
-		fprintf(stderr, "At %ld:%ld\n", reader.line, reader.col);            \
+		fprintf(stderr, "At %ld:%ld\n", reader.pos.line, reader.pos.col);    \
 		abort();                                                             \
 	} while (0)
 
@@ -770,12 +770,13 @@ struct Tokeniser
 	{
 		// The current character.
 		int c;
+		FilePos restore_pos;
 
-		while ((c = reader.peek_byte()) != EOF)
+		while (restore_pos = reader.read_char(c), c != EOF)
 		{
 			printf("tokenise(): %c (%hhu)\n", c, (uint8_t) c);
-			line = reader.line;
-			col  = reader.col;
+			line = reader.pos.line;
+			col  = reader.pos.col;
 
 			if (c == EOF)
 				break;
@@ -783,7 +784,6 @@ struct Tokeniser
 			if (whitespace_chars.count(c))
 			{
 				whitespace_before = true;
-				reader.advance();
 				continue;
 			}
 
@@ -793,7 +793,6 @@ struct Tokeniser
 			{
 				if (scan_comment())
 				{
-					reader.advance();
 					continue;
 				}
 			}
@@ -821,7 +820,6 @@ struct Tokeniser
 
 			else if (special_chars.count(c))
 			{
-				reader.advance();
 				push_token(SPECIAL_CHARACTER, std::string(1, c));
 			}
 
@@ -882,7 +880,8 @@ struct Tokeniser
 	bool
 	scan_comment()
 	{
-		char next_char = reader.peek_byte();
+		int next_char;
+		FilePos restore_pos = reader.read_char(next_char);
 
 		// If the next character is not a /,
 		// it's not a // comment.
@@ -890,13 +889,13 @@ struct Tokeniser
 
 		if (next_char == '/')
 		{
-			reader.advance();
 			ignore_until_eol();
 
 			return true;
 		}
 		else
 		{
+			reader.restore(restore_pos);
 			return false;
 		}
 	}
@@ -908,15 +907,12 @@ struct Tokeniser
 	void
 	ignore_until_eol()
 	{
-		char next_char = reader.peek_byte();
+		int next_char;
 
-		while (next_char != '\n' && next_char != EOF)
+		do
 		{
-			reader.advance();
-			next_char = reader.peek_byte();
-		}
-
-		reader.reset();
+			reader.read_char(next_char);
+		} while (next_char != '\n' && next_char != EOF);
 	}
 
 	/**
@@ -928,7 +924,8 @@ struct Tokeniser
 	char
 	scan_escape_sequence()
 	{
-		int c = reader.read_byte();
+		int c;
+		reader.read_char(c);
 
 		switch (c)
 		{
@@ -970,8 +967,10 @@ struct Tokeniser
 
 		case 'x':
 		{
-			char xc1 = reader.read_byte();
-			char xc2 = reader.read_byte();
+			int xc1;
+			reader.read_char(xc1);
+			int xc2;
+			reader.read_char(xc2);
 
 			if (!is_hex(xc1) || !is_hex(xc2))
 				throw_err("Invalid hexadecimal escape code");
@@ -993,11 +992,11 @@ struct Tokeniser
 	scan_literal_string()
 	{
 		std::string s;
-		char c;
+		int c;
 
 		while (true)
 		{
-			c = reader.read_byte();
+			reader.read_char(c);
 			if (c == EOF)
 				throw_err("Unexpected EOF");
 
@@ -1032,7 +1031,8 @@ struct Tokeniser
 	char
 	scan_literal_char()
 	{
-		int c = reader.read_byte();
+		int c;
+		reader.read_char(c);
 		if (c == EOF)
 			throw_err("Unexpected EOF");
 
@@ -1041,7 +1041,8 @@ struct Tokeniser
 		if (c == '\\')
 			c = scan_escape_sequence();
 
-		char next = reader.read_byte();
+		int next;
+		reader.read_char(next);
 
 		// Expect a closing single quote.
 
@@ -1064,8 +1065,9 @@ struct Tokeniser
 	{
 		std::string s;
 		s += first_char;
-		reader.advance();
-		int c = reader.peek_byte();
+
+		int c;
+		FilePos restore_pos = reader.read_char(c);
 
 		if (first_char == '0')
 		{
@@ -1079,12 +1081,11 @@ struct Tokeniser
 			{
 				do
 				{
-					reader.advance();
 					s += '.';
-					c = reader.peek_byte();
+					restore_pos = reader.read_char(c);
 				} while (is_decimal(c));
 
-				reader.reset();
+				reader.restore(restore_pos);
 				return s;
 			}
 
@@ -1094,13 +1095,12 @@ struct Tokeniser
 			{
 				s.clear();
 
-				while (c = reader.peek_byte(), is_hex(c))
+				while (restore_pos = reader.read_char(c), is_hex(c))
 				{
-					reader.advance();
 					s += c;
 				}
 
-				reader.reset();
+				reader.restore(restore_pos);
 
 				return std::to_string(stoull(s, nullptr, 16));
 			}
@@ -1111,13 +1111,12 @@ struct Tokeniser
 			{
 				s.clear();
 
-				while (c = reader.peek_byte(), is_binary(c))
+				while (restore_pos = reader.read_char(c), is_binary(c))
 				{
-					reader.advance();
 					s += c;
 				}
 
-				reader.reset();
+				reader.restore(restore_pos);
 
 				return std::to_string(stoull(s, nullptr, 2));
 			}
@@ -1134,13 +1133,12 @@ struct Tokeniser
 		{
 			do
 			{
-				reader.advance();
 				s += c;
-				c = reader.peek_byte();
+				restore_pos = reader.read_char(c);
 			} while ((c >= '0' && c <= '9') || c == '.');
 		}
 
-		reader.reset();
+		reader.restore(restore_pos);
 		return s;
 	}
 
@@ -1156,16 +1154,15 @@ struct Tokeniser
 	{
 		std::string s;
 		s += first_char;
-		char c;
 
 		while (true)
 		{
-			reader.advance();
-			c = reader.peek_byte();
+			int c;
+			FilePos restore_pos = reader.read_char(c);
 
 			if (!is_alphanumeric(c))
 			{
-				reader.reset();
+				reader.restore(restore_pos);
 				break;
 			}
 
@@ -1187,29 +1184,29 @@ struct Tokeniser
 		// Check if the next two characters are
 		// maybe also operators.
 
-		reader.advance();
-		char op_char_2 = reader.peek_byte();
+		int op_char_2;
+		FilePos restore_pos_2 = reader.read_char(op_char_2);
 
 		if (!operator_chars.count(op_char_2))
 		{
 			// Only the first character is an operator.
 
-			reader.reset();
+			reader.restore(restore_pos_2);
 		}
 		else
 		{
 			// The second character is an operator.
 			// Check if the third is too.
 
-			reader.advance();
-			char op_char_3 = reader.peek_byte();
+			int op_char_3;
+			FilePos restore_pos_3 = reader.read_char(op_char_3);
 
 			if (!operator_chars.count(op_char_3))
 			{
 				// Only the first two characters
 				// are operators.
 
-				reader.reset();
+				reader.restore(restore_pos_3);
 			}
 			else
 			{
@@ -1225,7 +1222,7 @@ struct Tokeniser
 				if (str_to_operator(op) != UNDEFINED_OPERATOR)
 					return op;
 				else
-					reader.reset();
+					reader.restore(restore_pos_3);
 			}
 
 			// Check if we can form a double
@@ -1238,7 +1235,7 @@ struct Tokeniser
 			if (str_to_operator(op) != UNDEFINED_OPERATOR)
 				return op;
 			else
-				reader.reset();
+				reader.restore(restore_pos_2);
 		}
 
 		std::string op;
