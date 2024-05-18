@@ -111,13 +111,17 @@ struct ASTNode
 	dfs(std::function<void(ASTNode *, size_t)>, size_t depth = 0) = 0;
 
 	virtual void
-	pre_type_check(TypeCheckState &type_check_state) {}
+	pre_type_check(TypeCheckState &type_check_state)
+	{
+	}
 
 	virtual void
 	type_check(TypeCheckState &type_check_state) = 0;
 
 	virtual void
-	post_type_check(TypeCheckState &type_check_state) {}
+	post_type_check(TypeCheckState &type_check_state)
+	{
+	}
 
 	virtual void
 	code_gen(Assembler &assembler)
@@ -126,7 +130,7 @@ struct ASTNode
 	void
 	print(const char *prefix)
 	{
-		printf("%s: %s\n", prefix, to_str().c_str());
+		p_trace(stdout, "%s: %s\n", prefix, to_str().c_str());
 	}
 };
 

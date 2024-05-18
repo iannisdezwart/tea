@@ -95,7 +95,7 @@ struct Compiler
 	void
 	print_ast(const std::vector<std::unique_ptr<ASTNode>> &statements)
 	{
-		printf("\\\\\\ AST \\\\\\\n\n");
+		p_trace(stdout, "\\\\\\ AST \\\\\\\n\n");
 
 		for (const std::unique_ptr<ASTNode> &statement : statements)
 		{
@@ -112,7 +112,7 @@ struct Compiler
 			statement->dfs(cb);
 		}
 
-		printf("\n/// AST ///\n");
+		p_trace(stdout, "\n/// AST ///\n");
 	}
 
 	/**

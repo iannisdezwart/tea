@@ -119,7 +119,7 @@ struct Assembler : public BufferBuilder
 
 		// Todo: create
 
-		fprintf(stderr, "No free registers found. Spilling registers is not implemented yet.");
+		p_warn(stderr, "No free registers found. Spilling registers is not implemented yet.");
 		abort();
 	}
 
@@ -1589,7 +1589,7 @@ struct Assembler : public BufferBuilder
 	{
 		if (labels.count(id))
 		{
-			printf("ProgramBuilder error: duplicate label %s\n", id.c_str());
+			p_warn(stderr, "ProgramBuilder error: duplicate label %s\n", id.c_str());
 			abort();
 		}
 
@@ -1623,7 +1623,7 @@ struct Assembler : public BufferBuilder
 
 			if (!labels.count(label))
 			{
-				printf("ProgramBuilder error: referenced non-defined label %s\n",
+				p_warn(stderr, "ProgramBuilder error: referenced non-defined label %s\n",
 					label.c_str());
 				abort();
 			}

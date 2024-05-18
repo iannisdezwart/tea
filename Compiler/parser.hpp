@@ -68,7 +68,7 @@ merge_bin_ops_ltr(std::vector<std::unique_ptr<ReadValue>> &expressions,
 		switch (op)
 		{
 		default:
-			printf("Operator %s isn't yet implemented by the parser\n",
+			p_warn(stderr, "Operator %s isn't yet implemented by the parser\n",
 				op_to_str(op));
 			abort();
 
@@ -162,7 +162,7 @@ merge_bin_ops_rtl(std::vector<std::unique_ptr<ReadValue>> &expressions,
 		switch (op)
 		{
 		default:
-			printf("Operator %s isn't yet implemented by the parser\n",
+			p_warn(stderr, "Operator %s isn't yet implemented by the parser\n",
 				op_to_str(op));
 			abort();
 
@@ -323,12 +323,12 @@ struct Parser
  * @param message The error message format string.
  * @param ... The format string arguments.
  */
-#define syntax_err(token, message, ...)                                            \
-	do                                                                         \
-	{                                                                          \
-		fprintf(stderr, "[ Syntax Error ]: " message "\n", ##__VA_ARGS__); \
-		fprintf(stderr, "At %ld:%ld\n", token.line, token.col);            \
-		abort();                                                           \
+#define syntax_err(token, message, ...)                                           \
+	do                                                                        \
+	{                                                                         \
+		p_warn(stderr, "[ Syntax Error ]: " message "\n", ##__VA_ARGS__); \
+		p_warn(stderr, "At %ld:%ld\n", token.line, token.col);            \
+		abort();                                                          \
 	} while (0)
 
 /**
@@ -353,11 +353,11 @@ struct Parser
 	{                                                                                      \
 		if (token.type != token_type)                                                  \
 		{                                                                              \
-			fprintf(stderr,                                                        \
+			p_warn(stderr,                                                         \
 				"[ Syntax Error ]: Unexpected token of type %s, "              \
 				"expected a %s token.\n",                                      \
 				token_type_to_str(token.type), token_type_to_str(token_type)); \
-			fprintf(stderr, "At %ld:%ld\n", token.line, token.col);                \
+			p_warn(stderr, "At %ld:%ld\n", token.line, token.col);                 \
 			abort();                                                               \
 		}                                                                              \
 	} while (0)
@@ -376,11 +376,11 @@ struct Parser
 	{                                                                                \
 		if (token.value != token_value)                                          \
 		{                                                                        \
-			fprintf(stderr,                                                  \
+			p_warn(stderr,                                                   \
 				"[ Syntax Error ]: Unexpected token with value \"%s\", " \
 				"expected a token with value \"%s\".\n",                 \
 				token.value.c_str(), token_value);                       \
-			fprintf(stderr, "At %ld:%ld\n", token.line, token.col);          \
+			p_warn(stderr, "At %ld:%ld\n", token.line, token.col);           \
 			abort();                                                         \
 		}                                                                        \
 	} while (0)
@@ -444,7 +444,7 @@ struct Parser
 	{
 		if (i + offset >= tokens.size())
 		{
-			fprintf(stderr, "[ Parser Error ]: Unexpected end of file.\n");
+			p_warn(stderr, "[ Parser Error ]: Unexpected end of file.\n");
 			abort();
 		}
 
@@ -596,11 +596,11 @@ struct Parser
 			return;
 		}
 
-		fprintf(stderr,
+		p_warn(stderr,
 			"[ Syntax Error ]: Unexpected token with value \"%s\", "
 			"expected a terminator token (newline or semicolon).\n",
 			terminator.value.c_str());
-		fprintf(stderr, "At %ld:%ld\n", terminator.line, terminator.col);
+		p_warn(stderr, "At %ld:%ld\n", terminator.line, terminator.col);
 		abort();
 	}
 

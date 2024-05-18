@@ -251,7 +251,7 @@ struct BinaryOperation final : public ReadValue
 		}
 
 		default:
-			printf("operator %s in BinaryOperation not implemented\n",
+			p_warn(stderr, "operator %s in BinaryOperation not implemented\n",
 				op_to_str(op));
 			abort();
 			break;
@@ -648,7 +648,7 @@ struct BinaryOperation final : public ReadValue
 			break;
 
 		default:
-			printf("operator %d in BinaryOperation not implemented\n",
+			p_warn(stderr, "operator %d in BinaryOperation not implemented\n",
 				op);
 			abort();
 			break;

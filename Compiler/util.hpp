@@ -8,18 +8,32 @@
 #include <sstream>
 #include <iomanip>
 
+static bool _debug;
+
+#define p_trace(stream, ...)                          \
+	do                                            \
+	{                                             \
+		if (_debug)                           \
+			fprintf(stream, __VA_ARGS__); \
+	} while (0)
+
+#define p_warn(stream, ...)                   \
+	do                                    \
+	{                                     \
+		fprintf(stream, __VA_ARGS__); \
+	} while (0)
+
 /**
  * @brief Macro that prints an error message and aborts the program.
  * Appends a newline to the error message.
  * @param message The message format string.
  * @param ... The arguments to the format string.
  */
-#define err(message, ...)                                \
-	do                                               \
-	{                                                \
-		fprintf(stderr, message, ##__VA_ARGS__); \
-		putc('\n', stderr);                      \
-		abort();                                 \
+#define err(message, ...)                                    \
+	do                                                   \
+	{                                                    \
+		p_warn(stderr, message "\n", ##__VA_ARGS__); \
+		abort();                                     \
 	} while (0)
 
 /**
@@ -30,12 +44,12 @@
  * @param message The message format string.
  * @param ... The arguments to the format string.
  */
-#define err_at_token(token, prefix, message, ...)                                \
-	do                                                                       \
-	{                                                                        \
-		fprintf(stderr, "[ %s ]: " message "\n", prefix, ##__VA_ARGS__); \
-		fprintf(stderr, "At %ld:%ld\n", token.line, token.col);          \
-		abort();                                                         \
+#define err_at_token(token, prefix, message, ...)                               \
+	do                                                                      \
+	{                                                                       \
+		p_warn(stderr, "[ %s ]: " message "\n", prefix, ##__VA_ARGS__); \
+		p_warn(stderr, "At %ld:%ld\n", token.line, token.col);          \
+		abort();                                                        \
 	} while (0)
 
 /**
@@ -44,10 +58,10 @@
  * @param message The message format string.
  * @param ... The arguments to the format string.
  */
-#define warn(message, ...)                                                    \
-	do                                                                    \
-	{                                                                     \
-		fprintf(stderr, "[ warning ]: " message "\n", ##__VA_ARGS__); \
+#define warn(message, ...)                                                   \
+	do                                                                   \
+	{                                                                    \
+		p_warn(stderr, "[ warning ]: " message "\n", ##__VA_ARGS__); \
 	} while (0)
 
 /**

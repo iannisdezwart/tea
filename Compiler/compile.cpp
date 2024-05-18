@@ -13,7 +13,7 @@ main(int argc, char **argv)
 	char *input_file_name  = argv[1];
 	char *output_file_name = argv[2];
 	std::string debug_flag = argc > 3 ? argv[3] : "";
-	bool debug             = debug_flag == "--debug" || debug_flag == "-d";
+	bool debug = _debug = debug_flag == "--debug" || debug_flag == "-d";
 
 	Compiler compiler(input_file_name, output_file_name, debug);
 	compiler.compile();

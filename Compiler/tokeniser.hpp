@@ -728,12 +728,12 @@ struct Tokeniser
  * @param message A format string for the message.
  * @param ... The arguments for the format string.
  */
-#define throw_err(message, ...)                                                      \
-	do                                                                           \
-	{                                                                            \
-		fprintf(stderr, "[ Tokenise Error ]: " message "\n", ##__VA_ARGS__); \
-		fprintf(stderr, "At %ld:%ld\n", reader.pos.line, reader.pos.col);    \
-		abort();                                                             \
+#define throw_err(message, ...)                                                     \
+	do                                                                          \
+	{                                                                           \
+		p_warn(stderr, "[ Tokenise Error ]: " message "\n", ##__VA_ARGS__); \
+		p_warn(stderr, "At %ld:%ld\n", reader.pos.line, reader.pos.col);    \
+		abort();                                                            \
 	} while (0)
 
 	// The list of tokens produced by the tokeniser.
@@ -752,14 +752,19 @@ struct Tokeniser
 	void
 	print_tokens()
 	{
-		printf("\\\\\\ Tokens (%ld) \\\\\\\n\n", tokens.size());
+		if (!_debug)
+		{
+			return;
+		}
+
+		p_trace(stdout, "\\\\\\ Tokens (%ld) \\\\\\\n\n", tokens.size());
 
 		for (const Token &token : tokens)
 		{
-			std::cout << token.to_str() << '\n';
+			p_trace(stdout, "%s\n", token.to_str().c_str());
 		}
 
-		printf("\n/// Tokens ///\n");
+		p_trace(stdout, "\n/// Tokens ///\n");
 	}
 
 	/**
@@ -775,7 +780,7 @@ struct Tokeniser
 
 		while (restore_pos = reader.read_char(c), c != EOF)
 		{
-			printf("tokenise(): %c (%hhu)\n", c, (uint8_t) c);
+			p_trace(stdout, "tokenise(): %c (%hhu)\n", c, (uint8_t) c);
 			line = reader.pos.line;
 			col  = reader.pos.col;
 
