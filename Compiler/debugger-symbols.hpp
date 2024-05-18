@@ -1,6 +1,7 @@
 #ifndef TEA_COMPILER_DEBUGGER_SYMBOLS_HEADER
 #define TEA_COMPILER_DEBUGGER_SYMBOLS_HEADER
 
+#include <functional>
 #include <map>
 #include <fstream>
 

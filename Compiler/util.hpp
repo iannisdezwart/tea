@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <cstdint>
 #include <sstream>
 #include <iomanip>
@@ -185,9 +186,9 @@ pad_start(const std::string &str, size_t len, char c)
 bool
 compare_str(const std::string &str, const char *test)
 {
-	if (str.length() > strlen(test))
+	if (str.length() > std::strlen(test))
 		return true;
-	return pad_start(str, strlen(test), '0') > test;
+	return pad_start(str, std::strlen(test), '0') > test;
 }
 
 /**

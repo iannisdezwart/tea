@@ -1,6 +1,7 @@
 #ifndef TEA_TOKENISER_HEADER
 #define TEA_TOKENISER_HEADER
 
+#include <vector>
 #include <unordered_set>
 
 #include "Compiler/file-stream-reader.hpp"
