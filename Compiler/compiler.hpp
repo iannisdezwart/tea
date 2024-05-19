@@ -11,7 +11,6 @@
 #include <chrono>
 #include "Compiler/ASTNodes/ClassDeclaration.hpp"
 #include "Compiler/util.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Compiler/parser.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
 #include "debugger-symbols.hpp"

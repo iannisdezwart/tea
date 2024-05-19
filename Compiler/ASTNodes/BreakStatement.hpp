@@ -2,12 +2,11 @@
 #define TEA_AST_NODE_BREAK_STATEMENT_HEADER
 
 #include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/tokeniser.hpp"
 
 struct BreakStatement final : public ASTNode
 {
-	BreakStatement(Token break_token)
-		: ASTNode(std::move(break_token), BREAK_STATEMENT) {}
+	BreakStatement(CompactToken accountable_token)
+		: ASTNode(std::move(accountable_token), BREAK_STATEMENT) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
