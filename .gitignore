@@ -11,3 +11,4 @@ Tests/*/.*
 *.dSYM
 html/
 latex/
+.prof/

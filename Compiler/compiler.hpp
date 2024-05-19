@@ -1,6 +1,13 @@
 #ifndef TEA_COMPILER_HEADER
 #define TEA_COMPILER_HEADER
 
+#ifdef __linux__
+#include <valgrind/callgrind.h>
+#else
+#define CALLGRIND_START_INSTRUMENTATION
+#define CALLGRIND_TOGGLE_COLLECT
+#define CALLGRIND_STOP_INSTRUMENTATION
+#endif
 #include "Compiler/ASTNodes/ClassDeclaration.hpp"
 #include "Compiler/util.hpp"
 #include "Compiler/tokeniser.hpp"
@@ -137,6 +144,9 @@ struct Compiler
 
 		// Type checking.
 
+		CALLGRIND_START_INSTRUMENTATION;
+		CALLGRIND_TOGGLE_COLLECT;
+
 		for (const std::unique_ptr<ASTNode> &statement : statements)
 			statement->pre_type_check(type_check_state);
 		for (const std::unique_ptr<ASTNode> &statement : statements)
@@ -199,6 +209,9 @@ struct Compiler
 		// Jumped to after the main function finishes.
 
 		assembler.add_label("exit");
+
+		CALLGRIND_TOGGLE_COLLECT;
+		CALLGRIND_STOP_INSTRUMENTATION;
 
 		// Write the byte code to the output file.
 
