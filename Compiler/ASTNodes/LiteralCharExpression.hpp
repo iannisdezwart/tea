@@ -3,7 +3,6 @@
 
 #include "Compiler/ASTNodes/ASTNode.hpp"
 #include "Compiler/ASTNodes/ReadValue.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 
@@ -11,9 +10,9 @@ struct LiteralCharExpression final : public ReadValue
 {
 	uint8_t value;
 
-	LiteralCharExpression(Token literal_char_token)
-		: ReadValue(std::move(literal_char_token), LITERAL_CHAR_EXPRESSION),
-		  value(accountable_token.value[0]) {}
+	LiteralCharExpression(CompactToken accountable_token, uint8_t value)
+		: ReadValue(std::move(accountable_token), LITERAL_CHAR_EXPRESSION),
+		  value(value) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)

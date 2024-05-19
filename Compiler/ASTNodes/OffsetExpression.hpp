@@ -9,9 +9,10 @@ struct OffsetExpression final : public WriteValue
 	std::unique_ptr<WriteValue> pointer;
 	std::unique_ptr<ReadValue> offset;
 
-	OffsetExpression(std::unique_ptr<WriteValue> pointer,
-		std::unique_ptr<ReadValue> offset, Token bracket_token)
-		: WriteValue(std::move(bracket_token), OFFSET_EXPRESSION),
+	OffsetExpression(CompactToken accountable_token,
+		std::unique_ptr<WriteValue> pointer,
+		std::unique_ptr<ReadValue> offset)
+		: WriteValue(std::move(accountable_token), OFFSET_EXPRESSION),
 		  pointer(std::move(pointer)),
 		  offset(std::move(offset)) {}
 

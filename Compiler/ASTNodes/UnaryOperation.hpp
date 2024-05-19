@@ -10,22 +10,22 @@
 #include "Executable/byte-code.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "VM/cpu.hpp"
 
 struct UnaryOperation final : public WriteValue
 {
-	std::unique_ptr<ReadValue> expression;
 	Operator op;
+	std::unique_ptr<ReadValue> expression;
 	bool prefix;
 
 	bool warned = false;
 
-	UnaryOperation(std::unique_ptr<ReadValue> expression, Token op_token, bool prefix)
-		: WriteValue(std::move(op_token), UNARY_OPERATION),
-		  expression(std::move(expression)),
-		  op(str_to_operator(accountable_token.value, prefix)),
-		  prefix(prefix) {}
+	UnaryOperation(CompactToken accountable_token,
+		Operator op, bool prefix,
+		std::unique_ptr<ReadValue> expression)
+		: WriteValue(std::move(accountable_token), UNARY_OPERATION),
+		  op(op), prefix(prefix),
+		  expression(std::move(expression)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
@@ -111,7 +111,7 @@ struct UnaryOperation final : public WriteValue
 		{
 			err_at_token(accountable_token, "Invalid UnaryOperation",
 				"didn't find an operation to perform with operator %s",
-				accountable_token.value.c_str());
+				op_to_str(op));
 		}
 		}
 	}
@@ -486,7 +486,7 @@ struct UnaryOperation final : public WriteValue
 		{
 			err_at_token(accountable_token, "Invalid UnaryOperation",
 				"didn't find an operation to perform with operator %s",
-				accountable_token.value.c_str());
+				op_to_str(op));
 		}
 		}
 	}
