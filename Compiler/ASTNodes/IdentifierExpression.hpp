@@ -7,15 +7,16 @@
 #include "Executable/byte-code.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
-#include "Compiler/tokeniser.hpp"
 
 struct IdentifierExpression final : public WriteValue
 {
+	std::string identifier;
 	// Set during type checking if the identifier is a class field.
 	std::optional<Type> object_type;
 
-	IdentifierExpression(Token identifier_token)
-		: WriteValue(std::move(identifier_token), IDENTIFIER_EXPRESSION) {}
+	IdentifierExpression(CompactToken accountable_token, std::string identifier)
+		: WriteValue(std::move(accountable_token), IDENTIFIER_EXPRESSION),
+		  identifier(identifier) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
@@ -29,7 +30,7 @@ struct IdentifierExpression final : public WriteValue
 		override
 	{
 		std::string s = "IdentifierExpression { identifier = \""
-			+ accountable_token.value + "\" } @ " + to_hex((size_t) this);
+			+ identifier + "\" } @ " + to_hex((size_t) this);
 		return s;
 	}
 
@@ -37,43 +38,41 @@ struct IdentifierExpression final : public WriteValue
 	type_check(TypeCheckState &type_check_state)
 		override
 	{
-		std::string id_name = accountable_token.value;
-
 		if (object_type.has_value())
 		{
 			const ClassDefinition &class_def = type_check_state.classes[object_type->class_name];
 
-			if (!class_def.has_field(id_name))
+			if (!class_def.has_field(identifier))
 			{
 				err_at_token(accountable_token,
 					"Class field not found",
 					"Field %s not found in class %s",
-					id_name.c_str(), object_type->class_name.c_str());
+					identifier.c_str(), object_type->class_name.c_str());
 			}
 
-			type          = class_def.get_field_type(id_name);
-			location_data = LocationData(IdentifierKind::UNDEFINED, class_def.get_field_offset(id_name));
+			type          = class_def.get_field_type(identifier);
+			location_data = LocationData(IdentifierKind::UNDEFINED, class_def.get_field_offset(identifier));
 			return;
 		}
 
-		type = type_check_state.get_type_of_identifier(id_name);
+		type = type_check_state.get_type_of_identifier(identifier);
 
 		if (type == Type::UNDEFINED)
 		{
 			err_at_token(accountable_token,
 				"Identifier has unknown kind",
 				"Identifier: %s. this might be a bug in the compiler",
-				id_name.c_str());
+				identifier.c_str());
 		}
 
-		IdentifierKind id_kind = type_check_state.get_identifier_kind(id_name);
+		IdentifierKind id_kind = type_check_state.get_identifier_kind(identifier);
 
 		if (id_kind == IdentifierKind::UNDEFINED)
 		{
 			err_at_token(accountable_token,
 				"Reference to undeclared variable",
 				"Identifier %s was referenced, but not declared",
-				id_name.c_str());
+				identifier.c_str());
 		}
 
 		int64_t offset;
@@ -82,14 +81,14 @@ struct IdentifierExpression final : public WriteValue
 		{
 		case IdentifierKind::LOCAL:
 		{
-			const VariableDefinition &var = type_check_state.get_local(id_name);
+			const VariableDefinition &var = type_check_state.get_local(identifier);
 			offset                        = var.offset;
 			break;
 		}
 
 		case IdentifierKind::PARAMETER:
 		{
-			const VariableDefinition &var = type_check_state.parameters[id_name];
+			const VariableDefinition &var = type_check_state.parameters[identifier];
 			offset                        = -type_check_state.parameters_size + var.offset
 				- 8 - CPU::stack_frame_size;
 			break;
@@ -97,7 +96,7 @@ struct IdentifierExpression final : public WriteValue
 
 		case IdentifierKind::GLOBAL:
 		{
-			const VariableDefinition &var = type_check_state.globals[id_name];
+			const VariableDefinition &var = type_check_state.globals[identifier];
 			offset                        = var.offset;
 			break;
 		}
@@ -106,7 +105,7 @@ struct IdentifierExpression final : public WriteValue
 			err_at_token(accountable_token,
 				"Identifier has unknown kind",
 				"Identifier: %s. this might be a bug in the compiler",
-				id_name.c_str());
+				identifier.c_str());
 		}
 
 		location_data = LocationData(id_kind, offset);

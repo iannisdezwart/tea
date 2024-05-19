@@ -3,7 +3,6 @@
 
 #include "Compiler/ASTNodes/ASTNode.hpp"
 #include "Compiler/ASTNodes/ReadValue.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/CodeBlock.hpp"
@@ -14,9 +13,9 @@ struct IfStatement final : public ASTNode
 	std::unique_ptr<CodeBlock> then_block;
 	std::unique_ptr<CodeBlock> else_block;
 
-	IfStatement(std::unique_ptr<ReadValue> test, Token if_token,
+	IfStatement(CompactToken accountable_token, std::unique_ptr<ReadValue> test,
 		std::unique_ptr<CodeBlock> then_block, std::unique_ptr<CodeBlock> else_block)
-		: ASTNode(std::move(if_token), IF_STATEMENT),
+		: ASTNode(std::move(accountable_token), IF_STATEMENT),
 		  test(std::move(test)),
 		  then_block(std::move(then_block)),
 		  else_block(std::move(else_block)) {}

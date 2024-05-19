@@ -3,7 +3,6 @@
 
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
@@ -12,8 +11,8 @@ struct CodeBlock final : public ASTNode
 {
 	std::vector<std::unique_ptr<ASTNode>> statements;
 
-	CodeBlock(Token start_token)
-		: ASTNode(std::move(start_token), CODE_BLOCK) {}
+	CodeBlock(CompactToken accountable_token)
+		: ASTNode(std::move(accountable_token), CODE_BLOCK) {}
 
 	~CodeBlock() {}
 

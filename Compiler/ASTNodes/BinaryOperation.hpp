@@ -6,20 +6,20 @@
 #include "Compiler/ASTNodes/ReadValue.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
-#include "Compiler/tokeniser.hpp"
 
 struct BinaryOperation final : public ReadValue
 {
-	std::unique_ptr<ReadValue> left;
-	std::unique_ptr<ReadValue> right;
 	Operator op;
+	std::unique_ptr<ReadValue> right;
+	std::unique_ptr<ReadValue> left;
 	Type cmp_type;
 
-	BinaryOperation(std::unique_ptr<ReadValue> left, std::unique_ptr<ReadValue> right, Token op_token)
-		: ReadValue(std::move(op_token), BINARY_OPERATION),
+	BinaryOperation(CompactToken accountable_token, Operator op,
+		std::unique_ptr<ReadValue> left, std::unique_ptr<ReadValue> right)
+		: ReadValue(std::move(accountable_token), BINARY_OPERATION),
+		  op(op),
 		  left(std::move(left)),
-		  right(std::move(right)),
-		  op(str_to_operator(accountable_token.value)) {}
+		  right(std::move(right)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)

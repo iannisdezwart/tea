@@ -2,12 +2,11 @@
 #define TEA_AST_NODE_CONTINUE_STATEMENT_HEADER
 
 #include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/tokeniser.hpp"
 
 struct ContinueStatement final : public ASTNode
 {
-	ContinueStatement(Token continue_token)
-		: ASTNode(std::move(continue_token), CONTINUE_STATEMENT) {}
+	ContinueStatement(CompactToken accountable_token)
+		: ASTNode(std::move(accountable_token), CONTINUE_STATEMENT) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)

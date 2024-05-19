@@ -9,23 +9,24 @@
 #include "Executable/byte-code.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "VM/cpu.hpp"
 
 struct MemberExpression final : public WriteValue
 {
+	Operator op;
 	std::unique_ptr<WriteValue> object;
 	std::unique_ptr<IdentifierExpression> member;
-	Operator op;
 	std::unique_ptr<ClassDefinition> class_definition;
 	bool is_ancestor;
 
-	MemberExpression(std::unique_ptr<WriteValue> object,
-		std::unique_ptr<IdentifierExpression> member, Token op_token)
-		: WriteValue(std::move(op_token), MEMBER_EXPRESSION),
+	MemberExpression(CompactToken accountable_token,
+		Operator op,
+		std::unique_ptr<WriteValue> object,
+		std::unique_ptr<IdentifierExpression> member)
+		: WriteValue(std::move(accountable_token), MEMBER_EXPRESSION),
+		  op(op),
 		  object(std::move(object)),
 		  member(std::move(member)),
-		  op(str_to_operator(accountable_token.value)),
 		  is_ancestor(true)
 	{
 		if (this->object->node_type == MEMBER_EXPRESSION)
@@ -53,10 +54,6 @@ struct MemberExpression final : public WriteValue
 
 		s += "MemberExpression { op = \"";
 		s += op_to_str(op);
-		s += "\", object = \"";
-		s += object->accountable_token.value;
-		s += "\", member = \"";
-		s += member->accountable_token.value;
 		s += "\" } @ ";
 		s += to_hex((size_t) this);
 
@@ -71,15 +68,14 @@ struct MemberExpression final : public WriteValue
 		member->object_type.emplace(object->type);
 		member->type_check(type_check_state);
 
-		std::string instance_name = object->accountable_token.value;
-		std::string member_name   = member->accountable_token.value;
+		std::string member_name = member->identifier;
 
 		if (object->type != Type::USER_DEFINED_CLASS)
 		{
 			err_at_token(accountable_token, "Type Error",
 				"Cannot access property %s from non-class type %s",
 				member_name.c_str(),
-				instance_name.c_str());
+				object->to_str().c_str());
 		}
 
 		std::string class_name = object->type.class_name;
@@ -90,26 +86,21 @@ struct MemberExpression final : public WriteValue
 		if (op == POINTER_TO_MEMBER && object->type.pointer_depth() != 0)
 		{
 			err_at_token(accountable_token, "Invalid MemberExpression",
-				"Cannot use %s.%s syntax on a pointer\n"
-				"Use %s->%s instead",
-				instance_name.c_str(), member_name.c_str(),
-				instance_name.c_str(), member_name.c_str());
+				"Cannot use x.y syntax on a pointer\n"
+				"Use x->y instead");
 		}
 
 		if (op == DEREFERENCED_POINTER_TO_MEMBER && object->type.pointer_depth() == 0)
 		{
 			err_at_token(accountable_token, "Invalid MemberExpression",
-				"Cannot use %s->%s syntax on an instance\n"
-				"Use %s.%s instead",
-				instance_name.c_str(), member_name.c_str(),
-				instance_name.c_str(), member_name.c_str());
+				"Cannot use x->y syntax on an instance\n"
+				"Use x.y instead");
 		}
 
 		if (op == DEREFERENCED_POINTER_TO_MEMBER && object->type.pointer_depth() != 1)
 		{
 			err_at_token(accountable_token, "Invalid MemberExpression",
-				"Cannot use %s->%s syntax on a pointer of depth %lu\n",
-				instance_name.c_str(), member_name.c_str(),
+				"Cannot use x->y syntax on a pointer of depth %lu\n",
 				object->type.pointer_depth());
 		}
 
@@ -140,9 +131,8 @@ struct MemberExpression final : public WriteValue
 
 		default:
 			err_at_token(accountable_token, "Syntax Error",
-				"Unexpected token \"%s\" of type %s\n"
-				"MemberExpressions only work with \".\" or \"->\" operators.",
-				accountable_token.value.c_str(), token_type_to_str(accountable_token.type));
+				"Unexpected token \"%s\"\n"
+				"MemberExpressions only work with \".\" or \"->\" operators.");
 			abort();
 			break;
 		}

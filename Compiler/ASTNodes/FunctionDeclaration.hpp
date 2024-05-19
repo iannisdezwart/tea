@@ -3,7 +3,6 @@
 
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
@@ -59,9 +58,8 @@ struct FunctionDeclaration final : public ASTNode
 	{
 		type_and_id_pair->type_check(type_check_state);
 
-		Type return_type           = type_and_id_pair->type;
-		fn_signature               = FunctionSignature(
-                        type_and_id_pair->get_identifier_name(), return_type);
+		Type return_type = type_and_id_pair->type;
+		fn_signature     = FunctionSignature(type_and_id_pair->identifier, return_type);
 
 		// Add parameters
 
@@ -69,12 +67,12 @@ struct FunctionDeclaration final : public ASTNode
 		{
 			param->type_check(type_check_state);
 
-			std::string param_name = param->get_identifier_name();
+			std::string param_name = param->identifier;
 			fn_signature.parameters.push_back(
 				IdentifierDefinition(param_name, param->type));
 		}
 
-		const std::string &fn_name = type_and_id_pair->get_identifier_name();
+		const std::string &fn_name = type_and_id_pair->identifier;
 		if (!type_check_state.add_function(fn_name, fn_signature))
 		{
 			err_at_token(accountable_token,
@@ -90,13 +88,13 @@ struct FunctionDeclaration final : public ASTNode
 	{
 		for (std::unique_ptr<TypeIdentifierPair> &param : params)
 		{
-			std::string param_name = param->get_identifier_name();
+			std::string param_name = param->identifier;
 			type_check_state.add_parameter(param_name, param->type);
 		}
 
 		// Type check the function body
 
-		const std::string &fn_name = type_and_id_pair->get_identifier_name();
+		const std::string &fn_name = type_and_id_pair->identifier;
 		type_check_state.begin_function_scope(fn_name);
 
 		body->type_check(type_check_state);
@@ -109,7 +107,7 @@ struct FunctionDeclaration final : public ASTNode
 	code_gen(Assembler &assembler)
 		const override
 	{
-		const std::string &fn_name = type_and_id_pair->get_identifier_name();
+		const std::string &fn_name = type_and_id_pair->identifier;
 
 		assembler.add_label(fn_name);
 		if (assembler.debug)

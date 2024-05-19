@@ -3,7 +3,6 @@
 
 #include "Compiler/ASTNodes/ASTNode.hpp"
 #include "Compiler/ASTNodes/ReadValue.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 
@@ -11,8 +10,8 @@ struct LiteralStringExpression final : public ReadValue
 {
 	std::string value;
 
-	LiteralStringExpression(Token literal_string_token, std::string value)
-		: ReadValue(std::move(literal_string_token), LITERAL_STRING_EXPRESSION),
+	LiteralStringExpression(CompactToken accountable_token, std::string value)
+		: ReadValue(std::move(accountable_token), LITERAL_STRING_EXPRESSION),
 		  value(std::move(value)) {}
 
 	void

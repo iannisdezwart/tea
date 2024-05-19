@@ -3,7 +3,6 @@
 
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
 #include "Compiler/ASTNodes/TypeName.hpp"
@@ -17,11 +16,10 @@ struct ClassDeclaration final : public ASTNode
 	std::string class_name;
 	std::vector<std::unique_ptr<TypeIdentifierPair>> fields;
 
-	ClassDeclaration(
-		Token class_token,
+	ClassDeclaration(CompactToken accountable_token,
 		std::string class_name,
 		std::vector<std::unique_ptr<TypeIdentifierPair>> &&fields)
-		: ASTNode(std::move(class_token), CLASS_DECLARATION),
+		: ASTNode(std::move(accountable_token), CLASS_DECLARATION),
 		  class_name(std::move(class_name)), fields(std::move(fields)) {}
 
 	void
@@ -73,7 +71,7 @@ struct ClassDeclaration final : public ASTNode
 
 		for (std::unique_ptr<TypeIdentifierPair> &field : fields)
 		{
-			class_def.add_field(field->get_identifier_name(), field->type);
+			class_def.add_field(field->identifier, field->type);
 		}
 
 		type_check_state.add_class(class_name, class_def);

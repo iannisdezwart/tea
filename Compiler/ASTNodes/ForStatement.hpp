@@ -3,7 +3,6 @@
 
 #include "Compiler/ASTNodes/ASTNode.hpp"
 #include "Compiler/ASTNodes/ReadValue.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/CodeBlock.hpp"
@@ -15,10 +14,12 @@ struct ForStatement final : public ASTNode
 	std::unique_ptr<ReadValue> update;
 	std::unique_ptr<CodeBlock> body;
 
-	ForStatement(std::unique_ptr<ASTNode> init, std::unique_ptr<ReadValue> test,
+	ForStatement(CompactToken accountable_token,
+		std::unique_ptr<ASTNode> init,
+		std::unique_ptr<ReadValue> test,
 		std::unique_ptr<ReadValue> update,
-		Token for_token, std::unique_ptr<CodeBlock> body)
-		: ASTNode(std::move(for_token), FOR_STATEMENT),
+		std::unique_ptr<CodeBlock> body)
+		: ASTNode(std::move(accountable_token), FOR_STATEMENT),
 		  init(std::move(init)),
 		  test(std::move(test)),
 		  update(std::move(update)),

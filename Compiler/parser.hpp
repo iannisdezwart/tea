@@ -1,9 +1,8 @@
 #ifndef TEA_PARSER_HEADER
 #define TEA_PARSER_HEADER
 
-#include "tokeniser.hpp"
-
 #include <vector>
+#include "Compiler/tokeniser.hpp"
 #include "Compiler/ASTNodes/ASTNode.hpp"
 #include "Compiler/ASTNodes/WriteValue.hpp"
 #include "Compiler/ASTNodes/ReadValue.hpp"
@@ -89,8 +88,9 @@ merge_bin_ops_ltr(std::vector<std::unique_ptr<ReadValue>> &expressions,
 		case EQUAL:
 		case NOT_EQUAL:
 		{
-			new_expr = std::make_unique<BinaryOperation>(
-				std::move(left_expr), std::move(right_expr), op_token);
+			new_expr = std::make_unique<BinaryOperation>(CompactToken(op_token),
+				str_to_operator(op_token.value),
+				std::move(left_expr), std::move(right_expr));
 			break;
 		}
 
@@ -104,8 +104,9 @@ merge_bin_ops_ltr(std::vector<std::unique_ptr<ReadValue>> &expressions,
 				std::unique_ptr<IdentifierExpression> member =
 					static_unique_ptr_cast<IdentifierExpression>(std::move(right_expr));
 
-				new_expr = std::make_unique<MemberExpression>(
-					std::move(object), std::move(member), op_token);
+				new_expr = std::make_unique<MemberExpression>(CompactToken(op_token),
+					str_to_operator(op_token.value),
+					std::move(object), std::move(member));
 				break;
 			}
 
@@ -199,9 +200,10 @@ merge_bin_ops_rtl(std::vector<std::unique_ptr<ReadValue>> &expressions,
 			// 	dereference_depth++;
 			// }
 
-			new_expr = std::make_unique<AssignmentExpression>(
+			new_expr = std::make_unique<AssignmentExpression>(CompactToken(op_token),
+				str_to_operator(op_token.value),
 				std::unique_ptr<WriteValue>(WriteValue::cast(left.release())),
-				std::move(right), op_token);
+				std::move(right));
 
 			break;
 		} // case BITWISE_OR_ASSIGNMENT
@@ -248,7 +250,8 @@ merge_un_ops_ltr(std::unique_ptr<ReadValue> &expression,
 	merge_op:
 
 		std::unique_ptr<ReadValue> new_expr = std::make_unique<UnaryOperation>(
-			std::move(expression), op_token, prefix);
+			CompactToken(op_token), str_to_operator(op_token.value, prefix),
+			prefix, std::move(expression));
 		expression = std::move(new_expr);
 
 		operators.erase(operators.begin() + j);
@@ -291,7 +294,8 @@ merge_un_ops_rtl(std::unique_ptr<ReadValue> &expression,
 	merge_op_1:
 
 		std::unique_ptr<ReadValue> new_expr = std::make_unique<UnaryOperation>(
-			std::move(expression), op_token, prefix);
+			CompactToken(op_token), str_to_operator(op_token.value, prefix),
+			prefix, std::move(expression));
 
 		expression = std::move(new_expr);
 
@@ -624,7 +628,8 @@ struct Parser
 				break;
 		}
 
-		return std::make_unique<TypeName>(type_name_token, std::move(array_sizes));
+		return std::make_unique<TypeName>(CompactToken(type_name_token),
+			type_name_token.value, std::move(array_sizes));
 	}
 
 	/**
@@ -641,7 +646,9 @@ struct Parser
 		Token identifier_token = next_token();
 		assert_token_type(identifier_token, IDENTIFIER);
 
-		return std::make_unique<TypeIdentifierPair>(std::move(type_name), identifier_token);
+		return std::make_unique<TypeIdentifierPair>(
+			CompactToken(identifier_token), std::move(type_name),
+			identifier_token.value);
 	}
 
 	/**
@@ -660,7 +667,8 @@ struct Parser
 		assert_token_type(curly_brace_start, SPECIAL_CHARACTER);
 		assert_token_value(curly_brace_start, "{");
 
-		std::unique_ptr<CodeBlock> code_block = std::make_unique<CodeBlock>(curly_brace_start);
+		std::unique_ptr<CodeBlock> code_block = std::make_unique<CodeBlock>(
+			CompactToken(curly_brace_start));
 
 		// Scan all statements.
 
@@ -700,7 +708,8 @@ struct Parser
 
 		// Wrap it inside a code block.
 
-		std::unique_ptr<CodeBlock> code_block = std::make_unique<CodeBlock>(first_token);
+		std::unique_ptr<CodeBlock> code_block = std::make_unique<CodeBlock>(
+			CompactToken(first_token));
 		code_block->add_statement(std::move(statement));
 
 		return code_block;
@@ -868,9 +877,10 @@ struct Parser
 			assert_token_type(left_parenthesis, SPECIAL_CHARACTER);
 			assert_token_value(left_parenthesis, "(");
 
+			std::unique_ptr<TypeName> type_name = std::make_unique<TypeName>(
+				CompactToken(expr_token), expr_token.value, std::vector<size_t> {});
 			expression = std::make_unique<CastExpression>(
-				std::make_unique<TypeName>(expr_token, std::vector<size_t> {}),
-				scan_expression());
+				std::move(type_name), scan_expression());
 
 			Token right_parenthesis = next_token();
 			assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
@@ -924,7 +934,7 @@ struct Parser
 		else if (expr_token.type == LITERAL_STRING)
 		{
 			expression = std::make_unique<LiteralStringExpression>(
-				expr_token, expr_token.value);
+				CompactToken(expr_token), expr_token.value);
 
 			// TODO: allow multiple literal strings next to each other.
 		}
@@ -933,7 +943,8 @@ struct Parser
 
 		else if (expr_token.type == LITERAL_CHAR)
 		{
-			expression = std::make_unique<LiteralCharExpression>(expr_token);
+			expression = std::make_unique<LiteralCharExpression>(
+				CompactToken(expr_token), expr_token.value[0]);
 
 			// TODO: make a method that parses a char correctly.
 			// Currently, it will just parse the first char.
@@ -944,7 +955,7 @@ struct Parser
 		else if (expr_token.type == LITERAL_NUMBER)
 		{
 			expression = std::make_unique<LiteralNumberExpression>(
-				expr_token, expr_token.value);
+				CompactToken(expr_token), expr_token.value);
 		}
 
 		// IdentifierExpression or FunctionCall
@@ -965,7 +976,8 @@ struct Parser
 
 			else
 			{
-				expression = std::make_unique<IdentifierExpression>(expr_token);
+				expression = std::make_unique<IdentifierExpression>(
+					CompactToken(expr_token), expr_token.value);
 			}
 		}
 
@@ -1164,8 +1176,8 @@ struct Parser
 
 	end_arguments:
 
-		return std::make_unique<FunctionCall>(
-			identifier_token, std::move(arguments));
+		return std::make_unique<FunctionCall>(CompactToken(identifier_token),
+			identifier_token.value, std::move(arguments));
 	}
 
 	/**
@@ -1191,8 +1203,8 @@ struct Parser
 		assert_token_type(right_bracket_token, SPECIAL_CHARACTER);
 		assert_token_value(right_bracket_token, "]");
 
-		return std::make_unique<OffsetExpression>(
-			std::move(left), std::move(offset), left_bracket_token);
+		return std::make_unique<OffsetExpression>(CompactToken(left_bracket_token),
+			std::move(left), std::move(offset));
 	}
 
 	/**
@@ -1275,8 +1287,8 @@ struct Parser
 
 		expect_statement_terminator();
 
-		return std::make_unique<ClassDeclaration>(
-			class_token, class_name_token.value, std::move(fields));
+		return std::make_unique<ClassDeclaration>(CompactToken(class_token),
+			class_name_token.value, std::move(fields));
 	}
 
 	/**
@@ -1298,14 +1310,16 @@ struct Parser
 
 		if (next.type == SPECIAL_CHARACTER && next.value == ";")
 		{
-			return std::make_unique<ReturnStatement>(return_token, nullptr);
+			return std::make_unique<ReturnStatement>(
+				CompactToken(return_token), nullptr);
 		}
 
 		// TODO: check if the expression is empty and there
 		// is no semicolon. I think it does not work yet.
 
 		std::unique_ptr<ReturnStatement> return_statement =
-			std::make_unique<ReturnStatement>(return_token, scan_expression());
+			std::make_unique<ReturnStatement>(
+				CompactToken(return_token), scan_expression());
 
 		return return_statement;
 	}
@@ -1367,7 +1381,8 @@ struct Parser
 			{
 				std::unique_ptr<IfStatement> nested_if_statement = scan_if_statement();
 
-				else_block = std::make_unique<CodeBlock>(after_else_token);
+				else_block = std::make_unique<CodeBlock>(
+					CompactToken(after_else_token));
 				else_block->add_statement(std::move(nested_if_statement));
 			}
 
@@ -1378,15 +1393,14 @@ struct Parser
 				else_block = scan_code_block_or_statement();
 			}
 
-			return std::make_unique<IfStatement>(
-				std::move(test), if_token, std::move(then_block),
-				std::move(else_block));
+			return std::make_unique<IfStatement>(CompactToken(if_token),
+				std::move(test), std::move(then_block), std::move(else_block));
 		}
 
 		// There is no else block.
 
-		return std::make_unique<IfStatement>(
-			std::move(test), if_token, std::move(then_block), nullptr);
+		return std::make_unique<IfStatement>(CompactToken(if_token),
+			std::move(test), std::move(then_block), nullptr);
 	}
 
 	/**
@@ -1461,7 +1475,8 @@ struct Parser
 	end_arguments:
 
 		expect_statement_terminator();
-		return std::make_unique<SysCall>(syscall_name_token, std::move(arguments));
+		return std::make_unique<SysCall>(CompactToken(syscall_name_token),
+			syscall_name_token.value, std::move(arguments));
 	}
 
 	/**
@@ -1498,8 +1513,8 @@ struct Parser
 
 		std::unique_ptr<CodeBlock> body = scan_code_block_or_statement();
 
-		return std::make_unique<WhileStatement>(
-			std::move(test), while_token, std::move(body));
+		return std::make_unique<WhileStatement>(CompactToken(while_token),
+			std::move(test), std::move(body));
 	}
 
 	/**
@@ -1544,8 +1559,8 @@ struct Parser
 
 		std::unique_ptr<CodeBlock> body = scan_code_block_or_statement();
 
-		return std::make_unique<ForStatement>(std::move(init), std::move(test),
-			std::move(update), for_token, std::move(body));
+		return std::make_unique<ForStatement>(CompactToken(for_token),
+			std::move(init), std::move(test), std::move(update), std::move(body));
 	}
 
 	/**
@@ -1560,7 +1575,7 @@ struct Parser
 		assert_token_value(break_token, "break");
 
 		expect_statement_terminator();
-		return std::make_unique<BreakStatement>(break_token);
+		return std::make_unique<BreakStatement>(CompactToken(break_token));
 	}
 
 	/**
@@ -1574,7 +1589,7 @@ struct Parser
 		assert_token_value(continue_token, "continue");
 
 		expect_statement_terminator();
-		return std::make_unique<ContinueStatement>(continue_token);
+		return std::make_unique<ContinueStatement>(CompactToken(continue_token));
 	}
 };
 

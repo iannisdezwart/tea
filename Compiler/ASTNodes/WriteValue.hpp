@@ -2,7 +2,6 @@
 #define TEA_WRITE_VALUE_HEADER
 
 #include "Compiler/ASTNodes/ReadValue.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
 
 bool
@@ -25,7 +24,7 @@ struct WriteValue : public ReadValue
 {
 	LocationData location_data;
 
-	WriteValue(Token accountable_token, ASTNodeType type)
+	WriteValue(CompactToken accountable_token, ASTNodeType type)
 		: ReadValue(std::move(accountable_token), type) {}
 
 	virtual ~WriteValue() {}

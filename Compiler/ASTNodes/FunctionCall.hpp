@@ -6,15 +6,18 @@
 #include "Compiler/ASTNodes/ReadValue.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
-#include "Compiler/tokeniser.hpp"
 
 struct FunctionCall final : public ReadValue
 {
+	std::string callee_name;
 	std::vector<std::unique_ptr<ReadValue>> arguments;
 	FunctionSignature fn_signature;
 
-	FunctionCall(Token fn_token, std::vector<std::unique_ptr<ReadValue>> &&arguments)
-		: ReadValue(std::move(fn_token), FUNCTION_CALL),
+	FunctionCall(CompactToken accountable_token,
+		std::string callee_name,
+		std::vector<std::unique_ptr<ReadValue>> &&arguments)
+		: ReadValue(std::move(accountable_token), FUNCTION_CALL),
+		  callee_name(std::move(callee_name)),
 		  arguments(std::move(arguments)) {}
 
 	void
@@ -33,7 +36,7 @@ struct FunctionCall final : public ReadValue
 	to_str()
 		override
 	{
-		std::string s = "FunctionCall { callee = \"" + accountable_token.value + "\" } @ "
+		std::string s = "FunctionCall { callee = \"" + callee_name + "\" } @ "
 			+ to_hex((size_t) this);
 		return s;
 	}
@@ -43,14 +46,14 @@ struct FunctionCall final : public ReadValue
 		override
 	{
 
-		if (!type_check_state.functions.count(accountable_token.value))
+		if (!type_check_state.functions.count(callee_name))
 		{
 			err_at_token(accountable_token, "Call to undeclared function",
 				"Function %s was called, but not declared",
-				accountable_token.value.c_str());
+				callee_name.c_str());
 		}
 
-		fn_signature = type_check_state.functions[accountable_token.value];
+		fn_signature = type_check_state.functions[callee_name];
 		type         = fn_signature.id.type;
 
 		// Validate arguments

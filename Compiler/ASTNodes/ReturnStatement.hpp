@@ -3,7 +3,6 @@
 
 #include "Compiler/ASTNodes/ASTNode.hpp"
 #include "Compiler/ASTNodes/ReadValue.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 
@@ -11,8 +10,8 @@ struct ReturnStatement final : public ASTNode
 {
 	std::unique_ptr<ReadValue> expression;
 
-	ReturnStatement(Token return_token, std::unique_ptr<ReadValue> expression)
-		: ASTNode(std::move(return_token), RETURN_STATEMENT),
+	ReturnStatement(CompactToken accountable_token, std::unique_ptr<ReadValue> expression)
+		: ASTNode(std::move(accountable_token), RETURN_STATEMENT),
 		  expression(std::move(expression)) {}
 
 	void

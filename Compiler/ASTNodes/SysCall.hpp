@@ -11,10 +11,14 @@ std::set<std::string> syscall_names = { "PRINT_CHAR", "GET_CHAR" };
 
 struct SysCall final : public ASTNode
 {
+	std::string syscall_name;
 	std::vector<std::unique_ptr<ReadValue>> arguments;
 
-	SysCall(Token name_token, std::vector<std::unique_ptr<ReadValue>> &&arguments)
-		: ASTNode(std::move(name_token), SYS_CALL),
+	SysCall(CompactToken accountable_token,
+		std::string syscall_name,
+		std::vector<std::unique_ptr<ReadValue>> &&arguments)
+		: ASTNode(std::move(accountable_token), SYS_CALL),
+		  syscall_name(syscall_name),
 		  arguments(std::move(arguments)) {}
 
 	void
@@ -33,7 +37,7 @@ struct SysCall final : public ASTNode
 	to_str()
 		override
 	{
-		std::string s = "SysCall { name = \"" + accountable_token.value
+		std::string s = "SysCall { name = \"" + syscall_name
 			+ "\" } @ " + to_hex((size_t) this);
 		return s;
 	}
@@ -52,7 +56,7 @@ struct SysCall final : public ASTNode
 	code_gen(Assembler &assembler)
 		const override
 	{
-		if (accountable_token.value == "PRINT_CHAR")
+		if (syscall_name == "PRINT_CHAR")
 		{
 			if (arguments.size() != 1)
 			{
@@ -79,7 +83,7 @@ struct SysCall final : public ASTNode
 			assembler.free_register(char_reg);
 		}
 
-		else if (accountable_token.value == "GET_CHAR")
+		else if (syscall_name == "GET_CHAR")
 		{
 			if (arguments.size() != 1)
 			{

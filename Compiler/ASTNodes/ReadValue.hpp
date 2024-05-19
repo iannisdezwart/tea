@@ -2,7 +2,6 @@
 #define TEA_READ_VALUE_HEADER
 
 #include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
 
@@ -31,7 +30,7 @@ is_read_value(ASTNode *node)
 
 struct ReadValue : public ASTNode
 {
-	ReadValue(Token accountable_token, ASTNodeType node_type)
+	ReadValue(CompactToken accountable_token, ASTNodeType node_type)
 		: ASTNode(std::move(accountable_token), node_type) {}
 
 	virtual ~ReadValue() {}

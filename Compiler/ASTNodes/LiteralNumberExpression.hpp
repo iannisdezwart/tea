@@ -3,7 +3,6 @@
 
 #include "Compiler/ASTNodes/ASTNode.hpp"
 #include "Compiler/ASTNodes/ReadValue.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 
@@ -12,8 +11,9 @@ struct LiteralNumberExpression final : public ReadValue
 	bool is_float;
 	uint64_t value;
 
-	LiteralNumberExpression(Token literal_number_token, const std::string &value)
-		: ReadValue(std::move(literal_number_token), LITERAL_NUMBER_EXPRESSION),
+	LiteralNumberExpression(CompactToken accountable_token,
+		const std::string &value)
+		: ReadValue(std::move(accountable_token), LITERAL_NUMBER_EXPRESSION),
 		  is_float(value.find('.') != std::string::npos),
 		  value(to_num(value, is_float)) {}
 
@@ -50,8 +50,7 @@ struct LiteralNumberExpression final : public ReadValue
 		if (is_float)
 		{
 			double result                 = std::stod(value);
-			uint64_t result_reinterpreted = *reinterpret_cast<uint64_t *>(&result);
-			return result_reinterpreted;
+			return *reinterpret_cast<uint64_t *>(&result);
 		}
 
 		if (value[0] == '0' && value[1] == 'x')

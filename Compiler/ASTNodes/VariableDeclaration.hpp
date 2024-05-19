@@ -4,7 +4,6 @@
 #include "Compiler/ASTNodes/ASTNode.hpp"
 #include "Compiler/ASTNodes/ReadValue.hpp"
 #include "Compiler/ASTNodes/IdentifierExpression.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/TypeIdentifierPair.hpp"
@@ -23,7 +22,7 @@ struct VariableDeclaration final : public ASTNode
 		: ASTNode(type_and_id_pair->accountable_token, VARIABLE_DECLARATION),
 		  type_and_id_pair(std::move(type_and_id_pair)),
 		  assignment(std::move(assignment)),
-		  id_expr(this->type_and_id_pair->accountable_token) {}
+		  id_expr(this->type_and_id_pair->accountable_token, this->type_and_id_pair->identifier) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
@@ -54,7 +53,7 @@ struct VariableDeclaration final : public ASTNode
 		type_and_id_pair->type_check(type_check_state);
 		type = type_and_id_pair->type;
 
-		std::string decl_name = type_and_id_pair->get_identifier_name();
+		std::string decl_name = type_and_id_pair->identifier;
 
 		if (!type_check_state.add_var(decl_name, type))
 		{
@@ -84,7 +83,7 @@ struct VariableDeclaration final : public ASTNode
 				type.to_str().c_str(), assignment->type.to_str().c_str());
 		}
 
-		std::string id_name = type_and_id_pair->get_identifier_name();
+		std::string id_name = type_and_id_pair->identifier;
 		id_kind             = type_check_state.get_identifier_kind(id_name);
 
 		switch (id_kind)
