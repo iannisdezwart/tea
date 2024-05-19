@@ -12,24 +12,24 @@
 #include "Executable/byte-code.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "VM/cpu.hpp"
 
 struct AssignmentExpression final : public ReadValue
 {
+	Operator op;
 	std::unique_ptr<WriteValue> lhs_expr;
 	std::unique_ptr<ReadValue> value;
-	Operator op;
 	Type::Fits type_fits;
 
 	AssignmentExpression(
+		CompactToken accountable_token,
+		Operator op,
 		std::unique_ptr<WriteValue> lhs_expr,
-		std::unique_ptr<ReadValue> value,
-		Token op_token)
-		: ReadValue(std::move(op_token), ASSIGNMENT_EXPRESSION),
+		std::unique_ptr<ReadValue> value)
+		: ReadValue(std::move(accountable_token), ASSIGNMENT_EXPRESSION),
+		  op(op),
 		  lhs_expr(std::move(lhs_expr)),
-		  value(std::move(value)),
-		  op(str_to_operator(accountable_token.value)) {}
+		  value(std::move(value)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)

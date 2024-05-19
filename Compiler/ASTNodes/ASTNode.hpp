@@ -2,6 +2,7 @@
 #define TEA_AST_NODE_HEADER
 
 #include <memory>
+#include <functional>
 #include "Compiler/tokeniser.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
@@ -93,13 +94,28 @@ ast_node_type_to_str(ASTNodeType type)
 	}
 }
 
+struct CompactToken
+{
+	uint line;
+	uint col;
+
+	CompactToken(const Token &token)
+		: line(token.line), col(token.col) {}
+
+	std::string
+	to_str()
+	{
+		return std::to_string(line) + ":" + std::to_string(col);
+	}
+};
+
 struct ASTNode
 {
-	Token accountable_token;
+	CompactToken accountable_token;
 	ASTNodeType node_type;
 	Type type;
 
-	ASTNode(Token accountable_token, ASTNodeType node_type)
+	ASTNode(CompactToken accountable_token, ASTNodeType node_type)
 		: accountable_token(std::move(accountable_token)),
 		  node_type(node_type) {}
 
