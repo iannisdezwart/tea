@@ -24,18 +24,14 @@ fibonacci(u64 n)
 
 	if (n <= 1)
 	{
-		return n
+		return n;
 	}
 
 	// Recursive case
 
-	return fibonacci(n - 1) + fibonacci(n - 2)
+	return fibonacci(n - 1) + fibonacci(n - 2);
 }
 ```
-
-As you can see, there are no semicolons in the above example.
-Semicolons are optional in Tea, and in case of ambiguity, the compiler will
-choose based on whitespace and indentation.
 
 ### Variables
 

@@ -87,10 +87,6 @@ struct Token
 	// The column in the source file where the token was found.
 	size_t col;
 
-	// Boolean indicating whether the token has a whitespace before it.
-	// This is used to determine line termination.
-	bool whitespace_before;
-
 	/**
 	 * @returns A string representation of the token.
 	 */
@@ -120,12 +116,6 @@ struct Token
 		s += std::to_string(line);
 		s += ":";
 		s += std::to_string(col);
-		s += ANSI_RESET ", ";
-
-		s += ANSI_BRIGHT_RED ANSI_ITALIC "whitespace_before";
-		s += ANSI_RESET ANSI_BRIGHT_RED " = ";
-		s += ANSI_BOLD;
-		s += bool_to_string(whitespace_before);
 
 		s += ANSI_RESET;
 		s += " } @ ";
@@ -694,14 +684,9 @@ struct Tokeniser
 	// The column number of the current token.
 	size_t col;
 
-	// Flag indicating whether the current token has a
-	// whitespace before it or not.
-	bool whitespace_before;
-
 	/**
 	 * @brief Adds a token to the list of tokens.
-	 * Automatically sets the line and column number and
-	 * the `whitespace_before` flag.
+	 * Automatically sets the line and column number.
 	 * @param type The type of the token.
 	 * @param value The value of the token.
 	 */
@@ -713,14 +698,9 @@ struct Tokeniser
 			.value             = value,
 			.line              = line,
 			.col               = col,
-			.whitespace_before = whitespace_before
 		};
 
 		tokens.push_back(token);
-
-		// Update the `whitespace_before` flag.
-
-		whitespace_before = false;
 	}
 
 /**
@@ -789,7 +769,6 @@ struct Tokeniser
 
 			if (whitespace_chars.count(c))
 			{
-				whitespace_before = true;
 				continue;
 			}
 

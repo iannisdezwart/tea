@@ -532,23 +532,17 @@ struct Parser
 
 			if (token.value == "syscall")
 			{
-				std::unique_ptr<ASTNode> node = scan_syscall();
-				expect_statement_terminator();
-				return node;
+				return scan_syscall();
 			}
 
 			if (token.value == "break")
 			{
-				std::unique_ptr<ASTNode> node = scan_break_statement();
-				expect_statement_terminator();
-				return node;
+				return scan_break_statement();
 			}
 
 			if (token.value == "continue")
 			{
-				std::unique_ptr<ASTNode> node = scan_continue_statement();
-				expect_statement_terminator();
-				return node;
+				return scan_continue_statement();
 			}
 
 			else
@@ -566,42 +560,13 @@ struct Parser
 
 	/**
 	 * @brief Checks if the next token is a semicolon.
-	 * If it is, the token is consumed. Due to the fact that
-	 * the Tea language has optional statement terminators,
-	 * if the next token is not a semicolon but is on the next line,
-	 * nothing happens. An error is thrown when the next token
-	 * is not a semicolon and it is on the same line.
 	 */
 	void
 	expect_statement_terminator()
 	{
-		Token terminator = get_token();
-
-		// If we find a semicolon, consume it.
-
-		if (terminator.type == SPECIAL_CHARACTER && terminator.value == ";")
-		{
-			i++;
-			return;
-		}
-
-		// TODO: fix.
-		// I think this doesn't work because of the way
-		// whitespace_before is computed.
-		// Currently, you could probably put multiple
-		// statements on the same line in some cases.
-
-		if (terminator.whitespace_before)
-		{
-			return;
-		}
-
-		p_warn(stderr,
-			"[ Syntax Error ]: Unexpected token with value \"%s\", "
-			"expected a terminator token (newline or semicolon).\n",
-			terminator.value.c_str());
-		p_warn(stderr, "At %ld:%ld\n", terminator.line, terminator.col);
-		abort();
+		Token terminator = next_token();
+		assert_token_type(terminator, SPECIAL_CHARACTER);
+		assert_token_value(terminator, ";");
 	}
 
 	/**
@@ -1256,7 +1221,6 @@ struct Parser
 
 		// Only declaration
 
-		expect_statement_terminator();
 		return std::make_unique<VariableDeclaration>(
 			std::move(type_id_pair), nullptr);
 	}
@@ -1496,6 +1460,7 @@ struct Parser
 
 	end_arguments:
 
+		expect_statement_terminator();
 		return std::make_unique<SysCall>(syscall_name_token, std::move(arguments));
 	}
 
