@@ -108,4 +108,6 @@ struct ForStatement final : public ASTNode
 	}
 };
 
+constexpr int FOR_STATEMENT_SIZE = sizeof(ForStatement);
+
 #endif

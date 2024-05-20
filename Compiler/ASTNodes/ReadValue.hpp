@@ -72,4 +72,6 @@ struct ReadValue : public ASTNode
 	}
 };
 
+constexpr int READ_VALUE_SIZE = sizeof(ReadValue);
+
 #endif

@@ -142,4 +142,6 @@ struct VariableDeclaration final : public ASTNode
 	}
 };
 
+constexpr int VARIABLE_DECLARATION_SIZE = sizeof(VariableDeclaration);
+
 #endif

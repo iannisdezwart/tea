@@ -84,4 +84,6 @@ struct ClassDeclaration final : public ASTNode
 	}
 };
 
+constexpr int CLASS_DECLARATION_SIZE = sizeof(ClassDeclaration);
+
 #endif

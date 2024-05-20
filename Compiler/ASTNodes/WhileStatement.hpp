@@ -90,4 +90,6 @@ struct WhileStatement final : public ASTNode
 	}
 };
 
+constexpr int WHILE_STATEMENT_SIZE = sizeof(WhileStatement);
+
 #endif

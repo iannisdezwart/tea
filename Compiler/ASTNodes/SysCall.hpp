@@ -115,4 +115,6 @@ struct SysCall final : public ASTNode
 	}
 };
 
+constexpr int SYSCALL_SIZE = sizeof(SysCall);
+
 #endif

@@ -54,4 +54,6 @@ struct WriteValue : public ReadValue
 	}
 };
 
+constexpr int WRITE_VALUE_SIZE = sizeof(WriteValue);
+
 #endif

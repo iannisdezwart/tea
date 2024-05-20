@@ -409,4 +409,6 @@ struct AssignmentExpression final : public ReadValue
 	}
 };
 
+constexpr int ASSIGNMENT_EXPRESSION_SIZE = sizeof(AssignmentExpression);
+
 #endif

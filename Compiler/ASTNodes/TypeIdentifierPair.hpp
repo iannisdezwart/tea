@@ -51,4 +51,6 @@ struct TypeIdentifierPair final : public ASTNode
 	}
 };
 
+constexpr int TYPE_IDENTIFIER_PAIR_SIZE = sizeof(TypeIdentifierPair);
+
 #endif

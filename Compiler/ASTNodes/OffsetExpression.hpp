@@ -223,4 +223,6 @@ struct OffsetExpression final : public WriteValue
 	}
 };
 
+constexpr int OFFSET_EXPRESSION_SIZE = sizeof(OffsetExpression);
+
 #endif

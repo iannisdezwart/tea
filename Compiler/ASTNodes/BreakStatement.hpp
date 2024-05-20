@@ -43,4 +43,6 @@ struct BreakStatement final : public ASTNode
 	}
 };
 
+constexpr int BREAK_STATEMENT_SIZE = sizeof(BreakStatement);
+
 #endif

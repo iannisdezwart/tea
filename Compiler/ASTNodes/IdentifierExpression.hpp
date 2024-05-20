@@ -326,4 +326,6 @@ struct IdentifierExpression final : public WriteValue
 	}
 };
 
+constexpr int IDENTIFIER_EXPRESSION_SIZE = sizeof(IdentifierExpression);
+
 #endif

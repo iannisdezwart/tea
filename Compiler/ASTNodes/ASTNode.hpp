@@ -150,4 +150,6 @@ struct ASTNode
 	}
 };
 
+constexpr int AST_NODE_SIZE = sizeof(ASTNode);
+
 #endif

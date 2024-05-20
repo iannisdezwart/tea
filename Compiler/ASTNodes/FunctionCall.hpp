@@ -167,4 +167,6 @@ struct FunctionCall final : public ReadValue
 	}
 };
 
+constexpr int FUNCTION_CALL_SIZE = sizeof(FunctionCall);
+
 #endif

@@ -492,4 +492,6 @@ struct UnaryOperation final : public WriteValue
 	}
 };
 
+constexpr int UNARY_OPERATION_SIZE = sizeof(UnaryOperation);
+
 #endif

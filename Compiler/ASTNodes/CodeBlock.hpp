@@ -65,4 +65,6 @@ struct CodeBlock final : public ASTNode
 	}
 };
 
+constexpr int CODE_BLOCK_SIZE = sizeof(CodeBlock);
+
 #endif

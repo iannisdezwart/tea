@@ -101,4 +101,6 @@ struct LiteralNumberExpression final : public ReadValue
 	}
 };
 
+constexpr int LITERAL_NUMBER_EXPRESSION_SIZE = sizeof(LiteralNumberExpression);
+
 #endif
