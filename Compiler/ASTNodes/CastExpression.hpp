@@ -41,20 +41,7 @@ struct CastExpression final : public ReadValue
 		expression->type_check(type_check_state);
 		type_name->type_check(type_check_state);
 
-		// TODO: do type checking
-
-		if (type_check_state.classes.count(accountable_token.value))
-		{
-			const ClassDefinition &class_def = type_check_state.classes[accountable_token.value];
-			size_t byte_size                 = class_def.byte_size;
-
-			type            = Type(Type::USER_DEFINED_CLASS, byte_size, type_name->array_sizes);
-			type.class_name = accountable_token.value;
-
-			return;
-		}
-
-		type = Type::from_string(accountable_token.value, type_name->array_sizes);
+		type = type_name->type;
 	}
 
 	void
