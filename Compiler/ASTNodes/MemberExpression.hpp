@@ -231,4 +231,6 @@ struct MemberExpression final : public WriteValue
 	}
 };
 
+constexpr int MEMBER_EXPRESSION_SIZE = sizeof(MemberExpression);
+
 #endif

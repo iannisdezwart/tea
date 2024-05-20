@@ -660,4 +660,6 @@ struct BinaryOperation final : public ReadValue
 	}
 };
 
+constexpr int BINARY_OPERATION_SIZE = sizeof(BinaryOperation);
+
 #endif

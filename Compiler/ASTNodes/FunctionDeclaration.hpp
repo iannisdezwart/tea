@@ -132,4 +132,6 @@ struct FunctionDeclaration final : public ASTNode
 	}
 };
 
+constexpr int FUNCTION_DECLARATION_SIZE = sizeof(FunctionDeclaration);
+
 #endif

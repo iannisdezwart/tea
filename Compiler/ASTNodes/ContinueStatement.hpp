@@ -44,4 +44,6 @@ struct ContinueStatement final : public ASTNode
 	}
 };
 
+constexpr int CONTINUE_STATEMENT_SIZE = sizeof(ContinueStatement);
+
 #endif

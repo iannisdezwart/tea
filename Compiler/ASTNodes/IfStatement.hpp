@@ -95,4 +95,6 @@ struct IfStatement final : public ASTNode
 	}
 };
 
+constexpr int IF_STATEMENT_SIZE = sizeof(IfStatement);
+
 #endif

@@ -65,4 +65,6 @@ struct CastExpression final : public ReadValue
 	}
 };
 
+constexpr int CAST_EXPRESSION_SIZE = sizeof(CastExpression);
+
 #endif
