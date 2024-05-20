@@ -85,4 +85,6 @@ struct TypeName final : public ASTNode
 	}
 };
 
+constexpr int TYPE_NAME_SIZE = sizeof(TypeName);
+
 #endif

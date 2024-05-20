@@ -47,4 +47,6 @@ struct LiteralCharExpression final : public ReadValue
 	}
 };
 
+constexpr int LITERAL_CHAR_EXPRESSION_SIZE = sizeof(LiteralCharExpression);
+
 #endif

@@ -63,4 +63,6 @@ struct ReturnStatement final : public ASTNode
 	}
 };
 
+constexpr int RETURN_STATEMENT_SIZE = sizeof(ReturnStatement);
+
 #endif
