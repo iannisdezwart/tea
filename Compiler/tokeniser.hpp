@@ -694,10 +694,10 @@ struct Tokeniser
 	push_token(TokenType type, std::string value)
 	{
 		Token token = {
-			.type              = type,
-			.value             = value,
-			.line              = line,
-			.col               = col,
+			.type  = type,
+			.value = value,
+			.line  = line,
+			.col   = col,
 		};
 
 		tokens.push_back(token);
@@ -949,6 +949,41 @@ struct Tokeniser
 
 		case '?':
 			return '\x3f';
+
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		{
+			int oc1 = c;
+
+			int oc2;
+			FilePos restore_pos = reader.read_char(oc2);
+
+			if (!is_octal(oc2))
+			{
+				reader.restore(restore_pos);
+				return oct_chars_to_byte(0, 0, oc1);
+			}
+
+			int oc3;
+			restore_pos = reader.read_char(oc3);
+
+			if (!is_octal(oc3))
+			{
+				reader.restore(restore_pos);
+				return oct_chars_to_byte(0, oc1, oc2);
+			}
+
+			if (!is_octal(oc3))
+				throw_err("Invalid octal escape code");
+
+			return oct_chars_to_byte(oc1, oc2, oc3);
+		}
 
 		case 'x':
 		{

@@ -147,6 +147,19 @@ hex_chars_to_byte(char upper, char lower)
 	return hex_char_to_num(upper) << 4 | hex_char_to_num(lower);
 }
 
+/**
+ * @brief Converts two octal characters to a byte.
+ * @param upper The upper octal character.
+ * @param middle The middle octal character.
+ * @param lower The lower octal character.
+ * @returns The byte corresponding to the three octal characters.
+ */
+char
+oct_chars_to_byte(char upper, char middle, char lower)
+{
+	return (upper - '0') << 6 | (middle - '0') << 3 | (lower - '0');
+}
+
 // Below are the minimum and maximum values that fit in a given
 // integer type. These are used to check if a literal number fits
 // in the range of the integer type.
