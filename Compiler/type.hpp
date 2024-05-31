@@ -52,8 +52,8 @@ struct Type
 	std::vector<size_t> array_sizes;
 
 	// If the subtype is a user-defined class,
-	// this field will hold the name of the class.
-	std::string class_name;
+	// this field will hold the id of the class.
+	uint32_t class_id;
 
 	/**
 	 * @brief Default constructor.
@@ -419,7 +419,7 @@ struct Type
 				return Fits::NO;
 			}
 
-			if (class_name != type.class_name)
+			if (class_id != type.class_id)
 			{
 				return Fits::NO;
 			}
@@ -464,7 +464,7 @@ struct Type
 			break;
 
 		case Type::USER_DEFINED_CLASS:
-			s += class_name;
+			s += "class(" + std::to_string(class_id) + ")";
 			break;
 		}
 

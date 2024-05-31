@@ -1,14 +1,14 @@
 v0 putc(u8 c)
 {
-	syscall PRINT_CHAR(c)
+	syscall PRINT_CHAR(c);
 }
 
 v0 print_str(u8* str)
 {
 	while (*str != 0)
 	{
-		putc(*str)
-		str++
+		putc(*str);
+		str++;
 	}
 }
 
@@ -16,65 +16,65 @@ v0 print_unsigned(u64 n)
 {
 	if (n < 10)
 	{
-		putc(u8(n + '0'))
+		putc(u8(n + '0'));
 	}
 	else
 	{
-		print_unsigned(n / 10)
-		putc(u8(n % 10 + '0'))
+		print_unsigned(n / 10);
+		putc(u8(n % 10 + '0'));
 	}
 }
 
 class Baz
 {
-	u8[10] a
-	u64 b
-}
+	u8[10] a;
+	u64 b;
+};
 
 class Bar
 {
-	u8 test
-	Baz baz
-}
+	u8 test;
+	Baz baz;
+};
 
 class Foo
 {
-	u64 a
-	u32 b
-	Bar c
-	u8[5] d
-}
+	u64 a;
+	u32 b;
+	Bar c;
+	u8[5] d;
+};
 
 v0 Foo_op(Foo* foo)
 {
-	foo->a += 1
-	foo->b -= 1
-	foo->c.test = 1
-	foo->c.baz.b += 40
+	foo->a += 1;
+	foo->b -= 1;
+	foo->c.test = 1;
+	foo->c.baz.b += 40;
 }
 
 u64 main()
 {
-	Foo foo
-	foo.a = 10
-	foo.b = 20
-	foo.c.test = 0
-	foo.c.baz.b = 30
+	Foo foo;
+	foo.a = 10;
+	foo.b = 20;
+	foo.c.test = 0;
+	foo.c.baz.b = 30;
 
-	Foo_op(&foo)
+	Foo_op(&foo);
 
-	print_str("foo.a = ")
-	print_unsigned(foo.a)
-	putc('\n')
-	print_str("foo.b = ")
-	print_unsigned(foo.b)
-	putc('\n')
-	print_str("foo.c.test = ")
-	print_unsigned(foo.c.test)
-	putc('\n')
-	print_str("foo.c.baz.b = ")
-	print_unsigned(foo.c.baz.b)
-	putc('\n')
+	print_str("foo.a = ");
+	print_unsigned(foo.a);
+	putc('\n');
+	print_str("foo.b = ");
+	print_unsigned(foo.b);
+	putc('\n');
+	print_str("foo.c.test = ");
+	print_unsigned(foo.c.test);
+	putc('\n');
+	print_str("foo.c.baz.b = ");
+	print_unsigned(foo.c.baz.b);
+	putc('\n');
 
-	return 0
+	return 0;
 }
