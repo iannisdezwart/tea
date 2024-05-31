@@ -13,14 +13,14 @@
 
 struct ClassDeclaration final : public ASTNode
 {
-	std::string class_name;
+	uint32_t class_id;
 	std::vector<std::unique_ptr<TypeIdentifierPair>> fields;
 
 	ClassDeclaration(CompactToken accountable_token,
-		std::string class_name,
+		uint32_t class_id,
 		std::vector<std::unique_ptr<TypeIdentifierPair>> &&fields)
 		: ASTNode(std::move(accountable_token), CLASS_DECLARATION),
-		  class_name(std::move(class_name)), fields(std::move(fields)) {}
+		  class_id(class_id), fields(std::move(fields)) {}
 
 	void
 	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
@@ -38,8 +38,8 @@ struct ClassDeclaration final : public ASTNode
 	to_str()
 		override
 	{
-		std::string s = "ClassDeclaration { name = "
-			+ class_name + " } @ " + to_hex((size_t) this);
+		std::string s = "ClassDeclaration { class_id = "
+			+ std::to_string(class_id) + " } @ " + to_hex((size_t) this);
 		return s;
 	}
 
@@ -47,11 +47,11 @@ struct ClassDeclaration final : public ASTNode
 	pre_type_check(TypeCheckState &type_check_state)
 		override
 	{
-		if (!type_check_state.def_class(class_name))
+		if (!type_check_state.def_class(class_id))
 		{
 			err_at_token(accountable_token, "Type Error",
-				"Class %s has already been declared",
-				class_name.c_str());
+				"Class %d has already been declared",
+				class_id);
 		}
 	}
 
@@ -74,7 +74,7 @@ struct ClassDeclaration final : public ASTNode
 			class_def.add_field(field->identifier, field->type);
 		}
 
-		type_check_state.add_class(class_name, class_def);
+		type_check_state.add_class(class_id, class_def);
 	}
 
 	void

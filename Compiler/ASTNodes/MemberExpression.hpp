@@ -78,9 +78,9 @@ struct MemberExpression final : public WriteValue
 				object->to_str().c_str());
 		}
 
-		std::string class_name = object->type.class_name;
+		uint32_t class_id = object->type.class_id;
 		class_definition       = std::make_unique<ClassDefinition>(
-                        type_check_state.classes[class_name]);
+                        type_check_state.classes[class_id]);
 		size_t offset = 0;
 
 		if (op == POINTER_TO_MEMBER && object->type.pointer_depth() != 0)
@@ -111,7 +111,7 @@ struct MemberExpression final : public WriteValue
 		{
 			// Find class in compiler state
 
-			const ClassDefinition &cl = type_check_state.classes[class_name];
+			const ClassDefinition &cl = type_check_state.classes[class_id];
 
 			for (size_t i = 0; i < cl.fields.size(); i++)
 			{
@@ -125,8 +125,8 @@ struct MemberExpression final : public WriteValue
 			}
 
 			err_at_token(accountable_token, "Member error",
-				"Class %s has no member named %s",
-				class_name.c_str(), member_name.c_str());
+				"Class %d has no member named %s",
+				class_id, member_name.c_str());
 		}
 
 		default:
