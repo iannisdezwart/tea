@@ -316,10 +316,9 @@ struct Parser
 	// The index of the current token being parsed.
 	size_t i = 0;
 
-	// A set of all user-defined types that the parser encounters.
-	// This is needed to check whether a token that was parsed
-	// as an identifier is actually a type name.
-	std::unordered_set<std::string> class_names;
+	// Mapping of class names to IDs.
+	std::unordered_map<std::string, uint32_t> class_name_to_id;
+	std::unordered_map<uint32_t, std::string> class_id_to_name;
 
 /**
  * @brief Macro that pretty-prints a syntax error.
@@ -402,7 +401,7 @@ struct Parser
 	 * class declarations and global variable declarations,
 	 * in order of definition within the source code file.
 	 */
-	std::vector<std::unique_ptr<ASTNode>>
+	std::tuple<std::vector<std::unique_ptr<ASTNode>>, std::unordered_map<uint32_t, std::string>>
 	parse()
 	{
 		std::vector<std::unique_ptr<ASTNode>> statements;
@@ -414,7 +413,7 @@ struct Parser
 			statements.push_back(next_statement());
 		}
 
-		return statements;
+		return std::make_tuple(std::move(statements), std::move(class_id_to_name));
 	}
 
 	/**
@@ -433,7 +432,9 @@ struct Parser
 				Token class_name_token = tokens[j + 1];
 				assert_token_type(class_name_token, IDENTIFIER);
 
-				class_names.insert(class_name_token.value);
+				uint32_t class_id                        = class_name_to_id.size();
+				class_name_to_id[class_name_token.value] = class_id;
+				class_id_to_name[class_id]               = class_name_token.value;
 			}
 		}
 	}
@@ -456,7 +457,7 @@ struct Parser
 
 		// User defined class
 
-		if (token.type == IDENTIFIER && class_names.count(token.value))
+		if (token.type == IDENTIFIER && class_name_to_id.count(token.value))
 		{
 			token.type = TYPE;
 		}
@@ -628,8 +629,16 @@ struct Parser
 				break;
 		}
 
+		if (class_name_to_id.count(type_name_token.value))
+		{
+			return std::make_unique<TypeName>(CompactToken(type_name_token),
+				type_name_token.value,
+				std::make_optional(class_name_to_id[type_name_token.value]),
+				std::move(array_sizes));
+		}
+
 		return std::make_unique<TypeName>(CompactToken(type_name_token),
-			type_name_token.value, std::move(array_sizes));
+			type_name_token.value, std::nullopt, std::move(array_sizes));
 	}
 
 	/**
@@ -877,8 +886,22 @@ struct Parser
 			assert_token_type(left_parenthesis, SPECIAL_CHARACTER);
 			assert_token_value(left_parenthesis, "(");
 
-			std::unique_ptr<TypeName> type_name = std::make_unique<TypeName>(
-				CompactToken(expr_token), expr_token.value, std::vector<size_t> {});
+			std::unique_ptr<TypeName> type_name;
+
+			if (class_name_to_id.count(expr_token.value))
+			{
+				type_name = std::make_unique<TypeName>(
+					CompactToken(expr_token), expr_token.value,
+					std::make_optional(class_name_to_id[expr_token.value]),
+					std::vector<size_t> {});
+			}
+			else
+			{
+				type_name = std::make_unique<TypeName>(
+					CompactToken(expr_token), expr_token.value, std::nullopt,
+					std::vector<size_t> {});
+			}
+
 			expression = std::make_unique<CastExpression>(
 				std::move(type_name), scan_expression());
 
@@ -1288,7 +1311,7 @@ struct Parser
 		expect_statement_terminator();
 
 		return std::make_unique<ClassDeclaration>(CompactToken(class_token),
-			class_name_token.value, std::move(fields));
+			class_name_to_id[class_name_token.value], std::move(fields));
 	}
 
 	/**
