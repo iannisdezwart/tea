@@ -107,7 +107,7 @@ struct VariableDeclaration final : public ASTNode
 		if (type == Type::USER_DEFINED_CLASS)
 		{
 			class_definition = std::make_unique<ClassDefinition>(
-				type_check_state.classes[type.class_name]);
+				type_check_state.classes[type.class_id]);
 		}
 	}
 

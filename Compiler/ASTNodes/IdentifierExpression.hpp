@@ -40,14 +40,14 @@ struct IdentifierExpression final : public WriteValue
 	{
 		if (object_type.has_value())
 		{
-			const ClassDefinition &class_def = type_check_state.classes[object_type->class_name];
+			const ClassDefinition &class_def = type_check_state.classes[object_type->class_id];
 
 			if (!class_def.has_field(identifier))
 			{
 				err_at_token(accountable_token,
 					"Class field not found",
-					"Field %s not found in class %s",
-					identifier.c_str(), object_type->class_name.c_str());
+					"Field %s not found in class %d",
+					identifier.c_str(), object_type->class_id);
 			}
 
 			type          = class_def.get_field_type(identifier);
