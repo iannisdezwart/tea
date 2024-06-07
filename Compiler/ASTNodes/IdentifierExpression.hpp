@@ -41,14 +41,14 @@ struct IdentifierExpression final : public WriteValue
 	{
 		if (object_type.has_value())
 		{
-			const ClassDefinition &class_def = type_check_state.classes[object_type->class_id];
+			const ClassDefinition &class_def = type_check_state.classes.at(object_type->value);
 
 			if (!class_def.has_field(identifier))
 			{
 				err_at_token(accountable_token,
 					"Class field not found",
 					"Field %s not found in class %d",
-					identifier.c_str(), object_type->class_id);
+					identifier.c_str(), object_type->value);
 			}
 
 			type          = class_def.get_field_type(identifier);
@@ -58,7 +58,7 @@ struct IdentifierExpression final : public WriteValue
 
 		type = type_check_state.get_type_of_identifier(identifier);
 
-		if (type == Type::UNDEFINED)
+		if (type.value == UNDEFINED)
 		{
 			err_at_token(accountable_token,
 				"Identifier has unknown kind",

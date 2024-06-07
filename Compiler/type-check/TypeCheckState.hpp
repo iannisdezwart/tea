@@ -343,7 +343,7 @@ struct TypeCheckState
 			for (const IdentifierDefinition &field : class_def.fields)
 				debugger_class.fields.push_back(
 					DebuggerSymbol(field.name, field.type.to_debug_type(),
-						class_name_by_id.at(field.type.class_id)));
+						class_name_by_id.at(field.type.value)));
 
 			debugger_symbols.add_class(class_name_by_id.at(class_id), debugger_class);
 		}
@@ -387,7 +387,7 @@ struct TypeCheckState
 			local_symbols.push_back(DebuggerSymbol(
 				local_name,
 				local_type.to_debug_type(),
-				class_name_by_id.at(local_type.class_id)));
+				class_name_by_id.at(local_type.value)));
 		}
 		locals_size += local_type.storage_size();
 		return true;
@@ -434,7 +434,7 @@ struct TypeCheckState
 			debugger_symbols.add_global(DebuggerSymbol(
 				global_name,
 				global_type.to_debug_type(),
-				class_name_by_id.at(global_type.class_id)));
+				class_name_by_id.at(global_type.value)));
 		}
 
 		return true;
@@ -531,7 +531,7 @@ struct TypeCheckState
 			for (const std::string &param_name : parameter_names_in_order)
 			{
 				DebuggerSymbolType fn_param_type = parameters[param_name].id.type.to_debug_type();
-				std::string class_name           = class_name_by_id.at(parameters[param_name].id.type.class_id);
+				std::string class_name           = class_name_by_id.at(parameters[param_name].id.type.value);
 				fn_symbols.params.push_back(DebuggerSymbol(param_name, fn_param_type, class_name));
 			}
 
