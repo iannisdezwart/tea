@@ -11,16 +11,26 @@ enum BuiltinType : uint
 	V0, U8, I8, U16, I16, U32, I32, U64, I64, F32, F64,
 	BUILTIN_TYPE_END,
 };
-static const uint BUILTIN_TYPE_SIZE[] = { 0, 0, 1, 1, 2, 2, 4, 4, 8, 8, 4, 8 };
+
+// The array dimensions of this type.
+// The size of this vector corresponds with
+// the "depth" of the type.
+// An array dimension of 0 indicates it is a pointer.
+// An array dimension of n indicates it is an array of
+// n elements.
+// This vector will be empty in case of a non-array,
+// non-pointer type.
+//
+// Examples:
+//   * u64* -> { 0 }
+//   * u64[3] -> { 3 }
+//   * u64[3][4] -> { 3, 4 }
+//   * u64[3]*[5] -> { 3, 0, 5 }
+static std::vector<std::vector<uint>> type_array_sizes = { {} };
 // clang-format on
 
 /**
  * Class that represents a data type of a variable.
- *
- * A type is specified by:
- * * its subtype (unsigned int, signed int, user defined class, or init list)
- * * the size of the type in bytes
- * * the "pointeryness" of the type, specified by the `array_sizes` field
  *
  * This class has lots of handy methods to get additional information about
  * the data type it corresponds.
@@ -28,25 +38,8 @@ static const uint BUILTIN_TYPE_SIZE[] = { 0, 0, 1, 1, 2, 2, 4, 4, 8, 8, 4, 8 };
 struct Type
 {
 	uint value;
-
-	// The size of the type in bytes.
 	uint size;
-
-	// The array dimensions of this type.
-	// The size of this vector corresponds with
-	// the "depth" of the type.
-	// An array dimension of 0 indicates it is a pointer.
-	// An array dimension of n indicates it is an array of
-	// n elements.
-	// This vector will be empty in case of a non-array,
-	// non-pointer type.
-	//
-	// Examples:
-	//   * u64* -> { 0 }
-	//   * u64[3] -> { 3 }
-	//   * u64[3][4] -> { 3, 4 }
-	//   * u64[3]*[5] -> { 3, 0, 5 }
-	std::vector<size_t> array_sizes;
+	uint array_sizes_idx;
 
 	/**
 	 * @brief Default constructor.
@@ -56,11 +49,8 @@ struct Type
 	Type()
 		: value(UNDEFINED) {}
 
-	Type(uint value, size_t size)
-		: value(value), size(size) {}
-
-	Type(uint value, size_t size, const std::vector<size_t> &array_sizes)
-		: value(value), size(size), array_sizes(array_sizes) {}
+	Type(uint value, uint size, uint array_sizes_idx = 0)
+		: value(value), size(size), array_sizes_idx(array_sizes_idx) {}
 
 	/**
 	 * Returns the pointer depth of this type.
@@ -70,10 +60,12 @@ struct Type
 	 *   * u64[3][4][5] -> 3
 	 *   * u64[3]*[5] -> 3
 	 */
-	size_t
+	uint
 	pointer_depth() const
 	{
-		return array_sizes.size();
+		if (array_sizes_idx == 0)
+			return 0;
+		return type_array_sizes[array_sizes_idx].size();
 	}
 
 	/**
@@ -85,8 +77,7 @@ struct Type
 	constexpr bool
 	operator==(const Type &other) const
 	{
-		return value == other.value && size == other.size
-			&& pointer_depth() == other.pointer_depth();
+		return value == other.value && pointer_depth() == other.pointer_depth();
 	}
 
 	/**
@@ -98,8 +89,7 @@ struct Type
 	constexpr bool
 	operator!=(const Type &other) const
 	{
-		return value != other.value || size != other.size
-			|| pointer_depth() != other.pointer_depth();
+		return value != other.value || pointer_depth() != other.pointer_depth();
 	}
 
 	/**
@@ -139,15 +129,18 @@ struct Type
 	Type
 	pointed_type() const
 	{
-		if (array_sizes.size() == 0)
+		if (array_sizes_idx == 0)
 		{
 			err("Compiler error: tried dereferencing non-pointer Type %s",
 				to_str().c_str());
 		}
 
-		Type type = *this;
-		type.array_sizes.erase(type.array_sizes.begin());
-		return type;
+		uint new_arr_sz_idx          = type_array_sizes.size();
+		std::vector<uint> new_arr_sz = type_array_sizes[array_sizes_idx];
+		new_arr_sz.erase(new_arr_sz.begin());
+		type_array_sizes.push_back(new_arr_sz);
+
+		return Type(value, size, new_arr_sz_idx);
 	}
 
 	/**
@@ -172,11 +165,12 @@ struct Type
 		// until we find a size that is zero, indicating
 		// a pointer.
 
+		const std::vector<uint> &array_sz = type_array_sizes[array_sizes_idx];
 		for (size_t i = pointer_depth(); i != 0; i--)
 		{
-			if (array_sizes[i - 1] == 0)
+			if (array_sz[i - 1] == 0)
 				break;
-			n_members *= array_sizes[i - 1];
+			n_members *= array_sz[i - 1];
 			dim++;
 		}
 
@@ -200,9 +194,12 @@ struct Type
 	bool
 	is_array() const
 	{
-		if (array_sizes.size() == 0)
+		if (array_sizes_idx == 0)
 			return false;
-		return array_sizes.back() != 0;
+		const std::vector<uint> &array_sz = type_array_sizes[array_sizes_idx];
+		if (array_sz.size() == 0)
+			return false;
+		return array_sz.back() != 0;
 	}
 
 	/**
@@ -252,44 +249,44 @@ struct Type
 	 * Only the standard primitive Tea types are supported:
 	 * u8, i8, u16, u32, i32, u64, i64, f32, f64, void.
 	 * @param str The string to convert.
-	 * @param array_sizes The `array_sizes` of the type.
+	 * @param array_sizes_idx
 	 * @returns The type parsed from the string.
 	 */
 	static Type
-	from_string(std::string str, const std::vector<size_t> &array_sizes)
+	from_string(std::string str, uint array_sizes_idx)
 	{
 		if (str == "u8")
-			return Type(U8, 1, array_sizes);
+			return Type(U8, 1, array_sizes_idx);
 
 		if (str == "i8")
-			return Type(I8, 1, array_sizes);
+			return Type(I8, 1, array_sizes_idx);
 
 		if (str == "u16")
-			return Type(U16, 2, array_sizes);
+			return Type(U16, 2, array_sizes_idx);
 
 		if (str == "i16")
-			return Type(I16, 2, array_sizes);
+			return Type(I16, 2, array_sizes_idx);
 
 		if (str == "u32")
-			return Type(U32, 4, array_sizes);
+			return Type(U32, 4, array_sizes_idx);
 
 		if (str == "i32")
-			return Type(I32, 4, array_sizes);
+			return Type(I32, 4, array_sizes_idx);
 
 		if (str == "u64")
-			return Type(U64, 8, array_sizes);
+			return Type(U64, 8, array_sizes_idx);
 
 		if (str == "i64")
-			return Type(I64, 8, array_sizes);
+			return Type(I64, 8, array_sizes_idx);
 
 		if (str == "f32")
-			return Type(F32, 4, array_sizes);
+			return Type(F32, 4, array_sizes_idx);
 
 		if (str == "f64")
-			return Type(F64, 8, array_sizes);
+			return Type(F64, 8, array_sizes_idx);
 
 		if (str == "v0")
-			return Type(V0, 0, array_sizes);
+			return Type(V0, 0, array_sizes_idx);
 
 		err("Wasn't able to convert \"%s\" to a Type", str.c_str());
 	}
@@ -476,17 +473,21 @@ struct Type
 			break;
 		}
 
+		if (array_sizes_idx == 0)
+			return s;
+
 		// Add the array sizes to the string.
 
-		for (size_t i = 0; i < array_sizes.size(); i++)
+		const std::vector<uint> &array_sz = type_array_sizes[array_sizes_idx];
+		for (size_t i = 0; i < array_sz.size(); i++)
 		{
-			if (array_sizes[i] == 0)
+			if (array_sz[i] == 0)
 			{
 				s += '*';
 			}
 			else
 			{
-				s += '[' + std::to_string(array_sizes[i]) + ']';
+				s += '[' + std::to_string(array_sz[i]) + ']';
 			}
 		}
 
