@@ -68,29 +68,29 @@ struct LiteralNumberExpression final : public ReadValue
 	{
 		if (is_float)
 		{
-			type = Type(Type::FLOATING_POINT, 8);
+			type = Type(F64, 8);
 			return;
 		}
 
 		if (value & 0xFF'00'00'00'00'00'00'00)
 		{
-			type = Type(Type::UNSIGNED_INTEGER, 8);
+			type = Type(U64, 8);
 			return;
 		}
 
 		if (value & 0xFF'FF'00'00)
 		{
-			type = Type(Type::UNSIGNED_INTEGER, 4);
+			type = Type(U32, 4);
 			return;
 		}
 
 		if (value & 0xFF'00)
 		{
-			type = Type(Type::UNSIGNED_INTEGER, 2);
+			type = Type(U16, 2);
 			return;
 		}
 
-		type = Type(Type::UNSIGNED_INTEGER, 1);
+		type = Type(U16, 1);
 	}
 
 	void

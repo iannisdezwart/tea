@@ -73,8 +73,7 @@ struct TypeName final : public ASTNode
 			const ClassDefinition &class_def = type_check_state.classes[class_id.value()];
 			size_t byte_size                 = class_def.byte_size;
 
-			type          = Type(Type::USER_DEFINED_CLASS, byte_size, array_sizes);
-			type.class_id = class_id.value();
+			type = Type(class_id.value(), byte_size, array_sizes);
 
 			return;
 		}

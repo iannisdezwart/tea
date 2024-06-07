@@ -80,7 +80,7 @@ struct AssignmentExpression final : public ReadValue
 		case PRODUCT_ASSIGNMENT:
 		case QUOTIENT_ASSIGNMENT:
 		case REMAINDER_ASSIGNMENT:
-			if (!type.is_integer() && type != Type::FLOATING_POINT && type.pointer_depth() == 0)
+			if (!type.is_integer() && !type.is_float() && type.pointer_depth() == 0)
 				err_at_token(accountable_token,
 					"Type Error",
 					"Operator %s is not defined for type %s",
@@ -164,11 +164,11 @@ struct AssignmentExpression final : public ReadValue
 			{
 				assembler.add_int_64(result_reg, prev_val_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			else if (type.value == F32)
 			{
 				assembler.add_flt_32(result_reg, prev_val_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			else if (type.value == F64)
 			{
 				assembler.add_flt_64(result_reg, prev_val_reg);
 			}
@@ -194,11 +194,11 @@ struct AssignmentExpression final : public ReadValue
 			{
 				assembler.sub_int_64(result_reg, prev_val_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			else if (type.value == F32)
 			{
 				assembler.sub_flt_32(result_reg, prev_val_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			else if (type.value == F64)
 			{
 				assembler.sub_flt_64(result_reg, prev_val_reg);
 			}
@@ -224,11 +224,11 @@ struct AssignmentExpression final : public ReadValue
 			{
 				assembler.mul_int_64(result_reg, prev_val_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			else if (type.value == F32)
 			{
 				assembler.mul_flt_32(result_reg, prev_val_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			else if (type.value == F64)
 			{
 				assembler.mul_flt_64(result_reg, prev_val_reg);
 			}
@@ -254,11 +254,11 @@ struct AssignmentExpression final : public ReadValue
 			{
 				assembler.div_int_64(result_reg, prev_val_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			else if (type.value == F32)
 			{
 				assembler.div_flt_32(result_reg, prev_val_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			else if (type.value == F64)
 			{
 				assembler.div_flt_64(result_reg, prev_val_reg);
 			}

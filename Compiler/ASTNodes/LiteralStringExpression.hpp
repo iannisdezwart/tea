@@ -34,7 +34,7 @@ struct LiteralStringExpression final : public ReadValue
 	type_check(TypeCheckState &type_check_state)
 		override
 	{
-		type = Type(Type::UNSIGNED_INTEGER, 1, { 0 });
+		type = Type(U8, 1, { 0 });
 	}
 
 	void
