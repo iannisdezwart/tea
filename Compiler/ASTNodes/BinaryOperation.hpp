@@ -65,13 +65,13 @@ struct BinaryOperation final : public ReadValue
 			if (left->type.pointer_depth() == 0
 				&& right->type.pointer_depth() == 0)
 			{
-				if (left->type == Type::FLOATING_POINT && right->type != Type::FLOATING_POINT)
+				if (left->type.is_float() && !right->type.is_float())
 				{
 					type = left->type;
 					return;
 				}
 
-				if (right->type == Type::FLOATING_POINT && left->type != Type::FLOATING_POINT)
+				if (right->type.is_float() && !left->type.is_float())
 				{
 					type = right->type;
 					return;
@@ -126,13 +126,13 @@ struct BinaryOperation final : public ReadValue
 			if (left->type.pointer_depth() == 0
 				&& right->type.pointer_depth() == 0)
 			{
-				if (left->type == Type::FLOATING_POINT && right->type != Type::FLOATING_POINT)
+				if (left->type.is_float() && !right->type.is_float())
 				{
 					type = left->type;
 					return;
 				}
 
-				if (right->type == Type::FLOATING_POINT && left->type != Type::FLOATING_POINT)
+				if (right->type.is_float() && !left->type.is_float())
 				{
 					type = right->type;
 					return;
@@ -216,18 +216,18 @@ struct BinaryOperation final : public ReadValue
 					accountable_token.col);
 			}
 
-			type = Type(left->type, 1); // Result of comparison is boolean
+			type = Type(left->type.value, 1); // Result of comparison is boolean
 
 			if (left->type.pointer_depth() == 0
 				&& right->type.pointer_depth() == 0)
 			{
-				if (left->type == Type::FLOATING_POINT && right->type != Type::FLOATING_POINT)
+				if (left->type.is_float() && !right->type.is_float())
 				{
 					cmp_type = left->type;
 					return;
 				}
 
-				if (right->type == Type::FLOATING_POINT && left->type != Type::FLOATING_POINT)
+				if (right->type.is_float() && !left->type.is_float())
 				{
 					cmp_type = right->type;
 					return;
@@ -316,43 +316,43 @@ struct BinaryOperation final : public ReadValue
 
 		auto compare_and_set = [&](std::function<void()> set_if_cb)
 		{
-			if (cmp_type == Type::SIGNED_INTEGER && cmp_type.byte_size() == 1)
+			if (cmp_type.value == I8)
 			{
 				assembler.cmp_int_8(result_reg, rhs_reg);
 			}
-			else if (cmp_type == Type::UNSIGNED_INTEGER && cmp_type.byte_size() == 1)
+			else if (cmp_type.value == U8)
 			{
 				assembler.cmp_int_8_u(result_reg, rhs_reg);
 			}
-			if (cmp_type == Type::SIGNED_INTEGER && cmp_type.byte_size() == 2)
+			if (cmp_type.value == I16)
 			{
 				assembler.cmp_int_16(result_reg, rhs_reg);
 			}
-			else if (cmp_type == Type::UNSIGNED_INTEGER && cmp_type.byte_size() == 2)
+			else if (cmp_type.value == U16)
 			{
 				assembler.cmp_int_16_u(result_reg, rhs_reg);
 			}
-			if (cmp_type == Type::SIGNED_INTEGER && cmp_type.byte_size() == 4)
+			if (cmp_type.value == I32)
 			{
 				assembler.cmp_int_32(result_reg, rhs_reg);
 			}
-			else if (cmp_type == Type::UNSIGNED_INTEGER && cmp_type.byte_size() == 4)
+			else if (cmp_type.value == U32)
 			{
 				assembler.cmp_int_32_u(result_reg, rhs_reg);
 			}
-			if (cmp_type == Type::SIGNED_INTEGER && cmp_type.byte_size() == 8)
+			if (cmp_type.value == I64)
 			{
 				assembler.cmp_int_64(result_reg, rhs_reg);
 			}
-			else if (cmp_type == Type::UNSIGNED_INTEGER && cmp_type.byte_size() == 8)
+			else if (cmp_type.value == U64)
 			{
 				assembler.cmp_int_64_u(result_reg, rhs_reg);
 			}
-			else if (cmp_type == Type::FLOATING_POINT && cmp_type.byte_size() == 4)
+			else if (cmp_type.value == F32)
 			{
 				assembler.cmp_flt_32(result_reg, rhs_reg);
 			}
-			else if (cmp_type == Type::FLOATING_POINT && cmp_type.byte_size() == 8)
+			else if (cmp_type.value == F64)
 			{
 				assembler.cmp_flt_64(result_reg, rhs_reg);
 			}
@@ -365,27 +365,27 @@ struct BinaryOperation final : public ReadValue
 
 		case DIVISION:
 		{
-			if (type.is_integer() && type.byte_size() == 1)
+			if (type.value == U8 || type.value == I8)
 			{
 				assembler.div_int_8(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 2)
+			else if (type.value == U16 || type.value == I16)
 			{
 				assembler.div_int_16(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 4)
+			else if (type.value == U32 || type.value == I32)
 			{
 				assembler.div_int_32(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 8)
+			else if (type.value == U64 || type.value == I64)
 			{
 				assembler.div_int_64(rhs_reg, result_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			else if (type.value == F32)
 			{
 				assembler.div_flt_32(rhs_reg, result_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			else if (type.value == F64)
 			{
 				assembler.div_flt_64(rhs_reg, result_reg);
 			}
@@ -395,19 +395,19 @@ struct BinaryOperation final : public ReadValue
 
 		case REMAINDER:
 		{
-			if (type.is_integer() && type.byte_size() == 1)
+			if (type.value == U8 || type.value == I8)
 			{
 				assembler.mod_int_8(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 2)
+			else if (type.value == U16 || type.value == I16)
 			{
 				assembler.mod_int_16(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 4)
+			else if (type.value == U32 || type.value == I32)
 			{
 				assembler.mod_int_32(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 8)
+			else if (type.value == U64 || type.value == I64)
 			{
 				assembler.mod_int_64(rhs_reg, result_reg);
 			}
@@ -417,27 +417,27 @@ struct BinaryOperation final : public ReadValue
 
 		case MULTIPLICATION:
 		{
-			if (type.is_integer() && type.byte_size() == 1)
+			if (type.value == U8 || type.value == I8)
 			{
 				assembler.mul_int_8(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 2)
+			else if (type.value == U16 || type.value == I16)
 			{
 				assembler.mul_int_16(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 4)
+			else if (type.value == U32 || type.value == I32)
 			{
 				assembler.mul_int_32(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 8)
+			else if (type.value == U64 || type.value == I64)
 			{
 				assembler.mul_int_64(rhs_reg, result_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			else if (type.value == F32)
 			{
 				assembler.mul_flt_32(rhs_reg, result_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			else if (type.value == F64)
 			{
 				assembler.mul_flt_64(rhs_reg, result_reg);
 			}
@@ -447,27 +447,27 @@ struct BinaryOperation final : public ReadValue
 
 		case ADDITION:
 		{
-			if (type.is_integer() && type.byte_size() == 1)
+			if (type.value == U8 || type.value == I8)
 			{
 				assembler.add_int_8(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 2)
+			else if (type.value == U16 || type.value == I16)
 			{
 				assembler.add_int_16(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 4)
+			else if (type.value == U32 || type.value == I32)
 			{
 				assembler.add_int_32(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 8)
+			else if (type.value == U64 || type.value == I64)
 			{
 				assembler.add_int_64(rhs_reg, result_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			else if (type.value == F32)
 			{
 				assembler.add_flt_32(rhs_reg, result_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			else if (type.value == F64)
 			{
 				assembler.add_flt_64(rhs_reg, result_reg);
 			}
@@ -477,27 +477,27 @@ struct BinaryOperation final : public ReadValue
 
 		case SUBTRACTION:
 		{
-			if (type.is_integer() && type.byte_size() == 1)
+			if (type.value == U8 || type.value == I8)
 			{
 				assembler.sub_int_8(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 2)
+			else if (type.value == U16 || type.value == I16)
 			{
 				assembler.sub_int_16(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 4)
+			else if (type.value == U32 || type.value == I32)
 			{
 				assembler.sub_int_32(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 8)
+			else if (type.value == U64 || type.value == I64)
 			{
 				assembler.sub_int_64(rhs_reg, result_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			else if (type.value == F32)
 			{
 				assembler.sub_flt_32(rhs_reg, result_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			else if (type.value == F64)
 			{
 				assembler.sub_flt_64(rhs_reg, result_reg);
 			}
@@ -507,19 +507,19 @@ struct BinaryOperation final : public ReadValue
 
 		case BITWISE_AND:
 		{
-			if (type.is_integer() && type.byte_size() == 1)
+			if (type.value == U8 || type.value == I8)
 			{
 				assembler.and_int_8(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 2)
+			else if (type.value == U16 || type.value == I16)
 			{
 				assembler.and_int_16(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 4)
+			else if (type.value == U32 || type.value == I32)
 			{
 				assembler.and_int_32(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 8)
+			else if (type.value == U64 || type.value == I64)
 			{
 				assembler.and_int_64(rhs_reg, result_reg);
 			}
@@ -529,19 +529,19 @@ struct BinaryOperation final : public ReadValue
 
 		case BITWISE_XOR:
 		{
-			if (type.is_integer() && type.byte_size() == 1)
+			if (type.value == U8 || type.value == I8)
 			{
 				assembler.xor_int_8(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 2)
+			else if (type.value == U16 || type.value == I16)
 			{
 				assembler.xor_int_16(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 4)
+			else if (type.value == U32 || type.value == I32)
 			{
 				assembler.xor_int_32(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 8)
+			else if (type.value == U64 || type.value == I64)
 			{
 				assembler.xor_int_64(rhs_reg, result_reg);
 			}
@@ -551,19 +551,19 @@ struct BinaryOperation final : public ReadValue
 
 		case BITWISE_OR:
 		{
-			if (type.is_integer() && type.byte_size() == 1)
+			if (type.value == U8 || type.value == I8)
 			{
 				assembler.or_int_8(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 2)
+			else if (type.value == U16 || type.value == I16)
 			{
 				assembler.or_int_16(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 4)
+			else if (type.value == U32 || type.value == I32)
 			{
 				assembler.or_int_32(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 8)
+			else if (type.value == U64 || type.value == I64)
 			{
 				assembler.or_int_64(rhs_reg, result_reg);
 			}
@@ -573,19 +573,19 @@ struct BinaryOperation final : public ReadValue
 
 		case LEFT_SHIFT:
 		{
-			if (type.is_integer() && type.byte_size() == 1)
+			if (type.value == U8 || type.value == I8)
 			{
 				assembler.shl_int_8(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 2)
+			else if (type.value == U16 || type.value == I16)
 			{
 				assembler.shl_int_16(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 4)
+			else if (type.value == U32 || type.value == I32)
 			{
 				assembler.shl_int_32(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 8)
+			else if (type.value == U64 || type.value == I64)
 			{
 				assembler.shl_int_64(rhs_reg, result_reg);
 			}
@@ -595,19 +595,19 @@ struct BinaryOperation final : public ReadValue
 
 		case RIGHT_SHIFT:
 		{
-			if (type.is_integer() && type.byte_size() == 1)
+			if (type.value == U8 || type.value == I8)
 			{
 				assembler.shr_int_8(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 2)
+			else if (type.value == U16 || type.value == I16)
 			{
 				assembler.shr_int_16(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 4)
+			else if (type.value == U32 || type.value == I32)
 			{
 				assembler.shr_int_32(rhs_reg, result_reg);
 			}
-			else if (type.is_integer() && type.byte_size() == 8)
+			else if (type.value == U64 || type.value == I64)
 			{
 				assembler.shr_int_64(rhs_reg, result_reg);
 			}

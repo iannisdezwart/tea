@@ -70,7 +70,7 @@ struct MemberExpression final : public WriteValue
 
 		std::string member_name = member->identifier;
 
-		if (object->type != Type::USER_DEFINED_CLASS)
+		if (object->type.value < BUILTIN_TYPE_END)
 		{
 			err_at_token(accountable_token, "Type Error",
 				"Cannot access property %s from non-class type %s",
@@ -78,7 +78,7 @@ struct MemberExpression final : public WriteValue
 				object->to_str().c_str());
 		}
 
-		uint32_t class_id = object->type.class_id;
+		uint32_t class_id = object->type.value;
 		class_definition       = std::make_unique<ClassDefinition>(
                         type_check_state.classes[class_id]);
 		size_t offset = 0;
@@ -138,7 +138,7 @@ struct MemberExpression final : public WriteValue
 		}
 
 	gather_location_data:
-		IdentifierKind id_kind = type != Type::USER_DEFINED_CLASS
+		IdentifierKind id_kind = type.value < BUILTIN_TYPE_END
 			? object->location_data.id_kind
 			: IdentifierKind::UNDEFINED;
 		location_data          = LocationData(id_kind, offset);

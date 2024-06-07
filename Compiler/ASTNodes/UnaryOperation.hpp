@@ -228,7 +228,7 @@ struct UnaryOperation final : public WriteValue
 		{
 			assembler.inc_int_64(result_reg);
 		}
-		else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+		else if (type.value == F32)
 		{
 			uint8_t temp_reg = assembler.get_register();
 			float one        = 1.0f;
@@ -236,7 +236,7 @@ struct UnaryOperation final : public WriteValue
 			assembler.add_flt_32(temp_reg, result_reg);
 			assembler.free_register(temp_reg);
 		}
-		else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+		else if (type.value == F64)
 		{
 			uint8_t temp_reg = assembler.get_register();
 			double one       = 1.0;
@@ -273,7 +273,7 @@ struct UnaryOperation final : public WriteValue
 		{
 			assembler.dec_int_64(result_reg);
 		}
-		else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+		else if (type.value == F32)
 		{
 			uint8_t temp_reg = assembler.get_register();
 			float one        = 1.0f;
@@ -281,7 +281,7 @@ struct UnaryOperation final : public WriteValue
 			assembler.sub_flt_32(temp_reg, result_reg);
 			assembler.free_register(temp_reg);
 		}
-		else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+		else if (type.value == F64)
 		{
 			uint8_t temp_reg = assembler.get_register();
 			double one       = 1.0;
@@ -379,7 +379,7 @@ struct UnaryOperation final : public WriteValue
 				assembler.neg_int_64(result_reg);
 				assembler.inc_int_64(result_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			else if (type.value == F32)
 			{
 				uint8_t temp_reg  = assembler.get_register();
 				uint32_t sign_bit = 0x80000000;
@@ -387,7 +387,7 @@ struct UnaryOperation final : public WriteValue
 				assembler.xor_int_32(temp_reg, result_reg);
 				assembler.free_register(temp_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			else if (type.value == F64)
 			{
 				uint8_t temp_reg  = assembler.get_register();
 				uint64_t sign_bit = 0x8000000000000000;

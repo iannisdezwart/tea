@@ -432,7 +432,7 @@ struct Parser
 				Token class_name_token = tokens[j + 1];
 				assert_token_type(class_name_token, IDENTIFIER);
 
-				uint32_t class_id                        = class_name_to_id.size();
+				uint32_t class_id                        = class_name_to_id.size() + BUILTIN_TYPE_END;
 				class_name_to_id[class_name_token.value] = class_id;
 				class_id_to_name[class_id]               = class_name_token.value;
 			}
