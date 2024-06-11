@@ -1,67 +1,71 @@
 #ifndef TEA_AST_NODE_RETURN_STATEMENT_HEADER
 #define TEA_AST_NODE_RETURN_STATEMENT_HEADER
 
-#include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct ReturnStatement final : public ASTNode
+void
+return_void_statement_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	std::unique_ptr<ReadValue> expression;
+	callback(node, depth);
+}
 
-	ReturnStatement(CompactToken accountable_token, std::unique_ptr<ReadValue> expression)
-		: ASTNode(std::move(accountable_token), RETURN_STATEMENT),
-		  expression(std::move(expression)) {}
+void
+return_expression_statement_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
+{
+	ast_dfs(ast, ast.data[node].return_expression_statement.expression_node, callback, depth + 1);
+	callback(node, depth);
+}
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
-	{
-		if (expression)
-			expression->dfs(callback, depth + 1);
+std::string
+return_void_statement_to_str(const AST &ast, uint node)
+{
+	return std::string("ReturnVoidStatement {} @ ") + std::to_string(node);
+}
 
-		callback(this, depth);
-	}
+std::string
+return_expression_statement_to_str(const AST &ast, uint node)
+{
+	return std::string("ReturnExpressionStatement {} @ ") + std::to_string(node);
+}
 
-	std::string
-	to_str()
-		override
-	{
-		std::string s = "ReturnStatement {} @ " + to_hex((size_t) this);
-		return s;
-	}
+void
+return_void_statement_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	ast.types[node] = Type(V0, 0);
+}
 
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
-	{
-		if (!expression)
-			return;
+void
+return_expression_statement_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	uint expression_node = ast.data[node].return_expression_statement.expression_node;
+	ast_type_check(ast, expression_node, type_check_state);
+	ast.types[node] = ast.types[expression_node];
+}
 
-		expression->type_check(type_check_state);
-		type = expression->type;
-	}
+void
+return_void_statement_code_gen(Assembler &assembler)
+{
+	assembler.return_();
+}
 
-	void
-	code_gen(Assembler &assembler)
-		const override
-	{
-		uint8_t res_reg = assembler.get_register();
+void
+return_expression_statement_code_gen(AST &ast, uint node, Assembler &assembler)
+{
+	uint8_t res_reg = assembler.get_register();
 
-		// Store value in result register.
+	// Store value in result register.
 
-		if (expression)
-			expression->get_value(assembler, res_reg);
+	uint expr_node = ast.data[node].return_expression_statement.expression_node;
+	ast_get_value(ast, expr_node, assembler, res_reg);
 
-		// Return value.
+	// Return value.
 
-		assembler.move(res_reg, R_RET);
-		assembler.free_register(res_reg);
-		assembler.return_();
-	}
-};
-
-constexpr int RETURN_STATEMENT_SIZE = sizeof(ReturnStatement);
+	assembler.move(res_reg, R_RET);
+	assembler.free_register(res_reg);
+	assembler.return_();
+}
 
 #endif

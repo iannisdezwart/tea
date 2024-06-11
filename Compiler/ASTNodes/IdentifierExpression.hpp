@@ -1,283 +1,222 @@
 #ifndef TEA_AST_NODE_IDENTIFIER_EXPRESSION_HEADER
 #define TEA_AST_NODE_IDENTIFIER_EXPRESSION_HEADER
 
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Compiler/util.hpp"
-#include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/ASTNodes/WriteValue.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct IdentifierExpression final : public WriteValue
+void
+identifier_expression_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	std::string identifier;
-	// Set during type checking if the identifier is a class field.
-	std::optional<Type> object_type;
+	callback(node, depth);
+}
 
-	IdentifierExpression(CompactToken accountable_token, std::string identifier)
-		: WriteValue(std::move(accountable_token), IDENTIFIER_EXPRESSION),
-		  identifier(identifier) {}
+std::string
+identifier_expression_standalone_to_str(const AST &ast, uint node)
+{
+	std::string s = "IdentifierExpression { identifier_id = ";
+	s += std::to_string(ast.data[node].identifier_expression_standalone.identifier_id);
+	s += " } @ ";
+	s += std::to_string(node);
+	return s;
+}
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
+std::string
+identifier_expression_member_to_str(const AST &ast, uint node)
+{
+	std::string s = "IdentifierExpression { identifier_id = ";
+	s += std::to_string(ast.data[node].identifier_expression_member.identifier_id);
+	s += ", object_node = ";
+	s += std::to_string(ast.data[node].identifier_expression_member.object.node); // TODO: reading from union, problematic
+	s += " } @ ";
+	s += std::to_string(node);
+	return s;
+}
+
+// clang-format off
+enum struct IdentifierExpressionIdKind { STACK, GLOBAL };
+// clang-format on
+
+void
+identifier_expression_standalone_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	uint identifier_id = ast.data[node].identifier_expression_standalone.identifier_id;
+	ast.types[node]    = type_check_state.get_type_of_identifier(identifier_id);
+
+	if (ast.types[node].value == UNDEFINED)
 	{
-		callback(this, depth);
+		err_at_token(ast.tokens[node],
+			"Identifier has unknown kind",
+			"Identifier: %d. this might be a bug in the compiler",
+			identifier_id);
 	}
 
-	std::string
-	to_str()
-		override
+	IdentifierKind id_kind = type_check_state.get_identifier_kind(identifier_id);
+
+	if (id_kind == IdentifierKind::UNDEFINED)
 	{
-		std::string s = "IdentifierExpression { identifier = \""
-			+ identifier + "\" } @ " + to_hex((size_t) this);
-		return s;
+		err_at_token(ast.tokens[node],
+			"Reference to undeclared variable",
+			"Identifier %d was referenced, but not declared",
+			identifier_id);
 	}
 
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
+	int offset;
+	uint id_kind_bit;
+
+	switch (id_kind)
 	{
-		if (object_type.has_value())
-		{
-			const ClassDefinition &class_def = type_check_state.classes.at(object_type->value);
-
-			if (!class_def.has_field(identifier))
-			{
-				err_at_token(accountable_token,
-					"Class field not found",
-					"Field %s not found in class %d",
-					identifier.c_str(), object_type->value);
-			}
-
-			type          = class_def.get_field_type(identifier);
-			location_data = LocationData(IdentifierKind::UNDEFINED, class_def.get_field_offset(identifier));
-			return;
-		}
-
-		type = type_check_state.get_type_of_identifier(identifier);
-
-		if (type.value == UNDEFINED)
-		{
-			err_at_token(accountable_token,
-				"Identifier has unknown kind",
-				"Identifier: %s. this might be a bug in the compiler",
-				identifier.c_str());
-		}
-
-		IdentifierKind id_kind = type_check_state.get_identifier_kind(identifier);
-
-		if (id_kind == IdentifierKind::UNDEFINED)
-		{
-			err_at_token(accountable_token,
-				"Reference to undeclared variable",
-				"Identifier %s was referenced, but not declared",
-				identifier.c_str());
-		}
-
-		int64_t offset;
-
-		switch (id_kind)
-		{
-		case IdentifierKind::LOCAL:
-		{
-			const VariableDefinition &var = type_check_state.get_local(identifier);
-			offset                        = var.offset;
-			break;
-		}
-
-		case IdentifierKind::PARAMETER:
-		{
-			const VariableDefinition &var = type_check_state.parameters[identifier];
-			offset                        = -type_check_state.parameters_size + var.offset
-				- 8 - CPU::stack_frame_size;
-			break;
-		}
-
-		case IdentifierKind::GLOBAL:
-		{
-			const VariableDefinition &var = type_check_state.globals[identifier];
-			offset                        = var.offset;
-			break;
-		}
-
-		default:
-			err_at_token(accountable_token,
-				"Identifier has unknown kind",
-				"Identifier: %s. this might be a bug in the compiler",
-				identifier.c_str());
-		}
-
-		location_data = LocationData(id_kind, offset);
+	case IdentifierKind::LOCAL:
+	{
+		const VariableDefinition &var = type_check_state.get_local(identifier_id);
+		offset                        = var.offset;
+		id_kind_bit                   = (uint) IdentifierExpressionIdKind::STACK;
+		break;
 	}
 
-	void
-	get_value(Assembler &assembler, uint8_t result_reg)
-		const override
+	case IdentifierKind::PARAMETER:
 	{
-		// Local variable or parameter
+		const VariableDefinition &var = type_check_state.parameters[identifier_id];
+		offset                        = -type_check_state.parameters_size + var.offset
+			- 8 - CPU::stack_frame_size;
+		id_kind_bit = (uint) IdentifierExpressionIdKind::STACK;
+		break;
+	}
 
-		if (location_data.is_at_frame_top())
-		{
-			if (type.is_array())
-			{
-				assembler.move_lit(location_data.offset, result_reg);
-				assembler.add_int_64(R_FRAME_PTR, result_reg);
+	case IdentifierKind::GLOBAL:
+	{
+		const VariableDefinition &var = type_check_state.globals[identifier_id];
+		offset                        = var.offset;
+		id_kind_bit                   = (uint) IdentifierExpressionIdKind::GLOBAL;
+		break;
+	}
 
-				return;
-			}
+	default:
+		err_at_token(ast.tokens[node],
+			"Identifier has unknown kind",
+			"Identifier: %d. this might be a bug in the compiler",
+			identifier_id);
+	}
 
-			switch (type.byte_size())
-			{
-			case 1:
-				assembler.move_lit(location_data.offset, result_reg);
-				assembler.add_int_64(R_FRAME_PTR, result_reg);
-				assembler.load_ptr_8(result_reg, result_reg);
-				break;
+	ast.data[node].identifier_expression_standalone.id_kind = id_kind_bit;
+	ast.data[node].identifier_expression_standalone.offset  = offset;
+}
 
-			case 2:
-				assembler.move_lit(location_data.offset, result_reg);
-				assembler.add_int_64(R_FRAME_PTR, result_reg);
-				assembler.load_ptr_16(result_reg, result_reg);
-				break;
+void
+identifier_expression_member_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	uint object_node                 = ast.data[node].identifier_expression_member.object.node;
+	uint class_id                    = ast.types[object_node].value;
+	const ClassDefinition &class_def = type_check_state.classes.at(class_id);
 
-			case 4:
-				assembler.move_lit(location_data.offset, result_reg);
-				assembler.add_int_64(R_FRAME_PTR, result_reg);
-				assembler.load_ptr_32(result_reg, result_reg);
-				break;
+	uint identifier_id = ast.data[node].identifier_expression_member.identifier_id;
 
-			case 8:
-				assembler.move_lit(location_data.offset, result_reg);
-				assembler.add_int_64(R_FRAME_PTR, result_reg);
-				assembler.load_ptr_64(result_reg, result_reg);
-				break;
+	if (!class_def.has_field(identifier_id))
+	{
+		err_at_token(ast.tokens[node],
+			"Class field not found",
+			"Field %d not found in class %d",
+			identifier_id, class_id);
+	}
 
-			default:
-				assembler.move_lit(location_data.offset, result_reg);
-				assembler.add_int_64(R_FRAME_PTR, result_reg);
-				break;
-			}
+	ast.types[node]                                           = class_def.get_field_type(identifier_id);
+	ast.data[node].identifier_expression_member.object.offset = class_def.get_field_offset(identifier_id, ast.extra_data);
+}
 
-			return;
-		}
+void
+identifier_expression_standalone_get_value(AST &ast, uint node, Assembler &assembler, uint8_t result_reg)
+{
+	int offset       = ast.data[node].identifier_expression_standalone.offset;
+	uint id_kind_bit = ast.data[node].identifier_expression_standalone.id_kind;
 
-		// Global variable
-
-		if (type.is_array())
-		{
-			assembler.move_lit(location_data.offset, result_reg);
-			assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
-
-			return;
-		}
-
-		switch (type.byte_size())
+	if (id_kind_bit == (uint) IdentifierExpressionIdKind::STACK)
+	{
+		switch (ast.types[node].byte_size(ast.extra_data))
 		{
 		case 1:
-			assembler.move_lit(location_data.offset, result_reg);
-			assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+			assembler.move_lit(offset, result_reg);
+			assembler.add_int_64(R_FRAME_PTR, result_reg);
 			assembler.load_ptr_8(result_reg, result_reg);
 			break;
 
 		case 2:
-			assembler.move_lit(location_data.offset, result_reg);
-			assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+			assembler.move_lit(offset, result_reg);
+			assembler.add_int_64(R_FRAME_PTR, result_reg);
 			assembler.load_ptr_16(result_reg, result_reg);
 			break;
 
 		case 4:
-			assembler.move_lit(location_data.offset, result_reg);
-			assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+			assembler.move_lit(offset, result_reg);
+			assembler.add_int_64(R_FRAME_PTR, result_reg);
 			assembler.load_ptr_32(result_reg, result_reg);
 			break;
 
 		case 8:
-			assembler.move_lit(location_data.offset, result_reg);
-			assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+			assembler.move_lit(offset, result_reg);
+			assembler.add_int_64(R_FRAME_PTR, result_reg);
 			assembler.load_ptr_64(result_reg, result_reg);
 			break;
 
 		default:
-			assembler.move_lit(location_data.offset, result_reg);
-			assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+			assembler.move_lit(offset, result_reg);
+			assembler.add_int_64(R_FRAME_PTR, result_reg);
 			break;
 		}
+
+		return;
 	}
 
-	void
-	store(Assembler &assembler, uint8_t value_reg)
-		const override
+	switch (ast.types[node].byte_size(ast.extra_data))
 	{
-		// Local variable or parameter
+	case 1:
+		assembler.move_lit(offset, result_reg);
+		assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+		assembler.load_ptr_8(result_reg, result_reg);
+		break;
 
-		if (location_data.is_at_frame_top())
-		{
-			switch (type.byte_size())
-			{
-			case 1:
-			{
-				uint8_t dst_ptr_reg = assembler.get_register();
-				assembler.move_lit(location_data.offset, dst_ptr_reg);
-				assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
-				assembler.store_ptr_8(value_reg, dst_ptr_reg);
-				assembler.free_register(dst_ptr_reg);
-				break;
-			}
+	case 2:
+		assembler.move_lit(offset, result_reg);
+		assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+		assembler.load_ptr_16(result_reg, result_reg);
+		break;
 
-			case 2:
-			{
-				uint8_t dst_ptr_reg = assembler.get_register();
-				assembler.move_lit(location_data.offset, dst_ptr_reg);
-				assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
-				assembler.store_ptr_16(value_reg, dst_ptr_reg);
-				assembler.free_register(dst_ptr_reg);
-				break;
-			}
+	case 4:
+		assembler.move_lit(offset, result_reg);
+		assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+		assembler.load_ptr_32(result_reg, result_reg);
+		break;
 
-			case 4:
-			{
-				uint8_t dst_ptr_reg = assembler.get_register();
-				assembler.move_lit(location_data.offset, dst_ptr_reg);
-				assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
-				assembler.store_ptr_32(value_reg, dst_ptr_reg);
-				assembler.free_register(dst_ptr_reg);
-				break;
-			}
+	case 8:
+		assembler.move_lit(offset, result_reg);
+		assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+		assembler.load_ptr_64(result_reg, result_reg);
+		break;
 
-			case 8:
-			{
-				uint8_t dst_ptr_reg = assembler.get_register();
-				assembler.move_lit(location_data.offset, dst_ptr_reg);
-				assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
-				assembler.store_ptr_64(value_reg, dst_ptr_reg);
-				assembler.free_register(dst_ptr_reg);
-				break;
-			}
+	default:
+		assembler.move_lit(offset, result_reg);
+		assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+		break;
+	}
+}
 
-			default:
-			{
-				uint8_t dst_ptr_reg = assembler.get_register();
-				assembler.move_lit(location_data.offset, dst_ptr_reg);
-				assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
-				assembler.mem_copy(value_reg, dst_ptr_reg, type.byte_size());
-				assembler.free_register(dst_ptr_reg);
-				break;
-			}
-			}
+void
+identifier_expression_standalone_store(AST &ast, uint node, Assembler &assembler, uint8_t value_reg)
+{
+	int offset       = ast.data[node].identifier_expression_standalone.offset;
+	uint id_kind_bit = ast.data[node].identifier_expression_standalone.id_kind;
 
-			return;
-		}
-
-		// Global variable
-
-		switch (type.byte_size())
+	if (id_kind_bit == (uint) IdentifierExpressionIdKind::STACK)
+	{
+		switch (ast.types[node].byte_size(ast.extra_data))
 		{
 		case 1:
 		{
 			uint8_t dst_ptr_reg = assembler.get_register();
-			assembler.move_lit(location_data.offset, dst_ptr_reg);
-			assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+			assembler.move_lit(offset, dst_ptr_reg);
+			assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
 			assembler.store_ptr_8(value_reg, dst_ptr_reg);
 			assembler.free_register(dst_ptr_reg);
 			break;
@@ -286,8 +225,8 @@ struct IdentifierExpression final : public WriteValue
 		case 2:
 		{
 			uint8_t dst_ptr_reg = assembler.get_register();
-			assembler.move_lit(location_data.offset, dst_ptr_reg);
-			assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+			assembler.move_lit(offset, dst_ptr_reg);
+			assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
 			assembler.store_ptr_16(value_reg, dst_ptr_reg);
 			assembler.free_register(dst_ptr_reg);
 			break;
@@ -296,8 +235,8 @@ struct IdentifierExpression final : public WriteValue
 		case 4:
 		{
 			uint8_t dst_ptr_reg = assembler.get_register();
-			assembler.move_lit(location_data.offset, dst_ptr_reg);
-			assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+			assembler.move_lit(offset, dst_ptr_reg);
+			assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
 			assembler.store_ptr_32(value_reg, dst_ptr_reg);
 			assembler.free_register(dst_ptr_reg);
 			break;
@@ -306,8 +245,8 @@ struct IdentifierExpression final : public WriteValue
 		case 8:
 		{
 			uint8_t dst_ptr_reg = assembler.get_register();
-			assembler.move_lit(location_data.offset, dst_ptr_reg);
-			assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+			assembler.move_lit(offset, dst_ptr_reg);
+			assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
 			assembler.store_ptr_64(value_reg, dst_ptr_reg);
 			assembler.free_register(dst_ptr_reg);
 			break;
@@ -316,16 +255,71 @@ struct IdentifierExpression final : public WriteValue
 		default:
 		{
 			uint8_t dst_ptr_reg = assembler.get_register();
-			assembler.move_lit(location_data.offset, dst_ptr_reg);
-			assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
-			assembler.mem_copy(value_reg, dst_ptr_reg, type.byte_size());
+			assembler.move_lit(offset, dst_ptr_reg);
+			assembler.add_int_64(R_FRAME_PTR, dst_ptr_reg);
+			assembler.mem_copy(value_reg, dst_ptr_reg, ast.types[node].byte_size(ast.extra_data));
 			assembler.free_register(dst_ptr_reg);
 			break;
 		}
 		}
-	}
-};
 
-constexpr int IDENTIFIER_EXPRESSION_SIZE = sizeof(IdentifierExpression);
+		return;
+	}
+
+	// Global variable.
+
+	switch (ast.types[node].byte_size(ast.extra_data))
+	{
+	case 1:
+	{
+		uint8_t dst_ptr_reg = assembler.get_register();
+		assembler.move_lit(offset, dst_ptr_reg);
+		assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+		assembler.store_ptr_8(value_reg, dst_ptr_reg);
+		assembler.free_register(dst_ptr_reg);
+		break;
+	}
+
+	case 2:
+	{
+		uint8_t dst_ptr_reg = assembler.get_register();
+		assembler.move_lit(offset, dst_ptr_reg);
+		assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+		assembler.store_ptr_16(value_reg, dst_ptr_reg);
+		assembler.free_register(dst_ptr_reg);
+		break;
+	}
+
+	case 4:
+	{
+		uint8_t dst_ptr_reg = assembler.get_register();
+		assembler.move_lit(offset, dst_ptr_reg);
+		assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+		assembler.store_ptr_32(value_reg, dst_ptr_reg);
+		assembler.free_register(dst_ptr_reg);
+		break;
+	}
+
+	case 8:
+	{
+		uint8_t dst_ptr_reg = assembler.get_register();
+		assembler.move_lit(offset, dst_ptr_reg);
+		assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+		assembler.store_ptr_64(value_reg, dst_ptr_reg);
+		assembler.free_register(dst_ptr_reg);
+		break;
+	}
+
+	default:
+	{
+		uint8_t dst_ptr_reg = assembler.get_register();
+		assembler.move_lit(offset, dst_ptr_reg);
+		assembler.add_int_64(R_STACK_TOP_PTR, dst_ptr_reg);
+		assembler.mem_copy(value_reg, dst_ptr_reg, ast.types[node].byte_size(ast.extra_data));
+		assembler.free_register(dst_ptr_reg);
+		break;
+	}
+	}
+}
 
 #endif

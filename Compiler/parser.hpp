@@ -3,9 +3,6 @@
 
 #include <vector>
 #include "Compiler/tokeniser.hpp"
-#include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/ASTNodes/WriteValue.hpp"
-#include "Compiler/ASTNodes/ReadValue.hpp"
 #include "Compiler/ASTNodes/TypeName.hpp"
 #include "Compiler/ASTNodes/TypeIdentifierPair.hpp"
 #include "Compiler/ASTNodes/VariableDeclaration.hpp"
@@ -35,7 +32,7 @@
  * @brief Merges binary operators with left-to-right associativity.
  */
 void
-merge_bin_ops_ltr(std::vector<std::unique_ptr<ReadValue>> &expressions,
+merge_bin_ops_ltr(AST &ast, std::vector<uint> &expressions,
 	std::vector<Token> &operators, const std::vector<Operator> &active_ops)
 {
 	for (size_t j = 0; j < operators.size(); j++)
@@ -60,9 +57,9 @@ merge_bin_ops_ltr(std::vector<std::unique_ptr<ReadValue>> &expressions,
 
 	merge_op:
 
-		std::unique_ptr<ReadValue> &left_expr  = expressions[j];
-		std::unique_ptr<ReadValue> &right_expr = expressions[j + 1];
-		std::unique_ptr<ReadValue> new_expr;
+		uint left_expr  = expressions[j];
+		uint right_expr = expressions[j + 1];
+		uint new_expr   = ast.data.size();
 
 		switch (op)
 		{
@@ -71,54 +68,97 @@ merge_bin_ops_ltr(std::vector<std::unique_ptr<ReadValue>> &expressions,
 				op_to_str(op));
 			abort();
 
-		case MULTIPLICATION:
-		case DIVISION:
-		case REMAINDER:
 		case ADDITION:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_ADDITION);
+			goto binop;
 		case SUBTRACTION:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_SUBTRACTION);
+			goto binop;
+		case MULTIPLICATION:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_MULTIPLICATION);
+			goto binop;
+		case DIVISION:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_DIVISION);
+			goto binop;
+		case REMAINDER:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_REMAINDER);
+			goto binop;
 		case BITWISE_AND:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_BITWISE_AND);
+			goto binop;
 		case BITWISE_XOR:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_BITWISE_XOR);
+			goto binop;
 		case BITWISE_OR:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_BITWISE_OR);
+			goto binop;
 		case LEFT_SHIFT:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_LEFT_SHIFT);
+			goto binop;
 		case RIGHT_SHIFT:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_RIGHT_SHIFT);
+			goto binop;
 		case LESS:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_LESS);
+			goto binop;
 		case LESS_OR_EQUAL:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_LESS_OR_EQUAL);
+			goto binop;
 		case GREATER:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_GREATER);
+			goto binop;
 		case GREATER_OR_EQUAL:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_GREATER_OR_EQUAL);
+			goto binop;
 		case EQUAL:
+			ast.tags.push_back(AstTag::BINARY_OPERATION_EQUAL);
+			goto binop;
 		case NOT_EQUAL:
-		{
-			new_expr = std::make_unique<BinaryOperation>(CompactToken(op_token),
-				str_to_operator(op_token.value),
-				std::move(left_expr), std::move(right_expr));
-			break;
+			ast.tags.push_back(AstTag::BINARY_OPERATION_NOT_EQUAL);
+			goto binop;
+		case POINTER_TO_MEMBER:
+			ast.tags.push_back(AstTag::MEMBER_EXPRESSION_DIRECT); // TODO: FINAL
+			goto membexpr;
+		case DEREFERENCED_POINTER_TO_MEMBER:
+			ast.tags.push_back(AstTag::MEMBER_EXPRESSION_DEREFERENCED); // TODO: FINAL
+			goto membexpr;
 		}
 
-		case POINTER_TO_MEMBER:
-		case DEREFERENCED_POINTER_TO_MEMBER:
+	binop:
+		ast.data.push_back(NodeData {
+			.binary_operation = {
+				.lhs_expr_node = left_expr,
+				.rhs_expr_node = right_expr,
+			},
+		});
+		goto end;
+
+	membexpr:
+
+		if (ast.tags[right_expr] != AstTag::IDENTIFIER_EXPRESSION_STANDALONE)
 		{
-			if (right_expr->node_type == IDENTIFIER_EXPRESSION)
-			{
-				std::unique_ptr<WriteValue> object =
-					static_unique_ptr_cast<WriteValue>(std::move(left_expr));
-				std::unique_ptr<IdentifierExpression> member =
-					static_unique_ptr_cast<IdentifierExpression>(std::move(right_expr));
-
-				new_expr = std::make_unique<MemberExpression>(CompactToken(op_token),
-					str_to_operator(op_token.value),
-					std::move(object), std::move(member));
-				break;
-			}
-
-			err_at_token(right_expr->accountable_token, "Type Error",
+			err_at_token(ast.tokens[right_expr], "Type Error",
 				"A member of a class instance must be an IdentifierExpression "
 				"or a FunctionCall\n"
 				"Found a %s",
-				ast_node_type_to_str(right_expr->node_type));
-		} // case DEREFERENCED_POINTER_TO_MEMBER
-		} // switch
+				ast_tag_to_str(ast.tags[right_expr]));
+		}
 
-		expressions[j] = std::move(new_expr);
+		ast.data.push_back(NodeData {
+			.member_expression = {
+				.object_node = left_expr,
+				.member {
+					.node = right_expr,
+				},
+			},
+		});
+		goto end;
+
+	end:
+
+		ast.tokens.push_back(CompactToken(op_token));
+
+		expressions[j] = new_expr;
 
 		operators.erase(operators.begin() + j);
 		expressions.erase(expressions.begin() + j + 1);
@@ -131,7 +171,7 @@ merge_bin_ops_ltr(std::vector<std::unique_ptr<ReadValue>> &expressions,
  * @brief Merges binary operators with right-to-left associativity.
  */
 void
-merge_bin_ops_rtl(std::vector<std::unique_ptr<ReadValue>> &expressions,
+merge_bin_ops_rtl(AST &ast, std::vector<uint> &expressions,
 	std::vector<Token> &operators, const std::vector<Operator> &active_ops)
 {
 	for (size_t j = operators.size(); j != 0; j--)
@@ -156,9 +196,9 @@ merge_bin_ops_rtl(std::vector<std::unique_ptr<ReadValue>> &expressions,
 
 	merge_op:
 
-		std::unique_ptr<ReadValue> &left  = expressions[j - 1];
-		std::unique_ptr<ReadValue> &right = expressions[j];
-		std::unique_ptr<ReadValue> new_expr;
+		uint left     = expressions[j - 1];
+		uint right    = expressions[j];
+		uint new_expr = ast.data.size();
 
 		switch (op)
 		{
@@ -168,48 +208,49 @@ merge_bin_ops_rtl(std::vector<std::unique_ptr<ReadValue>> &expressions,
 			abort();
 
 		case ASSIGNMENT:
-		case SUM_ASSIGNMENT:
-		case DIFFERENCE_ASSIGNMENT:
-		case QUOTIENT_ASSIGNMENT:
-		case REMAINDER_ASSIGNMENT:
-		case PRODUCT_ASSIGNMENT:
-		case LEFT_SHIFT_ASSIGNMENT:
-		case RIGHT_SHIFT_ASSIGNMENT:
-		case BITWISE_AND_ASSIGNMENT:
-		case BITWISE_XOR_ASSIGNMENT:
-		case BITWISE_OR_ASSIGNMENT:
-		{
-			// size_t dereference_depth = 0;
-			// Token id_token;
-
-			// while (left->type != IDENTIFIER_EXPRESSION) {
-			// 	if (left->type != UNARY_OPERATION)
-			// 		err_at_token(left->accountable_token,
-			// 			"Syntax Error",
-			// 			"Unexpected operator of type %d", op_token.type);
-
-			// 	UnaryOperation *unary_op = (UnaryOperation *) left;
-
-			// 	if (unary_op->op != DEREFERENCE)
-			// 		err_at_token(left->accountable_token,
-			// 			"Syntax Error",
-			// 			"Unexpected operator of type %d", op_token.type);
-
-			// 	left = unary_op->expression;
-			// 	delete unary_op;
-			// 	dereference_depth++;
-			// }
-
-			new_expr = std::make_unique<AssignmentExpression>(CompactToken(op_token),
-				str_to_operator(op_token.value),
-				std::unique_ptr<WriteValue>(WriteValue::cast(left.release())),
-				std::move(right));
-
+			ast.tags.push_back(AstTag::ASSIGNMENT_EXPRESSION_NORMAL);
 			break;
-		} // case BITWISE_OR_ASSIGNMENT
-		} // switch
+		case SUM_ASSIGNMENT:
+			ast.tags.push_back(AstTag::ASSIGNMENT_EXPRESSION_SUM);
+			break;
+		case DIFFERENCE_ASSIGNMENT:
+			ast.tags.push_back(AstTag::ASSIGNMENT_EXPRESSION_DIFFERENCE);
+			break;
+		case PRODUCT_ASSIGNMENT:
+			ast.tags.push_back(AstTag::ASSIGNMENT_EXPRESSION_PRODUCT);
+			break;
+		case QUOTIENT_ASSIGNMENT:
+			ast.tags.push_back(AstTag::ASSIGNMENT_EXPRESSION_QUOTIENT);
+			break;
+		case REMAINDER_ASSIGNMENT:
+			ast.tags.push_back(AstTag::ASSIGNMENT_EXPRESSION_REMAINDER);
+			break;
+		case LEFT_SHIFT_ASSIGNMENT:
+			ast.tags.push_back(AstTag::ASSIGNMENT_EXPRESSION_LEFT_SHIFT);
+			break;
+		case RIGHT_SHIFT_ASSIGNMENT:
+			ast.tags.push_back(AstTag::ASSIGNMENT_EXPRESSION_RIGHT_SHIFT);
+			break;
+		case BITWISE_AND_ASSIGNMENT:
+			ast.tags.push_back(AstTag::ASSIGNMENT_EXPRESSION_BITWISE_AND);
+			break;
+		case BITWISE_XOR_ASSIGNMENT:
+			ast.tags.push_back(AstTag::ASSIGNMENT_EXPRESSION_BITWISE_XOR);
+			break;
+		case BITWISE_OR_ASSIGNMENT:
+			ast.tags.push_back(AstTag::ASSIGNMENT_EXPRESSION_BITWISE_OR);
+			break;
+		}
 
-		expressions[j - 1] = std::move(new_expr);
+		ast.data.push_back(NodeData {
+			.assignment_expression = {
+				.store_node = left,
+				.value_node = right,
+			},
+		});
+		ast.tokens.push_back(CompactToken(op_token));
+
+		expressions[j - 1] = new_expr;
 
 		operators.erase(operators.begin() + j - 1);
 		expressions.erase(expressions.begin() + j);
@@ -220,7 +261,7 @@ merge_bin_ops_rtl(std::vector<std::unique_ptr<ReadValue>> &expressions,
  * Merges unary operators with left-to-right associativity.
  */
 void
-merge_un_ops_ltr(std::unique_ptr<ReadValue> &expression,
+merge_un_ops_ltr(AST &ast, uint &expression,
 	std::vector<std::pair<Token, bool>> &operators,
 	const std::vector<Operator> &active_ops)
 {
@@ -249,10 +290,31 @@ merge_un_ops_ltr(std::unique_ptr<ReadValue> &expression,
 
 	merge_op:
 
-		std::unique_ptr<ReadValue> new_expr = std::make_unique<UnaryOperation>(
-			CompactToken(op_token), str_to_operator(op_token.value, prefix),
-			prefix, std::move(expression));
-		expression = std::move(new_expr);
+		uint new_expr = ast.data.size();
+
+		switch (op)
+		{
+		default:
+			p_warn(stderr, "Operator %s isn't yet implemented by the parser\n",
+				op_to_str(op));
+			abort();
+
+		case POSTFIX_INCREMENT:
+			ast.tags.push_back(AstTag::UNARY_OPERATION_POSTFIX_INCREMENT);
+			break;
+		case POSTFIX_DECREMENT:
+			ast.tags.push_back(AstTag::UNARY_OPERATION_POSTFIX_DECREMENT);
+			break;
+		}
+
+		ast.data.push_back(NodeData {
+			.unary_operation = {
+				.expression_node = expression,
+			},
+		});
+		ast.tokens.push_back(CompactToken(op_token));
+
+		expression = new_expr;
 
 		operators.erase(operators.begin() + j);
 
@@ -264,7 +326,7 @@ merge_un_ops_ltr(std::unique_ptr<ReadValue> &expression,
  * @brief Merges unary operators with right-to-left associativity.
  */
 void
-merge_un_ops_rtl(std::unique_ptr<ReadValue> &expression,
+merge_un_ops_rtl(AST &ast, uint &expression,
 	std::vector<std::pair<Token, bool>> &operators,
 	const std::vector<Operator> &active_ops)
 {
@@ -293,11 +355,50 @@ merge_un_ops_rtl(std::unique_ptr<ReadValue> &expression,
 
 	merge_op_1:
 
-		std::unique_ptr<ReadValue> new_expr = std::make_unique<UnaryOperation>(
-			CompactToken(op_token), str_to_operator(op_token.value, prefix),
-			prefix, std::move(expression));
+		uint new_expr = ast.data.size();
 
-		expression = std::move(new_expr);
+		switch (op)
+		{
+		default:
+			p_warn(stderr, "Operator %s isn't yet implemented by the parser\n",
+				op_to_str(op));
+			abort();
+
+		case PREFIX_INCREMENT:
+			ast.tags.push_back(AstTag::UNARY_OPERATION_PREFIX_INCREMENT);
+			break;
+		case PREFIX_DECREMENT:
+			ast.tags.push_back(AstTag::UNARY_OPERATION_PREFIX_DECREMENT);
+			break;
+		case UNARY_PLUS:
+			ast.tags.push_back(AstTag::UNARY_OPERATION_PLUS);
+			break;
+		case UNARY_MINUS:
+			ast.tags.push_back(AstTag::UNARY_OPERATION_MINUS);
+			break;
+		case BITWISE_NOT:
+			ast.tags.push_back(AstTag::UNARY_OPERATION_BITWISE_NOT);
+			break;
+		case LOGICAL_NOT:
+			ast.tags.push_back(AstTag::UNARY_OPERATION_LOGICAL_NOT);
+			break;
+		case DEREFERENCE:
+			ast.tags.push_back(AstTag::UNARY_OPERATION_DEREFERENCE);
+			break;
+		case ADDRESS_OF:
+			ast.tags.push_back(AstTag::UNARY_OPERATION_ADDRESS_OF);
+			break;
+		}
+
+		ast.data.push_back(NodeData {
+			.unary_operation = {
+				.expression_node = expression,
+			},
+		});
+
+		ast.tokens.push_back(CompactToken(op_token));
+
+		expression = new_expr;
 
 		operators.erase(operators.begin() + j - 1);
 	}
@@ -316,9 +417,10 @@ struct Parser
 	// The index of the current token being parsed.
 	size_t i = 0;
 
-	// Mapping of class names to IDs.
-	std::unordered_map<std::string, uint32_t> class_name_to_id;
-	std::unordered_map<uint32_t, std::string> class_id_to_name;
+	// Mapping of identifier names to IDs.
+	std::unordered_set<std::string> class_names;
+	std::unordered_map<std::string, uint32_t> name_to_id;
+	std::unordered_map<uint32_t, std::string> id_to_name;
 
 /**
  * @brief Macro that pretty-prints a syntax error.
@@ -401,19 +503,40 @@ struct Parser
 	 * class declarations and global variable declarations,
 	 * in order of definition within the source code file.
 	 */
-	std::tuple<std::vector<std::unique_ptr<ASTNode>>, std::unordered_map<uint32_t, std::string>>
+	std::tuple<
+		AST,
+		std::unordered_map<uint32_t, std::string>,
+		std::unordered_map<std::string, uint32_t>>
 	parse()
 	{
-		std::vector<std::unique_ptr<ASTNode>> statements;
+		AST ast;
 
 		scan_class_names();
 
 		while (i < tokens.size())
 		{
-			statements.push_back(next_statement());
+			uint next_statement_node = next_statement(ast);
+
+			switch (ast.tags[next_statement_node])
+			{
+			case AstTag::CLASS_DECLARATION:
+				ast.class_declarations.push_back(next_statement_node);
+				break;
+			case AstTag::VARIABLE_DECLARATION_UNINITIALISED:
+			case AstTag::VARIABLE_DECLARATION_INITIALISED: // TODO: Is okay?
+				ast.global_declarations.push_back(next_statement_node);
+				break;
+			case AstTag::FUNCTION_DECLARATION:
+				ast.function_declarations.push_back(next_statement_node);
+				break;
+			default:
+				err("Unexpected top level statement with tag %s\n",
+					ast_tag_to_str(ast.tags[next_statement_node]));
+			}
 		}
 
-		return std::make_tuple(std::move(statements), std::move(class_id_to_name));
+		ast.types.resize(ast.data.size());
+		return std::make_tuple(std::move(ast), std::move(id_to_name), std::move(name_to_id));
 	}
 
 	/**
@@ -432,9 +555,10 @@ struct Parser
 				Token class_name_token = tokens[j + 1];
 				assert_token_type(class_name_token, IDENTIFIER);
 
-				uint32_t class_id                        = class_name_to_id.size() + BUILTIN_TYPE_END;
-				class_name_to_id[class_name_token.value] = class_id;
-				class_id_to_name[class_id]               = class_name_token.value;
+				uint32_t class_id = name_to_id.size() + BUILTIN_TYPE_END;
+				class_names.insert(class_name_token.value);
+				name_to_id[class_name_token.value] = class_id;
+				id_to_name[class_id]               = class_name_token.value;
 			}
 		}
 	}
@@ -455,11 +579,17 @@ struct Parser
 
 		Token token = tokens[i + offset];
 
-		// User defined class
-
-		if (token.type == IDENTIFIER && class_name_to_id.count(token.value))
+		if (token.type == IDENTIFIER)
 		{
-			token.type = TYPE;
+			if (class_names.find(token.value) != class_names.end())
+			{
+				// User defined class
+				token.type = TYPE;
+			}
+			else
+			{
+				//
+			}
 		}
 
 		return token;
@@ -477,13 +607,32 @@ struct Parser
 		return token;
 	}
 
+	uint
+	register_identifier(const std::string &id_str)
+	{
+		auto it = name_to_id.find(id_str);
+		uint identifier_id;
+		if (it == name_to_id.end())
+		{
+			identifier_id             = name_to_id.size() + BUILTIN_TYPE_END;
+			name_to_id[id_str]        = identifier_id;
+			id_to_name[identifier_id] = id_str;
+		}
+		else
+		{
+			identifier_id = it->second;
+		}
+
+		return identifier_id;
+	}
+
 	/**
 	 * @brief Looks at the next couple of tokens and figures out
 	 * what kind of statement they represent. The statement
 	 * is then parsed and returned as an AST node.
 	 */
-	std::unique_ptr<ASTNode>
-	next_statement()
+	uint
+	next_statement(AST &ast)
 	{
 		Token token = get_token();
 
@@ -505,49 +654,49 @@ struct Parser
 			// error, because the type comes first
 			// and a declaration is expected.
 
-			return scan_declaration();
+			return scan_declaration(ast);
 
 		case KEYWORD:
 			if (token.value == "return")
 			{
-				std::unique_ptr<ASTNode> node = scan_return_statement();
+				uint node = scan_return_statement(ast);
 				expect_statement_terminator();
 				return node;
 			}
 
 			if (token.value == "if")
 			{
-				return scan_if_statement();
+				return scan_if_statement(ast);
 			}
 
 			if (token.value == "while")
 			{
-				return scan_while_statement();
+				return scan_while_statement(ast);
 			}
 
 			if (token.value == "for")
 			{
-				return scan_for_statement();
+				return scan_for_statement(ast);
 			}
 
 			if (token.value == "class")
 			{
-				return scan_class_declaration();
+				return scan_class_declaration(ast);
 			}
 
 			if (token.value == "syscall")
 			{
-				return scan_syscall();
+				return scan_syscall(ast);
 			}
 
 			if (token.value == "break")
 			{
-				return scan_break_statement();
+				return scan_break_statement(ast);
 			}
 
 			if (token.value == "continue")
 			{
-				return scan_continue_statement();
+				return scan_continue_statement(ast);
 			}
 
 			else
@@ -556,7 +705,7 @@ struct Parser
 
 		default:
 		{
-			std::unique_ptr<ASTNode> node = scan_expression();
+			uint node = scan_expression(ast);
 			expect_statement_terminator();
 			return node;
 		}
@@ -584,8 +733,8 @@ struct Parser
 	 * * u8*
 	 * * u8*[10]****[7]**
 	 */
-	std::unique_ptr<TypeName>
-	scan_type_name()
+	uint
+	scan_type_name(AST &ast)
 	{
 		Token type_name_token = next_token();
 		assert_token_type(type_name_token, TYPE);
@@ -629,16 +778,37 @@ struct Parser
 				break;
 		}
 
-		if (class_name_to_id.count(type_name_token.value))
+		uint type_id = class_names.find(type_name_token.value) != class_names.end()
+			? name_to_id[type_name_token.value]
+			: builtin_type_from_string(type_name_token.value);
+
+		if (array_sizes.empty())
 		{
-			return std::make_unique<TypeName>(CompactToken(type_name_token),
-				type_name_token.value,
-				std::make_optional(class_name_to_id[type_name_token.value]),
-				std::move(array_sizes));
+			uint type_name_node = ast.data.size();
+			ast.tags.push_back(AstTag::TYPE_NAME);
+			ast.data.push_back(NodeData {
+				.type_name = {
+					.type_id = type_id,
+				},
+			});
+			ast.tokens.push_back(CompactToken(type_name_token));
+			return type_name_node;
 		}
 
-		return std::make_unique<TypeName>(CompactToken(type_name_token),
-			type_name_token.value, std::nullopt, std::move(array_sizes));
+		uint arr_sizes_ed_idx = ast.extra_data.size();
+		ast.extra_data.push_back(array_sizes.size());
+		ast.extra_data.insert(ast.extra_data.end(), array_sizes.begin(), array_sizes.end());
+
+		uint type_name_node = ast.data.size();
+		ast.tags.push_back(AstTag::TYPE_NAME_INDIRECTION);
+		ast.data.push_back(NodeData {
+			.type_name_indirection = {
+				.type_id          = type_id,
+				.arr_sizes_ed_idx = arr_sizes_ed_idx,
+			},
+		});
+		ast.tokens.push_back(CompactToken(type_name_token));
+		return type_name_node;
 	}
 
 	/**
@@ -647,17 +817,26 @@ struct Parser
 	 *
 	 * Useful when scanning a declaration.
 	 */
-	std::unique_ptr<TypeIdentifierPair>
-	scan_type_identifier_pair()
+	uint
+	scan_type_identifier_pair(AST &ast)
 	{
-		std::unique_ptr<TypeName> type_name = scan_type_name();
+		uint type_name = scan_type_name(ast);
 
 		Token identifier_token = next_token();
 		assert_token_type(identifier_token, IDENTIFIER);
 
-		return std::make_unique<TypeIdentifierPair>(
-			CompactToken(identifier_token), std::move(type_name),
-			identifier_token.value);
+		uint identifier_id = register_identifier(identifier_token.value);
+
+		uint type_identifier_node = ast.data.size();
+		ast.tags.push_back(AstTag::TYPE_IDENTIFIER_PAIR);
+		ast.data.push_back(NodeData {
+			.type_identifier_pair = {
+				.type_node     = type_name,
+				.identifier_id = identifier_id,
+			},
+		});
+		ast.tokens.push_back(CompactToken(identifier_token));
+		return type_identifier_node;
 	}
 
 	/**
@@ -667,8 +846,8 @@ struct Parser
 	 * method.
 	 * "{ any number of <statement> }"
 	 */
-	std::unique_ptr<CodeBlock>
-	scan_code_block()
+	uint
+	scan_code_block(AST &ast)
 	{
 		// Expect a left curly brace "{".
 
@@ -676,8 +855,7 @@ struct Parser
 		assert_token_type(curly_brace_start, SPECIAL_CHARACTER);
 		assert_token_value(curly_brace_start, "{");
 
-		std::unique_ptr<CodeBlock> code_block = std::make_unique<CodeBlock>(
-			CompactToken(curly_brace_start));
+		std::vector<uint> statements;
 
 		// Scan all statements.
 
@@ -695,10 +873,23 @@ struct Parser
 				break;
 			}
 
-			code_block->add_statement(next_statement());
+			statements.push_back(next_statement(ast));
 		}
 
-		return code_block;
+		uint statements_ed_idx = ast.extra_data.size();
+		ast.extra_data.insert(ast.extra_data.end(), statements.begin(), statements.end());
+
+		uint code_block_node = ast.data.size();
+		ast.tags.push_back(AstTag::CODE_BLOCK);
+		ast.data.push_back(NodeData {
+			.code_block = {
+				.statements_len    = static_cast<uint>(statements.size()),
+				.statements_ed_idx = statements_ed_idx,
+			},
+		});
+		ast.tokens.push_back(CompactToken(curly_brace_start));
+
+		return code_block_node;
 	}
 
 	/**
@@ -707,21 +898,30 @@ struct Parser
 	 * to support single line statements instead of code blocks.
 	 * <statement>
 	 */
-	std::unique_ptr<CodeBlock>
-	scan_and_wrap_statement_inside_code_block()
+	uint
+	scan_and_wrap_statement_inside_code_block(AST &ast)
 	{
 		// Scan the statement.
 
-		Token first_token                  = get_token();
-		std::unique_ptr<ASTNode> statement = next_statement();
+		Token first_token = get_token();
+		uint statement    = next_statement(ast);
 
 		// Wrap it inside a code block.
 
-		std::unique_ptr<CodeBlock> code_block = std::make_unique<CodeBlock>(
-			CompactToken(first_token));
-		code_block->add_statement(std::move(statement));
+		uint statement_ed_idx = ast.extra_data.size();
+		ast.extra_data.push_back(statement);
 
-		return code_block;
+		uint code_block_node = ast.data.size();
+		ast.tags.push_back(AstTag::CODE_BLOCK);
+		ast.data.push_back(NodeData {
+			.code_block = {
+				.statements_len    = 1,
+				.statements_ed_idx = statement_ed_idx,
+			},
+		});
+		ast.tokens.push_back(CompactToken(first_token));
+
+		return code_block_node;
 	}
 
 	/**
@@ -731,8 +931,8 @@ struct Parser
 	 * Used to scan a statement or a code block that comes
 	 * after an if, while, for etc.
 	 */
-	std::unique_ptr<CodeBlock>
-	scan_code_block_or_statement()
+	uint
+	scan_code_block_or_statement(AST &ast)
 	{
 		Token first_token = get_token();
 
@@ -742,13 +942,13 @@ struct Parser
 		{
 			// If so, scan the code block
 
-			return scan_code_block();
+			return scan_code_block(ast);
 		}
 		else
 		{
 			// Else, scan the statement and wrap it inside a code block
 
-			return scan_and_wrap_statement_inside_code_block();
+			return scan_and_wrap_statement_inside_code_block(ast);
 		}
 	}
 
@@ -762,11 +962,11 @@ struct Parser
 	 * * x + y
 	 * * (x * y / z - a + b & c << (d >> e))
 	 */
-	std::unique_ptr<ReadValue>
-	scan_expression()
+	uint
+	scan_expression(AST &ast)
 	{
 		// List of the expressions
-		std::vector<std::unique_ptr<ReadValue>> expressions;
+		std::vector<uint> expressions;
 
 		// List of all operators between the expressions
 		std::vector<Token> operators;
@@ -778,7 +978,7 @@ struct Parser
 
 		while (true)
 		{
-			expressions.push_back(scan_sub_expression());
+			expressions.push_back(scan_sub_expression(ast));
 
 			// Check if the next token is an operator.
 			// If it isn't, we're done.
@@ -806,15 +1006,15 @@ struct Parser
 
 			if (associativity == LEFT_TO_RIGHT)
 			{
-				merge_bin_ops_ltr(expressions, operators, active_ops);
+				merge_bin_ops_ltr(ast, expressions, operators, active_ops);
 			}
 			else
 			{
-				merge_bin_ops_rtl(expressions, operators, active_ops);
+				merge_bin_ops_rtl(ast, expressions, operators, active_ops);
 			}
 		}
 
-		std::unique_ptr<ReadValue> expression = std::move(expressions[0]);
+		uint expression = std::move(expressions[0]);
 
 		// OffsetExpression
 
@@ -822,8 +1022,7 @@ struct Parser
 			next.type == SPECIAL_CHARACTER && next.value == "[";
 			next = get_token())
 		{
-			expression = scan_offset_expression(std::unique_ptr<WriteValue>(
-				WriteValue::cast(expression.release())));
+			expression = scan_offset_expression(ast, expression);
 		}
 
 		return expression;
@@ -845,11 +1044,11 @@ struct Parser
 	 * * (x + y) + z
 	 * * a + *b
 	 */
-	std::unique_ptr<ReadValue>
-	scan_sub_expression()
+	uint
+	scan_sub_expression(AST &ast)
 	{
 		std::vector<std::pair<Token, bool>> operators; // bool => true = prefix
-		std::unique_ptr<ReadValue> expression;
+		uint expression;
 
 		// Prefix unary operators
 
@@ -886,24 +1085,29 @@ struct Parser
 			assert_token_type(left_parenthesis, SPECIAL_CHARACTER);
 			assert_token_value(left_parenthesis, "(");
 
-			std::unique_ptr<TypeName> type_name;
+			uint type_name_node = ast.data.size();
+			ast.tags.push_back(AstTag::TYPE_NAME);
+			ast.data.push_back(NodeData {
+				.type_name = {
+					.type_id = class_names.find(expr_token.value) != class_names.end()
+						? name_to_id[expr_token.value]
+						: builtin_type_from_string(expr_token.value),
+				},
+			});
+			ast.tokens.push_back(CompactToken(expr_token));
 
-			if (class_name_to_id.count(expr_token.value))
-			{
-				type_name = std::make_unique<TypeName>(
-					CompactToken(expr_token), expr_token.value,
-					std::make_optional(class_name_to_id[expr_token.value]),
-					std::vector<uint> {});
-			}
-			else
-			{
-				type_name = std::make_unique<TypeName>(
-					CompactToken(expr_token), expr_token.value, std::nullopt,
-					std::vector<uint> {});
-			}
+			uint expr_node = scan_expression(ast);
 
-			expression = std::make_unique<CastExpression>(
-				std::move(type_name), scan_expression());
+			expression = ast.data.size();
+			ast.tags.push_back(AstTag::CAST_EXPRESSION);
+			ast.data.push_back(NodeData {
+				.cast_expression = {
+					.type_name_node  = type_name_node,
+					.expression_node = expr_node,
+
+				},
+			});
+			ast.tokens.push_back(CompactToken(left_parenthesis));
 
 			Token right_parenthesis = next_token();
 			assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
@@ -920,7 +1124,7 @@ struct Parser
 
 		else if (expr_token.type == SPECIAL_CHARACTER && expr_token.value == "[")
 		{
-			std::unique_ptr<TypeName> type_name = scan_type_name();
+			uint type_name_node = scan_type_name(ast);
 
 			Token right_square_bracket = next_token();
 			assert_token_type(right_square_bracket, SPECIAL_CHARACTER);
@@ -930,8 +1134,18 @@ struct Parser
 			assert_token_type(left_parenthesis, SPECIAL_CHARACTER);
 			assert_token_value(left_parenthesis, "(");
 
-			expression = std::make_unique<CastExpression>(
-				std::move(type_name), scan_expression());
+			uint expr_node = scan_expression(ast);
+
+			expression = ast.data.size();
+			ast.tags.push_back(AstTag::CAST_EXPRESSION);
+			ast.data.push_back(NodeData {
+				.cast_expression = {
+					.type_name_node  = type_name_node,
+					.expression_node = expr_node,
+
+				},
+			});
+			ast.tokens.push_back(CompactToken(left_parenthesis));
 
 			Token right_parenthesis = next_token();
 			assert_token_type(right_parenthesis, SPECIAL_CHARACTER);
@@ -943,7 +1157,7 @@ struct Parser
 
 		else if (expr_token.type == SPECIAL_CHARACTER && expr_token.value == "(")
 		{
-			expression = scan_expression();
+			expression = scan_expression(ast);
 
 			// Expect right parenthesis
 
@@ -956,8 +1170,17 @@ struct Parser
 
 		else if (expr_token.type == LITERAL_STRING)
 		{
-			expression = std::make_unique<LiteralStringExpression>(
-				CompactToken(expr_token), expr_token.value);
+			uint string_id = ast.strings.size();
+			ast.strings.push_back(expr_token.value);
+
+			expression = ast.data.size();
+			ast.tags.push_back(AstTag::LITERAL_STRING_EXPRESSION);
+			ast.data.push_back(NodeData {
+				.literal_string_expression = {
+					.string_id = string_id,
+				},
+			});
+			ast.tokens.push_back(CompactToken(expr_token));
 
 			// TODO: allow multiple literal strings next to each other.
 		}
@@ -966,8 +1189,14 @@ struct Parser
 
 		else if (expr_token.type == LITERAL_CHAR)
 		{
-			expression = std::make_unique<LiteralCharExpression>(
-				CompactToken(expr_token), expr_token.value[0]);
+			expression = ast.data.size();
+			ast.tags.push_back(AstTag::LITERAL_CHAR_EXPRESSION);
+			ast.data.push_back(NodeData {
+				.literal_char_expression = {
+					.value = static_cast<uint8_t>(expr_token.value[0]),
+				},
+			});
+			ast.tokens.push_back(CompactToken(expr_token));
 
 			// TODO: make a method that parses a char correctly.
 			// Currently, it will just parse the first char.
@@ -977,8 +1206,37 @@ struct Parser
 
 		else if (expr_token.type == LITERAL_NUMBER)
 		{
-			expression = std::make_unique<LiteralNumberExpression>(
-				CompactToken(expr_token), expr_token.value);
+			expression = ast.data.size();
+
+			if (expr_token.value.find('.') != std::string::npos)
+			{
+				ast.tags.push_back(AstTag::LITERAL_FLOAT_EXPRESSION);
+				ast.data.push_back(NodeData {
+					.literal_float_expression = {
+						.value = std::stod(expr_token.value),
+					},
+				});
+			}
+			else
+			{
+				uint64_t val;
+				if (expr_token.value[0] == '0' && expr_token.value[1] == 'x')
+					val = std::stoul(expr_token.value, nullptr, 16);
+				else if (expr_token.value[0] == '0' && expr_token.value[1] == 'b')
+					val = std::stoul(expr_token.value, nullptr, 2);
+				// TODO: Support more cases.
+				else
+					val = std::stoul(expr_token.value);
+
+				ast.tags.push_back(AstTag::LITERAL_INTEGER_EXPRESSION);
+				ast.data.push_back(NodeData {
+					.literal_integer_expression = {
+						.value = val,
+					},
+				});
+			}
+
+			ast.tokens.push_back(CompactToken(expr_token));
 		}
 
 		// IdentifierExpression or FunctionCall
@@ -992,15 +1250,23 @@ struct Parser
 			if (next.type == SPECIAL_CHARACTER && next.value == "(")
 			{
 				i--;
-				expression = scan_function_call();
+				expression = scan_function_call(ast);
 			}
 
 			// IdentifierExpression
 
 			else
 			{
-				expression = std::make_unique<IdentifierExpression>(
-					CompactToken(expr_token), expr_token.value);
+				uint identifier_id = register_identifier(expr_token.value);
+
+				expression = ast.data.size();
+				ast.tags.push_back(AstTag::IDENTIFIER_EXPRESSION_STANDALONE);
+				ast.data.push_back(NodeData {
+					.identifier_expression_standalone = {
+						.identifier_id = identifier_id,
+					},
+				});
+				ast.tokens.push_back(CompactToken(expr_token));
 			}
 		}
 
@@ -1045,11 +1311,11 @@ struct Parser
 
 			if (associativity == LEFT_TO_RIGHT)
 			{
-				merge_un_ops_ltr(expression, operators, active_ops);
+				merge_un_ops_ltr(ast, expression, operators, active_ops);
 			}
 			else
 			{
-				merge_un_ops_rtl(expression, operators, active_ops);
+				merge_un_ops_rtl(ast, expression, operators, active_ops);
 			}
 		}
 
@@ -1060,10 +1326,10 @@ struct Parser
 	 * Scans a declaration. This can either be a function
 	 * declaration or a variable declaration.
 	 */
-	std::unique_ptr<ASTNode>
-	scan_declaration()
+	uint
+	scan_declaration(AST &ast)
 	{
-		std::unique_ptr<TypeIdentifierPair> type_id_pair = scan_type_identifier_pair();
+		uint type_id_pair = scan_type_identifier_pair(ast);
 
 		Token maybe_left_parenthesis = next_token();
 
@@ -1072,14 +1338,13 @@ struct Parser
 		{
 			// This is a function declaration
 
-			return scan_function_declaration(std::move(type_id_pair));
+			return scan_function_declaration(ast, type_id_pair);
 		}
 
 		// This is a variable declaration
 
 		i--;
-		std::unique_ptr<VariableDeclaration> var_decl =
-			scan_variable_declaration(std::move(type_id_pair));
+		uint var_decl = scan_variable_declaration(ast, type_id_pair);
 		expect_statement_terminator();
 		return var_decl;
 	}
@@ -1091,11 +1356,10 @@ struct Parser
 	 * @param type_id_pair The type identifier pair of the function.
 	 * This was parsed by the `scan_declaration()` function.
 	 */
-	std::unique_ptr<FunctionDeclaration>
-	scan_function_declaration(
-		std::unique_ptr<TypeIdentifierPair> type_id_pair)
+	uint
+	scan_function_declaration(AST &ast, uint type_id_pair)
 	{
-		std::vector<std::unique_ptr<TypeIdentifierPair>> params;
+		std::vector<uint> params;
 		Token next = get_token();
 
 		// Check if there are no parameters.
@@ -1110,7 +1374,7 @@ struct Parser
 
 	next_parameter:
 
-		params.push_back(scan_type_identifier_pair());
+		params.push_back(scan_type_identifier_pair(ast));
 		next = next_token();
 
 		if (next.type != SPECIAL_CHARACTER)
@@ -1136,18 +1400,32 @@ struct Parser
 
 		// Scan the function body.
 
-		std::unique_ptr<CodeBlock> code_block = scan_code_block();
+		uint code_block = scan_code_block(ast);
 
-		return std::make_unique<FunctionDeclaration>(
-			std::move(type_id_pair), std::move(params), std::move(code_block));
+		uint ed_idx = ast.extra_data.size();
+		ast.extra_data.push_back(code_block);
+		ast.extra_data.push_back(0); // locals_size, will be filled during type checking.
+		ast.extra_data.push_back(params.size());
+		ast.extra_data.insert(ast.extra_data.end(), params.begin(), params.end());
+
+		uint function_decl_node = ast.data.size();
+		ast.tags.push_back(AstTag::FUNCTION_DECLARATION);
+		ast.data.push_back(NodeData {
+			.function_declaration = {
+				.type_and_id_node = type_id_pair,
+				.ed_idx           = ed_idx,
+			},
+		});
+		ast.tokens.push_back(ast.tokens[type_id_pair]);
+		return function_decl_node;
 	}
 
 	/**
 	 * Scans a function body.
 	 * <identifier>(<parameter_list>)
 	 */
-	std::unique_ptr<FunctionCall>
-	scan_function_call()
+	uint
+	scan_function_call(AST &ast)
 	{
 		// Scan the function name.
 
@@ -1160,7 +1438,7 @@ struct Parser
 		assert_token_type(left_parenthesis_token, SPECIAL_CHARACTER);
 		assert_token_value(left_parenthesis_token, "(");
 
-		std::vector<std::unique_ptr<ReadValue>> arguments;
+		std::vector<uint> arguments;
 		Token next = get_token();
 
 		// Check if there are no arguments.
@@ -1175,7 +1453,7 @@ struct Parser
 
 	next_argument:
 
-		arguments.push_back(scan_expression());
+		arguments.push_back(scan_expression(ast));
 		next = next_token();
 
 		if (next.type != SPECIAL_CHARACTER)
@@ -1199,16 +1477,29 @@ struct Parser
 
 	end_arguments:
 
-		return std::make_unique<FunctionCall>(CompactToken(identifier_token),
-			identifier_token.value, std::move(arguments));
+		uint ed_idx = ast.extra_data.size();
+		ast.extra_data.push_back(0); // fn_signature_idx, will be filled during type checking.
+		ast.extra_data.push_back(arguments.size());
+		ast.extra_data.insert(ast.extra_data.end(), arguments.begin(), arguments.end());
+
+		uint function_call_node = ast.data.size();
+		ast.tags.push_back(AstTag::FUNCTION_CALL);
+		ast.data.push_back(NodeData {
+			.function_call = {
+				.callee_id = register_identifier(identifier_token.value),
+				.ed_idx    = ed_idx,
+			},
+		});
+		ast.tokens.push_back(CompactToken(identifier_token));
+		return function_call_node;
 	}
 
 	/**
 	 * Scans an offset expression.
 	 * <identifier>[<expr>]
 	 */
-	std::unique_ptr<OffsetExpression>
-	scan_offset_expression(std::unique_ptr<WriteValue> left)
+	uint
+	scan_offset_expression(AST &ast, uint object_node)
 	{
 		// Consume the left bracket "[".
 
@@ -1218,7 +1509,7 @@ struct Parser
 
 		// Scan the expression.
 
-		std::unique_ptr<ReadValue> offset = scan_expression();
+		uint offset = scan_expression(ast);
 
 		// Consume the right bracket "]".
 
@@ -1226,8 +1517,16 @@ struct Parser
 		assert_token_type(right_bracket_token, SPECIAL_CHARACTER);
 		assert_token_value(right_bracket_token, "]");
 
-		return std::make_unique<OffsetExpression>(CompactToken(left_bracket_token),
-			std::move(left), std::move(offset));
+		uint offset_expr_node = ast.data.size();
+		ast.tags.push_back(AstTag::OFFSET_EXPRESSION);
+		ast.data.push_back(NodeData {
+			.offset_expression = {
+				.object_node = object_node,
+				.offset_node = offset,
+			},
+		});
+		ast.tokens.push_back(CompactToken(left_bracket_token));
+		return offset_expr_node;
 	}
 
 	/**
@@ -1237,8 +1536,8 @@ struct Parser
 	 * @param type_id_pair The type identifier pair of the function.
 	 * This was parsed by the `scan_declaration()` function.
 	 */
-	std::unique_ptr<VariableDeclaration>
-	scan_variable_declaration(std::unique_ptr<TypeIdentifierPair> type_id_pair)
+	uint
+	scan_variable_declaration(AST &ast, uint type_id_pair_node)
 	{
 		Token next = get_token();
 
@@ -1250,14 +1549,44 @@ struct Parser
 		if (next.type == OPERATOR && next.value == "=")
 		{
 			i++;
-			return std::make_unique<VariableDeclaration>(
-				std::move(type_id_pair), scan_expression());
+			uint assignment_expr_node = scan_expression(ast);
+
+			uint id_expr_node = ast.data.size();
+			ast.tags.push_back(AstTag::IDENTIFIER_EXPRESSION_STANDALONE);
+			ast.data.push_back(NodeData {
+				.identifier_expression_standalone = {
+					.identifier_id = ast.data[type_id_pair_node].type_identifier_pair.identifier_id,
+				},
+			});
+			ast.tokens.push_back(ast.tokens[type_id_pair_node]);
+
+			uint ed_idx = ast.extra_data.size();
+			ast.extra_data.push_back(id_expr_node);
+			ast.extra_data.push_back(assignment_expr_node);
+
+			uint node_idx = ast.data.size();
+			ast.tags.push_back(AstTag::VARIABLE_DECLARATION_INITIALISED);
+			ast.data.push_back(NodeData {
+				.variable_declaration_initialised = {
+					.type_and_id_node = type_id_pair_node,
+					.ed_idx           = ed_idx,
+				},
+			});
+			ast.tokens.push_back(ast.tokens[type_id_pair_node]);
+			return node_idx;
 		}
 
 		// Only declaration
 
-		return std::make_unique<VariableDeclaration>(
-			std::move(type_id_pair), nullptr);
+		uint node_idx = ast.data.size();
+		ast.tags.push_back(AstTag::VARIABLE_DECLARATION_UNINITIALISED);
+		ast.data.push_back(NodeData {
+			.variable_declaration_uninitialised = {
+				.type_and_id_node = type_id_pair_node,
+			},
+		});
+		ast.tokens.push_back(ast.tokens[type_id_pair_node]);
+		return node_idx;
 	}
 
 	/**
@@ -1267,8 +1596,8 @@ struct Parser
 	 * The class body is parsed in the
 	 * `ClassDeclaration` constructor.
 	 */
-	std::unique_ptr<ClassDeclaration>
-	scan_class_declaration()
+	uint
+	scan_class_declaration(AST &ast)
 	{
 		// Consume the "class" keyword.
 
@@ -1287,7 +1616,7 @@ struct Parser
 		assert_token_type(curly_brace_start, SPECIAL_CHARACTER);
 		assert_token_value(curly_brace_start, "{");
 
-		std::vector<std::unique_ptr<TypeIdentifierPair>> fields;
+		std::vector<uint> fields;
 
 		// Scan all fields.
 
@@ -1304,22 +1633,34 @@ struct Parser
 				break;
 			}
 
-			fields.push_back(scan_type_identifier_pair());
+			fields.push_back(scan_type_identifier_pair(ast));
 			expect_statement_terminator();
 		}
 
 		expect_statement_terminator();
 
-		return std::make_unique<ClassDeclaration>(CompactToken(class_token),
-			class_name_to_id[class_name_token.value], std::move(fields));
+		uint fields_ed_idx = ast.extra_data.size();
+		ast.extra_data.push_back(fields.size());
+		ast.extra_data.insert(ast.extra_data.end(), fields.begin(), fields.end());
+
+		uint node_idx = ast.data.size();
+		ast.tags.push_back(AstTag::CLASS_DECLARATION);
+		ast.data.push_back(NodeData {
+			.class_declaration = {
+				.class_id      = name_to_id[class_name_token.value],
+				.fields_ed_idx = fields_ed_idx,
+			},
+		});
+		ast.tokens.push_back(CompactToken(class_token));
+		return node_idx;
 	}
 
 	/**
 	 * Scans a return statement.
 	 * "return (optional <expr>)
 	 */
-	std::unique_ptr<ReturnStatement>
-	scan_return_statement()
+	uint
+	scan_return_statement(AST &ast)
 	{
 		// Consume the "return" keyword.
 
@@ -1333,26 +1674,32 @@ struct Parser
 
 		if (next.type == SPECIAL_CHARACTER && next.value == ";")
 		{
-			return std::make_unique<ReturnStatement>(
-				CompactToken(return_token), nullptr);
+			uint node_idx = ast.data.size();
+			ast.tags.push_back(AstTag::RETURN_VOID_STATEMENT);
+			ast.data.push_back(NodeData {});
+			ast.tokens.push_back(CompactToken(return_token));
+			return node_idx;
 		}
 
-		// TODO: check if the expression is empty and there
-		// is no semicolon. I think it does not work yet.
+		uint expression_node = scan_expression(ast);
 
-		std::unique_ptr<ReturnStatement> return_statement =
-			std::make_unique<ReturnStatement>(
-				CompactToken(return_token), scan_expression());
-
-		return return_statement;
+		uint node_idx = ast.data.size();
+		ast.tags.push_back(AstTag::RETURN_EXPRESSION_STATEMENT);
+		ast.data.push_back(NodeData {
+			.return_expression_statement = {
+				.expression_node = expression_node,
+			},
+		});
+		ast.tokens.push_back(CompactToken(return_token));
+		return node_idx;
 	}
 
 	/**
 	 * Scans an if-statement.
 	 * "if (<expr>) <code_block or statement>"
 	 */
-	std::unique_ptr<IfStatement>
-	scan_if_statement()
+	uint
+	scan_if_statement(AST &ast)
 	{
 		// Consume the "if" keyword.
 
@@ -1368,7 +1715,7 @@ struct Parser
 
 		// Scan the test expression.
 
-		std::unique_ptr<ReadValue> test = scan_expression();
+		uint test = scan_expression(ast);
 
 		// Consume the right parenthesis ")".
 
@@ -1378,7 +1725,7 @@ struct Parser
 
 		// Scan the then block.
 
-		std::unique_ptr<CodeBlock> then_block = scan_code_block_or_statement();
+		uint then_block = scan_code_block_or_statement(ast);
 
 		// Check if there is an else or else if block.
 
@@ -1389,7 +1736,7 @@ struct Parser
 			i++;
 			Token after_else_token = get_token();
 
-			std::unique_ptr<CodeBlock> else_block;
+			uint else_block;
 
 			// Else if: wrap the block inside another
 			// if block in the else block.
@@ -1402,36 +1749,64 @@ struct Parser
 			if (after_else_token.type == KEYWORD
 				&& after_else_token.value == "if")
 			{
-				std::unique_ptr<IfStatement> nested_if_statement = scan_if_statement();
+				uint nested_if_statement = scan_if_statement(ast);
 
-				else_block = std::make_unique<CodeBlock>(
-					CompactToken(after_else_token));
-				else_block->add_statement(std::move(nested_if_statement));
+				uint ed_idx = ast.extra_data.size();
+				ast.extra_data.push_back(nested_if_statement);
+
+				ast.tags.push_back(AstTag::CODE_BLOCK);
+				ast.data.push_back(NodeData {
+					.code_block = {
+						.statements_len    = 1,
+						.statements_ed_idx = ed_idx,
+					},
+				});
+				ast.tokens.push_back(CompactToken(after_else_token));
 			}
 
 			// Normal else: simply scan the else block.
 
 			else
 			{
-				else_block = scan_code_block_or_statement();
+				else_block = scan_code_block_or_statement(ast);
 			}
 
-			return std::make_unique<IfStatement>(CompactToken(if_token),
-				std::move(test), std::move(then_block), std::move(else_block));
+			uint ed_idx = ast.extra_data.size();
+			ast.extra_data.push_back(then_block);
+			ast.extra_data.push_back(else_block);
+
+			uint node_idx = ast.data.size();
+			ast.tags.push_back(AstTag::IF_ELSE_STATEMENT);
+			ast.data.push_back(NodeData {
+				.if_else_statement = {
+					.condition_node = test,
+					.ed_idx         = ed_idx,
+				},
+			});
+			ast.tokens.push_back(CompactToken(if_token));
+			return node_idx;
 		}
 
 		// There is no else block.
 
-		return std::make_unique<IfStatement>(CompactToken(if_token),
-			std::move(test), std::move(then_block), nullptr);
+		uint node_idx = ast.data.size();
+		ast.tags.push_back(AstTag::IF_STATEMENT);
+		ast.data.push_back(NodeData {
+			.if_statement = {
+				.condition_node  = test,
+				.then_block_node = then_block,
+			},
+		});
+		ast.tokens.push_back(CompactToken(if_token));
+		return node_idx;
 	}
 
 	/**
 	 * Scans a syscall.
 	 * "syscall <syscall_name>(<arguments>)"
 	 */
-	std::unique_ptr<SysCall>
-	scan_syscall()
+	uint
+	scan_syscall(AST &ast)
 	{
 		// Consume the "syscall" keyword.
 
@@ -1445,7 +1820,8 @@ struct Parser
 
 		// Check if the syscall exists.
 
-		if (!syscall_names.count(syscall_name_token.value))
+		SysCallId sys_call_id = str_to_sys_call_id(syscall_name_token.value);
+		if (sys_call_id == SysCallId::UNKNOWN)
 		{
 			err_at_token(syscall_name_token, "Undefined System Call",
 				"System call \"%s\" is not defined",
@@ -1458,7 +1834,7 @@ struct Parser
 		assert_token_type(left_parethesis, SPECIAL_CHARACTER);
 		assert_token_value(left_parethesis, "(");
 
-		std::vector<std::unique_ptr<ReadValue>> arguments;
+		std::vector<uint> arguments;
 		Token next = get_token();
 
 		// Check if there are no arguments.
@@ -1473,7 +1849,7 @@ struct Parser
 
 	next_argument:
 
-		arguments.push_back(scan_expression());
+		arguments.push_back(scan_expression(ast));
 		next = next_token();
 
 		if (next.type != SPECIAL_CHARACTER)
@@ -1498,8 +1874,20 @@ struct Parser
 	end_arguments:
 
 		expect_statement_terminator();
-		return std::make_unique<SysCall>(CompactToken(syscall_name_token),
-			syscall_name_token.value, std::move(arguments));
+
+		uint ed_idx = ast.extra_data.size();
+		ast.extra_data.insert(ast.extra_data.end(), arguments.begin(), arguments.end());
+
+		uint node_idx = ast.data.size();
+		ast.tags.push_back(AstTag::SYS_CALL);
+		ast.data.push_back(NodeData {
+			.sys_call = {
+				.sys_call_id      = sys_call_id,
+				.arguments_ed_idx = ed_idx,
+			},
+		});
+		ast.tokens.push_back(CompactToken(syscall_token));
+		return node_idx;
 	}
 
 	/**
@@ -1507,8 +1895,8 @@ struct Parser
 	 * "while (<expr>) <code_block or statement>"
 	 * TODO: maybe support python style while-else blocks?
 	 */
-	std::unique_ptr<WhileStatement>
-	scan_while_statement()
+	uint
+	scan_while_statement(AST &ast)
 	{
 		// Consume the "while" keyword.
 
@@ -1524,7 +1912,7 @@ struct Parser
 
 		// Scan the test expression.
 
-		std::unique_ptr<ReadValue> test = scan_expression();
+		uint test = scan_expression(ast);
 
 		// Consume the right parenthesis ")".
 
@@ -1534,18 +1922,26 @@ struct Parser
 
 		// Scan body block.
 
-		std::unique_ptr<CodeBlock> body = scan_code_block_or_statement();
+		uint body = scan_code_block_or_statement(ast);
 
-		return std::make_unique<WhileStatement>(CompactToken(while_token),
-			std::move(test), std::move(body));
+		uint node_idx = ast.data.size();
+		ast.tags.push_back(AstTag::WHILE_STATEMENT);
+		ast.data.push_back(NodeData {
+			.while_statement = {
+				.condition_node = test,
+				.body_node      = body,
+			},
+		});
+		ast.tokens.push_back(CompactToken(while_token));
+		return node_idx;
 	}
 
 	/**
 	 * Scans a for statement.
 	 * "for (<init> <test> <update>) <code_block or statement>"
 	 */
-	std::unique_ptr<ForStatement>
-	scan_for_statement()
+	uint
+	scan_for_statement(AST &ast)
 	{
 		// Consume the "for" keyword.
 
@@ -1561,16 +1957,16 @@ struct Parser
 
 		// Scan the init statement.
 
-		std::unique_ptr<ASTNode> init = next_statement();
+		uint init = next_statement(ast);
 
 		// Scan the test expression.
 
-		std::unique_ptr<ReadValue> test = scan_expression();
+		uint test = scan_expression(ast);
 		expect_statement_terminator();
 
 		// Scan the update statement.
 
-		std::unique_ptr<ReadValue> update = scan_expression();
+		uint update = scan_expression(ast);
 
 		// Consume the right parenthesis ")".
 
@@ -1580,39 +1976,62 @@ struct Parser
 
 		// Scan the body block.
 
-		std::unique_ptr<CodeBlock> body = scan_code_block_or_statement();
+		uint body = scan_code_block_or_statement(ast);
 
-		return std::make_unique<ForStatement>(CompactToken(for_token),
-			std::move(init), std::move(test), std::move(update), std::move(body));
+		uint ed_idx = ast.extra_data.size();
+		ast.extra_data.push_back(test);
+		ast.extra_data.push_back(update);
+		ast.extra_data.push_back(body);
+
+		uint node_idx = ast.data.size();
+		ast.tags.push_back(AstTag::FOR_STATEMENT);
+		ast.data.push_back(NodeData {
+			.for_statement = {
+				.init_node   = init,
+				.rest_ed_idx = ed_idx,
+			},
+		});
+		ast.tokens.push_back(CompactToken(for_token));
+		return node_idx;
 	}
 
 	/**
 	 * Scans a break statement.
 	 * "break"
 	 */
-	std::unique_ptr<BreakStatement>
-	scan_break_statement()
+	uint
+	scan_break_statement(AST &ast)
 	{
 		Token break_token = next_token();
 		assert_token_type(break_token, KEYWORD);
 		assert_token_value(break_token, "break");
 
 		expect_statement_terminator();
-		return std::make_unique<BreakStatement>(CompactToken(break_token));
+
+		uint node_idx = ast.data.size();
+		ast.tags.push_back(AstTag::BREAK_STATEMENT);
+		ast.data.push_back(NodeData {});
+		ast.tokens.push_back(CompactToken(break_token));
+		return node_idx;
 	}
 
 	/**
 	 * Scans a continue statement.
 	 */
-	std::unique_ptr<ContinueStatement>
-	scan_continue_statement()
+	uint
+	scan_continue_statement(AST &ast)
 	{
 		Token continue_token = next_token();
 		assert_token_type(continue_token, KEYWORD);
 		assert_token_value(continue_token, "continue");
 
 		expect_statement_terminator();
-		return std::make_unique<ContinueStatement>(CompactToken(continue_token));
+
+		uint node_idx = ast.data.size();
+		ast.tags.push_back(AstTag::CONTINUE_STATEMENT);
+		ast.data.push_back(NodeData {});
+		ast.tokens.push_back(CompactToken(continue_token));
+		return node_idx;
 	}
 };
 

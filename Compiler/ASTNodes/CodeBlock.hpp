@@ -1,70 +1,59 @@
 #ifndef TEA_AST_NODE_CODE_BLOCK_HEADER
 #define TEA_AST_NODE_CODE_BLOCK_HEADER
 
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Compiler/util.hpp"
-#include "Compiler/ASTNodes/ASTNode.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct CodeBlock final : public ASTNode
+void
+code_block_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	std::vector<std::unique_ptr<ASTNode>> statements;
-
-	CodeBlock(CompactToken accountable_token)
-		: ASTNode(std::move(accountable_token), CODE_BLOCK) {}
-
-	~CodeBlock() {}
-
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
+	uint statement_idx = ast.data[node].code_block.statements_ed_idx;
+	uint len           = ast.data[node].code_block.statements_len;
+	for (uint i = statement_idx; i < statement_idx + len; i++)
 	{
-		for (const std::unique_ptr<ASTNode> &statement : statements)
-		{
-			statement->dfs(callback, depth + 1);
-		}
-
-		callback(this, depth);
+		uint statement_node = ast.extra_data[i];
+		ast_dfs(ast, statement_node, callback, depth + 1);
 	}
 
-	void
-	add_statement(std::unique_ptr<ASTNode> statement)
+	callback(node, depth);
+}
+
+std::string
+code_block_to_str(const AST &ast, uint node)
+{
+	return std::string("CodeBlock {} @ ") + std::to_string(node);
+}
+
+void
+code_block_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	type_check_state.begin_local_scope();
+
+	uint statement_idx = ast.data[node].code_block.statements_ed_idx;
+	uint len           = ast.data[node].code_block.statements_len;
+	for (uint i = statement_idx; i < statement_idx + len; i++)
 	{
-		statements.push_back(std::move(statement));
+		uint statement_node = ast.extra_data[i];
+		ast_type_check(ast, statement_node, type_check_state);
 	}
 
-	std::string
-	to_str()
-		override
-	{
-		std::string s = "CodeBlock {} @ " + to_hex((size_t) this);
-		return s;
-	}
+	type_check_state.end_local_scope();
+}
 
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
+void
+code_block_code_gen(AST &ast, uint node, Assembler &assembler)
+{
+	uint statement_idx = ast.data[node].code_block.statements_ed_idx;
+	uint len           = ast.data[node].code_block.statements_len;
+	for (uint i = statement_idx; i < statement_idx + len; i++)
 	{
-		type_check_state.begin_local_scope();
-		for (const std::unique_ptr<ASTNode> &statement : statements)
-		{
-			statement->type_check(type_check_state);
-		}
-		type_check_state.end_local_scope();
+		uint statement_node = ast.extra_data[i];
+		ast_code_gen(ast, statement_node, assembler);
 	}
-
-	void
-	code_gen(Assembler &assembler)
-		const override
-	{
-		for (const std::unique_ptr<ASTNode> &statement : statements)
-		{
-			statement->code_gen(assembler);
-		}
-	}
-};
-
-constexpr int CODE_BLOCK_SIZE = sizeof(CodeBlock);
+}
 
 #endif

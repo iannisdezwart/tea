@@ -1,95 +1,76 @@
 #ifndef TEA_AST_NODE_WHILE_STATEMENT_HEADER
 #define TEA_AST_NODE_WHILE_STATEMENT_HEADER
 
-#include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/CodeBlock.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct WhileStatement final : public ASTNode
+void
+while_statement_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	std::unique_ptr<ReadValue> test;
-	std::unique_ptr<CodeBlock> body;
+	ast_dfs(ast, ast.data[node].while_statement.condition_node, callback, depth + 1);
+	ast_dfs(ast, ast.data[node].while_statement.body_node, callback, depth + 1);
+	callback(node, depth);
+}
 
-	WhileStatement(CompactToken accountable_token,
-		std::unique_ptr<ReadValue> test,
-		std::unique_ptr<CodeBlock> body)
-		: ASTNode(std::move(accountable_token), WHILE_STATEMENT),
-		  test(std::move(test)),
-		  body(std::move(body)) {}
+std::string
+while_statement_to_str(const AST &ast, uint node)
+{
+	return std::string("WhileStatement {} @ ") + std::to_string(node);
+}
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
-	{
-		test->dfs(callback, depth + 1);
-		body->dfs(callback, depth + 1);
+void
+while_statement_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	ast_type_check(ast, ast.data[node].while_statement.condition_node, type_check_state);
+	ast_type_check(ast, ast.data[node].while_statement.body_node, type_check_state);
+}
 
-		callback(this, depth);
-	}
+void
+while_statement_code_gen(AST &ast, uint node, Assembler &assembler)
+{
+	uint8_t test_reg;
 
-	std::string
-	to_str()
-		override
-	{
-		std::string s = "WhileStatement {} @ " + to_hex((size_t) this);
-		return s;
-	}
+	// Create labels
 
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
-	{
-		test->type_check(type_check_state);
-		body->type_check(type_check_state);
-	}
+	auto [start_label, end_label] = assembler.push_loop_scope();
 
-	void
-	code_gen(Assembler &assembler)
-		const override
-	{
-		uint8_t test_reg;
+	// Create the loop label
 
-		// Create labels
+	assembler.add_label(start_label);
 
-		auto [start_label, end_label] = assembler.push_loop_scope();
+	// Perform the check and move the result into the test register
 
-		// Create the loop label
+	test_reg = assembler.get_register();
+	uint test_node = ast.data[node].while_statement.condition_node;
+	ast_get_value(ast, test_node, assembler, test_reg);
 
-		assembler.add_label(start_label);
+	// Break the loop if false
 
-		// Perform the check and move the result into the test register
+	uint8_t cmp_reg = assembler.get_register();
+	assembler.move_lit(0, cmp_reg);
+	assembler.cmp_int_8(test_reg, cmp_reg);
+	assembler.free_register(cmp_reg);
+	assembler.jump_if_eq(end_label);
 
-		test_reg = assembler.get_register();
-		test->get_value(assembler, test_reg);
+	assembler.free_register(test_reg);
 
-		// Break the loop if false
+	// Compile code for the body block
 
-		uint8_t cmp_reg = assembler.get_register();
-		assembler.move_lit(0, cmp_reg);
-		assembler.cmp_int_8(test_reg, cmp_reg);
-		assembler.free_register(cmp_reg);
-		assembler.jump_if_eq(end_label);
+	uint body_node = ast.data[node].while_statement.body_node;
+	ast_code_gen(ast, body_node, assembler);
 
-		assembler.free_register(test_reg);
+	// Jump to the start of the loop again
 
-		// Compile code for the body block
+	assembler.jump(start_label);
 
-		body->code_gen(assembler);
+	// Create the end label
 
-		// Jump to the start of the loop again
+	assembler.add_label(end_label);
 
-		assembler.jump(start_label);
-
-		// Create the end label
-
-		assembler.add_label(end_label);
-
-		assembler.pop_loop_scope();
-	}
-};
-
-constexpr int WHILE_STATEMENT_SIZE = sizeof(WhileStatement);
+	assembler.pop_loop_scope();
+}
 
 #endif

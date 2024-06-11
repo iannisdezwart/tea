@@ -1,57 +1,39 @@
 #ifndef TEA_AST_NODE_CAST_EXPRESSION_HEADER
 #define TEA_AST_NODE_CAST_EXPRESSION_HEADER
 
-#include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Compiler/ASTNodes/TypeName.hpp"
 #include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct CastExpression final : public ReadValue
+void
+cast_expression_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	std::unique_ptr<ReadValue> expression;
-	std::unique_ptr<TypeName> type_name;
+	ast_dfs(ast, ast.data[node].cast_expression.type_name_node, callback, depth + 1);
+	ast_dfs(ast, ast.data[node].cast_expression.expression_node, callback, depth + 1);
+	callback(node, depth);
+}
 
-	CastExpression(std::unique_ptr<TypeName> type_name,
-		std::unique_ptr<ReadValue> expression)
-		: ReadValue(type_name->accountable_token, CAST_EXPRESSION),
-		  expression(std::move(expression)),
-		  type_name(std::move(type_name)) {}
+std::string
+cast_expression_to_str(const AST &ast, uint node)
+{
+	return std::string("CastExpression {} @ ") + std::to_string(node);
+}
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
-	{
-		type_name->dfs(callback, depth + 1);
-		expression->dfs(callback, depth + 1);
-		callback(this, depth);
-	}
+void
+cast_expression_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	ast_type_check(ast, ast.data[node].cast_expression.type_name_node, type_check_state);
+	ast_type_check(ast, ast.data[node].cast_expression.expression_node, type_check_state);
 
-	std::string
-	to_str()
-		override
-	{
-		std::string s = "CastExpression {} @ " + to_hex((size_t) this);
-		return s;
-	}
+	ast.types[node] = ast.types[ast.data[node].cast_expression.type_name_node];
+}
 
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
-	{
-		expression->type_check(type_check_state);
-		type_name->type_check(type_check_state);
-
-		type = type_name->type;
-	}
-
-	void
-	get_value(Assembler &assembler, uint8_t result_reg)
-		const override
-	{
-		expression->get_value(assembler, result_reg);
-	}
-};
-
-constexpr int CAST_EXPRESSION_SIZE = sizeof(CastExpression);
+void
+cast_expression_get_value(AST &ast, uint node, Assembler &assembler, uint8_t result_reg)
+{
+	uint expression_node = ast.data[node].cast_expression.expression_node;
+	ast_get_value(ast, expression_node, assembler, result_reg);
+}
 
 #endif

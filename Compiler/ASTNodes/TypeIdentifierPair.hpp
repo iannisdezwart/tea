@@ -1,56 +1,35 @@
 #ifndef TEA_AST_NODE_TYPE_IDENTIFIER_HEADER
 #define TEA_AST_NODE_TYPE_IDENTIFIER_HEADER
 
-#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/TypeName.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct TypeIdentifierPair final : public ASTNode
+void
+type_identifier_pair_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	std::unique_ptr<TypeName> type_name;
-	std::string identifier;
+	ast_dfs(ast, ast.data[node].type_identifier_pair.type_node, callback, depth + 1);
+	callback(node, depth);
+}
 
-	TypeIdentifierPair(CompactToken accountable_token,
-		std::unique_ptr<TypeName> type_name,
-		std::string identifier)
-		: ASTNode(std::move(accountable_token), TYPE_IDENTIFIER_PAIR),
-		  type_name(std::move(type_name)),
-		  identifier(identifier) {}
+std::string
+type_identifier_pair_to_str(const AST &ast, uint node)
+{
+	std::string s = "TypeIdentifierPair { identifier_id = \"";
+	s += std::to_string(ast.data[node].type_identifier_pair.identifier_id);
+	s += "\" } @ ";
+	return s;
+}
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
-	{
-		type_name->dfs(callback, depth + 1);
-		callback(this, depth);
-	}
-
-	std::string
-	to_str()
-		override
-	{
-		std::string s = "TypeIdentifierPair { identifier = \""
-			+ identifier + "\" } @ " + to_hex((size_t) this);
-		return s;
-	}
-
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
-	{
-		type_name->type_check(type_check_state);
-		type = type_name->type;
-	}
-
-	void
-	code_gen(Assembler &assembler)
-		const override
-	{
-	}
-};
-
-constexpr int TYPE_IDENTIFIER_PAIR_SIZE = sizeof(TypeIdentifierPair);
+void
+type_identifier_pair_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	uint type_name_node = ast.data[node].type_identifier_pair.type_node;
+	ast_type_check(ast, type_name_node, type_check_state);
+	ast.types[node] = ast.types[type_name_node];
+}
 
 #endif

@@ -1,5 +1,6 @@
 #include "Compiler/compiler.hpp"
 #include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/ASTFunctions.hpp"
 
 int
 main(int argc, char **argv)

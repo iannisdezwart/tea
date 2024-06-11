@@ -1,48 +1,31 @@
 #ifndef TEA_AST_NODE_BREAK_STATEMENT_HEADER
 #define TEA_AST_NODE_BREAK_STATEMENT_HEADER
 
-#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct BreakStatement final : public ASTNode
+void
+break_statement_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	BreakStatement(CompactToken accountable_token)
-		: ASTNode(std::move(accountable_token), BREAK_STATEMENT) {}
+	callback(node, depth);
+}
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
-	{
-		callback(this, depth);
-	}
+std::string
+break_statement_to_str(const AST &ast, uint node)
+{
+	return std::string("BreakStatement {} @ ") + std::to_string(node);
+}
 
-	std::string
-	to_str()
-		override
-	{
-		std::string s = "BreakStatement {} @ " + to_hex((size_t) this);
-		return s;
-	}
+void
+break_statement_code_gen(Assembler &assembler)
+{
+	// Get the loop label.
 
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
-	{
-	}
+	auto [_, end_label] = assembler.loop_labels.top();
 
-	void
-	code_gen(Assembler &assembler)
-		const override
-	{
-		// Get the loop label.
+	// Jump to the loop label.
 
-		auto [_, end_label] = assembler.loop_labels.top();
-
-		// Jump to the loop label.
-
-		assembler.jump(end_label);
-	}
-};
-
-constexpr int BREAK_STATEMENT_SIZE = sizeof(BreakStatement);
+	assembler.jump(end_label);
+}
 
 #endif

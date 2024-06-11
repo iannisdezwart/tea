@@ -11,23 +11,36 @@ enum BuiltinType : uint
 	V0, U8, I8, U16, I16, U32, I32, U64, I64, F32, F64,
 	BUILTIN_TYPE_END,
 };
-
-// The array dimensions of this type.
-// The size of this vector corresponds with
-// the "depth" of the type.
-// An array dimension of 0 indicates it is a pointer.
-// An array dimension of n indicates it is an array of
-// n elements.
-// This vector will be empty in case of a non-array,
-// non-pointer type.
-//
-// Examples:
-//   * u64* -> { 0 }
-//   * u64[3] -> { 3 }
-//   * u64[3][4] -> { 3, 4 }
-//   * u64[3]*[5] -> { 3, 0, 5 }
-static std::vector<std::vector<uint>> type_array_sizes = { {} };
 // clang-format on
+
+BuiltinType
+builtin_type_from_string(std::string str)
+{
+	if (str == "v0")
+		return V0;
+	if (str == "u8")
+		return U8;
+	if (str == "i8")
+		return I8;
+	if (str == "u16")
+		return U16;
+	if (str == "i16")
+		return I16;
+	if (str == "u32")
+		return U32;
+	if (str == "i32")
+		return I32;
+	if (str == "u64")
+		return U64;
+	if (str == "i64")
+		return I64;
+	if (str == "f32")
+		return F32;
+	if (str == "f64")
+		return F64;
+
+	err("Wasn't able to convert \"%s\" to a Type", str.c_str());
+}
 
 /**
  * Class that represents a data type of a variable.
@@ -39,7 +52,7 @@ struct Type
 {
 	uint value;
 	uint size;
-	uint array_sizes_idx;
+	int array_sizes_idx;
 
 	/**
 	 * @brief Default constructor.
@@ -49,7 +62,7 @@ struct Type
 	Type()
 		: value(UNDEFINED) {}
 
-	Type(uint value, uint size, uint array_sizes_idx = 0)
+	Type(uint value, uint size, int array_sizes_idx = -1)
 		: value(value), size(size), array_sizes_idx(array_sizes_idx) {}
 
 	/**
@@ -61,35 +74,11 @@ struct Type
 	 *   * u64[3]*[5] -> 3
 	 */
 	uint
-	pointer_depth() const
+	pointer_depth(const std::vector<uint> &extra_data) const
 	{
-		if (array_sizes_idx == 0)
+		if (array_sizes_idx == -1)
 			return 0;
-		return type_array_sizes[array_sizes_idx].size();
-	}
-
-	/**
-	 * @brief Compares two types with each other for equality.
-	 * @param other The other type.
-	 * @returns True if the types have the same subtype
-	 * and array dimensions, false otherwise.
-	 */
-	constexpr bool
-	operator==(const Type &other) const
-	{
-		return value == other.value && pointer_depth() == other.pointer_depth();
-	}
-
-	/**
-	 * @brief Compares two types with each other for inequality.
-	 * @param other The other type.
-	 * @returns True if the types don't have the same subtype
-	 * and array dimensions, false otherwise.
-	 */
-	constexpr bool
-	operator!=(const Type &other) const
-	{
-		return value != other.value || pointer_depth() != other.pointer_depth();
+		return extra_data[array_sizes_idx];
 	}
 
 	/**
@@ -101,10 +90,10 @@ struct Type
 	 * If the type is not a pointer, this will be the byte size
 	 * of the type.
 	 */
-	size_t
-	byte_size(size_t deref_dep = 0) const
+	uint
+	byte_size(const std::vector<uint> &extra_data, uint deref_dep = 0) const
 	{
-		return (pointer_depth() - deref_dep > 0) ? 8 : size;
+		return (pointer_depth(extra_data) - deref_dep > 0) ? 8 : size;
 	}
 
 	/**
@@ -116,7 +105,7 @@ struct Type
 	 *   * u32[4][4][4] -> 4
 	 *   * u32** -> 4
 	 */
-	size_t
+	uint
 	pointed_byte_size() const
 	{
 		return size;
@@ -127,18 +116,23 @@ struct Type
 	 * This type is computed by discarding the `array_sizes`.
 	 */
 	Type
-	pointed_type() const
+	pointed_type(std::vector<uint> &extra_data) const
 	{
-		if (array_sizes_idx == 0)
+		if (array_sizes_idx == -1)
 		{
 			err("Compiler error: tried dereferencing non-pointer Type %s",
-				to_str().c_str());
+				to_str(extra_data).c_str());
 		}
 
-		uint new_arr_sz_idx          = type_array_sizes.size();
-		std::vector<uint> new_arr_sz = type_array_sizes[array_sizes_idx];
-		new_arr_sz.erase(new_arr_sz.begin());
-		type_array_sizes.push_back(new_arr_sz);
+		uint new_arr_sz_idx = extra_data.size();
+		uint old_arr_sz_len = extra_data[array_sizes_idx];
+
+		// Copy the array sizes but skip the first element.
+		extra_data.push_back(old_arr_sz_len - 1);
+		for (int i = array_sizes_idx + 2; i < array_sizes_idx + 1 + old_arr_sz_len; i++)
+		{
+			extra_data.push_back(extra_data[i]);
+		}
 
 		return Type(value, size, new_arr_sz_idx);
 	}
@@ -148,16 +142,16 @@ struct Type
 	 * Used to calculate the size of a (multidimensional) array.
 	 * @returns The storage size of the type.
 	 */
-	size_t
-	storage_size() const
+	uint
+	storage_size(const std::vector<uint> &extra_data) const
 	{
 		// If the type is not a pointer, simply return the size.
 
-		if (pointer_depth() == 0)
+		if (pointer_depth(extra_data) == 0)
 			return size;
 
-		size_t n_members = 1;
-		size_t dim       = 0;
+		uint n_members = 1;
+		uint dim       = 0;
 
 		// Compute the dimension of the array and the
 		// number of members it has.
@@ -165,12 +159,12 @@ struct Type
 		// until we find a size that is zero, indicating
 		// a pointer.
 
-		const std::vector<uint> &array_sz = type_array_sizes[array_sizes_idx];
-		for (size_t i = pointer_depth(); i != 0; i--)
+		uint array_sizes_len = extra_data[array_sizes_idx];
+		for (uint i = array_sizes_idx + array_sizes_len; i > array_sizes_idx; i--)
 		{
-			if (array_sz[i - 1] == 0)
+			if (extra_data[i] == 0)
 				break;
-			n_members *= array_sz[i - 1];
+			n_members *= extra_data[i];
 			dim++;
 		}
 
@@ -181,7 +175,7 @@ struct Type
 		// (for example, if the type is u64[3][4]),
 		// the byte size is simply the size of the type (8).
 
-		return n_members * byte_size(dim);
+		return n_members * byte_size(extra_data, dim);
 	}
 
 	/**
@@ -192,14 +186,14 @@ struct Type
 	 * the type is a pointer or a non-pointer.
 	 */
 	bool
-	is_array() const
+	is_array(const std::vector<uint> &extra_data) const
 	{
-		if (array_sizes_idx == 0)
+		if (array_sizes_idx == -1)
 			return false;
-		const std::vector<uint> &array_sz = type_array_sizes[array_sizes_idx];
-		if (array_sz.size() == 0)
+		uint array_sizes_sz = extra_data[array_sizes_idx];
+		if (array_sizes_sz == 0)
 			return false;
-		return array_sz.back() != 0;
+		return extra_data[array_sizes_idx + array_sizes_sz /* back */] != 0;
 	}
 
 	/**
@@ -207,11 +201,11 @@ struct Type
 	 * A pointer to a class is not a class.
 	 */
 	bool
-	is_class() const
+	is_class(const std::vector<uint> &extra_data) const
 	{
 		if (value < BUILTIN_TYPE_END)
 			return false;
-		return pointer_depth() == 0;
+		return pointer_depth(extra_data) == 0;
 	}
 
 	/**
@@ -244,51 +238,38 @@ struct Type
 		return value == F32 || value == F64;
 	}
 
-	/**
-	 * @brief Converts a string to a type.
-	 * Only the standard primitive Tea types are supported:
-	 * u8, i8, u16, u32, i32, u64, i64, f32, f64, void.
-	 * @param str The string to convert.
-	 * @param array_sizes_idx
-	 * @returns The type parsed from the string.
-	 */
 	static Type
-	from_string(std::string str, uint array_sizes_idx)
+	type_from_builtin(BuiltinType type, int arr_sizes_idx = -1)
 	{
-		if (str == "u8")
-			return Type(U8, 1, array_sizes_idx);
-
-		if (str == "i8")
-			return Type(I8, 1, array_sizes_idx);
-
-		if (str == "u16")
-			return Type(U16, 2, array_sizes_idx);
-
-		if (str == "i16")
-			return Type(I16, 2, array_sizes_idx);
-
-		if (str == "u32")
-			return Type(U32, 4, array_sizes_idx);
-
-		if (str == "i32")
-			return Type(I32, 4, array_sizes_idx);
-
-		if (str == "u64")
-			return Type(U64, 8, array_sizes_idx);
-
-		if (str == "i64")
-			return Type(I64, 8, array_sizes_idx);
-
-		if (str == "f32")
-			return Type(F32, 4, array_sizes_idx);
-
-		if (str == "f64")
-			return Type(F64, 8, array_sizes_idx);
-
-		if (str == "v0")
-			return Type(V0, 0, array_sizes_idx);
-
-		err("Wasn't able to convert \"%s\" to a Type", str.c_str());
+		switch (type)
+		{
+		case UNDEFINED:
+			return Type(UNDEFINED, 0, arr_sizes_idx);
+		case V0:
+			return Type(V0, 0, arr_sizes_idx);
+		case U8:
+			return Type(U8, 1, arr_sizes_idx);
+		case I8:
+			return Type(I8, 1, arr_sizes_idx);
+		case U16:
+			return Type(U16, 2, arr_sizes_idx);
+		case I16:
+			return Type(I16, 2, arr_sizes_idx);
+		case U32:
+			return Type(U32, 4, arr_sizes_idx);
+		case I32:
+			return Type(I32, 4, arr_sizes_idx);
+		case U64:
+			return Type(U64, 8, arr_sizes_idx);
+		case I64:
+			return Type(I64, 8, arr_sizes_idx);
+		case F32:
+			return Type(F32, 4, arr_sizes_idx);
+		case F64:
+			return Type(F64, 8, arr_sizes_idx);
+		default:
+			err("Wasn't able to convert \"%d\" to a Type", type);
+		}
 	}
 
 	/**
@@ -344,7 +325,7 @@ struct Type
 	 * @param type The other type.
 	 */
 	Fits
-	fits(const Type &type) const
+	fits(const Type &type, const std::vector<uint> &extra_data) const
 	{
 		// Primitives
 
@@ -360,7 +341,7 @@ struct Type
 
 			// Type won't fit if it is larger than the other type.
 
-			if (byte_size() > type.byte_size())
+			if (byte_size(extra_data) > type.byte_size(extra_data))
 			{
 				return Fits::NO;
 			}
@@ -412,7 +393,7 @@ struct Type
 	 * @returns A Tea string representation of the type.
 	 */
 	std::string
-	to_str() const
+	to_str(const std::vector<uint> &extra_data) const
 	{
 		std::string s;
 
@@ -473,21 +454,21 @@ struct Type
 			break;
 		}
 
-		if (array_sizes_idx == 0)
+		if (array_sizes_idx == -1)
 			return s;
 
 		// Add the array sizes to the string.
 
-		const std::vector<uint> &array_sz = type_array_sizes[array_sizes_idx];
-		for (size_t i = 0; i < array_sz.size(); i++)
+		uint array_sizes_len = extra_data[array_sizes_idx];
+		for (uint i = array_sizes_idx + 1; i < array_sizes_idx + 1 + array_sizes_len; i++)
 		{
-			if (array_sz[i] == 0)
+			if (extra_data[i] == 0)
 			{
 				s += '*';
 			}
 			else
 			{
-				s += '[' + std::to_string(array_sz[i]) + ']';
+				s += '[' + std::to_string(extra_data[i]) + ']';
 			}
 		}
 
@@ -500,10 +481,10 @@ struct Type
 	 * @returns A debugger symbol type.
 	 */
 	DebuggerSymbolType
-	to_debug_type()
+	to_debug_type(const std::vector<uint> &extra_data)
 		const
 	{
-		if (pointer_depth() > 0)
+		if (pointer_depth(extra_data) > 0)
 			return DebuggerSymbolType::POINTER;
 
 		switch (value)

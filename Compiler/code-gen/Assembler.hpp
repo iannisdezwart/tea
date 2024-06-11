@@ -46,19 +46,22 @@ struct StaticData
  */
 struct Assembler : public BufferBuilder
 {
+	// The map of names by ID, from the parsing phase.
+	const std::unordered_map<uint, std::string> &names_by_id;
+
 	/**
 	 * @brief Map containing all labels.
 	 * The key is the label name and the value is the offset
 	 * of the label in the program.
 	 */
-	std::unordered_map<std::string /* id */, uint64_t /* position */> labels;
+	std::unordered_map<uint /* id */, uint64_t /* position */> labels;
 
 	/**
 	 * @brief Map containing all references to labels.
 	 * The key is the label name and the value is a list of
 	 * positions in the program where the label is referenced.
 	 */
-	std::unordered_map<std::string /* id */, std::vector<uint64_t>> label_references;
+	std::unordered_map<uint /* id */, std::vector<uint64_t>> label_references;
 
 	// Generator for unique label identifiers.
 	// Used for generating unique labels for different
@@ -67,7 +70,7 @@ struct Assembler : public BufferBuilder
 
 	// A stack containing the current loop labels.
 	// Used for the break and continue statements.
-	std::stack<std::pair<std::string, std::string>> loop_labels;
+	std::stack<std::pair<uint, uint>> loop_labels;
 
 	/**
 	 * @brief Bit array used to check whether a register is free.
@@ -86,8 +89,9 @@ struct Assembler : public BufferBuilder
 	/**
 	 * @brief Construct a new CodeGenState object.
 	 */
-	Assembler(bool debug)
-		: free_registers(CPU::general_purpose_register_count, true),
+	Assembler(bool debug, const std::unordered_map<uint, std::string> &names_by_id)
+		: names_by_id(names_by_id),
+		  free_registers(CPU::general_purpose_register_count, true),
 		  debug(debug) {}
 
 	/**
@@ -1324,7 +1328,7 @@ struct Assembler : public BufferBuilder
 	 * @param label The label to jump to.
 	 */
 	void
-	jump(const std::string &label)
+	jump(uint label)
 	{
 		push_instruction(JUMP);
 		add_label_reference(label);
@@ -1336,7 +1340,7 @@ struct Assembler : public BufferBuilder
 	 * @param label The label to jump to.
 	 */
 	void
-	jump_if_gt(const std::string &label)
+	jump_if_gt(uint label)
 	{
 		push_instruction(JUMP_IF_GT);
 		add_label_reference(label);
@@ -1348,7 +1352,7 @@ struct Assembler : public BufferBuilder
 	 * @param label The label to jump to.
 	 */
 	void
-	jump_if_geq(const std::string &label)
+	jump_if_geq(uint label)
 	{
 		push_instruction(JUMP_IF_GEQ);
 		add_label_reference(label);
@@ -1360,7 +1364,7 @@ struct Assembler : public BufferBuilder
 	 * @param label The label to jump to.
 	 */
 	void
-	jump_if_lt(const std::string &label)
+	jump_if_lt(uint label)
 	{
 		push_instruction(JUMP_IF_LT);
 		add_label_reference(label);
@@ -1372,7 +1376,7 @@ struct Assembler : public BufferBuilder
 	 * @param label The label to jump to.
 	 */
 	void
-	jump_if_leq(const std::string &label)
+	jump_if_leq(uint label)
 	{
 		push_instruction(JUMP_IF_LEQ);
 		add_label_reference(label);
@@ -1384,7 +1388,7 @@ struct Assembler : public BufferBuilder
 	 * @param label The label to jump to.
 	 */
 	void
-	jump_if_eq(const std::string &label)
+	jump_if_eq(uint label)
 	{
 		push_instruction(JUMP_IF_EQ);
 		add_label_reference(label);
@@ -1396,7 +1400,7 @@ struct Assembler : public BufferBuilder
 	 * @param label The label to jump to.
 	 */
 	void
-	jump_if_neq(const std::string &label)
+	jump_if_neq(uint label)
 	{
 		push_instruction(JUMP_IF_NEQ);
 		add_label_reference(label);
@@ -1493,13 +1497,13 @@ struct Assembler : public BufferBuilder
 
 	/**
 	 * @brief Adds a CALL instruction to the program.
-	 * @param label The label to call.
+	 * @param label_id The label to call.
 	 */
 	void
-	call(const std::string &label)
+	call(uint label_id)
 	{
 		push_instruction(CALL);
-		add_label_reference(label);
+		add_label_reference(label_id);
 		push<uint64_t>(0); // This will be updated later
 	}
 
@@ -1547,13 +1551,13 @@ struct Assembler : public BufferBuilder
 
 	/**
 	 * @brief Adds a LABEL instruction to the program.
-	 * @param str The label name.
+	 * @param id An id.
 	 */
 	void
-	label(const std::string &str)
+	label(uint id)
 	{
 		push_instruction(LABEL);
-		push_null_terminated_string(str);
+		push_null_terminated_string(names_by_id.at(id));
 	}
 
 	/**
@@ -1582,30 +1586,30 @@ struct Assembler : public BufferBuilder
 	 * @brief Adds a label to the program.
 	 * The label can later be referred to using the
 	 * `add_label_reference()` method.
-	 * @param id The label name.
+	 * @param label_id The label id.
 	 */
 	void
-	add_label(const std::string &id)
+	add_label(uint label_id)
 	{
-		if (labels.count(id))
+		if (labels.count(label_id))
 		{
-			p_warn(stderr, "ProgramBuilder error: duplicate label %s\n", id.c_str());
+			p_warn(stderr, "Assembler error: duplicate label %d\n", label_id);
 			abort();
 		}
 
-		labels[id] = offset;
+		labels[label_id] = offset;
 	}
 
 	/**
 	 * @brief Adds a reference to a label to the program.
 	 * The label must have been previously added using the
 	 * `add_label()` method.
-	 * @param id The label name.
+	 * @param label_id The label id.
 	 */
 	void
-	add_label_reference(const std::string &id)
+	add_label_reference(uint label_id)
 	{
-		label_references[id].push_back(offset);
+		label_references[label_id].push_back(offset);
 	}
 
 	/**
@@ -1614,21 +1618,20 @@ struct Assembler : public BufferBuilder
 	void
 	update_label_references()
 	{
-		for (std::pair<const std::string &, std::vector<uint64_t>> ref : label_references)
+		for (std::pair<uint, std::vector<uint64_t>> ref : label_references)
 		{
-			const std::string &label                = ref.first;
+			uint label_id                           = ref.first;
 			std::vector<uint64_t> &reference_points = ref.second;
 
 			// Get the location of the label.
 
-			if (!labels.count(label))
+			if (!labels.count(label_id))
 			{
-				p_warn(stderr, "ProgramBuilder error: referenced non-defined label %s\n",
-					label.c_str());
+				p_warn(stderr, "ProgramBuilder error: referenced non-defined label %d\n", label_id);
 				abort();
 			}
 
-			uint64_t label_location = labels[label];
+			uint64_t label_location = labels[label_id];
 
 			// Update all label references.
 			// Label references are relative to the location of the label.
@@ -1645,29 +1648,24 @@ struct Assembler : public BufferBuilder
 	}
 
 	/**
-	 * @brief Generates a label name that can be used to jump to.
-	 * @param type The type of label to generate.
-	 * @returns The generated label name.
+	 * @brief Generates a label that can be used to jump to.
+	 * @returns The generated label.
 	 */
-	std::string
-	generate_label(std::string type)
+	uint
+	generate_label()
 	{
-		std::string label = "compiler-generated-label-";
-		label += std::to_string(label_id++);
-		label += "-for-";
-		label += type;
-		return label;
+		static uint label_id = 1 << 31; // So that it won't conflict with fn_id.
+		return label_id++;
 	}
 
 	/**
 	 * @brief Starts a new scope within the current function being compiled.
 	 * @returns The start and end labels of the new scope.
 	 */
-	std::pair<std::string, std::string>
+	std::pair<uint, uint>
 	push_loop_scope()
 	{
-		std::pair<std::string, std::string> labels = std::make_pair<>(
-			generate_label("loop-start"), generate_label("loop-end"));
+		std::pair<uint, uint> labels = std::make_pair<>(generate_label(), generate_label());
 		loop_labels.push(labels);
 		return labels;
 	}

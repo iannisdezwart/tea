@@ -1,113 +1,110 @@
 #ifndef TEA_AST_NODE_FOR_STATEMENT_HEADER
 #define TEA_AST_NODE_FOR_STATEMENT_HEADER
 
-#include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/CodeBlock.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct ForStatement final : public ASTNode
+void
+for_statement_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	std::unique_ptr<ASTNode> init;
-	std::unique_ptr<ReadValue> test;
-	std::unique_ptr<ReadValue> update;
-	std::unique_ptr<CodeBlock> body;
+	ast_dfs(ast, ast.data[node].for_statement.init_node, callback, depth + 1);
 
-	ForStatement(CompactToken accountable_token,
-		std::unique_ptr<ASTNode> init,
-		std::unique_ptr<ReadValue> test,
-		std::unique_ptr<ReadValue> update,
-		std::unique_ptr<CodeBlock> body)
-		: ASTNode(std::move(accountable_token), FOR_STATEMENT),
-		  init(std::move(init)),
-		  test(std::move(test)),
-		  update(std::move(update)),
-		  body(std::move(body)) {}
+	uint idx = ast.data[node].for_statement.rest_ed_idx;
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
-	{
-		init->dfs(callback, depth + 1);
-		test->dfs(callback, depth + 1);
-		update->dfs(callback, depth + 1);
-		body->dfs(callback, depth + 1);
+	uint test_node = ast.extra_data[idx];
+	ast_dfs(ast, test_node, callback, depth + 1);
 
-		callback(this, depth);
-	}
+	uint update_node = ast.extra_data[idx + 1];
+	ast_dfs(ast, update_node, callback, depth + 1);
 
-	std::string
-	to_str()
-		override
-	{
-		std::string s = "ForStatement {} @ " + to_hex((size_t) this);
-		return s;
-	}
+	uint body_node = ast.extra_data[idx + 2];
+	ast_dfs(ast, body_node, callback, depth + 1);
 
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
-	{
-		init->type_check(type_check_state);
-		test->type_check(type_check_state);
-		update->type_check(type_check_state);
-		body->type_check(type_check_state);
-	}
+	callback(node, depth);
+}
 
-	void
-	code_gen(Assembler &assembler)
-		const override
-	{
-		uint8_t test_reg;
+std::string
+for_statement_to_str(const AST &ast, uint node)
+{
+	return std::string("ForStatement {} @ ") + std::to_string(node);
+}
 
-		// Create labels
+void
+for_statement_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	ast_type_check(ast, ast.data[node].for_statement.init_node, type_check_state);
 
-		auto [start_label, end_label] = assembler.push_loop_scope();
+	uint idx = ast.data[node].for_statement.rest_ed_idx;
 
-		// Compile code for the init statement
+	uint test_node = ast.extra_data[idx];
+	ast_type_check(ast, test_node, type_check_state);
 
-		init->code_gen(assembler);
+	uint update_node = ast.extra_data[idx + 1];
+	ast_type_check(ast, update_node, type_check_state);
 
-		// Create the loop label
+	uint body_node = ast.extra_data[idx + 2];
+	ast_type_check(ast, body_node, type_check_state);
+}
 
-		assembler.add_label(start_label);
+void
+for_statement_code_gen(AST &ast, uint node, Assembler &assembler)
+{
+	uint8_t test_reg;
 
-		// Perform the check and move the result into the test register
+	// Create labels
 
-		test_reg = assembler.get_register();
-		test->get_value(assembler, test_reg);
+	auto [start_label, end_label] = assembler.push_loop_scope();
 
-		// Break the loop if false
+	// Compile code for the init statement
 
-		uint8_t cmp_reg = assembler.get_register();
-		assembler.move_lit(0, cmp_reg);
-		assembler.cmp_int_8(test_reg, cmp_reg);
-		assembler.free_register(cmp_reg);
-		assembler.jump_if_eq(end_label);
+	uint init_node = ast.data[node].for_statement.init_node;
+	ast_code_gen(ast, init_node, assembler);
 
-		assembler.free_register(test_reg);
+	// Create the loop label
 
-		// Compile code for the body block
+	assembler.add_label(start_label);
 
-		body->code_gen(assembler);
+	// Perform the check and move the result into the test register
 
-		// Compile code for the update expression
+	test_reg = assembler.get_register();
 
-		update->code_gen(assembler);
+	uint idx       = ast.data[node].for_statement.rest_ed_idx;
+	uint test_node = ast.extra_data[idx];
 
-		// Jump to the start of the loop again
+	ast_get_value(ast, test_node, assembler, test_reg);
 
-		assembler.jump(start_label);
+	// Break the loop if false
 
-		// Create the end label
+	uint8_t cmp_reg = assembler.get_register();
+	assembler.move_lit(0, cmp_reg);
+	assembler.cmp_int_8(test_reg, cmp_reg);
+	assembler.free_register(cmp_reg);
+	assembler.jump_if_eq(end_label);
 
-		assembler.add_label(end_label);
+	assembler.free_register(test_reg);
 
-		assembler.pop_loop_scope();
-	}
-};
+	// Compile code for the body block
 
-constexpr int FOR_STATEMENT_SIZE = sizeof(ForStatement);
+	uint body_node = ast.extra_data[idx + 2];
+	ast_code_gen(ast, body_node, assembler);
+
+	// Compile code for the update expression
+
+	uint update_node = ast.extra_data[idx + 1];
+	ast_code_gen(ast, update_node, assembler);
+
+	// Jump to the start of the loop again
+
+	assembler.jump(start_label);
+
+	// Create the end label
+
+	assembler.add_label(end_label);
+
+	assembler.pop_loop_scope();
+}
 
 #endif

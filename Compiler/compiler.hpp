@@ -29,9 +29,6 @@ struct Compiler
 	// Will contain the byte code after compilation.
 	char *output_file_name;
 
-	// The assembler object.
-	Assembler assembler;
-
 	// Whether to print debug information.
 	bool debug;
 
@@ -42,8 +39,7 @@ struct Compiler
 	 * @param output_file_name The name of the output file.
 	 */
 	Compiler(char *input_file_name, char *output_file_name, bool debug)
-		: output_file_name(output_file_name),
-		  assembler(debug)
+		: output_file_name(output_file_name)
 	{
 		input_file = fopen(input_file_name, "r");
 
@@ -62,59 +58,29 @@ struct Compiler
 		fclose(input_file);
 	}
 
-	void
-	collect_decl(std::vector<VariableDeclaration *> &global_var_decls,
-		std::vector<FunctionDeclaration *> &fn_decls,
-		std::vector<ClassDeclaration *> &class_decls,
-		const std::unique_ptr<ASTNode> &statement)
-	{
-		switch (statement->node_type)
-		{
-		case VARIABLE_DECLARATION:
-			global_var_decls.push_back((VariableDeclaration *) statement.get());
-			break;
-
-		case FUNCTION_DECLARATION:
-			fn_decls.push_back((FunctionDeclaration *) statement.get());
-			break;
-
-		case CLASS_DECLARATION:
-		{
-			class_decls.push_back((ClassDeclaration *) statement.get());
-			break;
-		}
-
-		default:
-			err_at_token(statement->accountable_token, "Unexpected statement",
-				"Unexpected statement of type %s",
-				ast_node_type_to_str(statement->node_type));
-			break;
-		}
-	}
-
 	/**
 	 * @brief Pretty-prints the AST to stdout.
 	 * The AST is printed in a depth-first post-order traversal.
 	 * TODO: Also support pre-order traversal.
 	 */
 	void
-	print_ast(const std::vector<std::unique_ptr<ASTNode>> &statements)
+	print_ast(const AST &ast, const std::vector<uint> &statement_nodes)
 	{
 		p_trace(stdout, "\\\\\\ AST \\\\\\\n\n");
 
-		for (const std::unique_ptr<ASTNode> &statement : statements)
+		for (uint statement_node : statement_nodes)
 		{
-			auto cb = [](ASTNode *node, size_t depth)
+			auto cb = [&ast](uint node, size_t depth)
 			{
 				for (size_t i = 0; i < depth; i++)
 				{
 					putc('\t', stdout);
 				}
 
-				node->print("\u279a");
+				ast_print(ast, node, "\u279a");
 			};
 
-			statement->dfs(cb);
+			ast_dfs(ast, statement_node, cb, 0);
 		}
 
 		p_trace(stdout, "\n/// AST ///\n");
@@ -137,37 +103,39 @@ struct Compiler
 		// Parse the tokens.
 
 		Parser parser(tokens);
-		const auto &[statements, class_id_to_name] = parser.parse();
-		print_ast(statements);
+		auto parse_res          = parser.parse();
+		AST &ast                = std::get<0>(parse_res);
+		const auto &names_by_id = std::get<1>(parse_res);
+		const auto &ids_by_name = std::get<2>(parse_res);
 
+		print_ast(ast, ast.class_declarations);
+		print_ast(ast, ast.global_declarations);
+		print_ast(ast, ast.function_declarations);
 
 		// Type checking.
 
-		TypeCheckState type_check_state(debug, class_id_to_name);
+		TypeCheckState type_check_state(debug, ast, names_by_id);
 
 		CALLGRIND_START_INSTRUMENTATION;
 		CALLGRIND_TOGGLE_COLLECT;
 
-		for (const std::unique_ptr<ASTNode> &statement : statements)
-			statement->pre_type_check(type_check_state);
-		for (const std::unique_ptr<ASTNode> &statement : statements)
-			statement->type_check(type_check_state);
-		for (const std::unique_ptr<ASTNode> &statement : statements)
-			statement->post_type_check(type_check_state);
+		for (uint statement_node : ast.class_declarations)
+			class_declaration_predefine(ast, statement_node, type_check_state);
 
-		// Collect declarations.
+		for (uint statement_node : ast.class_declarations)
+			ast_type_check(ast, statement_node, type_check_state);
+		for (uint statement_node : ast.global_declarations)
+			ast_type_check(ast, statement_node, type_check_state);
+		for (uint statement_node : ast.function_declarations)
+			ast_type_check(ast, statement_node, type_check_state);
 
-		std::vector<VariableDeclaration *> global_var_decls;
-		std::vector<FunctionDeclaration *> fn_decls;
-		std::vector<ClassDeclaration *> class_decls;
-
-		for (const std::unique_ptr<ASTNode> &statement : statements)
-		{
-			collect_decl(global_var_decls, fn_decls, class_decls, statement);
-		}
+		for (uint statement_node : ast.function_declarations)
+			function_declaration_type_check_body(ast, statement_node, type_check_state);
 
 		// Start assembling.
 		// Allocate space for globals & update stack and frame pointer.
+
+		Assembler assembler(debug, names_by_id);
 
 		assembler.allocate_stack(type_check_state.globals_size);
 		uint8_t init_alloc_reg = assembler.get_register();
@@ -178,38 +146,38 @@ struct Compiler
 
 		// Compile intitialisation values for global variables.
 
-		for (VariableDeclaration *decl : global_var_decls)
+		for (uint global_decl_node : ast.global_declarations)
 		{
-			decl->code_gen(assembler);
+			ast_code_gen(ast, global_decl_node, assembler);
 		}
 
 		// Push parameter count and call main.
+
+		auto main_it = ids_by_name.find("main");
+		if (main_it == ids_by_name.end())
+		{
+			err("No main function found");
+		}
 
 		uint8_t main_param_cnt_reg = assembler.get_register();
 		assembler.move_lit(0, main_param_cnt_reg);
 		assembler.push_reg_64(main_param_cnt_reg);
 		assembler.free_register(main_param_cnt_reg);
-		assembler.call("main");
-		assembler.jump("exit");
+		assembler.call(main_it->second);
+		uint exit_label = assembler.generate_label();
+		assembler.jump(exit_label);
 
 		// Compile function declarations.
 
-		for (FunctionDeclaration *decl : fn_decls)
+		for (uint function_declaration_node : ast.function_declarations)
 		{
-			decl->code_gen(assembler);
-		}
-
-		// Compile class method declarations.
-
-		for (ClassDeclaration *decl : class_decls)
-		{
-			decl->code_gen(assembler);
+			function_declaration_code_gen(ast, function_declaration_node, assembler);
 		}
 
 		// Add an exit label.
 		// Jumped to after the main function finishes.
 
-		assembler.add_label("exit");
+		assembler.add_label(exit_label);
 
 		CALLGRIND_TOGGLE_COLLECT;
 		CALLGRIND_STOP_INSTRUMENTATION;

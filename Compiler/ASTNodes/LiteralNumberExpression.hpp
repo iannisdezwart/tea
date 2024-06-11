@@ -1,106 +1,80 @@
 #ifndef TEA_AST_NODE_LITERAL_NUMBER_EXPRESSION_HEADER
 #define TEA_AST_NODE_LITERAL_NUMBER_EXPRESSION_HEADER
 
-#include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct LiteralNumberExpression final : public ReadValue
+void
+literal_number_expression_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	bool is_float;
-	uint64_t value;
+	callback(node, depth);
+}
 
-	LiteralNumberExpression(CompactToken accountable_token,
-		const std::string &value)
-		: ReadValue(std::move(accountable_token), LITERAL_NUMBER_EXPRESSION),
-		  is_float(value.find('.') != std::string::npos),
-		  value(to_num(value, is_float)) {}
+std::string
+literal_integer_expression_to_str(const AST &ast, uint node)
+{
+	std::string s = "LiteralIntegerExpression { value = ";
+	s += std::to_string(ast.data[node].literal_integer_expression.value);
+	s += " } @ ";
+	s += std::to_string(node);
+	return s;
+}
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
+std::string
+literal_float_expression_to_str(const AST &ast, uint node)
+{
+	std::string s = "LiteralFloatExpression { value = ";
+	s += std::to_string(ast.data[node].literal_float_expression.value);
+	s += " } @ ";
+	s += std::to_string(node);
+	return s;
+}
+
+void
+literal_integer_expression_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	uint64_t value = ast.data[node].literal_integer_expression.value;
+
+	if (value & 0xFF'00'00'00'00'00'00'00)
 	{
-		callback(this, depth);
+		ast.types[node] = Type(U64, 8);
+		return;
 	}
 
-	std::string
-	to_str()
-		override
+	if (value & 0xFF'FF'00'00)
 	{
-		std::string num;
-		if (is_float)
-		{
-			double result = *reinterpret_cast<double *>(&value);
-			num           = std::to_string(result);
-		}
-		else
-		{
-			num = std::to_string(value);
-		}
-
-		std::string s = "LiteralNumberExpression { value = \"" + num + "\" } @ "
-			+ to_hex((size_t) this);
-		return s;
+		ast.types[node] = Type(U32, 4);
+		return;
 	}
 
-	static uint64_t
-	to_num(const std::string &value, bool is_float)
+	if (value & 0xFF'00)
 	{
-		if (is_float)
-		{
-			double result                 = std::stod(value);
-			return *reinterpret_cast<uint64_t *>(&result);
-		}
-
-		if (value[0] == '0' && value[1] == 'x')
-			return std::stoull(value.substr(2), nullptr, 16);
-
-		if (value[0] == '0' && value[1] == 'b')
-			return std::stoull(value.substr(2), nullptr, 2);
-
-		return std::stoull(value);
+		ast.types[node] = Type(U16, 2);
+		return;
 	}
 
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
-	{
-		if (is_float)
-		{
-			type = Type(F64, 8);
-			return;
-		}
+	ast.types[node] = Type(U8, 1);
+}
 
-		if (value & 0xFF'00'00'00'00'00'00'00)
-		{
-			type = Type(U64, 8);
-			return;
-		}
+void
+literal_float_expression_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	ast.types[node] = Type(F64, 8);
+}
 
-		if (value & 0xFF'FF'00'00)
-		{
-			type = Type(U32, 4);
-			return;
-		}
+void
+literal_integer_expression_get_value(AST &ast, uint node, Assembler &assembler, uint8_t result_reg)
+{
+	assembler.move_lit(ast.data[node].literal_integer_expression.value, result_reg);
+}
 
-		if (value & 0xFF'00)
-		{
-			type = Type(U16, 2);
-			return;
-		}
-
-		type = Type(U16, 1);
-	}
-
-	void
-	get_value(Assembler &assembler, uint8_t result_reg)
-		const override
-	{
-		assembler.move_lit(value, result_reg);
-	}
-};
-
-constexpr int LITERAL_NUMBER_EXPRESSION_SIZE = sizeof(LiteralNumberExpression);
+void
+literal_float_expression_get_value(AST &ast, uint node, Assembler &assembler, uint8_t result_reg)
+{
+	// Reinterpret double value as integer.
+	assembler.move_lit(ast.data[node].literal_integer_expression.value, result_reg);
+}
 
 #endif

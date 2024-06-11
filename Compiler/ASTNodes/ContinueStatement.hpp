@@ -1,48 +1,31 @@
 #ifndef TEA_AST_NODE_CONTINUE_STATEMENT_HEADER
 #define TEA_AST_NODE_CONTINUE_STATEMENT_HEADER
 
-#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct ContinueStatement final : public ASTNode
+void
+continue_statement_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	ContinueStatement(CompactToken accountable_token)
-		: ASTNode(std::move(accountable_token), CONTINUE_STATEMENT) {}
+	callback(node, depth);
+}
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
-	{
-		callback(this, depth);
-	}
+std::string
+continue_statement_to_str(const AST &ast, uint node)
+{
+	return std::string("ContinueStatement {} @ ") + std::to_string(node);
+}
 
-	std::string
-	to_str()
-		override
-	{
-		std::string s = "ContinueStatement {} @ " + to_hex((size_t) this);
-		return s;
-	}
+void
+continue_statement_code_gen(Assembler &assembler)
+{
+	// Get the loop label.
 
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
-	{
-	}
+	auto [start_label, _] = assembler.loop_labels.top();
 
-	void
-	code_gen(Assembler &assembler)
-		const override
-	{
-		// Get the loop label.
+	// Jump to the loop label.
 
-		auto [start_label, _] = assembler.loop_labels.top();
-
-		// Jump to the loop label.
-
-		assembler.jump(start_label);
-	}
-};
-
-constexpr int CONTINUE_STATEMENT_SIZE = sizeof(ContinueStatement);
+	assembler.jump(start_label);
+}
 
 #endif

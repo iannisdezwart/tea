@@ -1,226 +1,216 @@
 #ifndef TEA_AST_NODES_MEMBER_EXPRESSION_HEADER
 #define TEA_AST_NODES_MEMBER_EXPRESSION_HEADER
 
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Compiler/util.hpp"
-#include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/ASTNodes/ReadValue.hpp"
-#include "Compiler/ASTNodes/WriteValue.hpp"
 #include "Compiler/ASTNodes/IdentifierExpression.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/code-gen/Assembler.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
 #include "VM/cpu.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct MemberExpression final : public WriteValue
+void
+member_expression_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	Operator op;
-	std::unique_ptr<WriteValue> object;
-	std::unique_ptr<IdentifierExpression> member;
-	std::unique_ptr<ClassDefinition> class_definition;
-	bool is_ancestor;
+	ast_dfs(ast, ast.data[node].member_expression.object_node, callback, depth + 1);
+	ast_dfs(ast, ast.data[node].member_expression.member.node, callback, depth + 1); // TODO: reading from union, problematic
+	callback(node, depth);
+}
 
-	MemberExpression(CompactToken accountable_token,
-		Operator op,
-		std::unique_ptr<WriteValue> object,
-		std::unique_ptr<IdentifierExpression> member)
-		: WriteValue(std::move(accountable_token), MEMBER_EXPRESSION),
-		  op(op),
-		  object(std::move(object)),
-		  member(std::move(member)),
-		  is_ancestor(true)
+std::string
+member_expression_direct_to_str(const AST &ast, uint node)
+{
+	return std::string("MemberExpressionDirect {} @ ") + std::to_string(node);
+}
+
+std::string
+member_expression_direct_final_to_str(const AST &ast, uint node)
+{
+	return std::string("MemberExpressionDirectFinal {} @ ") + std::to_string(node);
+}
+
+std::string
+member_expression_dereferenced_to_str(const AST &ast, uint node)
+{
+	return std::string("MemberExpressionDereferenced {} @ ") + std::to_string(node);
+}
+
+std::string
+member_expression_dereferenced_final_to_str(const AST &ast, uint node)
+{
+	return std::string("MemberExpressionDereferencedFinal {} @ ") + std::to_string(node);
+}
+
+template <typename F>
+void
+member_expression_type_check(AST &ast, uint node, TypeCheckState &type_check_state, F &&f)
+{
+	uint object_node = ast.data[node].member_expression.object_node;
+	uint member_node = ast.data[node].member_expression.member.node;
+
+	assert(ast.tags[member_node] == AstTag::IDENTIFIER_EXPRESSION_STANDALONE); // TODO: REMOVE
+
+	ast.tags[member_node]                                          = AstTag::IDENTIFIER_EXPRESSION_MEMBER;
+	ast.data[member_node].identifier_expression_member.object.node = object_node;
+
+	ast_type_check(ast, object_node, type_check_state);
+	ast_type_check(ast, member_node, type_check_state);
+
+	uint member_id = ast.data[member_node].identifier_expression_member.identifier_id;
+
+	if (ast.types[object_node].value < BUILTIN_TYPE_END)
 	{
-		if (this->object->node_type == MEMBER_EXPRESSION)
-		{
-			MemberExpression *member_expr = (MemberExpression *) this->object.get();
-			member_expr->is_ancestor      = false;
-		}
+		err_at_token(ast.tokens[node], "Type Error",
+			"Cannot access property %d from non-class type %s",
+			member_id,
+			ast_tag_to_str(ast.tags[object_node]));
 	}
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
+	size_t offset = 0;
+
+	f(ast, node, type_check_state);
+
+	const ClassDefinition &cl = type_check_state.classes[ast.types[object_node].value];
+
+	for (size_t i = 0; i < cl.fields.size(); i++)
 	{
-		object->dfs(callback, depth + 1);
-		member->dfs(callback, depth + 1);
-
-		callback(this, depth);
-	}
-
-	std::string
-	to_str()
-		override
-	{
-		std::string s;
-
-		s += "MemberExpression { op = \"";
-		s += op_to_str(op);
-		s += "\" } @ ";
-		s += to_hex((size_t) this);
-
-		return s;
-	}
-
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
-	{
-		object->type_check(type_check_state);
-		member->object_type.emplace(object->type);
-		member->type_check(type_check_state);
-
-		std::string member_name = member->identifier;
-
-		if (object->type.value < BUILTIN_TYPE_END)
+		if (cl.fields[i].id == member_id)
 		{
-			err_at_token(accountable_token, "Type Error",
-				"Cannot access property %s from non-class type %s",
-				member_name.c_str(),
-				object->to_str().c_str());
-		}
-
-		uint32_t class_id = object->type.value;
-		class_definition       = std::make_unique<ClassDefinition>(
-                        type_check_state.classes[class_id]);
-		size_t offset = 0;
-
-		if (op == POINTER_TO_MEMBER && object->type.pointer_depth() != 0)
-		{
-			err_at_token(accountable_token, "Invalid MemberExpression",
-				"Cannot use x.y syntax on a pointer\n"
-				"Use x->y instead");
-		}
-
-		if (op == DEREFERENCED_POINTER_TO_MEMBER && object->type.pointer_depth() == 0)
-		{
-			err_at_token(accountable_token, "Invalid MemberExpression",
-				"Cannot use x->y syntax on an instance\n"
-				"Use x.y instead");
-		}
-
-		if (op == DEREFERENCED_POINTER_TO_MEMBER && object->type.pointer_depth() != 1)
-		{
-			err_at_token(accountable_token, "Invalid MemberExpression",
-				"Cannot use x->y syntax on a pointer of depth %lu\n",
-				object->type.pointer_depth());
-		}
-
-		switch (op)
-		{
-		case POINTER_TO_MEMBER:
-		case DEREFERENCED_POINTER_TO_MEMBER:
-		{
-			// Find class in compiler state
-
-			const ClassDefinition &cl = type_check_state.classes[class_id];
-
-			for (size_t i = 0; i < cl.fields.size(); i++)
-			{
-				if (cl.fields[i].name == member_name)
-				{
-					type = cl.fields[i].type;
-					goto gather_location_data;
-				}
-
-				offset += cl.fields[i].type.byte_size();
-			}
-
-			err_at_token(accountable_token, "Member error",
-				"Class %d has no member named %s",
-				class_id, member_name.c_str());
-		}
-
-		default:
-			err_at_token(accountable_token, "Syntax Error",
-				"Unexpected token \"%s\"\n"
-				"MemberExpressions only work with \".\" or \"->\" operators.");
-			abort();
-			break;
-		}
-
-	gather_location_data:
-		IdentifierKind id_kind = type.value < BUILTIN_TYPE_END
-			? object->location_data.id_kind
-			: IdentifierKind::UNDEFINED;
-		location_data          = LocationData(id_kind, offset);
-	}
-
-	void
-	get_value(Assembler &assembler, uint8_t result_reg)
-		const override
-	{
-		// Get address of the class field
-
-		object->get_value(assembler, result_reg);
-		uint8_t offset_reg = assembler.get_register();
-		assembler.move_lit(location_data.offset, offset_reg);
-		assembler.add_int_64(offset_reg, result_reg);
-		assembler.free_register(offset_reg);
-
-		// Dereference
-
-		if (!is_ancestor)
-		{
+			ast.types[node]                                = cl.fields[i].type;
+			ast.data[node].member_expression.member.offset = offset;
 			return;
 		}
 
-		switch (type.byte_size())
-		{
-		case 1:
-			assembler.load_ptr_8(result_reg, result_reg);
-			break;
-		case 2:
-			assembler.load_ptr_16(result_reg, result_reg);
-			break;
-		case 4:
-			assembler.load_ptr_32(result_reg, result_reg);
-			break;
-		case 8:
-			assembler.load_ptr_64(result_reg, result_reg);
-			break;
-		default:
-			break;
-		}
+		offset += cl.fields[i].type.byte_size(ast.extra_data);
 	}
 
-	void
-	store(Assembler &assembler, uint8_t value_reg)
-		const override
+	err_at_token(ast.tokens[node], "Member error",
+		"Class %d has no member %d",
+		ast.types[object_node].value, member_id);
+}
+
+void
+member_expression_direct_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	auto fn = [](AST &ast, uint node, TypeCheckState &type_check_state)
 	{
-		// Get address of the class field
-
-		uint8_t dst_ptr_reg = assembler.get_register();
-
-		object->get_value(assembler, dst_ptr_reg);
-		uint8_t offset_reg = assembler.get_register();
-		assembler.move_lit(location_data.offset, offset_reg);
-		assembler.add_int_64(offset_reg, dst_ptr_reg);
-		assembler.free_register(offset_reg);
-
-		// Store value
-
-		switch (type.byte_size())
+		if (ast.types[ast.data[node].member_expression.object_node].pointer_depth(ast.extra_data) != 0)
 		{
-		case 1:
-			assembler.store_ptr_8(value_reg, dst_ptr_reg);
-			break;
-		case 2:
-			assembler.store_ptr_16(value_reg, dst_ptr_reg);
-			break;
-		case 4:
-			assembler.store_ptr_32(value_reg, dst_ptr_reg);
-			break;
-		case 8:
-			assembler.store_ptr_64(value_reg, dst_ptr_reg);
-			break;
-		default:
-			assembler.mem_copy(value_reg, dst_ptr_reg, type.byte_size());
-			break;
+			err_at_token(ast.tokens[node], "Invalid MemberExpression",
+				"Cannot use x.y syntax on a pointer\n"
+				"Use x->y instead");
 		}
+	};
+	member_expression_type_check(ast, node, type_check_state, fn);
+}
 
-		assembler.free_register(dst_ptr_reg);
+void
+member_expression_dereferenced_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	auto fn = [](AST &ast, uint node, TypeCheckState &type_check_state)
+	{
+		uint object_node = ast.data[node].member_expression.object_node;
+		if (ast.types[object_node].pointer_depth(ast.extra_data) == 0)
+		{
+			err_at_token(ast.tokens[node], "Invalid MemberExpression",
+				"Cannot use x->y syntax on an instance\n"
+				"Use x.y instead");
+		}
+		if (ast.types[object_node].pointer_depth(ast.extra_data) != 1)
+		{
+			err_at_token(ast.tokens[node], "Invalid MemberExpression",
+				"Cannot use x->y syntax on a pointer of depth %u\n",
+				ast.types[object_node].pointer_depth(ast.extra_data));
+		}
+	};
+	member_expression_type_check(ast, node, type_check_state, fn);
+}
+
+void
+member_expression_base_get_value(AST &ast, uint node, Assembler &assembler, uint8_t result_reg)
+{
+	// Get address of the class field
+
+	uint object_node = ast.data[node].member_expression.object_node;
+	ast_get_value(ast, object_node, assembler, result_reg);
+
+	uint8_t offset_reg = assembler.get_register();
+	assembler.move_lit(ast.data[node].member_expression.member.offset, offset_reg);
+	assembler.add_int_64(offset_reg, result_reg);
+	assembler.free_register(offset_reg);
+}
+
+void
+member_expression_get_value(AST &ast, uint node, Assembler &assembler, uint8_t result_reg)
+{
+	member_expression_base_get_value(ast, node, assembler, result_reg);
+
+	// Dereference
+
+	switch (ast.types[node].byte_size(ast.extra_data))
+	{
+	case 1:
+		assembler.load_ptr_8(result_reg, result_reg);
+		break;
+	case 2:
+		assembler.load_ptr_16(result_reg, result_reg);
+		break;
+	case 4:
+		assembler.load_ptr_32(result_reg, result_reg);
+		break;
+	case 8:
+		assembler.load_ptr_64(result_reg, result_reg);
+		break;
+	default:
+		break;
 	}
-};
+}
 
-constexpr int MEMBER_EXPRESSION_SIZE = sizeof(MemberExpression);
+void
+member_expression_final_get_value(AST &ast, uint node, Assembler &assembler, uint8_t result_reg)
+{
+	member_expression_base_get_value(ast, node, assembler, result_reg);
+}
+
+void
+member_expression_store(AST &ast, uint node, Assembler &assembler, uint8_t value_reg)
+{
+	// Get address of the class field
+
+	uint8_t dst_ptr_reg = assembler.get_register();
+
+	uint object_node = ast.data[node].member_expression.object_node;
+	ast_get_value(ast, object_node, assembler, dst_ptr_reg);
+
+	uint offset        = ast.data[node].member_expression.member.offset;
+	uint8_t offset_reg = assembler.get_register();
+	assembler.move_lit(offset, offset_reg);
+	assembler.add_int_64(offset_reg, dst_ptr_reg);
+	assembler.free_register(offset_reg);
+
+	// Store value
+
+	switch (ast.types[node].byte_size(ast.extra_data))
+	{
+	case 1:
+		assembler.store_ptr_8(value_reg, dst_ptr_reg);
+		break;
+	case 2:
+		assembler.store_ptr_16(value_reg, dst_ptr_reg);
+		break;
+	case 4:
+		assembler.store_ptr_32(value_reg, dst_ptr_reg);
+		break;
+	case 8:
+		assembler.store_ptr_64(value_reg, dst_ptr_reg);
+		break;
+	default:
+		assembler.mem_copy(value_reg, dst_ptr_reg, ast.types[node].byte_size(ast.extra_data));
+		break;
+	}
+
+	assembler.free_register(dst_ptr_reg);
+}
 
 #endif

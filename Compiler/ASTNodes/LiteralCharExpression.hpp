@@ -1,51 +1,37 @@
 #ifndef TEA_AST_NODE_LITERAL_CHAR_EXPRESSION_HEADER
 #define TEA_AST_NODE_LITERAL_CHAR_EXPRESSION_HEADER
 
-#include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct LiteralCharExpression final : public ReadValue
+void
+literal_char_expression_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	uint8_t value;
+	callback(node, depth);
+}
 
-	LiteralCharExpression(CompactToken accountable_token, uint8_t value)
-		: ReadValue(std::move(accountable_token), LITERAL_CHAR_EXPRESSION),
-		  value(value) {}
+std::string
+literal_char_expression_to_str(const AST &ast, uint node)
+{
+	std::string s = "LiteralCharExpression { value = ";
+	s += std::to_string(ast.data[node].literal_char_expression.value);
+	s += " } @ ";
+	s += std::to_string(node);
+	return s;
+}
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
-	{
-		callback(this, depth);
-	}
+void
+literal_char_expression_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	ast.types[node] = Type(U8, 1);
+}
 
-	std::string
-	to_str()
-		override
-	{
-		std::string s = "LiteralCharExpression { value = \"";
-		s += std::to_string(value);
-		s += "\" } @ " + to_hex((size_t) this);
-		return s;
-	}
-
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
-	{
-		type = Type(U8, 1);
-	}
-
-	void
-	get_value(Assembler &assembler, uint8_t result_reg)
-		const override
-	{
-		assembler.move_lit(value, result_reg);
-	}
-};
-
-constexpr int LITERAL_CHAR_EXPRESSION_SIZE = sizeof(LiteralCharExpression);
+void
+literal_char_expression_get_value(AST &ast, uint node, Assembler &assembler, uint8_t result_reg)
+{
+	assembler.move_lit(ast.data[node].literal_char_expression.value, result_reg);
+}
 
 #endif

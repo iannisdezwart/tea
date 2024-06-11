@@ -1,96 +1,81 @@
 #ifndef TEA_AST_NODE_TYPE_NAME_HEADER
 #define TEA_AST_NODE_TYPE_NAME_HEADER
 
-#include "Compiler/ASTNodes/ASTNode.hpp"
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
 #include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct TypeName final : public ASTNode
+void
+type_name_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	std::string type_name;
-	std::optional<uint> class_id;
-	std::vector<uint> array_sizes;
+	callback(node, depth);
+}
 
-	TypeName(CompactToken accountable_token, std::string type_name,
-		std::optional<uint> class_id, std::vector<uint> &&array_sizes)
-		: ASTNode(std::move(accountable_token), TYPE_NAME),
-		  type_name(std::move(type_name)),
-		  class_id(std::move(class_id)),
-		  array_sizes(std::move(array_sizes)) {}
+std::string
+type_name_to_str(const AST &ast, uint node)
+{
+	std::string s = "TypeName { type_id = \"";
+	s += std::to_string(ast.data[node].type_name.type_id);
+	s += "\" } @ ";
+	s += std::to_string(node);
+	return s;
+}
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
+void
+type_name_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	uint type_id = ast.data[node].type_name.type_id;
+
+	if (type_id >= BUILTIN_TYPE_END)
 	{
-		callback(this, depth);
+		const ClassDefinition &class_def = type_check_state.classes[type_id];
+		uint byte_size                   = class_def.byte_size;
+		ast.types[node]                  = Type(type_id, byte_size);
+		return;
 	}
 
-	size_t
-	pointer_depth()
+	ast.types[node] = Type::type_from_builtin(static_cast<BuiltinType>(type_id));
+}
+
+std::string
+type_name_indirection_to_str(const AST &ast, uint node)
+{
+	uint type_id       = ast.data[node].type_name_indirection.type_id;
+	uint arr_sizes_idx = ast.data[node].type_name_indirection.arr_sizes_ed_idx;
+	uint arr_sizes_len = ast.extra_data[arr_sizes_idx];
+
+	std::string s = "TypeNameIndirection { type_id = ";
+	s += std::to_string(type_id);
+	s += ", arr_sizes = [";
+
+	for (uint i = arr_sizes_idx + 1; i < arr_sizes_idx + 1 + arr_sizes_len; i++)
 	{
-		return array_sizes.size();
+		s += std::to_string(ast.extra_data[i]);
+		if (i != arr_sizes_idx + arr_sizes_len)
+			s += ", ";
 	}
 
-	std::string
-	type_to_str()
+	s += "] } @ ";
+	s += std::to_string(node);
+	return s;
+}
+
+void
+type_name_indirection_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	uint type_id = ast.data[node].type_name_indirection.type_id;
+	uint arr_sizes_idx = ast.data[node].type_name_indirection.arr_sizes_ed_idx;
+
+	if (type_id >= BUILTIN_TYPE_END)
 	{
-		std::string out;
-
-		out += type_name;
-
-		for (size_t i = 0; i < array_sizes.size(); i++)
-		{
-			if (array_sizes[i] == 0)
-			{
-				out += '*';
-			}
-			else
-			{
-				out += '[';
-				out += std::to_string(array_sizes[i]);
-				out += ']';
-			}
-		}
-
-		return out;
+		const ClassDefinition &class_def = type_check_state.classes[type_id];
+		uint byte_size                   = class_def.byte_size;
+		ast.types[node]                  = Type(type_id, byte_size, arr_sizes_idx);
+		return;
 	}
 
-	std::string
-	to_str()
-		override
-	{
-		std::string s = "TypeName { type = \"" + type_to_str() + "\" } @ "
-			+ to_hex((size_t) this);
-		return s;
-	}
-
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
-	{
-		uint array_sizes_idx = type_array_sizes.size();
-		type_array_sizes.push_back(array_sizes);
-
-		if (class_id.has_value())
-		{
-			const ClassDefinition &class_def = type_check_state.classes[class_id.value()];
-			size_t byte_size                 = class_def.byte_size;
-
-			type = Type(class_id.value(), byte_size, array_sizes_idx);
-
-			return;
-		}
-
-		type = Type::from_string(type_name, array_sizes_idx);
-	}
-
-	void
-	code_gen(Assembler &assembler)
-		const override
-	{
-	}
-};
-
-constexpr int TYPE_NAME_SIZE = sizeof(TypeName);
+	ast.types[node] = Type::type_from_builtin(static_cast<BuiltinType>(type_id), arr_sizes_idx);
+}
 
 #endif

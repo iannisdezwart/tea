@@ -1,53 +1,44 @@
 #ifndef TEA_AST_NODE_LITERAL_STRING_EXPRESSION_HEADER
 #define TEA_AST_NODE_LITERAL_STRING_EXPRESSION_HEADER
 
-#include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct LiteralStringExpression final : public ReadValue
+void
+literal_string_expression_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	std::string value;
+	callback(node, depth);
+}
 
-	LiteralStringExpression(CompactToken accountable_token, std::string value)
-		: ReadValue(std::move(accountable_token), LITERAL_STRING_EXPRESSION),
-		  value(std::move(value)) {}
+std::string
+literal_string_expression_to_str(const AST &ast, uint node)
+{
+	std::string s = "LiteralStringExpression { value = \"";
+	s += ast.strings[ast.data[node].literal_string_expression.string_id];
+	s += "\" } @ ";
+	s += std::to_string(node);
+	return s;
+}
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
-	{
-		callback(this, depth);
-	}
+void
+literal_string_expression_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	uint array_sizes_idx = ast.extra_data.size();
+	ast.extra_data.push_back(1);
+	ast.extra_data.push_back(0); // { 0 }
+	ast.types[node] = Type(U8, 1, array_sizes_idx);
+}
 
-	std::string
-	to_str()
-		override
-	{
-		std::string s = "LiteralStringExpression { value = \"" + value + "\" } @ "
-			+ to_hex((size_t) this);
-		return s;
-	}
+void
+literal_string_expression_get_value(AST &ast, uint node, Assembler &assembler, uint8_t result_reg)
+{
+	std::string value      = ast.strings[ast.data[node].literal_string_expression.string_id];
+	StaticData static_data = assembler.add_static_data(value);
 
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
-	{
-		type = Type(U8, 1, { 0 });
-	}
-
-	void
-	get_value(Assembler &assembler, uint8_t result_reg)
-		const override
-	{
-		StaticData static_data = assembler.add_static_data(value);
-
-		assembler.move_lit(static_data.offset, result_reg);
-		assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
-	}
-};
-
-constexpr int LITERAL_STRING_EXPRESSION_SIZE = sizeof(LiteralStringExpression);
+	assembler.move_lit(static_data.offset, result_reg);
+	assembler.add_int_64(R_STACK_TOP_PTR, result_reg);
+}
 
 #endif

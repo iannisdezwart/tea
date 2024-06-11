@@ -1,147 +1,136 @@
 #ifndef TEA_AST_NODE_VARIABLE_DECLARATION_HEADER
 #define TEA_AST_NODE_VARIABLE_DECLARATION_HEADER
 
-#include "Compiler/ASTNodes/ASTNode.hpp"
-#include "Compiler/ASTNodes/ReadValue.hpp"
+#include "Compiler/ASTNodes/ASTFunctions-fwd.hpp"
 #include "Compiler/ASTNodes/IdentifierExpression.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/TypeIdentifierPair.hpp"
+#include "Compiler/ASTNodes/AST.hpp"
 
-struct VariableDeclaration final : public ASTNode
+void
+variable_declaration_uninitialised_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
 {
-	std::unique_ptr<TypeIdentifierPair> type_and_id_pair;
-	std::unique_ptr<ReadValue> assignment;
-	IdentifierExpression id_expr;
-	std::unique_ptr<ClassDefinition> class_definition;
-	IdentifierKind id_kind;
-	VariableDefinition variable_definition;
+	ast_dfs(ast, ast.data[node].variable_declaration_uninitialised.type_and_id_node, callback, depth + 1);
+	callback(node, depth);
+}
 
-	VariableDeclaration(std::unique_ptr<TypeIdentifierPair> type_and_id_pair,
-		std::unique_ptr<ReadValue> assignment)
-		: ASTNode(type_and_id_pair->accountable_token, VARIABLE_DECLARATION),
-		  type_and_id_pair(std::move(type_and_id_pair)),
-		  assignment(std::move(assignment)),
-		  id_expr(this->type_and_id_pair->accountable_token, this->type_and_id_pair->identifier) {}
+void
+variable_declaration_initialised_dfs(const AST &ast, uint node, std::function<void(uint, size_t)> callback, size_t depth)
+{
+	ast_dfs(ast, ast.data[node].variable_declaration_initialised.type_and_id_node, callback, depth + 1);
 
-	void
-	dfs(std::function<void(ASTNode *, size_t)> callback, size_t depth)
-		override
+	uint ed_idx = ast.data[node].variable_declaration_initialised.ed_idx;
+
+	uint id_expr_node = ast.extra_data[ed_idx];
+	ast_dfs(ast, id_expr_node, callback, depth + 1);
+
+	uint assignment_node = ast.extra_data[ed_idx + 1];
+	ast_dfs(ast, assignment_node, callback, depth + 1);
+
+	callback(node, depth);
+}
+
+std::string
+variable_declaration_uninitialised_to_str(const AST &ast, uint node)
+{
+	return std::string("VariableDeclarationUninitialised {} @ ") + std::to_string(node);
+}
+
+std::string
+variable_declaration_initialised_to_str(const AST &ast, uint node)
+{
+	return std::string("VariableDeclarationInitialised {} @ ") + std::to_string(node);
+}
+
+void
+variable_declaration_uninitialised_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	uint type_and_id_node = ast.data[node].variable_declaration_uninitialised.type_and_id_node;
+	ast_type_check(ast, type_and_id_node, type_check_state);
+
+	ast.types[node] = ast.types[type_and_id_node];
+
+	uint decl_id = ast.data[type_and_id_node].type_identifier_pair.identifier_id;
+
+	if (!type_check_state.add_var(decl_id, ast.types[type_and_id_node], ast.extra_data))
 	{
-		type_and_id_pair->dfs(callback, depth + 1);
+		err_at_token(ast.tokens[node],
+			"Duplicate identifier name",
+			"Identifier %d is already declared",
+			ast.data[type_and_id_node].type_identifier_pair.identifier_id);
+	}
+}
 
-		if (assignment)
-		{
-			assignment->dfs(callback, depth + 1);
-		}
+void
+variable_declaration_initialised_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
+{
+	uint type_and_id_node = ast.data[node].variable_declaration_uninitialised.type_and_id_node;
+	ast_type_check(ast, type_and_id_node, type_check_state);
 
-		callback(this, depth);
+	ast.types[node] = ast.types[type_and_id_node];
+
+	uint decl_id = ast.data[type_and_id_node].type_identifier_pair.identifier_id;
+
+	if (!type_check_state.add_var(decl_id, ast.types[type_and_id_node], ast.extra_data))
+	{
+		err_at_token(ast.tokens[node],
+			"Duplicate identifier name",
+			"Identifier %d is already declared",
+			ast.data[type_and_id_node].type_identifier_pair.identifier_id);
 	}
 
-	std::string
-	to_str()
-		override
+	uint ed_idx = ast.data[node].variable_declaration_initialised.ed_idx;
+
+	uint id_expr_node = ast.extra_data[ed_idx];
+	ast_type_check(ast, id_expr_node, type_check_state);
+
+	uint assignment_node = ast.extra_data[ed_idx + 1];
+	ast_type_check(ast, assignment_node, type_check_state);
+
+	// Match types
+
+	if (ast.types[assignment_node].fits(ast.types[node], ast.extra_data) == Type::Fits::NO)
 	{
-		std::string s = "VariableDeclaration {} @ " + to_hex((size_t) this);
-		return s;
+		warn("At %s, Initial value of VariableDeclaration does not"
+		     "fit into specified type\n"
+		     "lhs_type = %s, rhs_type = %s",
+			ast.tokens[assignment_node].to_str().c_str(),
+			ast.types[node].to_str(ast.extra_data).c_str(),
+			ast.types[assignment_node].to_str(ast.extra_data).c_str());
+	}
+}
+
+void
+variable_declaration_initialised_code_gen(AST &ast, uint node, Assembler &assembler)
+{
+	uint8_t init_value_reg;
+
+	if (ast.types[node].value >= BUILTIN_TYPE_END)
+	{
+		return;
 	}
 
-	void
-	type_check(TypeCheckState &type_check_state)
-		override
+	// Array declaration
+
+	if (ast.types[node].is_array(ast.extra_data))
 	{
-		type_and_id_pair->type_check(type_check_state);
-		type = type_and_id_pair->type;
-
-		std::string decl_name = type_and_id_pair->identifier;
-
-		if (!type_check_state.add_var(decl_name, type))
-		{
-			err_at_token(accountable_token,
-				"Duplicate identifier name",
-				"Identifier %s is already declared",
-				decl_name.c_str());
-		}
-
-		id_expr.type_check(type_check_state);
-
-		if (!assignment)
-		{
-			return;
-		}
-
-		assignment->type_check(type_check_state);
-
-		// Match types
-
-		if (assignment->type.fits(type) == Type::Fits::NO)
-		{
-			warn("At %s, Initial value of VariableDeclaration does not"
-			     "fit into specified type\n"
-			     "lhs_type = %s, rhs_type = %s",
-				assignment->accountable_token.to_str().c_str(),
-				type.to_str().c_str(), assignment->type.to_str().c_str());
-		}
-
-		std::string id_name = type_and_id_pair->identifier;
-		id_kind             = type_check_state.get_identifier_kind(id_name);
-
-		switch (id_kind)
-		{
-		case IdentifierKind::LOCAL:
-			variable_definition = type_check_state.get_local(id_name);
-			break;
-
-		case IdentifierKind::GLOBAL:
-			variable_definition = type_check_state.globals[id_name];
-			break;
-
-		default:
-			err_at_token(accountable_token, "Invalid VariableDeclaration",
-				"Cannot declare a variable of this type\n"
-				"Only locals and globals can be declared");
-		}
-
-		type = variable_definition.id.type;
-
-		if (type.value >= BUILTIN_TYPE_END)
-		{
-			class_definition = std::make_unique<ClassDefinition>(
-				type_check_state.classes[type.value]);
-		}
+		return;
 	}
 
-	void
-	code_gen(Assembler &assembler)
-		const override
-	{
-		uint8_t init_value_reg;
+	// Primitive type declaration
+	// Get the expression value into a register and store it in memory
 
-		if (type.value > BUILTIN_TYPE_END)
-		{
-			return;
-		}
+	uint ed_idx          = ast.data[node].variable_declaration_initialised.ed_idx;
+	uint id_expr_node    = ast.extra_data[ed_idx];
+	uint assignment_node = ast.extra_data[ed_idx + 1];
 
-		// Array declaration
+	init_value_reg = assembler.get_register();
 
-		else if (type.is_array())
-		{
-			return;
-		}
+	ast_get_value(ast, assignment_node, assembler, init_value_reg);
+	ast_store(ast, id_expr_node, assembler, init_value_reg);
 
-		// Primitive type declaration
-		// Get the expression value into a register and store it in memory
-
-		if (!assignment)
-			return;
-
-		init_value_reg = assembler.get_register();
-		assignment->get_value(assembler, init_value_reg);
-		id_expr.store(assembler, init_value_reg);
-		assembler.free_register(init_value_reg);
-	}
-};
-
-constexpr int VARIABLE_DECLARATION_SIZE = sizeof(VariableDeclaration);
+	assembler.free_register(init_value_reg);
+}
 
 #endif
