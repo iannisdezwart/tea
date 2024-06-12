@@ -8,6 +8,7 @@
 	#define CALLGRIND_TOGGLE_COLLECT
 	#define CALLGRIND_STOP_INSTRUMENTATION
 #endif
+#include <chrono>
 #include "Compiler/ASTNodes/ClassDeclaration.hpp"
 #include "Compiler/util.hpp"
 #include "Compiler/parser.hpp"
@@ -119,6 +120,8 @@ struct Compiler
 		CALLGRIND_START_INSTRUMENTATION;
 		CALLGRIND_TOGGLE_COLLECT;
 
+		auto t1 = std::chrono::high_resolution_clock::now();
+
 		for (uint statement_node : ast.class_declarations)
 			class_declaration_predefine(ast, statement_node, type_check_state);
 
@@ -131,6 +134,8 @@ struct Compiler
 
 		for (uint statement_node : ast.function_declarations)
 			function_declaration_type_check_body(ast, statement_node, type_check_state);
+
+		auto t2 = std::chrono::high_resolution_clock::now();
 
 		// Start assembling.
 		// Allocate space for globals & update stack and frame pointer.
@@ -179,8 +184,17 @@ struct Compiler
 
 		assembler.add_label(exit_label);
 
+		auto t3 = std::chrono::high_resolution_clock::now();
+
 		CALLGRIND_TOGGLE_COLLECT;
 		CALLGRIND_STOP_INSTRUMENTATION;
+
+		// Print the time taken for type checking and code generation.
+
+		auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
+		auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2).count();
+		p_warn(stdout, "Type checking took %lld micros\n", duration1);
+		p_warn(stdout, "Code generation took %lld micros\n", duration2);
 
 		// Write the byte code to the output file.
 
