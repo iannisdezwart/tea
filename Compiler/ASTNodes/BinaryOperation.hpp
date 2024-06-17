@@ -171,6 +171,9 @@ struct BinaryOperation final : public ReadValue
 				type = left->type;
 				return;
 			}
+
+			type = right->type;
+			return;
 		}
 
 		case BITWISE_AND:
@@ -198,6 +201,9 @@ struct BinaryOperation final : public ReadValue
 				type = left->type;
 				return;
 			}
+
+			type = right->type;
+			return;
 		}
 
 		case LESS:
