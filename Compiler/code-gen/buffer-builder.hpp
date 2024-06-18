@@ -28,16 +28,14 @@ struct BufferBuilder
 		// We do this by starting `size` at 2^64 and halving it
 		// until it barely fits.
 
-		for (uint8_t i = sizeof(size_t) * 8; i != 1; i--)
+		size_t size = 1;
+
+		while (size < el_count)
 		{
-			size_t size = 1 << (i - 1);
-			if (size < el_count)
-				return 1 << i;
+			size <<= 1;
 		}
 
-		// If we get here, the el_count is 0.
-
-		return 1;
+		return size;
 	}
 
 	// The offset to the next element to be pushed.
