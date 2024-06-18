@@ -40,8 +40,12 @@ struct WhileStatement final : public ASTNode
 	type_check(TypeCheckState &type_check_state)
 		override
 	{
+		type_check_state.begin_local_scope();
+
 		test->type_check(type_check_state);
 		body->type_check(type_check_state);
+
+		type_check_state.end_local_scope();
 	}
 
 	void
