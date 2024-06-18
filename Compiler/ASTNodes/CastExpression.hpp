@@ -4,7 +4,6 @@
 #include "Compiler/ASTNodes/ASTNode.hpp"
 #include "Compiler/ASTNodes/ReadValue.hpp"
 #include "Compiler/ASTNodes/TypeName.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Compiler/util.hpp"
 
 struct CastExpression final : public ReadValue
@@ -12,7 +11,8 @@ struct CastExpression final : public ReadValue
 	std::unique_ptr<ReadValue> expression;
 	std::unique_ptr<TypeName> type_name;
 
-	CastExpression(std::unique_ptr<TypeName> type_name, std::unique_ptr<ReadValue> expression)
+	CastExpression(std::unique_ptr<TypeName> type_name,
+		std::unique_ptr<ReadValue> expression)
 		: ReadValue(type_name->accountable_token, CAST_EXPRESSION),
 		  expression(std::move(expression)),
 		  type_name(std::move(type_name)) {}

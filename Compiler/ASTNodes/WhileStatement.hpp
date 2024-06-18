@@ -3,7 +3,6 @@
 
 #include "Compiler/ASTNodes/ASTNode.hpp"
 #include "Compiler/ASTNodes/ReadValue.hpp"
-#include "Compiler/tokeniser.hpp"
 #include "Executable/byte-code.hpp"
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/CodeBlock.hpp"
@@ -13,8 +12,10 @@ struct WhileStatement final : public ASTNode
 	std::unique_ptr<ReadValue> test;
 	std::unique_ptr<CodeBlock> body;
 
-	WhileStatement(std::unique_ptr<ReadValue> test, Token while_token, std::unique_ptr<CodeBlock> body)
-		: ASTNode(std::move(while_token), WHILE_STATEMENT),
+	WhileStatement(CompactToken accountable_token,
+		std::unique_ptr<ReadValue> test,
+		std::unique_ptr<CodeBlock> body)
+		: ASTNode(std::move(accountable_token), WHILE_STATEMENT),
 		  test(std::move(test)),
 		  body(std::move(body)) {}
 
