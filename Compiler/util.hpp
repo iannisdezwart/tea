@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <sstream>
 #include <iomanip>
+#include <memory>
 
 static bool _debug;
 

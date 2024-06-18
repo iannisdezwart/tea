@@ -16,7 +16,7 @@ branches="main compact-token class-ids compact-type struct-of-arrays"
 # Function that is called with a given branch name.
 # Will compile the compiler, and then run all programs and gather results.
 
-function run_branch {
+run_branch() {
     branch=$1
     echo "Running branch $branch"
     git checkout $branch

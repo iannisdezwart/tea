@@ -2,6 +2,7 @@
 #define TEA_COMPILER_STATE_HEADER
 
 #include <deque>
+#include <optional>
 
 #include "Compiler/ASTNodes/AST.hpp"
 #include "Compiler/util.hpp"
