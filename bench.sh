@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Branches to perform benchmark on:
 # - main
 # - compact-token
@@ -10,6 +12,9 @@
 # - chibicc_parse.tea
 # - gzip.tea
 # - zlib.tea
+
+# first CLI arg is the number of iterations
+num_iterations=$1
 
 branches="main compact-token class-ids compact-type struct-of-arrays"
 
@@ -24,7 +29,7 @@ run_branch() {
     make > /dev/null 2> /dev/null
     for program in SampleTranspiledPrograms/*
     do
-        for i in {1..10}
+        for i in {1..$num_iterations}
         do
             echo "Running program $program iteration $i"
             Compiler/compile $program /dev/null 2> /dev/null
