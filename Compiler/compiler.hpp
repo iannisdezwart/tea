@@ -1,8 +1,8 @@
 #ifndef TEA_COMPILER_HEADER
 #define TEA_COMPILER_HEADER
 
-#ifdef __linux__
-#include <valgrind/callgrind.h>
+#if defined(__linux__) && defined(CALLGRIND)
+	#include <valgrind/callgrind.h>
 #else
 #define CALLGRIND_START_INSTRUMENTATION
 #define CALLGRIND_TOGGLE_COLLECT
