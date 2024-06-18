@@ -44,6 +44,7 @@ struct Compiler
 	 */
 	Compiler(char *input_file_name, char *output_file_name, bool debug)
 		: output_file_name(output_file_name),
+		  debug(debug),
 		  assembler(debug)
 	{
 		input_file = fopen(input_file_name, "r");
@@ -140,7 +141,6 @@ struct Compiler
 		Parser parser(tokens);
 		const auto &[statements, class_id_to_name] = parser.parse();
 		print_ast(statements);
-
 
 		// Type checking.
 
