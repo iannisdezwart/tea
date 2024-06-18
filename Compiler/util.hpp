@@ -1,6 +1,7 @@
 #ifndef TEA_COMPILER_UTIL_HEADER
 #define TEA_COMPILER_UTIL_HEADER
 
+#include <memory>
 #include <iostream>
 #include <string>
 #include <cstring>

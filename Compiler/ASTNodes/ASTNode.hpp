@@ -1,6 +1,7 @@
 #ifndef TEA_AST_NODE_HEADER
 #define TEA_AST_NODE_HEADER
 
+#include <memory>
 #include "Compiler/tokeniser.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"
 #include "Compiler/type-check/TypeCheckState.hpp"

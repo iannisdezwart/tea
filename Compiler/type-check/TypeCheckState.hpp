@@ -2,6 +2,7 @@
 #define TEA_COMPILER_STATE_HEADER
 
 #include <deque>
+#include <optional>
 
 #include "Compiler/util.hpp"
 #include "VM/cpu.hpp"

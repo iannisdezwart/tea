@@ -1,6 +1,7 @@
 #ifndef TEA_AST_NODE_IDENTIFIER_EXPRESSION_HEADER
 #define TEA_AST_NODE_IDENTIFIER_EXPRESSION_HEADER
 
+#include <optional>
 #include "Compiler/util.hpp"
 #include "Compiler/ASTNodes/ASTNode.hpp"
 #include "Compiler/ASTNodes/WriteValue.hpp"
