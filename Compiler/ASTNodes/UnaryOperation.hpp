@@ -97,13 +97,19 @@ struct UnaryOperation final : public WriteValue
 					type.to_str().c_str());
 			}
 
-			type.array_sizes.pop_back();
+			uint array_sizes_idx = type_array_sizes.size();
+			type_array_sizes.push_back(type_array_sizes[type.array_sizes_idx]);
+			type_array_sizes.back().pop_back();
+			type.array_sizes_idx = array_sizes_idx;
 			break;
 		}
 
 		case ADDRESS_OF:
 		{
-			type.array_sizes.insert(type.array_sizes.begin(), 1, 0);
+			uint array_sizes_idx = type_array_sizes.size();
+			type_array_sizes.push_back(type_array_sizes[type.array_sizes_idx]);
+			type_array_sizes.back().insert(type_array_sizes.back().begin(), 0);
+			type.array_sizes_idx = array_sizes_idx;
 			break;
 		}
 
@@ -157,15 +163,12 @@ struct UnaryOperation final : public WriteValue
 
 			// Dereference.
 
-			Type expr_type = expr->type;
-
 			while (--deref_dep > 0)
 			{
-				expr_type.array_sizes.pop_back();
 				assembler.load_ptr_64(ptr_reg, ptr_reg);
 			}
 
-			switch (expr->type.byte_size())
+			switch (expr->type.byte_size(deref_dep))
 			{
 			case 1:
 				assembler.store_ptr_8(value_reg, ptr_reg);
@@ -185,7 +188,7 @@ struct UnaryOperation final : public WriteValue
 
 			default:
 				// TODO: Test if this works.
-				assembler.mem_copy(value_reg, ptr_reg, expr->type.byte_size());
+				assembler.mem_copy(value_reg, ptr_reg, expr->type.byte_size(deref_dep));
 				break;
 			}
 
@@ -228,7 +231,7 @@ struct UnaryOperation final : public WriteValue
 		{
 			assembler.inc_int_64(result_reg);
 		}
-		else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+		else if (type.value == F32)
 		{
 			uint8_t temp_reg = assembler.get_register();
 			float one        = 1.0f;
@@ -236,7 +239,7 @@ struct UnaryOperation final : public WriteValue
 			assembler.add_flt_32(temp_reg, result_reg);
 			assembler.free_register(temp_reg);
 		}
-		else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+		else if (type.value == F64)
 		{
 			uint8_t temp_reg = assembler.get_register();
 			double one       = 1.0;
@@ -273,7 +276,7 @@ struct UnaryOperation final : public WriteValue
 		{
 			assembler.dec_int_64(result_reg);
 		}
-		else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+		else if (type.value == F32)
 		{
 			uint8_t temp_reg = assembler.get_register();
 			float one        = 1.0f;
@@ -281,7 +284,7 @@ struct UnaryOperation final : public WriteValue
 			assembler.sub_flt_32(temp_reg, result_reg);
 			assembler.free_register(temp_reg);
 		}
-		else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+		else if (type.value == F64)
 		{
 			uint8_t temp_reg = assembler.get_register();
 			double one       = 1.0;
@@ -379,7 +382,7 @@ struct UnaryOperation final : public WriteValue
 				assembler.neg_int_64(result_reg);
 				assembler.inc_int_64(result_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 4)
+			else if (type.value == F32)
 			{
 				uint8_t temp_reg  = assembler.get_register();
 				uint32_t sign_bit = 0x80000000;
@@ -387,7 +390,7 @@ struct UnaryOperation final : public WriteValue
 				assembler.xor_int_32(temp_reg, result_reg);
 				assembler.free_register(temp_reg);
 			}
-			else if (type == Type::FLOATING_POINT && type.byte_size() == 8)
+			else if (type.value == F64)
 			{
 				uint8_t temp_reg  = assembler.get_register();
 				uint64_t sign_bit = 0x8000000000000000;
@@ -433,12 +436,10 @@ struct UnaryOperation final : public WriteValue
 			// Moves the address of what to dereference into the result reg.
 
 			expression->get_value(assembler, result_reg);
-			Type type = expression->type;
-			type.array_sizes.pop_back();
 
 			// Move the dereferenced value into the result reg.
 
-			switch (type.byte_size())
+			switch (expression->type.byte_size(1))
 			{
 			case 1:
 				assembler.load_ptr_8(result_reg, result_reg);

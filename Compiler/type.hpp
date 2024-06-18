@@ -4,52 +4,42 @@
 #include "Compiler/util.hpp"
 #include "Compiler/debugger-symbols.hpp"
 
+// clang-format off
+enum BuiltinType : uint
+{
+	UNDEFINED,
+	V0, U8, I8, U16, I16, U32, I32, U64, I64, F32, F64,
+	BUILTIN_TYPE_END,
+};
+
+// The array dimensions of this type.
+// The size of this vector corresponds with
+// the "depth" of the type.
+// An array dimension of 0 indicates it is a pointer.
+// An array dimension of n indicates it is an array of
+// n elements.
+// This vector will be empty in case of a non-array,
+// non-pointer type.
+//
+// Examples:
+//   * u64* -> { 0 }
+//   * u64[3] -> { 3 }
+//   * u64[3][4] -> { 3, 4 }
+//   * u64[3]*[5] -> { 3, 0, 5 }
+static std::vector<std::vector<uint>> type_array_sizes = { {} };
+// clang-format on
+
 /**
  * Class that represents a data type of a variable.
- *
- * A type is specified by:
- * * its subtype (unsigned int, signed int, user defined class, or init list)
- * * the size of the type in bytes
- * * the "pointeryness" of the type, specified by the `array_sizes` field
  *
  * This class has lots of handy methods to get additional information about
  * the data type it corresponds.
  */
 struct Type
 {
-	/**
-	 * @brief The different subtypes of a type.
-	 */
-	enum Value : uint8_t
-	{
-		UNDEFINED,
-		UNSIGNED_INTEGER,
-		SIGNED_INTEGER,
-		FLOATING_POINT,
-		USER_DEFINED_CLASS,
-	};
-
-	// The subtype of the type.
-	Value value;
-
-	// The size of the type in bytes.
-	size_t size;
-
-	// The array dimensions of this type.
-	// The size of this vector corresponds with
-	// the "depth" of the type.
-	// An array dimension of 0 indicates it is a pointer.
-	// An array dimension of n indicates it is an array of
-	// n elements.
-	// This vector will be empty in case of a non-array,
-	// non-pointer type.
-	//
-	// Examples:
-	//   * u64* -> { 0 }
-	//   * u64[3] -> { 3 }
-	//   * u64[3][4] -> { 3, 4 }
-	//   * u64[3]*[5] -> { 3, 0, 5 }
-	std::vector<size_t> array_sizes;
+	uint value;
+	uint size;
+	uint array_sizes_idx;
 
 	// If the subtype is a user-defined class,
 	// this field will hold the id of the class.
@@ -63,23 +53,8 @@ struct Type
 	Type()
 		: value(UNDEFINED) {}
 
-	/**
-	 * @brief Constructs a new Type object
-	 * @param value The subtype of the type.
-	 * @param size The size of the type in bytes.
-	 */
-	Type(Value value, size_t size)
-		: value(value), size(size) {}
-
-	/**
-	 * @brief Constructs a new Type object.
-	 * @param value The subtype of the type.
-	 * @param size The size of the type in bytes.
-	 * @param array_sizes Initialises the `array_sizes` field.
-	 * See this field for reference.
-	 */
-	Type(Value value, size_t size, const std::vector<size_t> &array_sizes)
-		: value(value), size(size), array_sizes(array_sizes) {}
+	Type(uint value, uint size, uint array_sizes_idx = 0)
+		: value(value), size(size), array_sizes_idx(array_sizes_idx) {}
 
 	/**
 	 * Returns the pointer depth of this type.
@@ -89,23 +64,13 @@ struct Type
 	 *   * u64[3][4][5] -> 3
 	 *   * u64[3]*[5] -> 3
 	 */
-	size_t
+	uint
 	pointer_depth() const
 	{
-		return array_sizes.size();
+		if (array_sizes_idx == 0)
+			return 0;
+		return type_array_sizes[array_sizes_idx].size();
 	}
-
-	// Allow switch comparisons
-
-	operator Value() const
-	{
-		return value;
-	}
-
-	// Don't allow conversion to boolean
-
-	explicit
-	operator bool() = delete;
 
 	/**
 	 * @brief Compares two types with each other for equality.
@@ -116,8 +81,7 @@ struct Type
 	constexpr bool
 	operator==(const Type &other) const
 	{
-		return value == other.value && size == other.size
-			&& pointer_depth() == other.pointer_depth();
+		return value == other.value && pointer_depth() == other.pointer_depth();
 	}
 
 	/**
@@ -129,30 +93,7 @@ struct Type
 	constexpr bool
 	operator!=(const Type &other) const
 	{
-		return value != other.value || size != other.size
-			|| pointer_depth() != other.pointer_depth();
-	}
-
-	/**
-	 * @brief Compares the subtype of two types for equality.
-	 * @param other_value The other subtype.
-	 * @returns True if the subtypes are equal, false otherwise.
-	 */
-	constexpr bool
-	operator==(Type::Value other_value) const
-	{
-		return value == other_value;
-	}
-
-	/**
-	 * @brief Compares the subtype of two types for unequality.
-	 * @param other_value The other subtype.
-	 * @returns True if the subtypes are not equal, false otherwise.
-	 */
-	constexpr bool
-	operator!=(Type::Value other_value) const
-	{
-		return value != other_value;
+		return value != other.value || pointer_depth() != other.pointer_depth();
 	}
 
 	/**
@@ -192,15 +133,18 @@ struct Type
 	Type
 	pointed_type() const
 	{
-		if (array_sizes.size() == 0)
+		if (array_sizes_idx == 0)
 		{
 			err("Compiler error: tried dereferencing non-pointer Type %s",
 				to_str().c_str());
 		}
 
-		Type type = *this;
-		type.array_sizes.erase(type.array_sizes.begin());
-		return type;
+		uint new_arr_sz_idx          = type_array_sizes.size();
+		std::vector<uint> new_arr_sz = type_array_sizes[array_sizes_idx];
+		new_arr_sz.erase(new_arr_sz.begin());
+		type_array_sizes.push_back(new_arr_sz);
+
+		return Type(value, size, new_arr_sz_idx);
 	}
 
 	/**
@@ -225,11 +169,12 @@ struct Type
 		// until we find a size that is zero, indicating
 		// a pointer.
 
+		const std::vector<uint> &array_sz = type_array_sizes[array_sizes_idx];
 		for (size_t i = pointer_depth(); i != 0; i--)
 		{
-			if (array_sizes[i - 1] == 0)
+			if (array_sz[i - 1] == 0)
 				break;
-			n_members *= array_sizes[i - 1];
+			n_members *= array_sz[i - 1];
 			dim++;
 		}
 
@@ -253,9 +198,12 @@ struct Type
 	bool
 	is_array() const
 	{
-		if (array_sizes.size() == 0)
+		if (array_sizes_idx == 0)
 			return false;
-		return array_sizes.back() != 0;
+		const std::vector<uint> &array_sz = type_array_sizes[array_sizes_idx];
+		if (array_sz.size() == 0)
+			return false;
+		return array_sz.back() != 0;
 	}
 
 	/**
@@ -265,7 +213,7 @@ struct Type
 	bool
 	is_class() const
 	{
-		if (value != Type::USER_DEFINED_CLASS)
+		if (value < BUILTIN_TYPE_END)
 			return false;
 		return pointer_depth() == 0;
 	}
@@ -277,7 +225,27 @@ struct Type
 	bool
 	is_integer() const
 	{
-		return value == Type::SIGNED_INTEGER || value == Type::UNSIGNED_INTEGER;
+		switch (value)
+		{
+		case V0:
+		case U8:
+		case I8:
+		case U16:
+		case I16:
+		case U32:
+		case I32:
+		case U64:
+		case I64:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	bool
+	is_float() const
+	{
+		return value == F32 || value == F64;
 	}
 
 	/**
@@ -285,44 +253,44 @@ struct Type
 	 * Only the standard primitive Tea types are supported:
 	 * u8, i8, u16, u32, i32, u64, i64, f32, f64, void.
 	 * @param str The string to convert.
-	 * @param array_sizes The `array_sizes` of the type.
+	 * @param array_sizes_idx
 	 * @returns The type parsed from the string.
 	 */
 	static Type
-	from_string(std::string str, const std::vector<size_t> &array_sizes)
+	from_string(std::string str, uint array_sizes_idx)
 	{
 		if (str == "u8")
-			return Type(Type::UNSIGNED_INTEGER, 1, array_sizes);
+			return Type(U8, 1, array_sizes_idx);
 
 		if (str == "i8")
-			return Type(Type::SIGNED_INTEGER, 1, array_sizes);
+			return Type(I8, 1, array_sizes_idx);
 
 		if (str == "u16")
-			return Type(Type::UNSIGNED_INTEGER, 2, array_sizes);
+			return Type(U16, 2, array_sizes_idx);
 
 		if (str == "i16")
-			return Type(Type::SIGNED_INTEGER, 2, array_sizes);
+			return Type(I16, 2, array_sizes_idx);
 
 		if (str == "u32")
-			return Type(Type::UNSIGNED_INTEGER, 4, array_sizes);
+			return Type(U32, 4, array_sizes_idx);
 
 		if (str == "i32")
-			return Type(Type::SIGNED_INTEGER, 4, array_sizes);
+			return Type(I32, 4, array_sizes_idx);
 
 		if (str == "u64")
-			return Type(Type::UNSIGNED_INTEGER, 8, array_sizes);
+			return Type(U64, 8, array_sizes_idx);
 
 		if (str == "i64")
-			return Type(Type::SIGNED_INTEGER, 8, array_sizes);
+			return Type(I64, 8, array_sizes_idx);
 
 		if (str == "f32")
-			return Type(Type::FLOATING_POINT, 4, array_sizes);
+			return Type(F32, 4, array_sizes_idx);
 
 		if (str == "f64")
-			return Type(Type::FLOATING_POINT, 8, array_sizes);
+			return Type(F64, 8, array_sizes_idx);
 
 		if (str == "v0")
-			return Type(Type::UNSIGNED_INTEGER, 0, array_sizes);
+			return Type(V0, 0, array_sizes_idx);
 
 		err("Wasn't able to convert \"%s\" to a Type", str.c_str());
 	}
@@ -333,8 +301,23 @@ struct Type
 	bool
 	is_primitive() const
 	{
-		return value == Type::UNSIGNED_INTEGER || value == Type::SIGNED_INTEGER
-			|| value == Type::FLOATING_POINT;
+		switch (value)
+		{
+		case V0:
+		case U8:
+		case I8:
+		case U16:
+		case I16:
+		case U32:
+		case I32:
+		case U64:
+		case I64:
+		case F32:
+		case F64:
+			return true;
+		default:
+			return false;
+		}
 	}
 
 	/**
@@ -388,7 +371,7 @@ struct Type
 
 			// Floating point types can only fit in other floating point types.
 
-			if (value == Type::FLOATING_POINT && type.is_integer())
+			if ((value == F32 || value == F64) && type.is_integer())
 			{
 				if (size == 4)
 					return Fits::FLT_32_TO_INT_CAST_NEEDED;
@@ -398,7 +381,7 @@ struct Type
 
 			// Integer types can only fit in other integer types.
 
-			if (is_integer() && type.value == Type::FLOATING_POINT)
+			if (is_integer() && (type.value == F32 || type.value == F64))
 			{
 				if (type.size == 4)
 					return Fits::INT_TO_FLT_32_CAST_NEEDED;
@@ -412,14 +395,9 @@ struct Type
 		// If we're dealing with a user defined class, we can
 		// only fit if the other type is from the same class.
 
-		if (value == Type::USER_DEFINED_CLASS)
+		if (value >= BUILTIN_TYPE_END)
 		{
-			if (type.value != Type::USER_DEFINED_CLASS)
-			{
-				return Fits::NO;
-			}
-
-			if (class_id != type.class_id)
+			if (value != type.value)
 			{
 				return Fits::NO;
 			}
@@ -446,39 +424,74 @@ struct Type
 
 		switch (value)
 		{
-		default:
-		case Type::UNDEFINED:
+		case UNDEFINED:
 			s += "undefined";
 			break;
 
-		case Type::SIGNED_INTEGER:
-			s += "int" + std::to_string(size * 8);
+		case V0:
+			s += "v0";
 			break;
 
-		case Type::UNSIGNED_INTEGER:
-			s += "uint" + std::to_string(size * 8);
+		case U8:
+			s += "u8";
 			break;
 
-		case Type::FLOATING_POINT:
-			s += "float" + std::to_string(size * 8);
+		case I8:
+			s += "i8";
 			break;
 
-		case Type::USER_DEFINED_CLASS:
-			s += "class(" + std::to_string(class_id) + ")";
+		case U16:
+			s += "u16";
+			break;
+
+		case I16:
+			s += "i16";
+			break;
+
+		case U32:
+			s += "u32";
+			break;
+
+		case I32:
+			s += "i32";
+			break;
+
+		case U64:
+			s += "u64";
+			break;
+
+		case I64:
+			s += "i64";
+			break;
+
+		case F32:
+			s += "f32";
+			break;
+
+		case F64:
+			s += "f64";
+			break;
+
+		default:
+			s += "class(" + std::to_string(value) + ")";
 			break;
 		}
 
+		if (array_sizes_idx == 0)
+			return s;
+
 		// Add the array sizes to the string.
 
-		for (size_t i = 0; i < array_sizes.size(); i++)
+		const std::vector<uint> &array_sz = type_array_sizes[array_sizes_idx];
+		for (size_t i = 0; i < array_sz.size(); i++)
 		{
-			if (array_sizes[i] == 0)
+			if (array_sz[i] == 0)
 			{
 				s += '*';
 			}
 			else
 			{
-				s += '[' + std::to_string(array_sizes[i]) + ']';
+				s += '[' + std::to_string(array_sz[i]) + ']';
 			}
 		}
 
@@ -497,57 +510,36 @@ struct Type
 		if (pointer_depth() > 0)
 			return DebuggerSymbolType::POINTER;
 
-		if (value == Type::UNSIGNED_INTEGER)
+		switch (value)
 		{
-			switch (size)
-			{
-			case 1:
-				return DebuggerSymbolType::U8;
-			case 2:
-				return DebuggerSymbolType::U16;
-			case 4:
-				return DebuggerSymbolType::U32;
-			case 8:
-				return DebuggerSymbolType::U64;
-			default:
-				return DebuggerSymbolType::UNDEFINED;
-			}
-		}
-		else if (value == Type::SIGNED_INTEGER)
-		{
-			switch (size)
-			{
-			case 1:
-				return DebuggerSymbolType::I8;
-			case 2:
-				return DebuggerSymbolType::I16;
-			case 4:
-				return DebuggerSymbolType::I32;
-			case 8:
-				return DebuggerSymbolType::I64;
-			default:
-				return DebuggerSymbolType::UNDEFINED;
-			}
-		}
-		else if (value == Type::FLOATING_POINT)
-		{
-			switch (size)
-			{
-			case 4:
-				return DebuggerSymbolType::F32;
-			case 8:
-				return DebuggerSymbolType::F64;
-			default:
-				return DebuggerSymbolType::UNDEFINED;
-			}
-		}
-		else if (value == Type::USER_DEFINED_CLASS)
-		{
+		case V0:
+			return DebuggerSymbolType::UNDEFINED;
+		case U8:
+			return DebuggerSymbolType::U8;
+		case I8:
+			return DebuggerSymbolType::I8;
+		case U16:
+			return DebuggerSymbolType::U16;
+		case I16:
+			return DebuggerSymbolType::I16;
+		case U32:
+			return DebuggerSymbolType::U32;
+		case I32:
+			return DebuggerSymbolType::I32;
+		case U64:
+			return DebuggerSymbolType::U64;
+		case I64:
+			return DebuggerSymbolType::I64;
+		case F32:
+			return DebuggerSymbolType::F32;
+		case F64:
+			return DebuggerSymbolType::F64;
+		default:
 			return DebuggerSymbolType::USER_DEFINED_CLASS;
 		}
-
-		return DebuggerSymbolType::UNDEFINED;
 	}
 };
+
+constexpr int TYPE_SIZE = sizeof(Type);
 
 #endif

@@ -104,10 +104,10 @@ struct VariableDeclaration final : public ASTNode
 
 		type = variable_definition.id.type;
 
-		if (type == Type::USER_DEFINED_CLASS)
+		if (type.value >= BUILTIN_TYPE_END)
 		{
 			class_definition = std::make_unique<ClassDefinition>(
-				type_check_state.classes[type.class_id]);
+				type_check_state.classes[type.value]);
 		}
 	}
 
@@ -117,7 +117,7 @@ struct VariableDeclaration final : public ASTNode
 	{
 		uint8_t init_value_reg;
 
-		if (type == Type::USER_DEFINED_CLASS)
+		if (type.value > BUILTIN_TYPE_END)
 		{
 			return;
 		}

@@ -8,11 +8,11 @@
 struct TypeName final : public ASTNode
 {
 	std::string type_name;
-	std::optional<uint32_t> class_id;
-	std::vector<size_t> array_sizes;
+	std::optional<uint> class_id;
+	std::vector<uint> array_sizes;
 
 	TypeName(CompactToken accountable_token, std::string type_name,
-		std::optional<uint32_t> class_id, std::vector<size_t> &&array_sizes)
+		std::optional<uint> class_id, std::vector<uint> &&array_sizes)
 		: ASTNode(std::move(accountable_token), TYPE_NAME),
 		  type_name(std::move(type_name)),
 		  class_id(std::move(class_id)),
@@ -68,18 +68,20 @@ struct TypeName final : public ASTNode
 	type_check(TypeCheckState &type_check_state)
 		override
 	{
+		uint array_sizes_idx = type_array_sizes.size();
+		type_array_sizes.push_back(array_sizes);
+
 		if (class_id.has_value())
 		{
 			const ClassDefinition &class_def = type_check_state.classes[class_id.value()];
 			size_t byte_size                 = class_def.byte_size;
 
-			type          = Type(Type::USER_DEFINED_CLASS, byte_size, array_sizes);
-			type.class_id = class_id.value();
+			type = Type(class_id.value(), byte_size, array_sizes_idx);
 
 			return;
 		}
 
-		type = Type::from_string(type_name, array_sizes);
+		type = Type::from_string(type_name, array_sizes_idx);
 	}
 
 	void

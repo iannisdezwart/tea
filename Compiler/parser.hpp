@@ -432,7 +432,7 @@ struct Parser
 				Token class_name_token = tokens[j + 1];
 				assert_token_type(class_name_token, IDENTIFIER);
 
-				uint32_t class_id                        = class_name_to_id.size();
+				uint32_t class_id                        = class_name_to_id.size() + BUILTIN_TYPE_END;
 				class_name_to_id[class_name_token.value] = class_id;
 				class_id_to_name[class_id]               = class_name_token.value;
 			}
@@ -592,7 +592,7 @@ struct Parser
 
 		// TODO: add generics and references maybe
 
-		std::vector<size_t> array_sizes;
+		std::vector<uint> array_sizes;
 		Token token;
 
 		// Scan all pointer and array specifiers.
@@ -609,7 +609,7 @@ struct Parser
 
 				Token size_token = next_token();
 				assert_token_type(size_token, LITERAL_NUMBER);
-				array_sizes.push_back(stoull(size_token.value));
+				array_sizes.push_back(stoul(size_token.value));
 
 				Token array_size_end_token = next_token();
 				assert_token_type(array_size_end_token, SPECIAL_CHARACTER);
@@ -893,13 +893,13 @@ struct Parser
 				type_name = std::make_unique<TypeName>(
 					CompactToken(expr_token), expr_token.value,
 					std::make_optional(class_name_to_id[expr_token.value]),
-					std::vector<size_t> {});
+					std::vector<uint> {});
 			}
 			else
 			{
 				type_name = std::make_unique<TypeName>(
 					CompactToken(expr_token), expr_token.value, std::nullopt,
-					std::vector<size_t> {});
+					std::vector<uint> {});
 			}
 
 			expression = std::make_unique<CastExpression>(

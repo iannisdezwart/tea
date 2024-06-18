@@ -1,0 +1,2980 @@
+classes
+	$T_InitDesg
+		fields
+			POINTER:$T_InitDesg $I_next
+			I32:$T_anon_Lqne5c $I_idx
+			POINTER:$T_Member $I_member
+			POINTER:$T_Obj $I_var
+	$T_Initializer
+		fields
+			POINTER:$T_Initializer $I_next
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Token $I_tok
+			I8:$T_anon_Lqne5c $I_is_flexible
+			POINTER:$T_Node $I_expr
+			POINTER:$T_Initializer $I_children
+			POINTER:$T_Member $I_mem
+	$T_Member
+		fields
+			POINTER:$T_Member $I_next
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Token $I_name
+			I32:$T_anon_Lqne5c $I_idx
+			I32:$T_anon_Lqne5c $I_align
+			I32:$T_anon_Lqne5c $I_offset
+			I8:$T_anon_Lqne5c $I_is_bitfield
+			I32:$T_anon_Lqne5c $I_bit_offset
+			I32:$T_anon_Lqne5c $I_bit_width
+	$T_Node
+		fields
+			I32:$T_anon_Lqne5c $I_kind
+			POINTER:$T_Node $I_next
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Node $I_lhs
+			POINTER:$T_Node $I_rhs
+			POINTER:$T_Node $I_cond
+			POINTER:$T_Node $I_then
+			POINTER:$T_Node $I_els
+			POINTER:$T_Node $I_init
+			POINTER:$T_Node $I_inc
+			POINTER:$T_anon_Lqne5c $I_brk_label
+			POINTER:$T_anon_Lqne5c $I_cont_label
+			POINTER:$T_Node $I_body
+			POINTER:$T_Member $I_member
+			POINTER:$T_Type $I_func_ty
+			POINTER:$T_Node $I_args
+			I8:$T_anon_Lqne5c $I_pass_by_stack
+			POINTER:$T_Obj $I_ret_buffer
+			POINTER:$T_anon_Lqne5c $I_label
+			POINTER:$T_anon_Lqne5c $I_unique_label
+			POINTER:$T_Node $I_goto_next
+			POINTER:$T_Node $I_case_next
+			POINTER:$T_Node $I_default_case
+			I32:$T_anon_Lqne5c $I_begin
+			I32:$T_anon_Lqne5c $I_end
+			POINTER:$T_anon_Lqne5c $I_asm_str
+			POINTER:$T_Node $I_cas_addr
+			POINTER:$T_Node $I_cas_old
+			POINTER:$T_Node $I_cas_new
+			POINTER:$T_Obj $I_atomic_addr
+			POINTER:$T_Node $I_atomic_expr
+			POINTER:$T_Obj $I_var
+			I64:$T_anon_Lqne5c $I_val
+			F64:$T_anon_Lqne5c $I_fval
+	$T_Obj
+		fields
+			POINTER:$T_Obj $I_next
+			POINTER:$T_anon_Lqne5c $I_name
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Token $I_tok
+			I8:$T_anon_Lqne5c $I_is_local
+			I32:$T_anon_Lqne5c $I_align
+			I32:$T_anon_Lqne5c $I_offset
+			I8:$T_anon_Lqne5c $I_is_function
+			I8:$T_anon_Lqne5c $I_is_definition
+			I8:$T_anon_Lqne5c $I_is_static
+			I8:$T_anon_Lqne5c $I_is_tentative
+			I8:$T_anon_Lqne5c $I_is_tls
+			POINTER:$T_anon_Lqne5c $I_init_data
+			POINTER:$T_Relocation $I_rel
+			I8:$T_anon_Lqne5c $I_is_inline
+			POINTER:$T_Obj $I_params
+			POINTER:$T_Node $I_body
+			POINTER:$T_Obj $I_locals
+			POINTER:$T_Obj $I_va_area
+			POINTER:$T_Obj $I_alloca_bottom
+			I32:$T_anon_Lqne5c $I_stack_size
+			I8:$T_anon_Lqne5c $I_is_live
+			I8:$T_anon_Lqne5c $I_is_root
+			CLASS:$T_anon_lhBDg6 $I_refs
+	$T_Relocation
+		fields
+			POINTER:$T_Relocation $I_next
+			I32:$T_anon_Lqne5c $I_offset
+			POINTER:$T_anon_Lqne5c $I_label
+			I32:$T_anon_Lqne5c $I_addend
+	$T_Scope
+		fields
+			POINTER:$T_Scope $I_next
+			CLASS:$T_anon_ijePDX $I_vars
+			CLASS:$T_anon_ijePDX $I_tags
+	$T_Token
+		fields
+			I32:$T_anon_Lqne5c $I_kind
+			POINTER:$T_Token $I_next
+			I64:$T_anon_Lqne5c $I_val
+			F64:$T_anon_Lqne5c $I_fval
+			POINTER:$T_anon_Lqne5c $I_loc
+			I32:$T_anon_Lqne5c $I_len
+			POINTER:$T_Type $I_ty
+			POINTER:$T_anon_Lqne5c $I_str
+			POINTER:$T_anon_9fyvgE $I_file
+			POINTER:$T_anon_Lqne5c $I_filename
+			I32:$T_anon_Lqne5c $I_line_no
+			I32:$T_anon_Lqne5c $I_line_delta
+			I8:$T_anon_Lqne5c $I_at_bol
+			I8:$T_anon_Lqne5c $I_has_space
+			POINTER:$T_Token $I_origin
+	$T_Type
+		fields
+			I32:$T_anon_Lqne5c $I_kind
+			I32:$T_anon_Lqne5c $I_size
+			I32:$T_anon_Lqne5c $I_align
+			I8:$T_anon_Lqne5c $I_is_unsigned
+			I8:$T_anon_Lqne5c $I_is_atomic
+			POINTER:$T_Type $I_origin
+			POINTER:$T_Type $I_base
+			POINTER:$T_Token $I_name
+			POINTER:$T_Token $I_name_pos
+			I32:$T_anon_Lqne5c $I_array_len
+			POINTER:$T_Node $I_vla_len
+			POINTER:$T_Obj $I_vla_size
+			POINTER:$T_Member $I_members
+			I8:$T_anon_Lqne5c $I_is_flexible
+			I8:$T_anon_Lqne5c $I_is_packed
+			POINTER:$T_Type $I_return_ty
+			POINTER:$T_Type $I_params
+			I8:$T_anon_Lqne5c $I_is_variadic
+			POINTER:$T_Type $I_next
+	$T___arm_legacy_debug_state
+		fields
+			POINTER:$T_anon_Lqne5c $I___bvr
+			POINTER:$T_anon_Lqne5c $I___bcr
+			POINTER:$T_anon_Lqne5c $I___wvr
+			POINTER:$T_anon_Lqne5c $I___wcr
+	$T___arm_pagein_state
+		fields
+			I32:$T_anon_Lqne5c $I___pagein_error
+	$T___darwin_arm_cpmu_state64
+		fields
+			POINTER:$T_anon_Lqne5c $I___ctrs
+	$T___darwin_arm_debug_state32
+		fields
+			POINTER:$T_anon_Lqne5c $I___bvr
+			POINTER:$T_anon_Lqne5c $I___bcr
+			POINTER:$T_anon_Lqne5c $I___wvr
+			POINTER:$T_anon_Lqne5c $I___wcr
+			U64:$T_anon_Lqne5c $I___mdscr_el1
+	$T___darwin_arm_debug_state64
+		fields
+			POINTER:$T_anon_Lqne5c $I___bvr
+			POINTER:$T_anon_Lqne5c $I___bcr
+			POINTER:$T_anon_Lqne5c $I___wvr
+			POINTER:$T_anon_Lqne5c $I___wcr
+			U64:$T_anon_Lqne5c $I___mdscr_el1
+	$T___darwin_arm_exception_state
+		fields
+			U32:$T_anon_Lqne5c $I___exception
+			U32:$T_anon_Lqne5c $I___fsr
+			U32:$T_anon_Lqne5c $I___far
+	$T___darwin_arm_exception_state64
+		fields
+			U64:$T_anon_Lqne5c $I___far
+			U32:$T_anon_Lqne5c $I___esr
+			U32:$T_anon_Lqne5c $I___exception
+	$T___darwin_arm_neon_state
+		fields
+			POINTER:$T_anon_Lqne5c $I___v
+			U32:$T_anon_Lqne5c $I___fpsr
+			U32:$T_anon_Lqne5c $I___fpcr
+	$T___darwin_arm_neon_state64
+		fields
+			POINTER:$T_anon_Lqne5c $I___v
+			U32:$T_anon_Lqne5c $I___fpsr
+			U32:$T_anon_Lqne5c $I___fpcr
+	$T___darwin_arm_thread_state
+		fields
+			POINTER:$T_anon_Lqne5c $I___r
+			U32:$T_anon_Lqne5c $I___sp
+			U32:$T_anon_Lqne5c $I___lr
+			U32:$T_anon_Lqne5c $I___pc
+			U32:$T_anon_Lqne5c $I___cpsr
+	$T___darwin_arm_thread_state64
+		fields
+			POINTER:$T_anon_Lqne5c $I___x
+			U64:$T_anon_Lqne5c $I___fp
+			U64:$T_anon_Lqne5c $I___lr
+			U64:$T_anon_Lqne5c $I___sp
+			U64:$T_anon_Lqne5c $I___pc
+			U32:$T_anon_Lqne5c $I___cpsr
+			U32:$T_anon_Lqne5c $I___pad
+	$T___darwin_arm_vfp_state
+		fields
+			POINTER:$T_anon_Lqne5c $I___r
+			U32:$T_anon_Lqne5c $I___fpscr
+	$T___darwin_mcontext32
+		fields
+			CLASS:$T___darwin_arm_exception_state $I___es
+			CLASS:$T___darwin_arm_thread_state $I___ss
+			CLASS:$T___darwin_arm_vfp_state $I___fs
+	$T___darwin_mcontext64
+		fields
+			CLASS:$T___darwin_arm_exception_state64 $I___es
+			CLASS:$T___darwin_arm_thread_state64 $I___ss
+			CLASS:$T___darwin_arm_neon_state64 $I___ns
+	$T___darwin_pthread_handler_rec
+		fields
+			POINTER:$T_anon_Lqne5c $I___arg
+			POINTER:$T___darwin_pthread_handler_rec $I___next
+	$T___darwin_sigaltstack
+		fields
+			POINTER:$T_anon_Lqne5c $I_ss_sp
+			U32:$T_anon_Lqne5c $I_ss_size
+			I32:$T_anon_Lqne5c $I_ss_flags
+	$T___darwin_ucontext
+		fields
+			I32:$T_anon_Lqne5c $I_uc_onstack
+			U32:$T_anon_Lqne5c $I_uc_sigmask
+			CLASS:$T___darwin_sigaltstack $I_uc_stack
+			POINTER:$T___darwin_ucontext $I_uc_link
+			U32:$T_anon_Lqne5c $I_uc_mcsize
+			POINTER:$T___darwin_mcontext64 $I_uc_mcontext
+	$T___sFILE
+		fields
+			POINTER:$T_anon_Lqne5c $I__p
+			I32:$T_anon_Lqne5c $I__r
+			I32:$T_anon_Lqne5c $I__w
+			I16:$T_anon_Lqne5c $I__flags
+			I16:$T_anon_Lqne5c $I__file
+			CLASS:$T___sbuf $I__bf
+			I32:$T_anon_Lqne5c $I__lbfsize
+			POINTER:$T_anon_Lqne5c $I__cookie
+			CLASS:$T___sbuf $I__ub
+			POINTER:$T___sFILEX $I__extra
+			I32:$T_anon_Lqne5c $I__ur
+			POINTER:$T_anon_Lqne5c $I__ubuf
+			POINTER:$T_anon_Lqne5c $I__nbuf
+			CLASS:$T___sbuf $I__lb
+			I32:$T_anon_Lqne5c $I__blksize
+			I64:$T_anon_Lqne5c $I__offset
+	$T___sFILEX
+	$T___sbuf
+		fields
+			POINTER:$T_anon_Lqne5c $I__base
+			I32:$T_anon_Lqne5c $I__size
+	$T___sigaction
+		fields
+			CLASS:$T___sigaction_u $I___sigaction_u
+			U32:$T_anon_Lqne5c $I_sa_mask
+			I32:$T_anon_Lqne5c $I_sa_flags
+	$T___sigaction_u
+	$T___siginfo
+		fields
+			I32:$T_anon_Lqne5c $I_si_signo
+			I32:$T_anon_Lqne5c $I_si_errno
+			I32:$T_anon_Lqne5c $I_si_code
+			I32:$T_anon_Lqne5c $I_si_pid
+			U32:$T_anon_Lqne5c $I_si_uid
+			I32:$T_anon_Lqne5c $I_si_status
+			POINTER:$T_anon_Lqne5c $I_si_addr
+			CLASS:$T_sigval $I_si_value
+			I32:$T_anon_Lqne5c $I_si_band
+			POINTER:$T_anon_Lqne5c $I___pad
+	$T__opaque_pthread_attr_t
+		fields
+			I32:$T_anon_Lqne5c $I___sig
+			POINTER:$T_anon_Lqne5c $I___opaque
+	$T__opaque_pthread_cond_t
+		fields
+			I32:$T_anon_Lqne5c $I___sig
+			POINTER:$T_anon_Lqne5c $I___opaque
+	$T__opaque_pthread_condattr_t
+		fields
+			I32:$T_anon_Lqne5c $I___sig
+			POINTER:$T_anon_Lqne5c $I___opaque
+	$T__opaque_pthread_mutex_t
+		fields
+			I32:$T_anon_Lqne5c $I___sig
+			POINTER:$T_anon_Lqne5c $I___opaque
+	$T__opaque_pthread_mutexattr_t
+		fields
+			I32:$T_anon_Lqne5c $I___sig
+			POINTER:$T_anon_Lqne5c $I___opaque
+	$T__opaque_pthread_once_t
+		fields
+			I32:$T_anon_Lqne5c $I___sig
+			POINTER:$T_anon_Lqne5c $I___opaque
+	$T__opaque_pthread_rwlock_t
+		fields
+			I32:$T_anon_Lqne5c $I___sig
+			POINTER:$T_anon_Lqne5c $I___opaque
+	$T__opaque_pthread_rwlockattr_t
+		fields
+			I32:$T_anon_Lqne5c $I___sig
+			POINTER:$T_anon_Lqne5c $I___opaque
+	$T__opaque_pthread_t
+		fields
+			I32:$T_anon_Lqne5c $I___sig
+			POINTER:$T___darwin_pthread_handler_rec $I___cleanup_stack
+			POINTER:$T_anon_Lqne5c $I___opaque
+	$T_anon_1cATxe
+		fields
+			POINTER:$T_anon_Lqne5c $I___name
+			U32:$T_anon_Lqne5c $I___mask
+	$T_anon_9Xm4fk
+		fields
+			I8:$T_anon_Lqne5c $I_is_typedef
+			I8:$T_anon_Lqne5c $I_is_static
+			I8:$T_anon_Lqne5c $I_is_extern
+			I8:$T_anon_Lqne5c $I_is_inline
+			I8:$T_anon_Lqne5c $I_is_tls
+			I32:$T_anon_Lqne5c $I_align
+	$T_anon_9fyvgE
+		fields
+			POINTER:$T_anon_Lqne5c $I_name
+			I32:$T_anon_Lqne5c $I_file_no
+			POINTER:$T_anon_Lqne5c $I_contents
+			POINTER:$T_anon_Lqne5c $I_display_name
+			I32:$T_anon_Lqne5c $I_line_delta
+	$T_anon_JwLyQZ
+		fields
+			I32:$T_anon_Lqne5c $I___min
+			I32:$T_anon_Lqne5c $I___max
+			I32:$T_anon_Lqne5c $I___map
+			POINTER:$T_anon_Lqne5c $I___types
+	$T_anon_KAyajZ
+		fields
+			U32:$T_anon_Lqne5c $I_gl_pathc
+			I32:$T_anon_Lqne5c $I_gl_matchc
+			U32:$T_anon_Lqne5c $I_gl_offs
+			I32:$T_anon_Lqne5c $I_gl_flags
+			POINTER:$T_anon_Lqne5c $I_gl_pathv
+	$T_anon_Lqne5c
+	$T_anon_XcpZXu
+		fields
+			I32:$T_anon_Lqne5c $I_quot
+			I32:$T_anon_Lqne5c $I_rem
+	$T_anon_YcSHOx
+		fields
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Type $I_type_def
+			POINTER:$T_Type $I_enum_ty
+			I32:$T_anon_Lqne5c $I_enum_val
+	$T_anon_YwHSZM
+	$T_anon_ek9iKe
+		fields
+			I32:$T_anon_Lqne5c $I_quot
+			I32:$T_anon_Lqne5c $I_rem
+	$T_anon_hrMWoN
+		fields
+			POINTER:$T_anon_Lqne5c $I_key
+			I32:$T_anon_Lqne5c $I_keylen
+			POINTER:$T_anon_Lqne5c $I_val
+	$T_anon_i5e1WI
+		fields
+			POINTER:$T_anon_Lqne5c $I___magic
+			POINTER:$T_anon_Lqne5c $I___encoding
+			I32:$T_anon_Lqne5c $I___invalid_rune
+			POINTER:$T_anon_Lqne5c $I___runetype
+			POINTER:$T_anon_Lqne5c $I___maplower
+			POINTER:$T_anon_Lqne5c $I___mapupper
+			CLASS:$T_anon_jWXFr5 $I___runetype_ext
+			CLASS:$T_anon_jWXFr5 $I___maplower_ext
+			CLASS:$T_anon_jWXFr5 $I___mapupper_ext
+			POINTER:$T_anon_Lqne5c $I___variable
+			I32:$T_anon_Lqne5c $I___variable_len
+			I32:$T_anon_Lqne5c $I___ncharclasses
+			POINTER:$T_anon_1cATxe $I___charclasses
+	$T_anon_ijePDX
+		fields
+			POINTER:$T_anon_hrMWoN $I_buckets
+			I32:$T_anon_Lqne5c $I_capacity
+			I32:$T_anon_Lqne5c $I_used
+	$T_anon_jWXFr5
+		fields
+			I32:$T_anon_Lqne5c $I___nranges
+			POINTER:$T_anon_JwLyQZ $I___ranges
+	$T_anon_lhBDg6
+		fields
+			POINTER:$T_anon_Lqne5c $I_data
+			I32:$T_anon_Lqne5c $I_capacity
+			I32:$T_anon_Lqne5c $I_len
+	$T_anon_npRFIr
+		fields
+			POINTER:$T_anon_Lqne5c $I___mbstate8
+			I64:$T_anon_Lqne5c $I__mbstateL
+	$T_anon_wV1dbA
+		fields
+			I64:$T_anon_Lqne5c $I_quot
+			I64:$T_anon_Lqne5c $I_rem
+	$T_rlimit
+		fields
+			U64:$T_anon_Lqne5c $I_rlim_cur
+			U64:$T_anon_Lqne5c $I_rlim_max
+	$T_rusage
+		fields
+			CLASS:$T_timeval $I_ru_utime
+			CLASS:$T_timeval $I_ru_stime
+			POINTER:$T_anon_Lqne5c $I_ru_opaque
+	$T_sigaction
+		fields
+			CLASS:$T___sigaction_u $I___sigaction_u
+			U32:$T_anon_Lqne5c $I_sa_mask
+			I32:$T_anon_Lqne5c $I_sa_flags
+	$T_sigevent
+		fields
+			I32:$T_anon_Lqne5c $I_sigev_notify
+			I32:$T_anon_Lqne5c $I_sigev_signo
+			CLASS:$T_sigval $I_sigev_value
+			POINTER:$T__opaque_pthread_attr_t $I_sigev_notify_attributes
+	$T_sigstack
+		fields
+			POINTER:$T_anon_Lqne5c $I_ss_sp
+			I32:$T_anon_Lqne5c $I_ss_onstack
+	$T_sigval
+		fields
+			I32:$T_anon_Lqne5c $I_sival_int
+			POINTER:$T_anon_Lqne5c $I_sival_ptr
+	$T_stat
+		fields
+			I32:$T_anon_Lqne5c $I_st_dev
+			U16:$T_anon_Lqne5c $I_st_mode
+			U16:$T_anon_Lqne5c $I_st_nlink
+			U64:$T_anon_Lqne5c $I_st_ino
+			U32:$T_anon_Lqne5c $I_st_uid
+			U32:$T_anon_Lqne5c $I_st_gid
+			I32:$T_anon_Lqne5c $I_st_rdev
+			I32:$T_anon_Lqne5c $I_st_atime
+			I32:$T_anon_Lqne5c $I_st_atimensec
+			I32:$T_anon_Lqne5c $I_st_mtime
+			I32:$T_anon_Lqne5c $I_st_mtimensec
+			I32:$T_anon_Lqne5c $I_st_ctime
+			I32:$T_anon_Lqne5c $I_st_ctimensec
+			I32:$T_anon_Lqne5c $I_st_birthtime
+			I32:$T_anon_Lqne5c $I_st_birthtimensec
+			I64:$T_anon_Lqne5c $I_st_size
+			I64:$T_anon_Lqne5c $I_st_blocks
+			I32:$T_anon_Lqne5c $I_st_blksize
+			U32:$T_anon_Lqne5c $I_st_flags
+			U32:$T_anon_Lqne5c $I_st_gen
+			I32:$T_anon_Lqne5c $I_st_lspare
+			POINTER:$T_anon_Lqne5c $I_st_qspare
+	$T_timespec
+		fields
+			I32:$T_anon_Lqne5c $I_tv_sec
+			I32:$T_anon_Lqne5c $I_tv_nsec
+	$T_timeval
+		fields
+			I32:$T_anon_Lqne5c $I_tv_sec
+			I32:$T_anon_Lqne5c $I_tv_usec
+	$T_tm
+		fields
+			I32:$T_anon_Lqne5c $I_tm_sec
+			I32:$T_anon_Lqne5c $I_tm_min
+			I32:$T_anon_Lqne5c $I_tm_hour
+			I32:$T_anon_Lqne5c $I_tm_mday
+			I32:$T_anon_Lqne5c $I_tm_mon
+			I32:$T_anon_Lqne5c $I_tm_year
+			I32:$T_anon_Lqne5c $I_tm_wday
+			I32:$T_anon_Lqne5c $I_tm_yday
+			I32:$T_anon_Lqne5c $I_tm_isdst
+			I32:$T_anon_Lqne5c $I_tm_gmtoff
+			POINTER:$T_anon_Lqne5c $I_tm_zone
+functions
+	$I__Exit
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I____runetype
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I____tolower
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I____toupper
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I___assert_rtn
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+			POINTER:$T_anon_Lqne5c $A_3
+	$I___error
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I___isctype
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+			U32:$T_anon_Lqne5c $I__f
+	$I___istype
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+			U32:$T_anon_Lqne5c $I__f
+	$I___maskrune
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+	$I___snprintf_chk
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+			U32:$T_anon_Lqne5c $A_3
+			POINTER:$T_anon_Lqne5c $A_4
+	$I___sprintf_chk
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+			POINTER:$T_anon_Lqne5c $A_3
+	$I___sputc
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+			POINTER:$T___sFILE $I__p
+	$I___srget
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I___svfscanf
+		parameters
+			POINTER:$T___sFILE $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			CLASS:$T_anon_YwHSZM $A_2
+	$I___swbuf
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T___sFILE $A_1
+	$I___tolower
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I___toupper
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I___vsnprintf_chk
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+			U32:$T_anon_Lqne5c $A_3
+			POINTER:$T_anon_Lqne5c $A_4
+			CLASS:$T_anon_YwHSZM $A_5
+	$I___vsprintf_chk
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+			POINTER:$T_anon_Lqne5c $A_3
+			CLASS:$T_anon_YwHSZM $A_4
+	$I___wcwidth
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+		locals
+			U32:$T_anon_Lqne5c $I__x
+	$I__exit
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_a64l
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_abort
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_abs
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_abstract_declarator
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+		locals
+			POINTER:$T_Token $I_start
+			CLASS:$T_Type $I_dummy
+	$I_access
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+	$I_add
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_start
+	$I_add_type
+		parameters
+			POINTER:$T_Node $I_node
+	$I_alarm
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+	$I_align_down
+		parameters
+			I32:$T_anon_Lqne5c $I_n
+			I32:$T_anon_Lqne5c $I_align
+	$I_align_to
+		parameters
+			I32:$T_anon_Lqne5c $I_n
+			I32:$T_anon_Lqne5c $I_align
+	$I_aligned_alloc
+		parameters
+			U32:$T_anon_Lqne5c $I___alignment
+			U32:$T_anon_Lqne5c $I___size
+	$I_array_designator
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+			POINTER:$T_anon_Lqne5c $I_begin
+			POINTER:$T_anon_Lqne5c $I_end
+	$I_array_dimensions
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+		locals
+			POINTER:$T_Node $I_expr
+	$I_array_initializer1
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Initializer $I_init
+		locals
+			I32:$T_anon_Lqne5c $I_len
+			I8:$T_anon_Lqne5c $I_first
+			I32:$T_anon_Lqne5c $I_len
+			I32:$T_anon_Lqne5c $I_i
+			I32:$T_anon_Lqne5c $I_begin
+			I32:$T_anon_Lqne5c $I_end
+			POINTER:$T_Token $I_tok2
+			I32:$T_anon_Lqne5c $I_j
+	$I_array_initializer2
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Initializer $I_init
+			I32:$T_anon_Lqne5c $I_i
+		locals
+			I32:$T_anon_Lqne5c $I_len
+			POINTER:$T_Token $I_start
+	$I_array_of
+		parameters
+			POINTER:$T_Type $I_base
+			I32:$T_anon_Lqne5c $I_size
+	$I_asctime
+		parameters
+			POINTER:$T_tm $A_0
+	$I_asctime_r
+		parameters
+			POINTER:$T_tm $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_asm_stmt
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_assign
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_atof
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_atoi
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_atol
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_atoll
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_attribute_list
+		parameters
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+		locals
+			I8:$T_anon_Lqne5c $I_first
+	$I_basename
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_bitand
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_start
+	$I_bitor
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_start
+	$I_bitxor
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_start
+	$I_calloc
+		parameters
+			U32:$T_anon_Lqne5c $I___count
+			U32:$T_anon_Lqne5c $I___size
+	$I_cast
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Token $I_start
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Node $I_node
+	$I_chdir
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_chmod
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			U16:$T_anon_Lqne5c $A_1
+	$I_chown
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+	$I_clearerr
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_clock
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_clock_getres
+		parameters
+			I32:$T_anon_Lqne5c $I___clock_id
+			POINTER:$T_timespec $I___res
+	$I_clock_gettime
+		parameters
+			I32:$T_anon_Lqne5c $I___clock_id
+			POINTER:$T_timespec $I___tp
+	$I_clock_settime
+		parameters
+			I32:$T_anon_Lqne5c $I___clock_id
+			POINTER:$T_timespec $I___tp
+	$I_close
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_codegen
+		parameters
+			POINTER:$T_Obj $I_prog
+			POINTER:$T___sFILE $I_out
+	$I_compound_stmt
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			CLASS:$T_Node $I_head
+			POINTER:$T_Node $I_cur
+			CLASS:$T_anon_9Xm4fk $I_attr
+			POINTER:$T_Type $I_basety
+	$I_compute_vla_size
+		parameters
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_base_sz
+			POINTER:$T_Node $I_expr
+	$I_conditional
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_cond
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Node $I_lhs
+			POINTER:$T_Node $I_rhs
+			POINTER:$T_Node $I_node
+	$I_confstr
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+	$I_const_expr
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_consume
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_anon_Lqne5c $I_str
+	$I_consume_end
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+	$I_convert_pp_tokens
+		parameters
+			POINTER:$T_Token $I_tok
+	$I_copy_struct_type
+		parameters
+			POINTER:$T_Type $I_ty
+		locals
+			CLASS:$T_Member $I_head
+			POINTER:$T_Member $I_cur
+			POINTER:$T_Member $I_mem
+			POINTER:$T_Member $I_m
+	$I_copy_type
+		parameters
+			POINTER:$T_Type $I_ty
+	$I_count_array_init_elements
+		parameters
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+		locals
+			I8:$T_anon_Lqne5c $I_first
+			POINTER:$T_Initializer $I_dummy
+			I32:$T_anon_Lqne5c $I_i
+			I32:$T_anon_Lqne5c $I_max
+	$I_create_lvar_init
+		parameters
+			POINTER:$T_Initializer $I_init
+			POINTER:$T_Type $I_ty
+			POINTER:$T_InitDesg $I_desg
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			I32:$T_anon_Lqne5c $I_i
+			CLASS:$T_InitDesg $I_desg2
+			POINTER:$T_Node $I_rhs
+			POINTER:$T_Node $I_node
+			POINTER:$T_Member $I_mem
+			CLASS:$T_InitDesg $I_desg2
+			POINTER:$T_Node $I_rhs
+			POINTER:$T_Member $I_mem
+			CLASS:$T_InitDesg $I_desg2
+			POINTER:$T_Node $I_lhs
+	$I_create_param_lvars
+		parameters
+			POINTER:$T_Type $I_param
+	$I_crypt
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_ctermid
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_ctime
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_ctime_r
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_declaration
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_basety
+			POINTER:$T_anon_9Xm4fk $I_attr
+		locals
+			CLASS:$T_Node $I_head
+			POINTER:$T_Node $I_cur
+			I32:$T_anon_Lqne5c $I_i
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Node $I_expr
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Node $I_expr
+			POINTER:$T_Node $I_node
+	$I_declarator
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+		locals
+			POINTER:$T_Token $I_start
+			CLASS:$T_Type $I_dummy
+			POINTER:$T_Token $I_name
+			POINTER:$T_Token $I_name_pos
+	$I_declare_builtin_functions
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+		locals
+			POINTER:$T_Type $I_ty
+	$I_declspec
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_anon_9Xm4fk $I_attr
+		locals
+			POINTER:$T_Type $I_ty
+			I32:$T_anon_Lqne5c $I_counter
+			I8:$T_anon_Lqne5c $I_is_atomic
+			POINTER:$T_Type $I_ty2
+			U8:$T_anon_Lqne5c $_Bgh0ou
+	$I_decode_utf8
+		parameters
+			POINTER:$T_anon_Lqne5c $I_new_pos
+			POINTER:$T_anon_Lqne5c $I_p
+	$I_define_macro
+		parameters
+			POINTER:$T_anon_Lqne5c $I_name
+			POINTER:$T_anon_Lqne5c $I_buf
+	$I_designation
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Initializer $I_init
+		locals
+			I32:$T_anon_Lqne5c $I_begin
+			I32:$T_anon_Lqne5c $I_end
+			POINTER:$T_Token $I_tok2
+			I32:$T_anon_Lqne5c $I_i
+			POINTER:$T_Member $I_mem
+			POINTER:$T_Member $I_mem
+	$I_difftime
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+	$I_dirname
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_display_width
+		parameters
+			POINTER:$T_anon_Lqne5c $I_p
+			I32:$T_anon_Lqne5c $I_len
+	$I_div
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+	$I_dprintf
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_drand48
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_dup
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_dup2
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+	$I_ecvt
+		parameters
+			F64:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+			POINTER:$T_anon_Lqne5c $A_2
+			POINTER:$T_anon_Lqne5c $A_3
+	$I_encode_utf8
+		parameters
+			POINTER:$T_anon_Lqne5c $I_buf
+			U32:$T_anon_Lqne5c $I_c
+	$I_encrypt
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+	$I_enter_scope
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+		locals
+			POINTER:$T_Scope $I_sc
+	$I_enum_specifier
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Token $I_tag
+			POINTER:$T_Type $I_ty
+			I32:$T_anon_Lqne5c $I_i
+			I32:$T_anon_Lqne5c $I_val
+			POINTER:$T_anon_Lqne5c $I_name
+			POINTER:$T_anon_YcSHOx $I_sc
+	$I_enum_type
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_equal
+		parameters
+			POINTER:$T_Token $I_tok
+			POINTER:$T_anon_Lqne5c $I_op
+	$I_equality
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_start
+	$I_erand48
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_error
+		parameters
+			POINTER:$T_anon_Lqne5c $I_fmt
+	$I_error_at
+		parameters
+			POINTER:$T_anon_Lqne5c $I_loc
+			POINTER:$T_anon_Lqne5c $I_fmt
+	$I_error_tok
+		parameters
+			POINTER:$T_Token $I_tok
+			POINTER:$T_anon_Lqne5c $I_fmt
+	$I_eval
+		parameters
+			POINTER:$T_Node $I_node
+	$I_eval2
+		parameters
+			POINTER:$T_Node $I_node
+			POINTER:$T_anon_Lqne5c $I_label
+		locals
+			U8:$T_anon_Lqne5c $_0DcUdu
+			I64:$T_anon_Lqne5c $I_val
+			U8:$T_anon_Lqne5c $_UVQzDF
+	$I_eval_double
+		parameters
+			POINTER:$T_Node $I_node
+		locals
+			U8:$T_anon_Lqne5c $_8JqvNJ
+	$I_eval_rval
+		parameters
+			POINTER:$T_Node $I_node
+			POINTER:$T_anon_Lqne5c $I_label
+		locals
+			U8:$T_anon_Lqne5c $_9yEHoQ
+	$I_execl
+		parameters
+			POINTER:$T_anon_Lqne5c $I___path
+			POINTER:$T_anon_Lqne5c $I___arg0
+	$I_execle
+		parameters
+			POINTER:$T_anon_Lqne5c $I___path
+			POINTER:$T_anon_Lqne5c $I___arg0
+	$I_execlp
+		parameters
+			POINTER:$T_anon_Lqne5c $I___file
+			POINTER:$T_anon_Lqne5c $I___arg0
+	$I_execv
+		parameters
+			POINTER:$T_anon_Lqne5c $I___path
+			POINTER:$T_anon_Lqne5c $I___argv
+	$I_execve
+		parameters
+			POINTER:$T_anon_Lqne5c $I___file
+			POINTER:$T_anon_Lqne5c $I___argv
+			POINTER:$T_anon_Lqne5c $I___envp
+	$I_execvp
+		parameters
+			POINTER:$T_anon_Lqne5c $I___file
+			POINTER:$T_anon_Lqne5c $I___argv
+	$I_exit
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_expr
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_expr_stmt
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_faccessat
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+			I32:$T_anon_Lqne5c $A_3
+	$I_fchdir
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_fchmod
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			U16:$T_anon_Lqne5c $A_1
+	$I_fchmodat
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U16:$T_anon_Lqne5c $A_2
+			I32:$T_anon_Lqne5c $A_3
+	$I_fchown
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+	$I_fchownat
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+			U32:$T_anon_Lqne5c $A_3
+			I32:$T_anon_Lqne5c $A_4
+	$I_fclose
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_fcvt
+		parameters
+			F64:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+			POINTER:$T_anon_Lqne5c $A_2
+			POINTER:$T_anon_Lqne5c $A_3
+	$I_fdopen
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_feof
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_ferror
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_fflush
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_ffs
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_fgetc
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_fgetpos
+		parameters
+			POINTER:$T___sFILE $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_fgets
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+			POINTER:$T___sFILE $A_2
+	$I_file_exists
+		parameters
+			POINTER:$T_anon_Lqne5c $I_path
+	$I_fileno
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_find_func
+		parameters
+			POINTER:$T_anon_Lqne5c $I_name
+		locals
+			POINTER:$T_Scope $I_sc
+			POINTER:$T_anon_YcSHOx $I_sc2
+	$I_find_tag
+		parameters
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Scope $I_sc
+			POINTER:$T_Type $I_ty
+	$I_find_typedef
+		parameters
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_anon_YcSHOx $I_sc
+	$I_find_var
+		parameters
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Scope $I_sc
+			POINTER:$T_anon_YcSHOx $I_sc2
+	$I_flockfile
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_fmemopen
+		parameters
+			POINTER:$T_anon_Lqne5c $I___buf
+			U32:$T_anon_Lqne5c $I___size
+			POINTER:$T_anon_Lqne5c $I___mode
+	$I_fopen
+		parameters
+			POINTER:$T_anon_Lqne5c $I___filename
+			POINTER:$T_anon_Lqne5c $I___mode
+	$I_fork
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_format
+		parameters
+			POINTER:$T_anon_Lqne5c $I_fmt
+	$I_fpathconf
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+	$I_fprintf
+		parameters
+			POINTER:$T___sFILE $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_fputc
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T___sFILE $A_1
+	$I_fputs
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T___sFILE $A_1
+	$I_fread
+		parameters
+			POINTER:$T_anon_Lqne5c $I___ptr
+			U32:$T_anon_Lqne5c $I___size
+			U32:$T_anon_Lqne5c $I___nitems
+			POINTER:$T___sFILE $I___stream
+	$I_free
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_freopen
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			POINTER:$T___sFILE $A_2
+	$I_fscanf
+		parameters
+			POINTER:$T___sFILE $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_fseek
+		parameters
+			POINTER:$T___sFILE $A_0
+			I32:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+	$I_fseeko
+		parameters
+			POINTER:$T___sFILE $I___stream
+			I64:$T_anon_Lqne5c $I___offset
+			I32:$T_anon_Lqne5c $I___whence
+	$I_fsetpos
+		parameters
+			POINTER:$T___sFILE $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_fstat
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_stat $A_1
+	$I_fstatat
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			POINTER:$T_stat $A_2
+			I32:$T_anon_Lqne5c $A_3
+	$I_fsync
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_ftell
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_ftello
+		parameters
+			POINTER:$T___sFILE $I___stream
+	$I_ftruncate
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			I64:$T_anon_Lqne5c $A_1
+	$I_ftrylockfile
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_func_params
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+		locals
+			CLASS:$T_Type $I_head
+			POINTER:$T_Type $I_cur
+			I8:$T_anon_Lqne5c $I_is_variadic
+			POINTER:$T_Type $I_ty2
+			POINTER:$T_Token $I_name
+	$I_func_type
+		parameters
+			POINTER:$T_Type $I_return_ty
+	$I_funcall
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Node $I_fn
+		locals
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Type $I_param_ty
+			CLASS:$T_Node $I_head
+			POINTER:$T_Node $I_cur
+			POINTER:$T_Node $I_arg
+			POINTER:$T_Node $I_node
+	$I_function
+		parameters
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_basety
+			POINTER:$T_anon_9Xm4fk $I_attr
+		locals
+			POINTER:$T_Type $I_ty
+			POINTER:$T_anon_Lqne5c $I_name_str
+			POINTER:$T_Obj $I_fn
+			POINTER:$T_Type $I_rty
+	$I_funlockfile
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_futimens
+		parameters
+			I32:$T_anon_Lqne5c $I___fd
+			POINTER:$T_timespec $I___times
+	$I_fwrite
+		parameters
+			POINTER:$T_anon_Lqne5c $I___ptr
+			U32:$T_anon_Lqne5c $I___size
+			U32:$T_anon_Lqne5c $I___nitems
+			POINTER:$T___sFILE $I___stream
+	$I_gcvt
+		parameters
+			F64:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+			POINTER:$T_anon_Lqne5c $A_2
+	$I_generic_selection
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Token $I_start
+			POINTER:$T_Node $I_ctrl
+			POINTER:$T_Type $I_t1
+			POINTER:$T_Node $I_ret
+			POINTER:$T_Node $I_node
+			POINTER:$T_Type $I_t2
+			POINTER:$T_Node $I_node
+	$I_get_ident
+		parameters
+			POINTER:$T_Token $I_tok
+	$I_get_input_files
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_get_struct_member
+		parameters
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Member $I_mem
+	$I_getc
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_getc_unlocked
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_getchar
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_getchar_unlocked
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_getcwd
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+	$I_getdate
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_getdelim
+		parameters
+			POINTER:$T_anon_Lqne5c $I___linep
+			POINTER:$T_anon_Lqne5c $I___linecapp
+			I32:$T_anon_Lqne5c $I___delimiter
+			POINTER:$T___sFILE $I___stream
+	$I_getegid
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_getenv
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_geteuid
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_getgid
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_getgroups
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_gethostid
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_gethostname
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+	$I_getline
+		parameters
+			POINTER:$T_anon_Lqne5c $I___linep
+			POINTER:$T_anon_Lqne5c $I___linecapp
+			POINTER:$T___sFILE $I___stream
+	$I_getlogin
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_getlogin_r
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+	$I_getopt
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			POINTER:$T_anon_Lqne5c $A_2
+	$I_getpgid
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_getpgrp
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_getpid
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_getppid
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_getpriority
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+	$I_getrlimit
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_rlimit $A_1
+	$I_getrusage
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_rusage $A_1
+	$I_gets
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_getsid
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_getsubopt
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			POINTER:$T_anon_Lqne5c $A_2
+	$I_getuid
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_global_variable
+		parameters
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_basety
+			POINTER:$T_anon_9Xm4fk $I_attr
+		locals
+			I8:$T_anon_Lqne5c $I_first
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Obj $I_var
+	$I_globfree
+		parameters
+			POINTER:$T_anon_KAyajZ $A_0
+	$I_gmtime
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_gmtime_r
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_tm $A_1
+	$I_grantpt
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_gvar_initializer
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Obj $I_var
+		locals
+			POINTER:$T_Initializer $I_init
+			CLASS:$T_Relocation $I_head
+			POINTER:$T_anon_Lqne5c $I_buf
+	$I_hashmap_delete
+		parameters
+			POINTER:$T_anon_ijePDX $I_map
+			POINTER:$T_anon_Lqne5c $I_key
+	$I_hashmap_delete2
+		parameters
+			POINTER:$T_anon_ijePDX $I_map
+			POINTER:$T_anon_Lqne5c $I_key
+			I32:$T_anon_Lqne5c $I_keylen
+	$I_hashmap_get
+		parameters
+			POINTER:$T_anon_ijePDX $I_map
+			POINTER:$T_anon_Lqne5c $I_key
+	$I_hashmap_get2
+		parameters
+			POINTER:$T_anon_ijePDX $I_map
+			POINTER:$T_anon_Lqne5c $I_key
+			I32:$T_anon_Lqne5c $I_keylen
+	$I_hashmap_put
+		parameters
+			POINTER:$T_anon_ijePDX $I_map
+			POINTER:$T_anon_Lqne5c $I_key
+			POINTER:$T_anon_Lqne5c $I_val
+	$I_hashmap_put2
+		parameters
+			POINTER:$T_anon_ijePDX $I_map
+			POINTER:$T_anon_Lqne5c $I_key
+			I32:$T_anon_Lqne5c $I_keylen
+			POINTER:$T_anon_Lqne5c $I_val
+	$I_hashmap_test
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_init_desg_expr
+		parameters
+			POINTER:$T_InitDesg $I_desg
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_lhs
+			POINTER:$T_Node $I_rhs
+	$I_init_macros
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_initializer
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Type $I_new_ty
+		locals
+			POINTER:$T_Initializer $I_init
+			POINTER:$T_Member $I_mem
+	$I_initializer2
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Initializer $I_init
+		locals
+			POINTER:$T_Node $I_expr
+	$I_initstate
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+	$I_is_compatible
+		parameters
+			POINTER:$T_Type $I_t1
+			POINTER:$T_Type $I_t2
+	$I_is_const_expr
+		parameters
+			POINTER:$T_Node $I_node
+		locals
+			U8:$T_anon_Lqne5c $_ZhM0Av
+	$I_is_end
+		parameters
+			POINTER:$T_Token $I_tok
+	$I_is_flonum
+		parameters
+			POINTER:$T_Type $I_ty
+	$I_is_function
+		parameters
+			POINTER:$T_Token $I_tok
+		locals
+			CLASS:$T_Type $I_dummy
+			POINTER:$T_Type $I_ty
+	$I_is_ident1
+		parameters
+			U32:$T_anon_Lqne5c $I_c
+	$I_is_ident2
+		parameters
+			U32:$T_anon_Lqne5c $I_c
+	$I_is_integer
+		parameters
+			POINTER:$T_Type $I_ty
+	$I_is_numeric
+		parameters
+			POINTER:$T_Type $I_ty
+	$I_is_typename
+		parameters
+			POINTER:$T_Token $I_tok
+		locals
+			CLASS:$T_anon_ijePDX $I_map
+			POINTER:$T_anon_Lqne5c $I_kw
+			I32:$T_anon_Lqne5c $I_i
+	$I_isalnum
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_isalpha
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_isascii
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_isatty
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_isblank
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_iscntrl
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_isdigit
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_isgraph
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_islower
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_isprint
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_ispunct
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_isspace
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_isupper
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_isxdigit
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_jrand48
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_l64a
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_labs
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_lchown
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+	$I_lcong48
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_ldiv
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+	$I_leave_scope
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_link
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_linkat
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+			POINTER:$T_anon_Lqne5c $A_3
+			I32:$T_anon_Lqne5c $A_4
+	$I_llabs
+		parameters
+			I64:$T_anon_Lqne5c $A_0
+	$I_lldiv
+		parameters
+			I64:$T_anon_Lqne5c $A_0
+			I64:$T_anon_Lqne5c $A_1
+	$I_localtime
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_localtime_r
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_tm $A_1
+	$I_lockf
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+			I64:$T_anon_Lqne5c $A_2
+	$I_logand
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_start
+	$I_logor
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_start
+	$I_lrand48
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_lseek
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			I64:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+	$I_lstat
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_stat $A_1
+	$I_lvar_initializer
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Obj $I_var
+		locals
+			POINTER:$T_Initializer $I_init
+			CLASS:$T_InitDesg $I_desg
+			POINTER:$T_Node $I_lhs
+			POINTER:$T_Node $I_rhs
+	$I_malloc
+		parameters
+			U32:$T_anon_Lqne5c $I___size
+	$I_mark_live
+		parameters
+			POINTER:$T_Obj $I_var
+		locals
+			I32:$T_anon_Lqne5c $I_i
+			POINTER:$T_Obj $I_fn
+	$I_mblen
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s
+			U32:$T_anon_Lqne5c $I___n
+	$I_mbstowcs
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+	$I_mbtowc
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+	$I_memccpy
+		parameters
+			POINTER:$T_anon_Lqne5c $I___dst
+			POINTER:$T_anon_Lqne5c $I___src
+			I32:$T_anon_Lqne5c $I___c
+			U32:$T_anon_Lqne5c $I___n
+	$I_memchr
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s
+			I32:$T_anon_Lqne5c $I___c
+			U32:$T_anon_Lqne5c $I___n
+	$I_memcmp
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s1
+			POINTER:$T_anon_Lqne5c $I___s2
+			U32:$T_anon_Lqne5c $I___n
+	$I_memcpy
+		parameters
+			POINTER:$T_anon_Lqne5c $I___dst
+			POINTER:$T_anon_Lqne5c $I___src
+			U32:$T_anon_Lqne5c $I___n
+	$I_memmove
+		parameters
+			POINTER:$T_anon_Lqne5c $I___dst
+			POINTER:$T_anon_Lqne5c $I___src
+			U32:$T_anon_Lqne5c $I___len
+	$I_memset
+		parameters
+			POINTER:$T_anon_Lqne5c $I___b
+			I32:$T_anon_Lqne5c $I___c
+			U32:$T_anon_Lqne5c $I___len
+	$I_mkdir
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			U16:$T_anon_Lqne5c $A_1
+	$I_mkdirat
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U16:$T_anon_Lqne5c $A_2
+	$I_mkfifo
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			U16:$T_anon_Lqne5c $A_1
+	$I_mkfifoat
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U16:$T_anon_Lqne5c $A_2
+	$I_mknod
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			U16:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+	$I_mknodat
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U16:$T_anon_Lqne5c $A_2
+			I32:$T_anon_Lqne5c $A_3
+	$I_mkstemp
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_mktemp
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_mktime
+		parameters
+			POINTER:$T_tm $A_0
+	$I_mrand48
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_mul
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_start
+	$I_nanosleep
+		parameters
+			POINTER:$T_timespec $I___rqtp
+			POINTER:$T_timespec $I___rmtp
+	$I_new_add
+		parameters
+			POINTER:$T_Node $I_lhs
+			POINTER:$T_Node $I_rhs
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_tmp
+	$I_new_alloca
+		parameters
+			POINTER:$T_Node $I_sz
+		locals
+			POINTER:$T_Node $I_node
+	$I_new_anon_gvar
+		parameters
+			POINTER:$T_Type $I_ty
+	$I_new_binary
+		parameters
+			I32:$T_anon_Lqne5c $I_kind
+			POINTER:$T_Node $I_lhs
+			POINTER:$T_Node $I_rhs
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_new_cast
+		parameters
+			POINTER:$T_Node $I_expr
+			POINTER:$T_Type $I_ty
+		locals
+			POINTER:$T_Node $I_node
+	$I_new_file
+		parameters
+			POINTER:$T_anon_Lqne5c $I_name
+			I32:$T_anon_Lqne5c $I_file_no
+			POINTER:$T_anon_Lqne5c $I_contents
+	$I_new_gvar
+		parameters
+			POINTER:$T_anon_Lqne5c $I_name
+			POINTER:$T_Type $I_ty
+		locals
+			POINTER:$T_Obj $I_var
+	$I_new_inc_dec
+		parameters
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_tok
+			I32:$T_anon_Lqne5c $I_addend
+	$I_new_initializer
+		parameters
+			POINTER:$T_Type $I_ty
+			I8:$T_anon_Lqne5c $I_is_flexible
+		locals
+			POINTER:$T_Initializer $I_init
+			I32:$T_anon_Lqne5c $I_i
+			I32:$T_anon_Lqne5c $I_len
+			POINTER:$T_Member $I_mem
+			POINTER:$T_Member $I_mem
+			POINTER:$T_Initializer $I_child
+	$I_new_long
+		parameters
+			I64:$T_anon_Lqne5c $I_val
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_new_lvar
+		parameters
+			POINTER:$T_anon_Lqne5c $I_name
+			POINTER:$T_Type $I_ty
+		locals
+			POINTER:$T_Obj $I_var
+	$I_new_node
+		parameters
+			I32:$T_anon_Lqne5c $I_kind
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_new_num
+		parameters
+			I64:$T_anon_Lqne5c $I_val
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_new_string_literal
+		parameters
+			POINTER:$T_anon_Lqne5c $I_p
+			POINTER:$T_Type $I_ty
+		locals
+			POINTER:$T_Obj $I_var
+	$I_new_sub
+		parameters
+			POINTER:$T_Node $I_lhs
+			POINTER:$T_Node $I_rhs
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_node
+	$I_new_ulong
+		parameters
+			I32:$T_anon_Lqne5c $I_val
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_new_unary
+		parameters
+			I32:$T_anon_Lqne5c $I_kind
+			POINTER:$T_Node $I_expr
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_new_unique_name
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+		locals
+			I32:$T_anon_Lqne5c $I_id
+	$I_new_var
+		parameters
+			POINTER:$T_anon_Lqne5c $I_name
+			POINTER:$T_Type $I_ty
+		locals
+			POINTER:$T_Obj $I_var
+	$I_new_var_node
+		parameters
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_new_vla_ptr
+		parameters
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+	$I_nice
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_nrand48
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_open_memstream
+		parameters
+			POINTER:$T_anon_Lqne5c $I___bufp
+			POINTER:$T_anon_Lqne5c $I___sizep
+	$I_parse
+		parameters
+			POINTER:$T_Token $I_tok
+		locals
+			CLASS:$T_anon_9Xm4fk $I_attr
+			POINTER:$T_Type $I_basety
+			POINTER:$T_Obj $I_var
+	$I_parse_typedef
+		parameters
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_basety
+		locals
+			I8:$T_anon_Lqne5c $I_first
+			POINTER:$T_Type $I_ty
+	$I_pathconf
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+	$I_pause
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_pclose
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_perror
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_pipe
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_pointer_to
+		parameters
+			POINTER:$T_Type $I_base
+	$I_pointers
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+	$I_popen
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_posix_memalign
+		parameters
+			POINTER:$T_anon_Lqne5c $I___memptr
+			U32:$T_anon_Lqne5c $I___alignment
+			U32:$T_anon_Lqne5c $I___size
+	$I_posix_openpt
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_postfix
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Token $I_start
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Node $I_lhs
+			POINTER:$T_Node $I_rhs
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_start
+			POINTER:$T_Node $I_idx
+	$I_pread
+		parameters
+			I32:$T_anon_Lqne5c $I___fd
+			POINTER:$T_anon_Lqne5c $I___buf
+			U32:$T_anon_Lqne5c $I___nbyte
+			I64:$T_anon_Lqne5c $I___offset
+	$I_preprocess
+		parameters
+			POINTER:$T_Token $I_tok
+	$I_primary
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Token $I_start
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_node
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Node $I_lhs
+			POINTER:$T_Node $I_rhs
+			POINTER:$T_Node $I_node
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Node $I_node
+			POINTER:$T_Type $I_t1
+			POINTER:$T_Type $I_t2
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_node
+			POINTER:$T_anon_YcSHOx $I_sc
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Node $I_node
+	$I_printf
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_ptsname
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_push_scope
+		parameters
+			POINTER:$T_anon_Lqne5c $I_name
+		locals
+			POINTER:$T_anon_YcSHOx $I_sc
+	$I_push_tag_scope
+		parameters
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+	$I_putc
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T___sFILE $A_1
+	$I_putc_unlocked
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T___sFILE $A_1
+	$I_putchar
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_putchar_unlocked
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_putenv
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_puts
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_pwrite
+		parameters
+			I32:$T_anon_Lqne5c $I___fd
+			POINTER:$T_anon_Lqne5c $I___buf
+			U32:$T_anon_Lqne5c $I___nbyte
+			I64:$T_anon_Lqne5c $I___offset
+	$I_rand
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_rand_r
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_random
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_read
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+	$I_read_buf
+		parameters
+			POINTER:$T_anon_Lqne5c $I_buf
+			I32:$T_anon_Lqne5c $I_sz
+	$I_readlink
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+	$I_readlinkat
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			POINTER:$T_anon_Lqne5c $A_2
+			U32:$T_anon_Lqne5c $A_3
+	$I_realloc
+		parameters
+			POINTER:$T_anon_Lqne5c $I___ptr
+			U32:$T_anon_Lqne5c $I___size
+	$I_realpath
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_relational
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_start
+	$I_remove
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_rename
+		parameters
+			POINTER:$T_anon_Lqne5c $I___old
+			POINTER:$T_anon_Lqne5c $I___new
+	$I_renameat
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+			POINTER:$T_anon_Lqne5c $A_3
+	$I_resolve_goto_labels
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+		locals
+			POINTER:$T_Node $I_x
+			POINTER:$T_Node $I_y
+	$I_rewind
+		parameters
+			POINTER:$T___sFILE $A_0
+	$I_rmdir
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_scan_globals
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+		locals
+			CLASS:$T_Obj $I_head
+			POINTER:$T_Obj $I_cur
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Obj $I_var2
+	$I_scanf
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_search_include_paths
+		parameters
+			POINTER:$T_anon_Lqne5c $I_filename
+	$I_seed48
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_setbuf
+		parameters
+			POINTER:$T___sFILE $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_setegid
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+	$I_setenv
+		parameters
+			POINTER:$T_anon_Lqne5c $I___name
+			POINTER:$T_anon_Lqne5c $I___value
+			I32:$T_anon_Lqne5c $I___overwrite
+	$I_seteuid
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+	$I_setgid
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+	$I_setkey
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_setpgid
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+	$I_setpgrp
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_setpriority
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+	$I_setregid
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+	$I_setreuid
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+	$I_setrlimit
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_rlimit $A_1
+	$I_setsid
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_setstate
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_setuid
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+	$I_setvbuf
+		parameters
+			POINTER:$T___sFILE $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+			U32:$T_anon_Lqne5c $A_3
+	$I_shift
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_start
+	$I_skip
+		parameters
+			POINTER:$T_Token $I_tok
+			POINTER:$T_anon_Lqne5c $I_op
+	$I_skip_excess_element
+		parameters
+			POINTER:$T_Token $I_tok
+	$I_sleep
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+	$I_snprintf
+		parameters
+			POINTER:$T_anon_Lqne5c $I___str
+			U32:$T_anon_Lqne5c $I___size
+			POINTER:$T_anon_Lqne5c $I___format
+	$I_sprintf
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_srand
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+	$I_srand48
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_srandom
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+	$I_sscanf
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_stat
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_stat $A_1
+	$I_stmt
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_exp
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_sw
+			POINTER:$T_anon_Lqne5c $I_brk
+			POINTER:$T_Node $I_node
+			I32:$T_anon_Lqne5c $I_begin
+			I32:$T_anon_Lqne5c $I_end
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_node
+			POINTER:$T_anon_Lqne5c $I_brk
+			POINTER:$T_anon_Lqne5c $I_cont
+			POINTER:$T_Type $I_basety
+			POINTER:$T_Node $I_node
+			POINTER:$T_anon_Lqne5c $I_brk
+			POINTER:$T_anon_Lqne5c $I_cont
+			POINTER:$T_Node $I_node
+			POINTER:$T_anon_Lqne5c $I_brk
+			POINTER:$T_anon_Lqne5c $I_cont
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_node
+	$I_stpcpy
+		parameters
+			POINTER:$T_anon_Lqne5c $I___dst
+			POINTER:$T_anon_Lqne5c $I___src
+	$I_stpncpy
+		parameters
+			POINTER:$T_anon_Lqne5c $I___dst
+			POINTER:$T_anon_Lqne5c $I___src
+			U32:$T_anon_Lqne5c $I___n
+	$I_strarray_push
+		parameters
+			POINTER:$T_anon_lhBDg6 $I_arr
+			POINTER:$T_anon_Lqne5c $I_s
+	$I_strcasecmp
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_strcat
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s1
+			POINTER:$T_anon_Lqne5c $I___s2
+	$I_strchr
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s
+			I32:$T_anon_Lqne5c $I___c
+	$I_strcmp
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s1
+			POINTER:$T_anon_Lqne5c $I___s2
+	$I_strcoll
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s1
+			POINTER:$T_anon_Lqne5c $I___s2
+	$I_strcpy
+		parameters
+			POINTER:$T_anon_Lqne5c $I___dst
+			POINTER:$T_anon_Lqne5c $I___src
+	$I_strcspn
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s
+			POINTER:$T_anon_Lqne5c $I___charset
+	$I_strdup
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s1
+	$I_strerror
+		parameters
+			I32:$T_anon_Lqne5c $I___errnum
+	$I_strerror_r
+		parameters
+			I32:$T_anon_Lqne5c $I___errnum
+			POINTER:$T_anon_Lqne5c $I___strerrbuf
+			U32:$T_anon_Lqne5c $I___buflen
+	$I_strftime
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+			POINTER:$T_anon_Lqne5c $A_2
+			POINTER:$T_tm $A_3
+	$I_string_initializer
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Initializer $I_init
+		locals
+			I32:$T_anon_Lqne5c $I_len
+			U8:$T_anon_Lqne5c $_9LJqp1
+			POINTER:$T_anon_Lqne5c $I_str
+			I32:$T_anon_Lqne5c $I_i
+			POINTER:$T_anon_Lqne5c $I_str
+			I32:$T_anon_Lqne5c $I_i
+			POINTER:$T_anon_Lqne5c $I_str
+			I32:$T_anon_Lqne5c $I_i
+	$I_strlen
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s
+	$I_strncasecmp
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+	$I_strncat
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s1
+			POINTER:$T_anon_Lqne5c $I___s2
+			U32:$T_anon_Lqne5c $I___n
+	$I_strncmp
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s1
+			POINTER:$T_anon_Lqne5c $I___s2
+			U32:$T_anon_Lqne5c $I___n
+	$I_strncpy
+		parameters
+			POINTER:$T_anon_Lqne5c $I___dst
+			POINTER:$T_anon_Lqne5c $I___src
+			U32:$T_anon_Lqne5c $I___n
+	$I_strndup
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s1
+			U32:$T_anon_Lqne5c $I___n
+	$I_strnlen
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s1
+			U32:$T_anon_Lqne5c $I___n
+	$I_strpbrk
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s
+			POINTER:$T_anon_Lqne5c $I___charset
+	$I_strptime
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			POINTER:$T_tm $A_2
+	$I_strrchr
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s
+			I32:$T_anon_Lqne5c $I___c
+	$I_strsignal
+		parameters
+			I32:$T_anon_Lqne5c $I___sig
+	$I_strspn
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s
+			POINTER:$T_anon_Lqne5c $I___charset
+	$I_strstr
+		parameters
+			POINTER:$T_anon_Lqne5c $I___big
+			POINTER:$T_anon_Lqne5c $I___little
+	$I_strtod
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_strtof
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_strtok
+		parameters
+			POINTER:$T_anon_Lqne5c $I___str
+			POINTER:$T_anon_Lqne5c $I___sep
+	$I_strtok_r
+		parameters
+			POINTER:$T_anon_Lqne5c $I___str
+			POINTER:$T_anon_Lqne5c $I___sep
+			POINTER:$T_anon_Lqne5c $I___lasts
+	$I_strtol
+		parameters
+			POINTER:$T_anon_Lqne5c $I___str
+			POINTER:$T_anon_Lqne5c $I___endptr
+			I32:$T_anon_Lqne5c $I___base
+	$I_strtold
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_strtoll
+		parameters
+			POINTER:$T_anon_Lqne5c $I___str
+			POINTER:$T_anon_Lqne5c $I___endptr
+			I32:$T_anon_Lqne5c $I___base
+	$I_strtoul
+		parameters
+			POINTER:$T_anon_Lqne5c $I___str
+			POINTER:$T_anon_Lqne5c $I___endptr
+			I32:$T_anon_Lqne5c $I___base
+	$I_strtoull
+		parameters
+			POINTER:$T_anon_Lqne5c $I___str
+			POINTER:$T_anon_Lqne5c $I___endptr
+			I32:$T_anon_Lqne5c $I___base
+	$I_struct_decl
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Type $I_ty
+			I32:$T_anon_Lqne5c $I_bits
+			POINTER:$T_Member $I_mem
+			I32:$T_anon_Lqne5c $I_sz
+	$I_struct_designator
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+		locals
+			POINTER:$T_Token $I_start
+			POINTER:$T_Member $I_mem
+	$I_struct_initializer1
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Initializer $I_init
+		locals
+			POINTER:$T_Member $I_mem
+			I8:$T_anon_Lqne5c $I_first
+	$I_struct_initializer2
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Initializer $I_init
+			POINTER:$T_Member $I_mem
+		locals
+			I8:$T_anon_Lqne5c $I_first
+			POINTER:$T_Token $I_start
+	$I_struct_members
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+		locals
+			CLASS:$T_Member $I_head
+			POINTER:$T_Member $I_cur
+			I32:$T_anon_Lqne5c $I_idx
+			CLASS:$T_anon_9Xm4fk $I_attr
+			POINTER:$T_Type $I_basety
+			I8:$T_anon_Lqne5c $I_first
+			POINTER:$T_Member $I_mem
+			POINTER:$T_Member $I_mem
+	$I_struct_ref
+		parameters
+			POINTER:$T_Node $I_node
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Member $I_mem
+	$I_struct_type
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_struct_union_decl
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Token $I_tag
+			POINTER:$T_Type $I_ty2
+			POINTER:$T_Type $I_ty2
+	$I_strxfrm
+		parameters
+			POINTER:$T_anon_Lqne5c $I___s1
+			POINTER:$T_anon_Lqne5c $I___s2
+			U32:$T_anon_Lqne5c $I___n
+	$I_swab
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+	$I_symlink
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+	$I_symlinkat
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+			POINTER:$T_anon_Lqne5c $A_2
+	$I_sync
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_sysconf
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_system
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_tcgetpgrp
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_tcsetpgrp
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+	$I_tempnam
+		parameters
+			POINTER:$T_anon_Lqne5c $I___dir
+			POINTER:$T_anon_Lqne5c $I___prefix
+	$I_time
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_timespec_get
+		parameters
+			POINTER:$T_timespec $I_ts
+			I32:$T_anon_Lqne5c $I_base
+	$I_tmpfile
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_tmpnam
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_to_assign
+		parameters
+			POINTER:$T_Node $I_binary
+		locals
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Node $I_expr1
+			POINTER:$T_Node $I_expr2
+			POINTER:$T_Node $I_expr3
+			POINTER:$T_Node $I_expr4
+			CLASS:$T_Node $I_head
+			POINTER:$T_Node $I_cur
+			POINTER:$T_Obj $I_addr
+			POINTER:$T_Obj $I_val
+			POINTER:$T_Obj $I_old
+			POINTER:$T_Obj $I_new
+			POINTER:$T_Node $I_loop
+			POINTER:$T_Node $I_body
+			POINTER:$T_Node $I_cas
+			POINTER:$T_Node $I_node
+			POINTER:$T_Obj $I_var
+			POINTER:$T_Node $I_expr1
+			POINTER:$T_Node $I_expr2
+	$I_toascii
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_tokenize
+		parameters
+			POINTER:$T_anon_9fyvgE $I_file
+	$I_tokenize_file
+		parameters
+			POINTER:$T_anon_Lqne5c $I_filename
+	$I_tokenize_string_literal
+		parameters
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_basety
+	$I_tolower
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_toupper
+		parameters
+			I32:$T_anon_Lqne5c $I__c
+	$I_truncate
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			I64:$T_anon_Lqne5c $A_1
+	$I_ttyname
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_ttyname_r
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+	$I_type_suffix
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Type $I_ty
+	$I_typename
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Type $I_ty
+	$I_typeof_specifier
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Node $I_node
+	$I_tzset
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_ualarm
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+	$I_umask
+		parameters
+			U16:$T_anon_Lqne5c $A_0
+	$I_unary
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Node $I_lhs
+			POINTER:$T_Node $I_node
+			POINTER:$T_Node $I_node
+	$I_undef_macro
+		parameters
+			POINTER:$T_anon_Lqne5c $I_name
+	$I_ungetc
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T___sFILE $A_1
+	$I_union_decl
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+		locals
+			POINTER:$T_Type $I_ty
+			POINTER:$T_Member $I_mem
+	$I_union_initializer
+		parameters
+			POINTER:$T_Token $I_rest
+			POINTER:$T_Token $I_tok
+			POINTER:$T_Initializer $I_init
+		locals
+			POINTER:$T_Member $I_mem
+	$I_unlink
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_unlinkat
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+	$I_unlockpt
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+	$I_unsetenv
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_usleep
+		parameters
+			U32:$T_anon_Lqne5c $A_0
+	$I_utimensat
+		parameters
+			I32:$T_anon_Lqne5c $I___fd
+			POINTER:$T_anon_Lqne5c $I___path
+			POINTER:$T_timespec $I___times
+			I32:$T_anon_Lqne5c $I___flag
+	$I_vdprintf
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			CLASS:$T_anon_YwHSZM $A_2
+	$I_vfork
+		parameters
+			UNDEFINED:$T_anon_Lqne5c $A_0
+	$I_vfprintf
+		parameters
+			POINTER:$T___sFILE $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			CLASS:$T_anon_YwHSZM $A_2
+	$I_vfscanf
+		parameters
+			POINTER:$T___sFILE $I___stream
+			POINTER:$T_anon_Lqne5c $I___format
+			CLASS:$T_anon_YwHSZM $A_2
+	$I_vla_of
+		parameters
+			POINTER:$T_Type $I_base
+			POINTER:$T_Node $I_expr
+	$I_vprintf
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			CLASS:$T_anon_YwHSZM $A_1
+	$I_vscanf
+		parameters
+			POINTER:$T_anon_Lqne5c $I___format
+			CLASS:$T_anon_YwHSZM $A_1
+	$I_vsnprintf
+		parameters
+			POINTER:$T_anon_Lqne5c $I___str
+			U32:$T_anon_Lqne5c $I___size
+			POINTER:$T_anon_Lqne5c $I___format
+			CLASS:$T_anon_YwHSZM $A_3
+	$I_vsprintf
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			CLASS:$T_anon_YwHSZM $A_2
+	$I_vsscanf
+		parameters
+			POINTER:$T_anon_Lqne5c $I___str
+			POINTER:$T_anon_Lqne5c $I___format
+			CLASS:$T_anon_YwHSZM $A_2
+	$I_wait
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+	$I_waitid
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			U32:$T_anon_Lqne5c $A_1
+			POINTER:$T___siginfo $A_2
+			I32:$T_anon_Lqne5c $A_3
+	$I_waitpid
+		parameters
+			I32:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			I32:$T_anon_Lqne5c $A_2
+	$I_warn_tok
+		parameters
+			POINTER:$T_Token $I_tok
+			POINTER:$T_anon_Lqne5c $I_fmt
+	$I_wcstombs
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			POINTER:$T_anon_Lqne5c $A_1
+			U32:$T_anon_Lqne5c $A_2
+	$I_wctomb
+		parameters
+			POINTER:$T_anon_Lqne5c $A_0
+			I32:$T_anon_Lqne5c $A_1
+	$I_write
+		parameters
+			I32:$T_anon_Lqne5c $I___fd
+			POINTER:$T_anon_Lqne5c $I___buf
+			U32:$T_anon_Lqne5c $I___nbyte
+	$I_write_buf
+		parameters
+			POINTER:$T_anon_Lqne5c $I_buf
+			U64:$T_anon_Lqne5c $I_val
+			I32:$T_anon_Lqne5c $I_sz
+	$I_write_gvar_data
+		parameters
+			POINTER:$T_Relocation $I_cur
+			POINTER:$T_Initializer $I_init
+			POINTER:$T_Type $I_ty
+			POINTER:$T_anon_Lqne5c $I_buf
+			I32:$T_anon_Lqne5c $I_offset
+		locals
+			I32:$T_anon_Lqne5c $I_sz
+			I32:$T_anon_Lqne5c $I_i
+			POINTER:$T_Member $I_mem
+			POINTER:$T_Node $I_expr
+			POINTER:$T_anon_Lqne5c $I_loc
+			U64:$T_anon_Lqne5c $I_oldval
+			U64:$T_anon_Lqne5c $I_newval
+			U64:$T_anon_Lqne5c $I_mask
+			U64:$T_anon_Lqne5c $I_combined
+			POINTER:$T_anon_Lqne5c $I_label
+			U64:$T_anon_Lqne5c $I_val
+			POINTER:$T_Relocation $I_rel
+	main
+globals
+	I32:$T_anon_Lqne5c $I_P_ALL
+	I32:$T_anon_Lqne5c $I_P_PID
+	I32:$T_anon_Lqne5c $I_P_PGID
+	I32:$T_anon_Lqne5c $I__CLOCK_REALTIME
+	I32:$T_anon_Lqne5c $I__CLOCK_MONOTONIC
+	I32:$T_anon_Lqne5c $I__CLOCK_PROCESS_CPUTIME_ID
+	I32:$T_anon_Lqne5c $I__CLOCK_THREAD_CPUTIME_ID
+	I32:$T_anon_Lqne5c $I_TK_IDENT
+	I32:$T_anon_Lqne5c $I_TK_PUNCT
+	I32:$T_anon_Lqne5c $I_TK_KEYWORD
+	I32:$T_anon_Lqne5c $I_TK_STR
+	I32:$T_anon_Lqne5c $I_TK_NUM
+	I32:$T_anon_Lqne5c $I_TK_PP_NUM
+	I32:$T_anon_Lqne5c $I_TK_EOF
+	I32:$T_anon_Lqne5c $I_ND_NULL_EXPR
+	I32:$T_anon_Lqne5c $I_ND_ADD
+	I32:$T_anon_Lqne5c $I_ND_SUB
+	I32:$T_anon_Lqne5c $I_ND_MUL
+	I32:$T_anon_Lqne5c $I_ND_DIV
+	I32:$T_anon_Lqne5c $I_ND_NEG
+	I32:$T_anon_Lqne5c $I_ND_MOD
+	I32:$T_anon_Lqne5c $I_ND_BITAND
+	I32:$T_anon_Lqne5c $I_ND_BITOR
+	I32:$T_anon_Lqne5c $I_ND_BITXOR
+	I32:$T_anon_Lqne5c $I_ND_SHL
+	I32:$T_anon_Lqne5c $I_ND_SHR
+	I32:$T_anon_Lqne5c $I_ND_EQ
+	I32:$T_anon_Lqne5c $I_ND_NE
+	I32:$T_anon_Lqne5c $I_ND_LT
+	I32:$T_anon_Lqne5c $I_ND_LE
+	I32:$T_anon_Lqne5c $I_ND_ASSIGN
+	I32:$T_anon_Lqne5c $I_ND_COND
+	I32:$T_anon_Lqne5c $I_ND_COMMA
+	I32:$T_anon_Lqne5c $I_ND_MEMBER
+	I32:$T_anon_Lqne5c $I_ND_ADDR
+	I32:$T_anon_Lqne5c $I_ND_DEREF
+	I32:$T_anon_Lqne5c $I_ND_NOT
+	I32:$T_anon_Lqne5c $I_ND_BITNOT
+	I32:$T_anon_Lqne5c $I_ND_LOGAND
+	I32:$T_anon_Lqne5c $I_ND_LOGOR
+	I32:$T_anon_Lqne5c $I_ND_RETURN
+	I32:$T_anon_Lqne5c $I_ND_IF
+	I32:$T_anon_Lqne5c $I_ND_FOR
+	I32:$T_anon_Lqne5c $I_ND_DO
+	I32:$T_anon_Lqne5c $I_ND_SWITCH
+	I32:$T_anon_Lqne5c $I_ND_CASE
+	I32:$T_anon_Lqne5c $I_ND_BLOCK
+	I32:$T_anon_Lqne5c $I_ND_GOTO
+	I32:$T_anon_Lqne5c $I_ND_GOTO_EXPR
+	I32:$T_anon_Lqne5c $I_ND_LABEL
+	I32:$T_anon_Lqne5c $I_ND_LABEL_VAL
+	I32:$T_anon_Lqne5c $I_ND_FUNCALL
+	I32:$T_anon_Lqne5c $I_ND_EXPR_STMT
+	I32:$T_anon_Lqne5c $I_ND_STMT_EXPR
+	I32:$T_anon_Lqne5c $I_ND_VAR
+	I32:$T_anon_Lqne5c $I_ND_VLA_PTR
+	I32:$T_anon_Lqne5c $I_ND_NUM
+	I32:$T_anon_Lqne5c $I_ND_CAST
+	I32:$T_anon_Lqne5c $I_ND_MEMZERO
+	I32:$T_anon_Lqne5c $I_ND_ASM
+	I32:$T_anon_Lqne5c $I_ND_CAS
+	I32:$T_anon_Lqne5c $I_ND_EXCH
+	I32:$T_anon_Lqne5c $I_TY_VOID
+	I32:$T_anon_Lqne5c $I_TY_BOOL
+	I32:$T_anon_Lqne5c $I_TY_CHAR
+	I32:$T_anon_Lqne5c $I_TY_SHORT
+	I32:$T_anon_Lqne5c $I_TY_INT
+	I32:$T_anon_Lqne5c $I_TY_LONG
+	I32:$T_anon_Lqne5c $I_TY_FLOAT
+	I32:$T_anon_Lqne5c $I_TY_DOUBLE
+	I32:$T_anon_Lqne5c $I_TY_LDOUBLE
+	I32:$T_anon_Lqne5c $I_TY_ENUM
+	I32:$T_anon_Lqne5c $I_TY_PTR
+	I32:$T_anon_Lqne5c $I_TY_FUNC
+	I32:$T_anon_Lqne5c $I_TY_ARRAY
+	I32:$T_anon_Lqne5c $I_TY_VLA
+	I32:$T_anon_Lqne5c $I_TY_STRUCT
+	I32:$T_anon_Lqne5c $I_TY_UNION
+	I32:$T_anon_Lqne5c $I_VOID
+	I32:$T_anon_Lqne5c $I_BOOL
+	I32:$T_anon_Lqne5c $I_CHAR
+	I32:$T_anon_Lqne5c $I_SHORT
+	I32:$T_anon_Lqne5c $I_INT
+	I32:$T_anon_Lqne5c $I_LONG
+	I32:$T_anon_Lqne5c $I_FLOAT
+	I32:$T_anon_Lqne5c $I_DOUBLE
+	I32:$T_anon_Lqne5c $I_OTHER
+	I32:$T_anon_Lqne5c $I_SIGNED
+	I32:$T_anon_Lqne5c $I_UNSIGNED
+	POINTER:$T_Node $I_current_switch
+	POINTER:$T_Node $I_gotos
+	POINTER:$T_Node $I_labels
+	POINTER:$T_Obj $I_builtin_alloca
+	POINTER:$T_Obj $I_current_fn
+	POINTER:$T_Obj $I_globals
+	POINTER:$T_Obj $I_locals
+	CLASS:$T_Scope $I_scope_
+	POINTER:$T_Scope $I_scope
+	POINTER:$T_anon_Lqne5c $I_brk_label
+	POINTER:$T_anon_Lqne5c $I_cont_label
+	POINTER:$T_Type $I_ty_bool
+	POINTER:$T_Type $I_ty_char
+	POINTER:$T_Type $I_ty_double
+	POINTER:$T_Type $I_ty_float
+	POINTER:$T_Type $I_ty_int
+	POINTER:$T_Type $I_ty_ldouble
+	POINTER:$T_Type $I_ty_long
+	POINTER:$T_Type $I_ty_short
+	POINTER:$T_Type $I_ty_uchar
+	POINTER:$T_Type $I_ty_uint
+	POINTER:$T_Type $I_ty_ulong
+	POINTER:$T_Type $I_ty_ushort
+	POINTER:$T_Type $I_ty_void
+	POINTER:$T___sFILE $I___stderrp
+	POINTER:$T___sFILE $I___stdinp
+	POINTER:$T___sFILE $I___stdoutp
+	CLASS:$T_anon_i5e1WI $I__DefaultRuneLocale
+	POINTER:$T_anon_i5e1WI $I__CurrentRuneLocale
+	CLASS:$T_anon_lhBDg6 $I_include_paths
+	I32:$T_anon_Lqne5c $I___mb_cur_max
+	I32:$T_anon_Lqne5c $I_daylight
+	I32:$T_anon_Lqne5c $I_getdate_err
+	I32:$T_anon_Lqne5c $I_opterr
+	I32:$T_anon_Lqne5c $I_optind
+	I32:$T_anon_Lqne5c $I_optopt
+	I32:$T_anon_Lqne5c $I_timezone
+	I8:$T_anon_Lqne5c $I_opt_fcommon
+	I8:$T_anon_Lqne5c $I_opt_fpic
+	POINTER:$T_anon_Lqne5c $I_base_file
+	POINTER:$T_anon_Lqne5c $I_optarg
+	POINTER:$T_anon_Lqne5c $I_tzname
