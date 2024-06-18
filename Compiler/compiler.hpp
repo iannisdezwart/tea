@@ -4,9 +4,9 @@
 #if defined(__linux__) && defined(CALLGRIND)
 	#include <valgrind/callgrind.h>
 #else
-#define CALLGRIND_START_INSTRUMENTATION
-#define CALLGRIND_TOGGLE_COLLECT
-#define CALLGRIND_STOP_INSTRUMENTATION
+	#define CALLGRIND_START_INSTRUMENTATION
+	#define CALLGRIND_TOGGLE_COLLECT
+	#define CALLGRIND_STOP_INSTRUMENTATION
 #endif
 #include <chrono>
 #include "Compiler/ASTNodes/ClassDeclaration.hpp"
@@ -33,8 +33,8 @@ struct Compiler
 	// The assembler object.
 	Assembler assembler;
 
-	// The compiler state object.
-	TypeCheckState type_check_state;
+	// Whether to print debug information.
+	bool debug;
 
 	/**
 	 * @brief Constructor.
@@ -44,8 +44,7 @@ struct Compiler
 	 */
 	Compiler(char *input_file_name, char *output_file_name, bool debug)
 		: output_file_name(output_file_name),
-		  assembler(debug),
-		  type_check_state(debug)
+		  assembler(debug)
 	{
 		input_file = fopen(input_file_name, "r");
 
@@ -139,10 +138,13 @@ struct Compiler
 		// Parse the tokens.
 
 		Parser parser(tokens);
-		std::vector<std::unique_ptr<ASTNode>> statements = parser.parse();
+		const auto &[statements, class_id_to_name] = parser.parse();
 		print_ast(statements);
 
+
 		// Type checking.
+
+		TypeCheckState type_check_state(debug, class_id_to_name);
 
 		CALLGRIND_START_INSTRUMENTATION;
 		CALLGRIND_TOGGLE_COLLECT;

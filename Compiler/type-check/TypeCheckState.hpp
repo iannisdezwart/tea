@@ -225,11 +225,14 @@ struct LocationData
  */
 struct TypeCheckState
 {
+	// The map of class names by ID, from the parsing phase.
+	const std::unordered_map<uint32_t, std::string> &class_name_by_id;
+
 	// A map of all functions in the current compilation context.
 	std::unordered_map<std::string, FunctionSignature> functions;
 
 	// A map of all classes in the current compilation context.
-	std::unordered_map<std::string, ClassDefinition> classes;
+	std::unordered_map<uint32_t, ClassDefinition> classes;
 
 	// A map of all global variables in the current compilation context.
 	std::unordered_map<std::string, VariableDefinition> globals;
@@ -273,8 +276,9 @@ struct TypeCheckState
 	 * @brief Constructs a new Compiler State object.
 	 * @param debug Whether debug symbols should be generated.
 	 */
-	TypeCheckState(bool debug)
-		: debug(debug) {}
+	TypeCheckState(bool debug,
+		const std::unordered_map<uint32_t, std::string> &class_name_by_id)
+		: class_name_by_id(class_name_by_id), debug(debug) {}
 
 	/**
 	 * @param id_name The identifier to look for.
@@ -310,12 +314,12 @@ struct TypeCheckState
 	 * A class is only added if it does not already exist.
 	 */
 	bool
-	def_class(const std::string &class_name)
+	def_class(uint32_t class_id)
 	{
-		if (classes.count(class_name))
+		if (classes.count(class_id))
 			return false;
 
-		classes[class_name] = ClassDefinition();
+		classes[class_id] = ClassDefinition();
 		return true;
 	}
 
@@ -325,9 +329,9 @@ struct TypeCheckState
 	 * @param class_definition The type of the class.
 	 */
 	void
-	add_class(const std::string &class_name, ClassDefinition class_def)
+	add_class(uint32_t class_id, ClassDefinition class_def)
 	{
-		classes[class_name] = class_def;
+		classes[class_id] = class_def;
 
 		// Add the class to the debugger symbols
 
@@ -339,9 +343,9 @@ struct TypeCheckState
 			for (const IdentifierDefinition &field : class_def.fields)
 				debugger_class.fields.push_back(
 					DebuggerSymbol(field.name, field.type.to_debug_type(),
-						field.type.class_name));
+						class_name_by_id.at(field.type.class_id)));
 
-			debugger_symbols.add_class(class_name, debugger_class);
+			debugger_symbols.add_class(class_name_by_id.at(class_id), debugger_class);
 		}
 	}
 
@@ -381,7 +385,9 @@ struct TypeCheckState
 		if (debug)
 		{
 			local_symbols.push_back(DebuggerSymbol(
-				local_name, local_type.to_debug_type(), local_type.class_name));
+				local_name,
+				local_type.to_debug_type(),
+				class_name_by_id.at(local_type.class_id)));
 		}
 		locals_size += local_type.storage_size();
 		return true;
@@ -425,8 +431,10 @@ struct TypeCheckState
 
 		if (debug)
 		{
-			debugger_symbols.add_global(DebuggerSymbol(global_name,
-				global_type.to_debug_type(), global_type.class_name));
+			debugger_symbols.add_global(DebuggerSymbol(
+				global_name,
+				global_type.to_debug_type(),
+				class_name_by_id.at(global_type.class_id)));
 		}
 
 		return true;
@@ -523,7 +531,7 @@ struct TypeCheckState
 			for (const std::string &param_name : parameter_names_in_order)
 			{
 				DebuggerSymbolType fn_param_type = parameters[param_name].id.type.to_debug_type();
-				std::string class_name           = parameters[param_name].id.type.class_name;
+				std::string class_name           = class_name_by_id.at(parameters[param_name].id.type.class_id);
 				fn_symbols.params.push_back(DebuggerSymbol(param_name, fn_param_type, class_name));
 			}
 
