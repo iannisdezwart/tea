@@ -1,0 +1,5650 @@
+// enum decls:
+i32 $I__ISupper = 0;
+i32 $I__ISlower = 1;
+i32 $I__ISalpha = 2;
+i32 $I__ISdigit = 3;
+i32 $I__ISxdigit = 4;
+i32 $I__ISspace = 5;
+i32 $I__ISprint = 6;
+i32 $I__ISgraph = 7;
+i32 $I__ISblank = 8;
+i32 $I__IScntrl = 9;
+i32 $I__ISpunct = 10;
+i32 $I__ISalnum = 11;
+i32 $I_DT_UNKNOWN = 0;
+i32 $I_DT_FIFO = 1;
+i32 $I_DT_CHR = 2;
+i32 $I_DT_DIR = 3;
+i32 $I_DT_BLK = 4;
+i32 $I_DT_REG = 5;
+i32 $I_DT_LNK = 6;
+i32 $I_DT_SOCK = 7;
+i32 $I_DT_WHT = 8;
+i32 $I_SI_ASYNCNL = 0;
+i32 $I_SI_DETHREAD = 1;
+i32 $I_SI_TKILL = 2;
+i32 $I_SI_SIGIO = 3;
+i32 $I_SI_ASYNCIO = 4;
+i32 $I_SI_MESGQ = 5;
+i32 $I_SI_TIMER = 6;
+i32 $I_SI_QUEUE = 7;
+i32 $I_SI_USER = 8;
+i32 $I_SI_KERNEL = 9;
+i32 $I_ILL_ILLOPC = 0;
+i32 $I_ILL_ILLOPN = 1;
+i32 $I_ILL_ILLADR = 2;
+i32 $I_ILL_ILLTRP = 3;
+i32 $I_ILL_PRVOPC = 4;
+i32 $I_ILL_PRVREG = 5;
+i32 $I_ILL_COPROC = 6;
+i32 $I_ILL_BADSTK = 7;
+i32 $I_ILL_BADIADDR = 8;
+i32 $I_FPE_INTDIV = 0;
+i32 $I_FPE_INTOVF = 1;
+i32 $I_FPE_FLTDIV = 2;
+i32 $I_FPE_FLTOVF = 3;
+i32 $I_FPE_FLTUND = 4;
+i32 $I_FPE_FLTRES = 5;
+i32 $I_FPE_FLTINV = 6;
+i32 $I_FPE_FLTSUB = 7;
+i32 $I_FPE_FLTUNK = 8;
+i32 $I_FPE_CONDTRAP = 9;
+i32 $I_SEGV_MAPERR = 0;
+i32 $I_SEGV_ACCERR = 1;
+i32 $I_SEGV_BNDERR = 2;
+i32 $I_SEGV_PKUERR = 3;
+i32 $I_SEGV_ACCADI = 4;
+i32 $I_SEGV_ADIDERR = 5;
+i32 $I_SEGV_ADIPERR = 6;
+i32 $I_BUS_ADRALN = 0;
+i32 $I_BUS_ADRERR = 1;
+i32 $I_BUS_OBJERR = 2;
+i32 $I_BUS_MCEERR_AR = 3;
+i32 $I_BUS_MCEERR_AO = 4;
+i32 $I_CLD_EXITED = 0;
+i32 $I_CLD_KILLED = 1;
+i32 $I_CLD_DUMPED = 2;
+i32 $I_CLD_TRAPPED = 3;
+i32 $I_CLD_STOPPED = 4;
+i32 $I_CLD_CONTINUED = 5;
+i32 $I_POLL_IN = 0;
+i32 $I_POLL_OUT = 1;
+i32 $I_POLL_MSG = 2;
+i32 $I_POLL_ERR = 3;
+i32 $I_POLL_PRI = 4;
+i32 $I_POLL_HUP = 5;
+i32 $I_SIGEV_SIGNAL = 0;
+i32 $I_SIGEV_NONE = 1;
+i32 $I_SIGEV_THREAD = 2;
+i32 $I_SIGEV_THREAD_ID = 3;
+i32 $I_SS_ONSTACK = 0;
+i32 $I_SS_DISABLE = 1;
+i32 $I_P_ALL = 0;
+i32 $I_P_PID = 1;
+i32 $I_P_PGID = 2;
+i32 $I_ITIMER_REAL = 0;
+i32 $I_ITIMER_VIRTUAL = 1;
+i32 $I_ITIMER_PROF = 2;
+i32 $I__PC_LINK_MAX = 0;
+i32 $I__PC_MAX_CANON = 1;
+i32 $I__PC_MAX_INPUT = 2;
+i32 $I__PC_NAME_MAX = 3;
+i32 $I__PC_PATH_MAX = 4;
+i32 $I__PC_PIPE_BUF = 5;
+i32 $I__PC_CHOWN_RESTRICTED = 6;
+i32 $I__PC_NO_TRUNC = 7;
+i32 $I__PC_VDISABLE = 8;
+i32 $I__PC_SYNC_IO = 9;
+i32 $I__PC_ASYNC_IO = 10;
+i32 $I__PC_PRIO_IO = 11;
+i32 $I__PC_SOCK_MAXBUF = 12;
+i32 $I__PC_FILESIZEBITS = 13;
+i32 $I__PC_REC_INCR_XFER_SIZE = 14;
+i32 $I__PC_REC_MAX_XFER_SIZE = 15;
+i32 $I__PC_REC_MIN_XFER_SIZE = 16;
+i32 $I__PC_REC_XFER_ALIGN = 17;
+i32 $I__PC_ALLOC_SIZE_MIN = 18;
+i32 $I__PC_SYMLINK_MAX = 19;
+i32 $I__PC_2_SYMLINKS = 20;
+i32 $I__SC_ARG_MAX = 0;
+i32 $I__SC_CHILD_MAX = 1;
+i32 $I__SC_CLK_TCK = 2;
+i32 $I__SC_NGROUPS_MAX = 3;
+i32 $I__SC_OPEN_MAX = 4;
+i32 $I__SC_STREAM_MAX = 5;
+i32 $I__SC_TZNAME_MAX = 6;
+i32 $I__SC_JOB_CONTROL = 7;
+i32 $I__SC_SAVED_IDS = 8;
+i32 $I__SC_REALTIME_SIGNALS = 9;
+i32 $I__SC_PRIORITY_SCHEDULING = 10;
+i32 $I__SC_TIMERS = 11;
+i32 $I__SC_ASYNCHRONOUS_IO = 12;
+i32 $I__SC_PRIORITIZED_IO = 13;
+i32 $I__SC_SYNCHRONIZED_IO = 14;
+i32 $I__SC_FSYNC = 15;
+i32 $I__SC_MAPPED_FILES = 16;
+i32 $I__SC_MEMLOCK = 17;
+i32 $I__SC_MEMLOCK_RANGE = 18;
+i32 $I__SC_MEMORY_PROTECTION = 19;
+i32 $I__SC_MESSAGE_PASSING = 20;
+i32 $I__SC_SEMAPHORES = 21;
+i32 $I__SC_SHARED_MEMORY_OBJECTS = 22;
+i32 $I__SC_AIO_LISTIO_MAX = 23;
+i32 $I__SC_AIO_MAX = 24;
+i32 $I__SC_AIO_PRIO_DELTA_MAX = 25;
+i32 $I__SC_DELAYTIMER_MAX = 26;
+i32 $I__SC_MQ_OPEN_MAX = 27;
+i32 $I__SC_MQ_PRIO_MAX = 28;
+i32 $I__SC_VERSION = 29;
+i32 $I__SC_PAGESIZE = 30;
+i32 $I__SC_RTSIG_MAX = 31;
+i32 $I__SC_SEM_NSEMS_MAX = 32;
+i32 $I__SC_SEM_VALUE_MAX = 33;
+i32 $I__SC_SIGQUEUE_MAX = 34;
+i32 $I__SC_TIMER_MAX = 35;
+i32 $I__SC_BC_BASE_MAX = 36;
+i32 $I__SC_BC_DIM_MAX = 37;
+i32 $I__SC_BC_SCALE_MAX = 38;
+i32 $I__SC_BC_STRING_MAX = 39;
+i32 $I__SC_COLL_WEIGHTS_MAX = 40;
+i32 $I__SC_EQUIV_CLASS_MAX = 41;
+i32 $I__SC_EXPR_NEST_MAX = 42;
+i32 $I__SC_LINE_MAX = 43;
+i32 $I__SC_RE_DUP_MAX = 44;
+i32 $I__SC_CHARCLASS_NAME_MAX = 45;
+i32 $I__SC_2_VERSION = 46;
+i32 $I__SC_2_C_BIND = 47;
+i32 $I__SC_2_C_DEV = 48;
+i32 $I__SC_2_FORT_DEV = 49;
+i32 $I__SC_2_FORT_RUN = 50;
+i32 $I__SC_2_SW_DEV = 51;
+i32 $I__SC_2_LOCALEDEF = 52;
+i32 $I__SC_PII = 53;
+i32 $I__SC_PII_XTI = 54;
+i32 $I__SC_PII_SOCKET = 55;
+i32 $I__SC_PII_INTERNET = 56;
+i32 $I__SC_PII_OSI = 57;
+i32 $I__SC_POLL = 58;
+i32 $I__SC_SELECT = 59;
+i32 $I__SC_UIO_MAXIOV = 60;
+i32 $I__SC_IOV_MAX = 61;
+i32 $I__SC_PII_INTERNET_STREAM = 62;
+i32 $I__SC_PII_INTERNET_DGRAM = 63;
+i32 $I__SC_PII_OSI_COTS = 64;
+i32 $I__SC_PII_OSI_CLTS = 65;
+i32 $I__SC_PII_OSI_M = 66;
+i32 $I__SC_T_IOV_MAX = 67;
+i32 $I__SC_THREADS = 68;
+i32 $I__SC_THREAD_SAFE_FUNCTIONS = 69;
+i32 $I__SC_GETGR_R_SIZE_MAX = 70;
+i32 $I__SC_GETPW_R_SIZE_MAX = 71;
+i32 $I__SC_LOGIN_NAME_MAX = 72;
+i32 $I__SC_TTY_NAME_MAX = 73;
+i32 $I__SC_THREAD_DESTRUCTOR_ITERATIONS = 74;
+i32 $I__SC_THREAD_KEYS_MAX = 75;
+i32 $I__SC_THREAD_STACK_MIN = 76;
+i32 $I__SC_THREAD_THREADS_MAX = 77;
+i32 $I__SC_THREAD_ATTR_STACKADDR = 78;
+i32 $I__SC_THREAD_ATTR_STACKSIZE = 79;
+i32 $I__SC_THREAD_PRIORITY_SCHEDULING = 80;
+i32 $I__SC_THREAD_PRIO_INHERIT = 81;
+i32 $I__SC_THREAD_PRIO_PROTECT = 82;
+i32 $I__SC_THREAD_PROCESS_SHARED = 83;
+i32 $I__SC_NPROCESSORS_CONF = 84;
+i32 $I__SC_NPROCESSORS_ONLN = 85;
+i32 $I__SC_PHYS_PAGES = 86;
+i32 $I__SC_AVPHYS_PAGES = 87;
+i32 $I__SC_ATEXIT_MAX = 88;
+i32 $I__SC_PASS_MAX = 89;
+i32 $I__SC_XOPEN_VERSION = 90;
+i32 $I__SC_XOPEN_XCU_VERSION = 91;
+i32 $I__SC_XOPEN_UNIX = 92;
+i32 $I__SC_XOPEN_CRYPT = 93;
+i32 $I__SC_XOPEN_ENH_I18N = 94;
+i32 $I__SC_XOPEN_SHM = 95;
+i32 $I__SC_2_CHAR_TERM = 96;
+i32 $I__SC_2_C_VERSION = 97;
+i32 $I__SC_2_UPE = 98;
+i32 $I__SC_XOPEN_XPG2 = 99;
+i32 $I__SC_XOPEN_XPG3 = 100;
+i32 $I__SC_XOPEN_XPG4 = 101;
+i32 $I__SC_CHAR_BIT = 102;
+i32 $I__SC_CHAR_MAX = 103;
+i32 $I__SC_CHAR_MIN = 104;
+i32 $I__SC_INT_MAX = 105;
+i32 $I__SC_INT_MIN = 106;
+i32 $I__SC_LONG_BIT = 107;
+i32 $I__SC_WORD_BIT = 108;
+i32 $I__SC_MB_LEN_MAX = 109;
+i32 $I__SC_NZERO = 110;
+i32 $I__SC_SSIZE_MAX = 111;
+i32 $I__SC_SCHAR_MAX = 112;
+i32 $I__SC_SCHAR_MIN = 113;
+i32 $I__SC_SHRT_MAX = 114;
+i32 $I__SC_SHRT_MIN = 115;
+i32 $I__SC_UCHAR_MAX = 116;
+i32 $I__SC_UINT_MAX = 117;
+i32 $I__SC_ULONG_MAX = 118;
+i32 $I__SC_USHRT_MAX = 119;
+i32 $I__SC_NL_ARGMAX = 120;
+i32 $I__SC_NL_LANGMAX = 121;
+i32 $I__SC_NL_MSGMAX = 122;
+i32 $I__SC_NL_NMAX = 123;
+i32 $I__SC_NL_SETMAX = 124;
+i32 $I__SC_NL_TEXTMAX = 125;
+i32 $I__SC_XBS5_ILP32_OFF32 = 126;
+i32 $I__SC_XBS5_ILP32_OFFBIG = 127;
+i32 $I__SC_XBS5_LP64_OFF64 = 128;
+i32 $I__SC_XBS5_LPBIG_OFFBIG = 129;
+i32 $I__SC_XOPEN_LEGACY = 130;
+i32 $I__SC_XOPEN_REALTIME = 131;
+i32 $I__SC_XOPEN_REALTIME_THREADS = 132;
+i32 $I__SC_ADVISORY_INFO = 133;
+i32 $I__SC_BARRIERS = 134;
+i32 $I__SC_BASE = 135;
+i32 $I__SC_C_LANG_SUPPORT = 136;
+i32 $I__SC_C_LANG_SUPPORT_R = 137;
+i32 $I__SC_CLOCK_SELECTION = 138;
+i32 $I__SC_CPUTIME = 139;
+i32 $I__SC_THREAD_CPUTIME = 140;
+i32 $I__SC_DEVICE_IO = 141;
+i32 $I__SC_DEVICE_SPECIFIC = 142;
+i32 $I__SC_DEVICE_SPECIFIC_R = 143;
+i32 $I__SC_FD_MGMT = 144;
+i32 $I__SC_FIFO = 145;
+i32 $I__SC_PIPE = 146;
+i32 $I__SC_FILE_ATTRIBUTES = 147;
+i32 $I__SC_FILE_LOCKING = 148;
+i32 $I__SC_FILE_SYSTEM = 149;
+i32 $I__SC_MONOTONIC_CLOCK = 150;
+i32 $I__SC_MULTI_PROCESS = 151;
+i32 $I__SC_SINGLE_PROCESS = 152;
+i32 $I__SC_NETWORKING = 153;
+i32 $I__SC_READER_WRITER_LOCKS = 154;
+i32 $I__SC_SPIN_LOCKS = 155;
+i32 $I__SC_REGEXP = 156;
+i32 $I__SC_REGEX_VERSION = 157;
+i32 $I__SC_SHELL = 158;
+i32 $I__SC_SIGNALS = 159;
+i32 $I__SC_SPAWN = 160;
+i32 $I__SC_SPORADIC_SERVER = 161;
+i32 $I__SC_THREAD_SPORADIC_SERVER = 162;
+i32 $I__SC_SYSTEM_DATABASE = 163;
+i32 $I__SC_SYSTEM_DATABASE_R = 164;
+i32 $I__SC_TIMEOUTS = 165;
+i32 $I__SC_TYPED_MEMORY_OBJECTS = 166;
+i32 $I__SC_USER_GROUPS = 167;
+i32 $I__SC_USER_GROUPS_R = 168;
+i32 $I__SC_2_PBS = 169;
+i32 $I__SC_2_PBS_ACCOUNTING = 170;
+i32 $I__SC_2_PBS_LOCATE = 171;
+i32 $I__SC_2_PBS_MESSAGE = 172;
+i32 $I__SC_2_PBS_TRACK = 173;
+i32 $I__SC_SYMLOOP_MAX = 174;
+i32 $I__SC_STREAMS = 175;
+i32 $I__SC_2_PBS_CHECKPOINT = 176;
+i32 $I__SC_V6_ILP32_OFF32 = 177;
+i32 $I__SC_V6_ILP32_OFFBIG = 178;
+i32 $I__SC_V6_LP64_OFF64 = 179;
+i32 $I__SC_V6_LPBIG_OFFBIG = 180;
+i32 $I__SC_HOST_NAME_MAX = 181;
+i32 $I__SC_TRACE = 182;
+i32 $I__SC_TRACE_EVENT_FILTER = 183;
+i32 $I__SC_TRACE_INHERIT = 184;
+i32 $I__SC_TRACE_LOG = 185;
+i32 $I__SC_LEVEL1_ICACHE_SIZE = 186;
+i32 $I__SC_LEVEL1_ICACHE_ASSOC = 187;
+i32 $I__SC_LEVEL1_ICACHE_LINESIZE = 188;
+i32 $I__SC_LEVEL1_DCACHE_SIZE = 189;
+i32 $I__SC_LEVEL1_DCACHE_ASSOC = 190;
+i32 $I__SC_LEVEL1_DCACHE_LINESIZE = 191;
+i32 $I__SC_LEVEL2_CACHE_SIZE = 192;
+i32 $I__SC_LEVEL2_CACHE_ASSOC = 193;
+i32 $I__SC_LEVEL2_CACHE_LINESIZE = 194;
+i32 $I__SC_LEVEL3_CACHE_SIZE = 195;
+i32 $I__SC_LEVEL3_CACHE_ASSOC = 196;
+i32 $I__SC_LEVEL3_CACHE_LINESIZE = 197;
+i32 $I__SC_LEVEL4_CACHE_SIZE = 198;
+i32 $I__SC_LEVEL4_CACHE_ASSOC = 199;
+i32 $I__SC_LEVEL4_CACHE_LINESIZE = 200;
+i32 $I__SC_IPV6 = 201;
+i32 $I__SC_RAW_SOCKETS = 202;
+i32 $I__SC_V7_ILP32_OFF32 = 203;
+i32 $I__SC_V7_ILP32_OFFBIG = 204;
+i32 $I__SC_V7_LP64_OFF64 = 205;
+i32 $I__SC_V7_LPBIG_OFFBIG = 206;
+i32 $I__SC_SS_REPL_MAX = 207;
+i32 $I__SC_TRACE_EVENT_NAME_MAX = 208;
+i32 $I__SC_TRACE_NAME_MAX = 209;
+i32 $I__SC_TRACE_SYS_MAX = 210;
+i32 $I__SC_TRACE_USER_EVENT_MAX = 211;
+i32 $I__SC_XOPEN_STREAMS = 212;
+i32 $I__SC_THREAD_ROBUST_PRIO_INHERIT = 213;
+i32 $I__SC_THREAD_ROBUST_PRIO_PROTECT = 214;
+i32 $I__CS_PATH = 0;
+i32 $I__CS_V6_WIDTH_RESTRICTED_ENVS = 1;
+i32 $I__CS_GNU_LIBC_VERSION = 2;
+i32 $I__CS_GNU_LIBPTHREAD_VERSION = 3;
+i32 $I__CS_V5_WIDTH_RESTRICTED_ENVS = 4;
+i32 $I__CS_V7_WIDTH_RESTRICTED_ENVS = 5;
+i32 $I__CS_LFS_CFLAGS = 6;
+i32 $I__CS_LFS_LDFLAGS = 7;
+i32 $I__CS_LFS_LIBS = 8;
+i32 $I__CS_LFS_LINTFLAGS = 9;
+i32 $I__CS_LFS64_CFLAGS = 10;
+i32 $I__CS_LFS64_LDFLAGS = 11;
+i32 $I__CS_LFS64_LIBS = 12;
+i32 $I__CS_LFS64_LINTFLAGS = 13;
+i32 $I__CS_XBS5_ILP32_OFF32_CFLAGS = 14;
+i32 $I__CS_XBS5_ILP32_OFF32_LDFLAGS = 15;
+i32 $I__CS_XBS5_ILP32_OFF32_LIBS = 16;
+i32 $I__CS_XBS5_ILP32_OFF32_LINTFLAGS = 17;
+i32 $I__CS_XBS5_ILP32_OFFBIG_CFLAGS = 18;
+i32 $I__CS_XBS5_ILP32_OFFBIG_LDFLAGS = 19;
+i32 $I__CS_XBS5_ILP32_OFFBIG_LIBS = 20;
+i32 $I__CS_XBS5_ILP32_OFFBIG_LINTFLAGS = 21;
+i32 $I__CS_XBS5_LP64_OFF64_CFLAGS = 22;
+i32 $I__CS_XBS5_LP64_OFF64_LDFLAGS = 23;
+i32 $I__CS_XBS5_LP64_OFF64_LIBS = 24;
+i32 $I__CS_XBS5_LP64_OFF64_LINTFLAGS = 25;
+i32 $I__CS_XBS5_LPBIG_OFFBIG_CFLAGS = 26;
+i32 $I__CS_XBS5_LPBIG_OFFBIG_LDFLAGS = 27;
+i32 $I__CS_XBS5_LPBIG_OFFBIG_LIBS = 28;
+i32 $I__CS_XBS5_LPBIG_OFFBIG_LINTFLAGS = 29;
+i32 $I__CS_POSIX_V6_ILP32_OFF32_CFLAGS = 30;
+i32 $I__CS_POSIX_V6_ILP32_OFF32_LDFLAGS = 31;
+i32 $I__CS_POSIX_V6_ILP32_OFF32_LIBS = 32;
+i32 $I__CS_POSIX_V6_ILP32_OFF32_LINTFLAGS = 33;
+i32 $I__CS_POSIX_V6_ILP32_OFFBIG_CFLAGS = 34;
+i32 $I__CS_POSIX_V6_ILP32_OFFBIG_LDFLAGS = 35;
+i32 $I__CS_POSIX_V6_ILP32_OFFBIG_LIBS = 36;
+i32 $I__CS_POSIX_V6_ILP32_OFFBIG_LINTFLAGS = 37;
+i32 $I__CS_POSIX_V6_LP64_OFF64_CFLAGS = 38;
+i32 $I__CS_POSIX_V6_LP64_OFF64_LDFLAGS = 39;
+i32 $I__CS_POSIX_V6_LP64_OFF64_LIBS = 40;
+i32 $I__CS_POSIX_V6_LP64_OFF64_LINTFLAGS = 41;
+i32 $I__CS_POSIX_V6_LPBIG_OFFBIG_CFLAGS = 42;
+i32 $I__CS_POSIX_V6_LPBIG_OFFBIG_LDFLAGS = 43;
+i32 $I__CS_POSIX_V6_LPBIG_OFFBIG_LIBS = 44;
+i32 $I__CS_POSIX_V6_LPBIG_OFFBIG_LINTFLAGS = 45;
+i32 $I__CS_POSIX_V7_ILP32_OFF32_CFLAGS = 46;
+i32 $I__CS_POSIX_V7_ILP32_OFF32_LDFLAGS = 47;
+i32 $I__CS_POSIX_V7_ILP32_OFF32_LIBS = 48;
+i32 $I__CS_POSIX_V7_ILP32_OFF32_LINTFLAGS = 49;
+i32 $I__CS_POSIX_V7_ILP32_OFFBIG_CFLAGS = 50;
+i32 $I__CS_POSIX_V7_ILP32_OFFBIG_LDFLAGS = 51;
+i32 $I__CS_POSIX_V7_ILP32_OFFBIG_LIBS = 52;
+i32 $I__CS_POSIX_V7_ILP32_OFFBIG_LINTFLAGS = 53;
+i32 $I__CS_POSIX_V7_LP64_OFF64_CFLAGS = 54;
+i32 $I__CS_POSIX_V7_LP64_OFF64_LDFLAGS = 55;
+i32 $I__CS_POSIX_V7_LP64_OFF64_LIBS = 56;
+i32 $I__CS_POSIX_V7_LP64_OFF64_LINTFLAGS = 57;
+i32 $I__CS_POSIX_V7_LPBIG_OFFBIG_CFLAGS = 58;
+i32 $I__CS_POSIX_V7_LPBIG_OFFBIG_LDFLAGS = 59;
+i32 $I__CS_POSIX_V7_LPBIG_OFFBIG_LIBS = 60;
+i32 $I__CS_POSIX_V7_LPBIG_OFFBIG_LINTFLAGS = 61;
+i32 $I__CS_V6_ENV = 62;
+i32 $I__CS_V7_ENV = 63;
+i32 $I_REQUIRE_ORDER = 0;
+i32 $I_PERMUTE = 1;
+i32 $I_RETURN_IN_ORDER = 2;
+// hoisted nested struct decls:
+class $T_anon_ihWoUJ {
+u32 $I___wch;
+i8 [4]$I___wchb;
+};
+class $T_anon_ePTTu9 {
+i32  $I_si_pid;
+u32  $I_si_uid;
+};
+class $T_anon_xmZF1h {
+i32 $I_si_tid;
+i32 $I_si_overrun;
+$T_sigval $I_si_sigval;
+};
+class $T_anon_XGEq41 {
+i32  $I_si_pid;
+u32  $I_si_uid;
+$T_sigval $I_si_sigval;
+};
+class $T_anon_Pvxcc7 {
+i32  $I_si_pid;
+u32  $I_si_uid;
+i32 $I_si_status;
+i32  $I_si_utime;
+i32  $I_si_stime;
+};
+class $T_anon_4RY7kN {
+v0 *$I__lower;
+v0 *$I__upper;
+};
+class $T_anon_n5I1GY {
+$T_anon_4RY7kN $I__addr_bnd;
+u32  $I__pkey;
+};
+class $T_anon_ata5iq {
+v0 *$I_si_addr;
+i16 $I_si_addr_lsb;
+$T_anon_n5I1GY $I__bounds;
+};
+class $T_anon_TeS0Tb {
+i32 $I_si_band;
+i32 $I_si_fd;
+};
+class $T_anon_KffioA {
+v0 *$I__call_addr;
+i32 $I__syscall;
+u32 $I__arch;
+};
+class $T_anon_EqFZiu {
+i32 [0]$I__pad;
+$T_anon_ePTTu9 $I__kill;
+$T_anon_xmZF1h $I__timer;
+$T_anon_XGEq41 $I__rt;
+$T_anon_Pvxcc7 $I__sigchld;
+$T_anon_ata5iq $I__sigfault;
+$T_anon_TeS0Tb $I__sigpoll;
+$T_anon_KffioA $I__sigsys;
+};
+class $T_anon_v2uSus {
+$T_pthread_attr_t *$I__attribute;
+};
+class $T_anon_mV09bx {
+i32 [0]$I__pad;
+i32  $I__tid;
+$T_anon_v2uSus $I__sigev_thread;
+};
+class $T_anon_tfJyRu {
+v0  $I_sa_handler;
+};
+class $T_anon_yrkSxg {
+$T__fpstate *$I_fpstate;
+u32  $I___fpstate_word;
+};
+class $T_anon_jbW0vA {
+u32 $I___low;
+u32 $I___high;
+};
+class $T_anon_VZUw8L {
+u64 $I___wseq;
+$T_anon_jbW0vA $I___wseq32;
+};
+class $T_anon_rcUlcJ {
+u32 $I___low;
+u32 $I___high;
+};
+class $T_anon_eo2AsY {
+u64 $I___g1_start;
+$T_anon_rcUlcJ $I___g1_start32;
+};
+class $T_anon_Z98nEM {
+u16  $I_n;
+$T_huft *$I_t;
+};
+class $T_anon_y4OwJ6 {
+u16  $I_freq;
+u16  $I_code;
+};
+class $T_anon_SHuB2J {
+u16  $I_dad;
+u16  $I_len;
+};
+class $T_anon_gJeQaa {
+i32 $I_dummy;
+};
+
+// hoisted empty struct decls:
+class $T___dirstream {};
+class $T___locale_data {};
+class $T__IO_wide_data {};
+class $T__IO_codecvt {};
+class $T__IO_marker {};
+
+// non-empty struct decls:
+class $T_anon_kyjIY8 {
+i32 [2]$I___val;
+} ;
+class $T___locale_struct {
+$T___locale_data *[13]$I___locales;
+ u16 *$I___ctype_b;
+ i32 *$I___ctype_tolower;
+ i32 *$I___ctype_toupper;
+ i8 *[13]$I___names;
+} ;
+class $T_dirent {
+u32  $I_d_ino;
+i32  $I_d_off;
+u16 $I_d_reclen;
+u8 $I_d_type;
+i8 [256]$I_d_name;
+} ;
+class $T_flock {
+i16 $I_l_type;
+i16 $I_l_whence;
+i32  $I_l_start;
+i32  $I_l_len;
+i32  $I_l_pid;
+} ;
+class $T_timespec {
+i32  $I_tv_sec;
+i32  $I_tv_nsec;
+} ;
+class $T_stat {
+u32  $I_st_dev;
+u32  $I_st_ino;
+u32  $I_st_nlink;
+u32  $I_st_mode;
+u32  $I_st_uid;
+u32  $I_st_gid;
+i32 $I___pad0;
+u32  $I_st_rdev;
+i32  $I_st_size;
+i32  $I_st_blksize;
+i32  $I_st_blocks;
+$T_timespec $I_st_atim;
+$T_timespec $I_st_mtim;
+$T_timespec $I_st_ctim;
+i32  [3]$I___glibc_reserved;
+} ;
+class $T_anon_YmgXcv {
+i64 $I___max_align_ll;
+f64 $I___max_align_ld;
+} ;
+class $T_anon_yGVdWc {
+i32 $I___count;
+$T_anon_ihWoUJ $I___value;
+} ;
+class $T__G_fpos_t {
+i32  $I___pos;
+$T_anon_yGVdWc $I___state;
+} ;
+class $T__G_fpos64_t {
+i32  $I___pos;
+$T_anon_yGVdWc $I___state;
+} ;
+class $T__IO_FILE {
+i32 $I__flags;
+i8 *$I__IO_read_ptr;
+i8 *$I__IO_read_end;
+i8 *$I__IO_read_base;
+i8 *$I__IO_write_base;
+i8 *$I__IO_write_ptr;
+i8 *$I__IO_write_end;
+i8 *$I__IO_buf_base;
+i8 *$I__IO_buf_end;
+i8 *$I__IO_save_base;
+i8 *$I__IO_backup_base;
+i8 *$I__IO_save_end;
+$T__IO_marker *$I__markers;
+$T__IO_FILE *$I__chain;
+i32 $I__fileno;
+i32 $I__flags2;
+i32  $I__old_offset;
+u16 $I__cur_column;
+i8 $I__vtable_offset;
+i8 [1]$I__shortbuf;
+v0  *$I__lock;
+i32  $I__offset;
+$T__IO_codecvt *$I__codecvt;
+$T__IO_wide_data *$I__wide_data;
+$T__IO_FILE *$I__freeres_list;
+v0 *$I__freeres_buf;
+u32  $I___pad5;
+i32 $I__mode;
+i8 [0]$I__unused2;
+} ;
+class $T_mallinfo {
+i32 $I_arena;
+i32 $I_ordblks;
+i32 $I_smblks;
+i32 $I_hblks;
+i32 $I_hblkhd;
+i32 $I_usmblks;
+i32 $I_fsmblks;
+i32 $I_uordblks;
+i32 $I_fordblks;
+i32 $I_keepcost;
+} ;
+class $T_anon_n1G0mm {
+u32 [0]$I___val;
+} ;
+class $T_sigval {
+i32 $I_sival_int;
+v0 *$I_sival_ptr;
+} ;
+class $T_anon_4ul1Rc {
+i32 $I_si_signo;
+i32 $I_si_errno;
+i32 $I_si_code;
+i32 $I___pad0;
+$T_anon_EqFZiu $I__sifields;
+} ;
+class $T_sigevent {
+$T_sigval $I_sigev_value;
+i32 $I_sigev_signo;
+i32 $I_sigev_notify;
+$T_anon_mV09bx $I__sigev_un;
+} ;
+class $T_sigaction {
+$T_anon_tfJyRu $I___sigaction_handler;
+$T_anon_n1G0mm $I_sa_mask;
+i32 $I_sa_flags;
+} ;
+class $T__fpx_sw_bytes {
+u32  $I_magic1;
+u32  $I_extended_size;
+u32  $I_xstate_bv;
+u32  $I_xstate_size;
+u32  [7]$I___glibc_reserved1;
+} ;
+class $T__fpreg {
+u16 [4]$I_significand;
+u16 $I_exponent;
+} ;
+class $T__fpxreg {
+u16 [4]$I_significand;
+u16 $I_exponent;
+u16 [3]$I___glibc_reserved1;
+} ;
+class $T__xmmreg {
+u32  [4]$I_element;
+} ;
+class $T__fpstate {
+u16  $I_cwd;
+u16  $I_swd;
+u16  $I_ftw;
+u16  $I_fop;
+u32  $I_rip;
+u32  $I_rdp;
+u32  $I_mxcsr;
+u32  $I_mxcr_mask;
+$T__fpxreg [8]$I__st;
+$T__xmmreg [16]$I__xmm;
+u32  [24]$I___glibc_reserved1;
+} ;
+class $T_sigcontext {
+u32  $I_r8;
+u32  $I_r9;
+u32  $I_r10;
+u32  $I_r11;
+u32  $I_r12;
+u32  $I_r13;
+u32  $I_r14;
+u32  $I_r15;
+u32  $I_rdi;
+u32  $I_rsi;
+u32  $I_rbp;
+u32  $I_rbx;
+u32  $I_rdx;
+u32  $I_rax;
+u32  $I_rcx;
+u32  $I_rsp;
+u32  $I_rip;
+u32  $I_eflags;
+u16 $I_cs;
+u16 $I_gs;
+u16 $I_fs;
+u16 $I___pad0;
+u32  $I_err;
+u32  $I_trapno;
+u32  $I_oldmask;
+u32  $I_cr2;
+u32  [8]$I___reserved1;
+} ;
+class $T__xsave_hdr {
+u32  $I_xstate_bv;
+u32  [2]$I___glibc_reserved1;
+u32  [5]$I___glibc_reserved2;
+} ;
+class $T__ymmh_state {
+u32  [64]$I_ymmh_space;
+} ;
+class $T__xstate {
+$T__fpstate $I_fpstate;
+$T__xsave_hdr $I_xstate_hdr;
+$T__ymmh_state $I_ymmh;
+} ;
+class $T_anon_Ye6e9c {
+v0 *$I_ss_sp;
+i32 $I_ss_flags;
+u32  $I_ss_size;
+} ;
+class $T__libc_fpxreg {
+u16 [4]$I_significand;
+u16 $I_exponent;
+u16 [3]$I___glibc_reserved1;
+} ;
+class $T__libc_xmmreg {
+u32  [4]$I_element;
+} ;
+class $T__libc_fpstate {
+u16  $I_cwd;
+u16  $I_swd;
+u16  $I_ftw;
+u16  $I_fop;
+u32  $I_rip;
+u32  $I_rdp;
+u32  $I_mxcsr;
+u32  $I_mxcr_mask;
+$T__libc_fpxreg [8]$I__st;
+$T__libc_xmmreg [16]$I__xmm;
+u32  [24]$I___glibc_reserved1;
+} ;
+class $T_anon_2sLcVV {
+i64   $I_gregs;
+$T__libc_fpstate $I_fpregs;
+u64 [8]$I___reserved1;
+} ;
+class $T_ucontext_t {
+u32 $I_uc_flags;
+$T_ucontext_t *$I_uc_link;
+$T_anon_Ye6e9c $I_uc_stack;
+$T_anon_2sLcVV $I_uc_mcontext;
+$T_anon_n1G0mm  $I_uc_sigmask;
+$T__libc_fpstate $I___fpregs_mem;
+u64 [4]$I___ssp;
+} ;
+class $T_sigstack {
+v0 *$I_ss_sp;
+i32 $I_ss_onstack;
+} ;
+class $T___pthread_internal_list {
+$T___pthread_internal_list *$I___prev;
+$T___pthread_internal_list *$I___next;
+} ;
+class $T___pthread_internal_slist {
+$T___pthread_internal_slist *$I___next;
+} ;
+class $T___pthread_mutex_s {
+i32 $I___lock;
+u32 $I___count;
+i32 $I___owner;
+u32 $I___nusers;
+i32 $I___kind;
+i16 $I___spins;
+i16 $I___elision;
+$T___pthread_internal_list $I___list;
+} ;
+class $T___pthread_rwlock_arch_t {
+u32 $I___readers;
+u32 $I___writers;
+u32 $I___wrphase_futex;
+u32 $I___writers_futex;
+u32 $I___pad3;
+u32 $I___pad4;
+i32 $I___cur_writer;
+i32 $I___shared;
+i8 $I___rwelision;
+u8 [7]$I___pad1;
+u32 $I___pad2;
+u32 $I___flags;
+} ;
+class $T___pthread_cond_s {
+u32 [2]$I___g_refs;
+u32 [2]$I___g_size;
+u32 $I___g1_orig_size;
+u32 $I___wrefs;
+u32 [2]$I___g_signals;
+} ;
+class $T_anon_DUpkUJ {
+i8 [4]$I___size;
+i32 $I___align;
+} ;
+class $T_anon_TMbXf4 {
+i8 [4]$I___size;
+i32 $I___align;
+} ;
+class $T_pthread_attr_t {
+i8 [56]$I___size;
+i32 $I___align;
+} ;
+class $T_anon_UlOVYR {
+$T___pthread_mutex_s $I___data;
+i8 [40]$I___size;
+i32 $I___align;
+} ;
+class $T_anon_geuc2v {
+$T___pthread_cond_s $I___data;
+i8 [48]$I___size;
+i64 $I___align;
+} ;
+class $T_anon_jUgqq1 {
+$T___pthread_rwlock_arch_t $I___data;
+i8 [56]$I___size;
+i32 $I___align;
+} ;
+class $T_anon_yBeV9V {
+i8 [8]$I___size;
+i32 $I___align;
+} ;
+class $T_anon_qWXiJL {
+i8 [32]$I___size;
+i32 $I___align;
+} ;
+class $T_anon_kl35JK {
+i8 [4]$I___size;
+i32 $I___align;
+} ;
+class $T_anon_KAIQej {
+i32 $I_quot;
+i32 $I_rem;
+} ;
+class $T_anon_hSLKea {
+i32 $I_quot;
+i32 $I_rem;
+} ;
+class $T_anon_EEsSE4 {
+i64 $I_quot;
+i64 $I_rem;
+} ;
+class $T_timeval {
+i32  $I_tv_sec;
+i32  $I_tv_usec;
+} ;
+class $T_anon_msreSD {
+i32  [0]$I___fds_bits;
+} ;
+class $T_random_data {
+i32   *$I_fptr;
+i32   *$I_rptr;
+i32   *$I_state;
+i32 $I_rand_type;
+i32 $I_rand_deg;
+i32 $I_rand_sep;
+i32   *$I_end_ptr;
+} ;
+class $T_drand48_data {
+u16 [3]$I___x;
+u16 [3]$I___old_x;
+u16 $I___c;
+u16 $I___init;
+u64 $I___a;
+} ;
+class $T_timezone {
+i32 $I_tz_minuteswest;
+i32 $I_tz_dsttime;
+} ;
+class $T_itimerval {
+$T_timeval $I_it_interval;
+$T_timeval $I_it_value;
+} ;
+class $T_tm {
+i32 $I_tm_sec;
+i32 $I_tm_min;
+i32 $I_tm_hour;
+i32 $I_tm_mday;
+i32 $I_tm_mon;
+i32 $I_tm_year;
+i32 $I_tm_wday;
+i32 $I_tm_yday;
+i32 $I_tm_isdst;
+i32 $I_tm_gmtoff;
+ i8 *$I_tm_zone;
+} ;
+class $T_itimerspec {
+$T_timespec $I_it_interval;
+$T_timespec $I_it_value;
+} ;
+class $T_utimbuf {
+i32  $I_actime;
+i32  $I_modtime;
+} ;
+class $T_config {
+u16  $I_good_length;
+u16  $I_max_lazy;
+u16  $I_nice_length;
+u16  $I_max_chain;
+} ;
+class $T_option {
+ i8 *$I_name;
+i32 $I_has_arg;
+i32 *$I_flag;
+i32 $I_val;
+} ;
+class $T_huft {
+u8  $I_e;
+u8  $I_b;
+$T_anon_Z98nEM $I_v;
+} ;
+class $T_ct_data {
+$T_anon_y4OwJ6 $I_fc;
+$T_anon_SHuB2J $I_dl;
+} ;
+class $T_tree_desc {
+$T_ct_data *$I_dyn_tree;
+$T_ct_data *$I_static_tree;
+i32 *$I_extra_bits;
+i32 $I_extra_base;
+i32 $I_elems;
+i32 $I_max_length;
+i32 $I_max_code;
+} ;
+class $T_bytes {
+i32 $I_word;
+$T_anon_gJeQaa $I_bytes;
+} ;
+
+// top-level fn decls:
+v0  $I_bzero(v0 *$I___s, u32  $I___n){}
+i32  $I_rmdir( i8 *$I___path){}
+$T__IO_FILE  *$I_tmpfile(v0 $A_0){}
+v0  $I_seekdir($T___dirstream *$I___dirp, i32 $I___pos){}
+i32  $I_fclose($T__IO_FILE *$I___stream){}
+i32  $I_execvp( i8 *$I___file, i8 **$I___argv){}
+u32   $I_strftime(i8 *$I___s, u32  $I___maxsize,  i8 *$I___format,  $T_tm *$I___tp){}
+i32  $I_setegid(u32  $I___gid){}
+i32  $I_isprint(i32 $A_0){}
+i32  $I_on_exit(v0 *$I___func, v0 *$I___arg){}
+i32  $I_utimes( i8 *$I___file,  $T_timeval [2]$I___tvp){}
+i32  $I_revoke( i8 *$I___file){}
+i32  $I_vsscanf( i8 *$I___s,  i8 *$I___format, v0*  $I___arg){}
+i32  $I_toupper_l(i32 $I___c, $T___locale_struct  $I___l){}
+i32  $I_mkstemps(i8 *$I___template, i32 $I___suffixlen){}
+i32  $I_qecvt_r(f64 $I___value, i32 $I___ndigit, i32 *$I___decpt, i32 *$I___sign, i8 *$I___buf, u32  $I___len){}
+f64  $I_erand48(u16 [3]$I___xsubi){}
+f64  $I_difftime(i32   $I___time1, i32   $I___time0){}
+v0  *$I_memset(v0 *$I___s, i32 $I___c, u32  $I___n){}
+i32  $I_setitimer(i32  $I___which,  $T_itimerval *$I___new, $T_itimerval *$I___old){}
+i32  $I_close(i32 $I___fd){}
+ u16  **$I___ctype_b_loc(v0 $A_0){}
+i32  $I_malloc_trim(u32  $I___pad){}
+i32  $I_fsync(i32 $I___fd){}
+i32  $I_fgetc($T__IO_FILE *$I___stream){}
+i32  $I_isgraph_l(i32 $A_0, $T___locale_struct  $A_1){}
+i32  $I_telldir($T___dirstream *$I___dirp){}
+v0  *$I_realloc(v0 *$I___ptr, u32  $I___size){}
+i8  *$I_tmpnam_r(i8 *$I___s){}
+v0  $I_lcong48(u16 [7]$I___param){}
+i32  $I_getitimer(i32  $I___which, $T_itimerval *$I___value){}
+i32  $I_execl( i8 *$I___path,  i8 *$I___arg){}
+i8  *$I___strtok_r(i8 *$I___s,  i8 *$I___delim, i8 **$I___save_ptr){}
+i8  *$I_fcvt(f64 $I___value, i32 $I___ndigit, i32 *$I___decpt, i32 *$I___sign){}
+i32  $I_ungetc(i32 $I___c, $T__IO_FILE *$I___stream){}
+v0  *$I_sbrk(i32   $I___delta){}
+i32  $I_vfprintf($T__IO_FILE *$I___s,  i8 *$I___format, v0*  $I___arg){}
+i32  $I_sigfillset($T_anon_n1G0mm  *$I___set){}
+i32  $I_readdir_r($T___dirstream *$I___dirp, $T_dirent *$I___entry, $T_dirent **$I___result){}
+v0  $I_srand(u32 $I___seed){}
+i32  $I_putchar_unlocked(i32 $I___c){}
+i32  $I_vdprintf(i32 $I___fd,  i8 *$I___fmt, v0*  $I___arg){}
+i32  $I_ttyslot(v0 $A_0){}
+i8  *$I_strerror(i32 $I___errnum){}
+i32  $I_fputc_unlocked(i32 $I___c, $T__IO_FILE *$I___stream){}
+i32  $I_execv( i8 *$I___path, i8 **$I___argv){}
+i32  $I_sigsuspend( $T_anon_n1G0mm  *$I___set){}
+i32  $I_memcmp( v0 *$I___s1,  v0 *$I___s2, u32  $I___n){}
+i32  $I_fchmodat(i32 $I___fd,  i8 *$I___file, u32  $I___mode, i32 $I___flag){}
+u32   $I_strcspn( i8 *$I___s,  i8 *$I___reject){}
+i32  $I_getw($T__IO_FILE *$I___stream){}
+i32  $I___libc_current_sigrtmin(v0 $A_0){}
+i32   $I_getdelim(i8 **$I___lineptr, u32  *$I___n, i32 $I___delimiter, $T__IO_FILE *$I___stream){}
+i32  $I_syscall(i32 $I___sysno){}
+i32  $I_tolower_l(i32 $I___c, $T___locale_struct  $I___l){}
+i32  $I_settimeofday( $T_timeval *$I___tv,  $T_timezone *$I___tz){}
+i32  $I_truncate( i8 *$I___file, i32  $I___length){}
+i32  $I_ferror_unlocked($T__IO_FILE *$I___stream){}
+i32  $I_drand48_r($T_drand48_data *$I___buffer, f64 *$I___result){}
+v0  $I_psiginfo( $T_anon_4ul1Rc *$I___pinfo,  i8 *$I___s){}
+i32  $I_getsubopt(i8 **$I___optionp, i8 **$I___tokens, i8 **$I___valuep){}
+i32  $I_fputc(i32 $I___c, $T__IO_FILE *$I___stream){}
+i32  $I_scanf( i8 *$I___format){}
+i8  *$I_strndup( i8 *$I___string, u32  $I___n){}
+v0  *$I_alloca(u32  $I___size){}
+v0  *$I_aligned_alloc(u32  $I___alignment, u32  $I___size){}
+i8  *$I_strncat(i8 *$I___dest,  i8 *$I___src, u32  $I___n){}
+i32  $I_lstat( i8 *$I___file, $T_stat *$I___buf){}
+i32  $I_setuid(u32  $I___uid){}
+i32  $I_srandom_r(u32 $I___seed, $T_random_data *$I___buf){}
+f64  $I_strtod( i8 *$I___nptr, i8 **$I___endptr){}
+i32  $I_strcasecmp( i8 *$I___s1,  i8 *$I___s2){}
+i32   $I_lseek(i32 $I___fd, i32  $I___offset, i32 $I___whence){}
+i32  $I_isatty(i32 $I___fd){}
+i32  $I_isblank(i32 $A_0){}
+i32  $I_fchdir(i32 $I___fd){}
+v0  $I_rewind($T__IO_FILE *$I___stream){}
+i32  $I_rename( i8 *$I___old,  i8 *$I___new){}
+i32  $I_fchownat(i32 $I___fd,  i8 *$I___file, u32  $I___owner, u32  $I___group, i32 $I___flag){}
+i32  $I_jrand48(u16 [3]$I___xsubi){}
+i32  $I_fexecve(i32 $I___fd, i8 **$I___argv, i8 **$I___envp){}
+v0  $I__exit(i32 $I___status){}
+i32  $I_initstate_r(u32 $I___seed, i8 *$I___statebuf, u32  $I___statelen, $T_random_data *$I___buf){}
+i32  $I__tolower(i32 $A_0){}
+i32  $I_ispunct_l(i32 $A_0, $T___locale_struct  $A_1){}
+u32   $I_getuid(v0 $A_0){}
+i8  *$I_ctermid(i8 *$I___s){}
+u32   $I_fwrite_unlocked( v0 *$I___ptr, u32  $I___size, u32  $I___n, $T__IO_FILE *$I___stream){}
+i8  *$I_strpbrk( i8 *$I___s,  i8 *$I___accept){}
+i32  $I_link( i8 *$I___from,  i8 *$I___to){}
+i32  $I_seteuid(u32  $I___uid){}
+i32  *$I___errno_location(v0 $A_0){}
+i8  *$I_stpcpy(i8 *$I___dest,  i8 *$I___src){}
+$T__IO_FILE  *$I_popen( i8 *$I___command,  i8 *$I___modes){}
+v0  $I_explicit_bzero(v0 *$I___s, u32  $I___n){}
+v0  *$I_reallocarray(v0 *$I___ptr, u32  $I___nmemb, u32  $I___size){}
+i32  $I_rand(v0 $A_0){}
+i32  $I_pathconf( i8 *$I___path, i32 $I___name){}
+i32  $I_isdigit(i32 $A_0){}
+f64  $I_atof( i8 *$I___nptr){}
+i32  $I_isblank_l(i32 $A_0, $T___locale_struct  $A_1){}
+i32  $I_isalpha(i32 $A_0){}
+u32   $I_strxfrm_l(i8 *$I___dest,  i8 *$I___src, u32  $I___n, $T___locale_struct  $I___l){}
+i32  $I_pause(v0 $A_0){}
+i32  $I_vsprintf(i8 *$I___s,  i8 *$I___format, v0*  $I___arg){}
+i32  $I_toupper(i32 $I___c){}
+i8  *$I_strcpy(i8 *$I___dest,  i8 *$I___src){}
+v0  $I_qsort(v0 *$I___base, u32  $I___nmemb, u32  $I___size, v0 *$I___compar){}
+i8  *$I_crypt( i8 *$I___key,  i8 *$I___salt){}
+i32  $I_dysize(i32 $I___year){}
+i32  $I_setpgid(i32  $I___pid, i32  $I___pgid){}
+i32  $I_sigsetmask(i32 $I___mask){}
+i32  $I_abs(i32 $I___x){}
+i32  $I_qfcvt_r(f64 $I___value, i32 $I___ndigit, i32 *$I___decpt, i32 *$I___sign, i8 *$I___buf, u32  $I___len){}
+i32  $I_putc(i32 $I___c, $T__IO_FILE *$I___stream){}
+i8  *$I_rindex( i8 *$I___s, i32 $I___c){}
+i32  $I_setenv( i8 *$I___name,  i8 *$I___value, i32 $I___replace){}
+i32   $I_getdirentries(i32 $I___fd, i8 *$I___buf, u32  $I___nbytes, i32  *$I___basep){}
+i32  $I_getentropy(v0 *$I___buffer, u32  $I___length){}
+i32  $I_fstatat(i32 $I___fd,  i8 *$I___file, $T_stat *$I___buf, i32 $I___flag){}
+i8  *$I_setstate(i8 *$I___statebuf){}
+i32  $I___lxstat(i32 $I___ver,  i8 *$I___filename, $T_stat *$I___stat_buf){}
+i32  $I_strcasecmp_l( i8 *$I___s1,  i8 *$I___s2, $T___locale_struct  $I___loc){}
+i32  $I_puts( i8 *$I___s){}
+i32  $I_access( i8 *$I___name, i32 $I___type){}
+i32  $I_fseek($T__IO_FILE *$I___stream, i32 $I___off, i32 $I___whence){}
+i32  $I_sprintf(i8 *$I___s,  i8 *$I___format){}
+v0  $I_perror( i8 *$I___s){}
+v0  *$I_memcpy(v0 *$I___dest,  v0 *$I___src, u32  $I___n){}
+v0  $I_funlockfile($T__IO_FILE *$I___stream){}
+v0  $I_setlinebuf($T__IO_FILE *$I___stream){}
+v0  *$I_bsearch( v0 *$I___key,  v0 *$I___base, u32  $I___nmemb, u32  $I___size, v0 *$I___compar){}
+i32  $I_siggetmask(v0 $A_0){}
+i32  $I_isspace_l(i32 $A_0, $T___locale_struct  $A_1){}
+i32  $I___tolower_l(i32 $I___c, $T___locale_struct  $I___l){}
+i32  $I_getchar(v0 $A_0){}
+i32  $I_clearenv(v0 $A_0){}
+i32  $I_ecvt_r(f64 $I___value, i32 $I___ndigit, i32 *$I___decpt, i32 *$I___sign, i8 *$I___buf, u32  $I___len){}
+i32  $I_sethostname( i8 *$I___name, u32  $I___len){}
+i32  $I_execve( i8 *$I___path, i8 **$I___argv, i8 **$I___envp){}
+i32  $I_fsetpos($T__IO_FILE *$I___stream,  $T__G_fpos_t  *$I___pos){}
+i32  $I_acct( i8 *$I___name){}
+i8  *$I_strerror_l(i32 $I___errnum, $T___locale_struct  $I___l){}
+v0  $I_sync(v0 $A_0){}
+u32   $I_getegid(v0 $A_0){}
+i8  *$I_strdup( i8 *$I___s){}
+i32  $I_siginterrupt(i32 $I___sig, i32 $I___interrupt){}
+i32  $I_nanosleep( $T_timespec *$I___requested_time, $T_timespec *$I___remaining){}
+i32  $I_putenv(i8 *$I___string){}
+i32  $I_setpgrp(v0 $A_0){}
+i32  $I_gethostid(v0 $A_0){}
+i32    $I_mktime($T_tm *$I___tp){}
+i32  $I_alphasort( $T_dirent **$I___e1,  $T_dirent **$I___e2){}
+i32  $I_isalnum(i32 $A_0){}
+i8  *$I___stpcpy(i8 *$I___dest,  i8 *$I___src){}
+i32  $I_getchar_unlocked(v0 $A_0){}
+i32  $I_sigaddset($T_anon_n1G0mm  *$I___set, i32 $I___signo){}
+i32  $I_open( i8 *$I___file, i32 $I___oflag){}
+i32  $I_fputs( i8 *$I___s, $T__IO_FILE *$I___stream){}
+i32  $I_isalpha_l(i32 $A_0, $T___locale_struct  $A_1){}
+i32  $I_clock_nanosleep(i32   $I___clock_id, i32 $I___flags,  $T_timespec *$I___req, $T_timespec *$I___rem){}
+i32  $I_fscanf($T__IO_FILE *$I___stream,  i8 *$I___format){}
+i32  $I_feof_unlocked($T__IO_FILE *$I___stream){}
+u32   $I_fwrite( v0 *$I___ptr, u32  $I___size, u32  $I___n, $T__IO_FILE *$I___s){}
+i32  $I_atoi( i8 *$I___nptr){}
+i32  $I_dup(i32 $I___fd){}
+v0  $I_malloc_stats(v0 $A_0){}
+i32  $I_getloadavg(f64 *$I___loadavg, i32 $I___nelem){}
+i32  $I_setvbuf($T__IO_FILE *$I___stream, i8 *$I___buf, i32 $I___modes, u32  $I___n){}
+i32  $I_lrand48(v0 $A_0){}
+i8  *$I_qfcvt(f64 $I___value, i32 $I___ndigit, i32 *$I___decpt, i32 *$I___sign){}
+i32  $I_sigaction(i32 $I___sig,  $T_sigaction *$I___act, $T_sigaction *$I___oact){}
+i32  $I_isxdigit_l(i32 $A_0, $T___locale_struct  $A_1){}
+i8  *$I_ttyname(i32 $I___fd){}
+i32  $I_chroot( i8 *$I___path){}
+i32  $I_vscanf( i8 *$I___format, v0*  $I___arg){}
+i8  *$I_getpass( i8 *$I___prompt){}
+i32  $I_strncmp( i8 *$I___s1,  i8 *$I___s2, u32  $I___n){}
+i32  $I___xmknod(i32 $I___ver,  i8 *$I___path, u32  $I___mode, u32  *$I___dev){}
+i32  $I_fcntl(i32 $I___fd, i32 $I___cmd){}
+i32  $I_atexit(v0 *$I___func){}
+i32  $I_random(v0 $A_0){}
+i8  *$I___stpncpy(i8 *$I___dest,  i8 *$I___src, u32  $I___n){}
+$T___dirstream  *$I_fdopendir(i32 $I___fd){}
+v0  $I__Exit(i32 $I___status){}
+i32  $I_wctomb(i8 *$I___s, i32  $I___wchar){}
+i32   $I_getsid(i32  $I___pid){}
+i32  $I_getgroups(i32 $I___size, u32  *$I___list){}
+i32  $I_timer_create(i32   $I___clock_id, $T_sigevent *$I___evp, v0   *$I___timerid){}
+i32  $I_random_r($T_random_data *$I___buf, i32   *$I___result){}
+i32  $I_unlinkat(i32 $I___fd,  i8 *$I___name, i32 $I___flag){}
+i32    $I_read(i32 $I___fd, v0 *$I___buf, u32  $I___nbytes){}
+i32  $I_ispunct(i32 $A_0){}
+i32  $I_mkfifoat(i32 $I___fd,  i8 *$I___path, u32  $I___mode){}
+i8  *$I_initstate(u32 $I___seed, i8 *$I___statebuf, u32  $I___statelen){}
+i64  $I_strtoq( i8 *$I___nptr, i8 **$I___endptr, i32 $I___base){}
+i32  $I_lchown( i8 *$I___file, u32  $I___owner, u32  $I___group){}
+u32   $I_getgid(v0 $A_0){}
+i32  $I_nrand48_r(u16 [3]$I___xsubi, $T_drand48_data *$I___buffer, i32 *$I___result){}
+i32  $I_clock_getcpuclockid(i32   $I___pid, i32   *$I___clock_id){}
+u32   $I_fread(v0 *$I___ptr, u32  $I___size, u32  $I___n, $T__IO_FILE *$I___stream){}
+i32  $I_stat( i8 *$I___file, $T_stat *$I___buf){}
+i8  *$I_getenv(){}
+i32  $I_pclose($T__IO_FILE *$I___stream){}
+$T__IO_FILE  *$I_freopen( i8 *$I___filename,  i8 *$I___modes, $T__IO_FILE *$I___stream){}
+i32  $I_mkstemp(i8 *$I___template){}
+i32  $I_sscanf( i8 *$I___s,  i8 *$I___format){}
+i32  $I_fseeko($T__IO_FILE *$I___stream, i32  $I___off, i32 $I___whence){}
+i32  $I_daemon(i32 $I___nochdir, i32 $I___noclose){}
+i32  $I_setgid(u32  $I___gid){}
+v0  *$I_valloc(u32  $I___size){}
+v0  *$I_memccpy(v0 *$I___dest,  v0 *$I___src, i32 $I___c, u32  $I___n){}
+i32  $I_timer_gettime(v0   $I___timerid, $T_itimerspec *$I___value){}
+u32  $I_sleep(u32 $I___seconds){}
+i8  *$I_getwd(i8 *$I___buf){}
+i32  $I_getdomainname(i8 *$I___name, u32  $I___len){}
+v0  $I_setbuf($T__IO_FILE *$I___stream, i8 *$I___buf){}
+$T__IO_FILE  *$I_fdopen(i32 $I___fd,  i8 *$I___modes){}
+u32   $I_strspn( i8 *$I___s,  i8 *$I___accept){}
+i32  $I_strcmp( i8 *$I___s1,  i8 *$I___s2){}
+i32  $I_strncasecmp_l( i8 *$I___s1,  i8 *$I___s2, u32  $I___n, $T___locale_struct  $I___loc){}
+i32  $I_dprintf(i32 $I___fd,  i8 *$I___fmt){}
+i8  *$I_index( i8 *$I___s, i32 $I___c){}
+v0  $I_abort(v0 $A_0){}
+v0  $I_clearerr($T__IO_FILE *$I___stream){}
+i8  *$I_ctime( i32   *$I___timer){}
+i8  *$I_l64a(i32 $I___n){}
+i32   $I_fork(v0 $A_0){}
+i32  $I_jrand48_r(u16 [3]$I___xsubi, $T_drand48_data *$I___buffer, i32 *$I___result){}
+i32  $I_ttyname_r(i32 $I___fd, i8 *$I___buf, u32  $I___buflen){}
+i32  $I_raise(i32 $I___sig){}
+i32  $I_feof($T__IO_FILE *$I___stream){}
+i32  $I_mkfifo( i8 *$I___path, u32  $I___mode){}
+i32  $I_tolower(i32 $I___c){}
+i32  $I_sigismember( $T_anon_n1G0mm  *$I___set, i32 $I___signo){}
+$T_anon_KAIQej  $I_div(i32 $I___numer, i32 $I___denom){}
+v0  $I_rewinddir($T___dirstream *$I___dirp){}
+i32  $I_putc_unlocked(i32 $I___c, $T__IO_FILE *$I___stream){}
+i32  $I_lcong48_r(u16 [7]$I___param, $T_drand48_data *$I___buffer){}
+i32  $I_labs(i32 $I___x){}
+v0  *$I_malloc(u32  $I___size){}
+i32  $I_fflush_unlocked($T__IO_FILE *$I___stream){}
+i32  $I_mallopt(i32 $I___param, i32 $I___val){}
+i32  $I_gettimeofday($T_timeval *$I___tv, v0 *$I___tz){}
+u32   $I_fread_unlocked(v0 *$I___ptr, u32  $I___size, u32  $I___n, $T__IO_FILE *$I___stream){}
+i32  $I_ferror($T__IO_FILE *$I___stream){}
+i32  $I_atol( i8 *$I___nptr){}
+u32   $I_malloc_usable_size(v0 *$I___ptr){}
+i32  $I_openat(i32 $I___fd,  i8 *$I___file, i32 $I___oflag){}
+i32  $I_symlink( i8 *$I___from,  i8 *$I___to){}
+i32  $I_ftell($T__IO_FILE *$I___stream){}
+i32   $I___getdelim(i8 **$I___lineptr, u32  *$I___n, i32 $I___delimiter, $T__IO_FILE *$I___stream){}
+i32  $I_mknodat(i32 $I___fd,  i8 *$I___path, u32  $I___mode, u32  $I___dev){}
+i32  $I_sigqueue(i32  $I___pid, i32 $I___sig,  $T_sigval $I___val){}
+i32  $I_system( i8 *$I___command){}
+i32  $I_seed48_r(u16 [3]$I___seed16v, $T_drand48_data *$I___buffer){}
+i32  $I_erand48_r(u16 [3]$I___xsubi, $T_drand48_data *$I___buffer, f64 *$I___result){}
+i32  $I___uflow($T__IO_FILE *$A_0){}
+i32  $I_strcoll_l( i8 *$I___s1,  i8 *$I___s2, $T___locale_struct  $I___l){}
+i8  *$I_strsignal(i32 $I___sig){}
+$T_tm  *$I_localtime_r( i32   *$I___timer, $T_tm *$I___tp){}
+i32  $I_sigtimedwait( $T_anon_n1G0mm  *$I___set, $T_anon_4ul1Rc *$I___info,  $T_timespec *$I___timeout){}
+i32   $I_getline(i8 **$I___lineptr, u32  *$I___n, $T__IO_FILE *$I___stream){}
+i8  *$I_mktemp(i8 *$I___template){}
+i32  $I_sigstack($T_sigstack *$I___ss, $T_sigstack *$I___oss){}
+i32  $I_clock_getres(i32   $I___clock_id, $T_timespec *$I___res){}
+i32  $I_fflush($T__IO_FILE *$I___stream){}
+$T_tm  *$I_gmtime( i32   *$I___timer){}
+i32  $I_kill(i32  $I___pid, i32 $I___sig){}
+v0  $I_setusershell(v0 $A_0){}
+i32  $I_setregid(u32  $I___rgid, u32  $I___egid){}
+i32  $I_creat( i8 *$I___file, u32   $I___mode){}
+v0  $I_bcopy( v0 *$I___src, v0 *$I___dest, u32  $I___n){}
+v0  $I_setbuffer($T__IO_FILE *$I___stream, i8 *$I___buf, u32  $I___size){}
+ i32   **$I___ctype_tolower_loc(v0 $A_0){}
+i32  $I_lchmod( i8 *$I___file, u32  $I___mode){}
+i8  *$I_ecvt(f64 $I___value, i32 $I___ndigit, i32 *$I___decpt, i32 *$I___sign){}
+i32  $I_strncasecmp( i8 *$I___s1,  i8 *$I___s2, u32  $I___n){}
+i32  $I_ffsl(i32 $I___l){}
+i32  $I_ffsll(i64 $I___ll){}
+v0  $I_clearerr_unlocked($T__IO_FILE *$I___stream){}
+v0  *$I_memchr( v0 *$I___s, i32 $I___c, u32  $I___n){}
+u32   $I_mbstowcs(i32  *$I___pwcs,  i8 *$I___s, u32  $I___n){}
+i32  $I_isxdigit(i32 $A_0){}
+v0   $I_ssignal(i32 $I___sig, v0  $I___handler){}
+i32  $I_getdtablesize(v0 $A_0){}
+i8  *$I_mkdtemp(i8 *$I___template){}
+u16  *$I_seed48(u16 [3]$I___seed16v){}
+i32  $I_setreuid(u32  $I___ruid, u32  $I___euid){}
+i32  $I_lrand48_r($T_drand48_data *$I___buffer, i32 *$I___result){}
+i8  *$I_strstr( i8 *$I___haystack,  i8 *$I___needle){}
+i32  $I___xmknodat(i32 $I___ver, i32 $I___fd,  i8 *$I___path, u32  $I___mode, u32  *$I___dev){}
+i8  *$I_getlogin(v0 $A_0){}
+i32  $I_lutimes( i8 *$I___file,  $T_timeval [2]$I___tvp){}
+i32   $I_getppid(v0 $A_0){}
+i32  $I_mrand48_r($T_drand48_data *$I___buffer, i32 *$I___result){}
+v0  $I_srandom(u32 $I___seed){}
+i32   $I_tcgetpgrp(i32 $I___fd){}
+i32  $I_strerror_r(i32 $I___errnum, i8 *$I___buf, u32  $I___buflen){}
+ i32   **$I___ctype_toupper_loc(v0 $A_0){}
+i32  $I_sigreturn($T_sigcontext *$I___scp){}
+i64  $I_atoll( i8 *$I___nptr){}
+i8  *$I_tempnam( i8 *$I___dir,  i8 *$I___pfx){}
+i32  $I_futimes(i32 $I___fd,  $T_timeval [2]$I___tvp){}
+i32  $I_sigwait( $T_anon_n1G0mm  *$I___set, i32 *$I___sig){}
+i32    $I_timelocal($T_tm *$I___tp){}
+v0  $I_tzset(v0 $A_0){}
+i32  $I_vfscanf($T__IO_FILE *$I___s,  i8 *$I___format, v0*  $I___arg){}
+i32  $I_sigblock(i32 $I___mask){}
+i32  $I_getc($T__IO_FILE *$I___stream){}
+i32  $I_fileno($T__IO_FILE *$I___stream){}
+i8  *$I_strsep(i8 **$I___stringp,  i8 *$I___delim){}
+i32  $I_getc_unlocked($T__IO_FILE *$I___stream){}
+i32  $I_fstat(i32 $I___fd, $T_stat *$I___buf){}
+i32   $I_getpgid(i32  $I___pid){}
+i32  $I_fgetc_unlocked($T__IO_FILE *$I___stream){}
+i32   $I_getpgrp(v0 $A_0){}
+i32  $I_clock_settime(i32   $I___clock_id,  $T_timespec *$I___tp){}
+i32  $I_sysconf(i32 $I___name){}
+i32  $I_killpg(i32  $I___pgrp, i32 $I___sig){}
+i32  $I_islower_l(i32 $A_0, $T___locale_struct  $A_1){}
+i32  $I_sigwaitinfo( $T_anon_n1G0mm  *$I___set, $T_anon_4ul1Rc *$I___info){}
+i32  $I_rand_r(u32 *$I___seed){}
+v0  $I_psignal(i32 $I___sig,  i8 *$I___s){}
+i8  *$I_qecvt(f64 $I___value, i32 $I___ndigit, i32 *$I___decpt, i32 *$I___sign){}
+i32  $I_isprint_l(i32 $A_0, $T___locale_struct  $A_1){}
+i32  $I_sethostid(i32 $I___id){}
+i32  $I_isalnum_l(i32 $A_0, $T___locale_struct  $A_1){}
+i32  $I___fxstatat(i32 $I___ver, i32 $I___fildes,  i8 *$I___filename, $T_stat *$I___stat_buf, i32 $I___flag){}
+i32  $I_unlink( i8 *$I___name){}
+i32  $I_isascii(i32 $I___c){}
+i32  $I_renameat(i32 $I___oldfd,  i8 *$I___old, i32 $I___newfd,  i8 *$I___new){}
+i32  $I_mkdirat(i32 $I___fd,  i8 *$I___path, u32  $I___mode){}
+i32  $I_islower(i32 $A_0){}
+i8  *$I_asctime_r( $T_tm *$I___tp, i8 *$I___buf){}
+f64  $I_drand48(v0 $A_0){}
+i32  $I_dup2(i32 $I___fd, i32 $I___fd2){}
+i32  $I_mbtowc(i32  *$I___pwc,  i8 *$I___s, u32  $I___n){}
+i32  $I_vhangup(v0 $A_0){}
+$T__IO_FILE  *$I_fopen( i8 *$I___filename,  i8 *$I___modes){}
+i32  $I_mrand48(v0 $A_0){}
+i32  $I_adjtime( $T_timeval *$I___delta, $T_timeval *$I___olddelta){}
+i32  $I_sigpending($T_anon_n1G0mm  *$I___set){}
+i32  $I_pthread_sigmask(i32 $I___how,  $T_anon_n1G0mm *$I___newmask, $T_anon_n1G0mm *$I___oldmask){}
+i32   $I_setsid(v0 $A_0){}
+i32  $I_sigemptyset($T_anon_n1G0mm  *$I___set){}
+i8  *$I_strncpy(i8 *$I___dest,  i8 *$I___src, u32  $I___n){}
+i32    $I_pread(i32 $I___fd, v0 *$I___buf, u32  $I___nbytes, i32  $I___offset){}
+i32    $I_write(i32 $I___fd,  v0 *$I___buf, u32  $I___n){}
+i32  $I_mblen( i8 *$I___s, u32  $I___n){}
+i32  $I_utimensat(i32 $I___fd,  i8 *$I___path,  $T_timespec [2]$I___times, i32 $I___flags){}
+v0  $I_exit(i32 $I___status){}
+i32  $I_fcvt_r(f64 $I___value, i32 $I___ndigit, i32 *$I___decpt, i32 *$I___sign, i8 *$I___buf, u32  $I___len){}
+i32  $I_sigprocmask(i32 $I___how,  $T_anon_n1G0mm  *$I___set, $T_anon_n1G0mm  *$I___oset){}
+i32  $I_iscntrl_l(i32 $A_0, $T___locale_struct  $A_1){}
+i32  $I_symlinkat( i8 *$I___from, i32 $I___tofd,  i8 *$I___to){}
+u32   $I_geteuid(v0 $A_0){}
+i32  $I_fprintf($T__IO_FILE *$I___stream,  i8 *$I___format){}
+i32  $I_timer_getoverrun(v0   $I___timerid){}
+i32  $I_strcoll( i8 *$I___s1,  i8 *$I___s2){}
+i32   $I_vfork(v0 $A_0){}
+i32    $I_pwrite(i32 $I___fd,  v0 *$I___buf, u32  $I___n, i32  $I___offset){}
+i32  $I_at_quick_exit(v0 *$I___func){}
+i32  $I_ffs(i32 $I___i){}
+i32  $I___fxstat(i32 $I___ver, i32 $I___fildes, $T_stat *$I___stat_buf){}
+i32  $I_getpagesize(v0 $A_0){}
+i32  $I_vsnprintf(i8 *$I___s, u32  $I___maxlen,  i8 *$I___format, v0*  $I___arg){}
+u64  $I_strtoull( i8 *$I___nptr, i8 **$I___endptr, i32 $I___base){}
+i32  $I_mknod( i8 *$I___path, u32  $I___mode, u32  $I___dev){}
+i32  $I_brk(v0 *$I___addr){}
+$T_tm  *$I_localtime( i32   *$I___timer){}
+i32  $I_tcsetpgrp(i32 $I___fd, i32  $I___pgrp_id){}
+i32  $I_toascii(i32 $I___c){}
+i32  $I_chmod( i8 *$I___file, u32  $I___mode){}
+u32   $I_umask(u32  $I___mask){}
+i8  *$I_strtok_r(i8 *$I___s,  i8 *$I___delim, i8 **$I___save_ptr){}
+i32  $I_gsignal(i32 $I___sig){}
+i32  $I_select(i32 $I___nfds, $T_anon_msreSD *$I___readfds, $T_anon_msreSD *$I___writefds, $T_anon_msreSD *$I___exceptfds, $T_timeval *$I___timeout){}
+i64  $I_strtoll( i8 *$I___nptr, i8 **$I___endptr, i32 $I___base){}
+i32  $I_isspace(i32 $A_0){}
+$T__IO_FILE  *$I_open_memstream(i8 **$I___bufloc, u32  *$I___sizeloc){}
+i8  *$I_strcat(i8 *$I___dest,  i8 *$I___src){}
+$T___dirstream  *$I_opendir( i8 *$I___name){}
+u32   $I_confstr(i32 $I___name, i8 *$I___buf, u32  $I___len){}
+i32  $I_fdatasync(i32 $I___fildes){}
+i32  $I_fileno_unlocked($T__IO_FILE *$I___stream){}
+i32  $I_isupper_l(i32 $A_0, $T___locale_struct  $A_1){}
+i32  $I_lockf(i32 $I___fd, i32 $I___cmd, i32   $I___len){}
+i32  $I___libc_current_sigrtmax(v0 $A_0){}
+i32  $I_strtol( i8 *$I___nptr, i8 **$I___endptr, i32 $I___base){}
+i32  $I_setlogin( i8 *$I___name){}
+i32  $I_pipe(i32 [2]$I___pipedes){}
+i8  *$I_getcwd(i8 *$I___buf, u32  $I___size){}
+v0  *$I_calloc(u32  $I___nmemb, u32  $I___size){}
+i32  $I_fchmod(i32 $I___fd, u32  $I___mode){}
+i32  $I_mkdir( i8 *$I___path, u32  $I___mode){}
+i32  $I_nice(i32 $I___inc){}
+v0   $I_signal(i32 $I___sig, v0  $I___handler){}
+v0  $I_free(v0 *$I___ptr){}
+i32  $I_setstate_r(i8 *$I___statebuf, $T_random_data *$I___buf){}
+i32  $I_fchown(i32 $I___fd, u32  $I___owner, u32  $I___group){}
+i8  *$I_tmpnam(i8 *$I___s){}
+i32  $I_bcmp( v0 *$I___s1,  v0 *$I___s2, u32  $I___n){}
+i32  $I_unsetenv( i8 *$I___name){}
+$T_anon_EEsSE4  $I_lldiv(i64 $I___numer, i64 $I___denom){}
+v0   $I___sysv_signal(i32 $I___sig, v0  $I___handler){}
+$T__IO_FILE  *$I_fmemopen(v0 *$I___s, u32  $I___len,  i8 *$I___modes){}
+i32  $I___overflow($T__IO_FILE *$A_0, i32 $A_1){}
+i32  $I_malloc_info(i32 $I___options, $T__IO_FILE *$I___fp){}
+f32  $I_strtof( i8 *$I___nptr, i8 **$I___endptr){}
+i32  $I_dirfd($T___dirstream *$I___dirp){}
+i32  $I_flock(i32 $I___fd, i32 $I___operation){}
+i32  $I_posix_fadvise(i32 $I___fd, i32   $I___offset, i32   $I___len, i32 $I___advise){}
+i8  *$I_fgets(i8 *$I___s, i32 $I___n, $T__IO_FILE *$I___stream){}
+u32  $I_alarm(u32 $I___seconds){}
+v0  *$I_pvalloc(u32  $I___size){}
+i32  $I_srand48_r(i32 $I___seedval, $T_drand48_data *$I___buffer){}
+i32  $I_chown( i8 *$I___file, u32  $I___owner, u32  $I___group){}
+i32  $I_sigaltstack( $T_anon_Ye6e9c *$I___ss, $T_anon_Ye6e9c *$I___oss){}
+v0  $I_srand48(i32 $I___seedval){}
+u32   $I_strftime_l(i8 *$I___s, u32  $I___maxsize,  i8 *$I___format,  $T_tm *$I___tp, $T___locale_struct  $I___loc){}
+i32   $I_getpid(v0 $A_0){}
+u32   $I_strxfrm(i8 *$I___dest,  i8 *$I___src, u32  $I___n){}
+i32  $I_fgetpos($T__IO_FILE *$I___stream, $T__G_fpos_t  *$I___pos){}
+i32  $I_clock_gettime(i32   $I___clock_id, $T_timespec *$I___tp){}
+i32  $I_profil(u16 *$I___sample_buffer, u32  $I___size, u32  $I___offset, u32 $I___scale){}
+u32   $I___ctype_get_mb_cur_max(v0 $A_0){}
+$T_mallinfo  $I_mallinfo(v0 $A_0){}
+i32  $I_pthread_kill(u32  $I___threadid, i32 $I___signo){}
+i32  $I_timer_delete(v0   $I___timerid){}
+v0  $I_endusershell(v0 $A_0){}
+u64  $I_strtouq( i8 *$I___nptr, i8 **$I___endptr, i32 $I___base){}
+i8  *$I_stpncpy(i8 *$I___dest,  i8 *$I___src, u32  $I___n){}
+i64  $I_llabs(i64 $I___x){}
+i32  $I_timer_settime(v0   $I___timerid, i32 $I___flags,  $T_itimerspec *$I___value, $T_itimerspec *$I___ovalue){}
+i32  $I_posix_memalign(v0 **$I___memptr, u32  $I___alignment, u32  $I___size){}
+i32  $I_gethostname(i8 *$I___name, u32  $I___len){}
+i32  $I_nrand48(u16 [3]$I___xsubi){}
+i32  $I_getlogin_r(i8 *$I___name, u32  $I___name_len){}
+i32  $I_setdomainname( i8 *$I___name, u32  $I___len){}
+i32  $I_execlp( i8 *$I___file,  i8 *$I___arg){}
+i32  $I_isgraph(i32 $A_0){}
+v0  $I_flockfile($T__IO_FILE *$I___stream){}
+i32  $I_fpathconf(i32 $I___fd, i32 $I___name){}
+i32  $I___xstat(i32 $I___ver,  i8 *$I___filename, $T_stat *$I___stat_buf){}
+$T_tm  *$I_gmtime_r( i32   *$I___timer, $T_tm *$I___tp){}
+i32  $I_timespec_get($T_timespec *$I___ts, i32 $I___base){}
+i32    $I_readlinkat(i32 $I___fd,  i8 *$I___path, i8 *$I___buf, u32  $I___len){}
+i32  $I_a64l( i8 *$I___s){}
+i32  $I_linkat(i32 $I___fromfd,  i8 *$I___from, i32 $I___tofd,  i8 *$I___to, i32 $I___flags){}
+f64  $I_strtold( i8 *$I___nptr, i8 **$I___endptr){}
+v0  *$I___default_morecore(i32  $I___size){}
+i8  *$I_strtok(i8 *$I___s,  i8 *$I___delim){}
+i8  *$I_asctime( $T_tm *$I___tp){}
+i8  *$I_gcvt(f64 $I___value, i32 $I___ndigit, i8 *$I___buf){}
+v0  *$I_memalign(u32  $I___alignment, u32  $I___size){}
+v0  $I_quick_exit(i32 $I___status){}
+u32  $I_strtoul( i8 *$I___nptr, i8 **$I___endptr, i32 $I___base){}
+i32  $I__toupper(i32 $A_0){}
+i8  *$I_getusershell(v0 $A_0){}
+$T_anon_hSLKea  $I_ldiv(i32 $I___numer, i32 $I___denom){}
+i32  $I_isdigit_l(i32 $A_0, $T___locale_struct  $A_1){}
+i32  $I_vprintf( i8 *$I___format, v0*  $I___arg){}
+i32  $I_posix_fallocate(i32 $I___fd, i32   $I___offset, i32   $I___len){}
+i32  $I_chdir( i8 *$I___path){}
+i8  *$I_ctime_r( i32   *$I___timer, i8 *$I___buf){}
+i32  $I_execle( i8 *$I___path,  i8 *$I___arg){}
+i32  $I_ftrylockfile($T__IO_FILE *$I___stream){}
+i32  $I_isupper(i32 $A_0){}
+i8  *$I_strrchr( i8 *$I___s, i32 $I___c){}
+u32   $I_strnlen( i8 *$I___string, u32  $I___maxlen){}
+i32  $I_faccessat(i32 $I___fd,  i8 *$I___file, i32 $I___type, i32 $I___flag){}
+i32  $I_iscntrl(i32 $A_0){}
+i32    $I_clock(v0 $A_0){}
+i32    $I_readlink( i8 *$I___path, i8 *$I___buf, u32  $I___len){}
+i32  $I_utime( i8 *$I___file,  $T_utimbuf *$I___file_times){}
+i32  $I_usleep(u32  $I___useconds){}
+i32   $I_ftello($T__IO_FILE *$I___stream){}
+i32  $I_snprintf(i8 *$I___s, u32  $I___maxlen,  i8 *$I___format){}
+u32   $I_wcstombs(i8 *$I___s,  i32  *$I___pwcs, u32  $I___n){}
+i32  $I_putw(i32 $I___w, $T__IO_FILE *$I___stream){}
+i32  $I_pselect(i32 $I___nfds, $T_anon_msreSD *$I___readfds, $T_anon_msreSD *$I___writefds, $T_anon_msreSD *$I___exceptfds,  $T_timespec *$I___timeout,  $T_anon_n1G0mm *$I___sigmask){}
+u32   $I_ualarm(u32  $I___value, u32  $I___interval){}
+i32  $I_ftruncate(i32 $I___fd, i32  $I___length){}
+i32  $I_putchar(i32 $I___c){}
+v0  *$I_memmove(v0 *$I___dest,  v0 *$I___src, u32  $I___n){}
+i32  $I_closedir($T___dirstream *$I___dirp){}
+i32  $I_futimens(i32 $I___fd,  $T_timespec [2]$I___times){}
+i32    $I_time(i32   *$I___timer){}
+i8  *$I_qgcvt(f64 $I___value, i32 $I___ndigit, i8 *$I___buf){}
+u32   $I_strlen( i8 *$I___s){}
+i32  $I_printf( i8 *$I___format){}
+i32    $I_timegm($T_tm *$I___tp){}
+i8  *$I_realpath( i8 *$I___name, i8 *$I___resolved){}
+i32  $I___toupper_l(i32 $I___c, $T___locale_struct  $I___l){}
+i32  $I_sigdelset($T_anon_n1G0mm  *$I___set, i32 $I___signo){}
+$T_dirent  *$I_readdir($T___dirstream *$I___dirp){}
+i32  $I_remove( i8 *$I___filename){}
+i32   $I___getpgid(i32  $I___pid){}
+
+// top-level var decls:
+ $T_config  [10]$I_configuration_table;
+ $T_ct_data  [0]$I_bl_tree;
+ $T_ct_data  [0]$I_dyn_dtree;
+ $T_ct_data  [0]$I_dyn_ltree;
+ $T_ct_data  [0]$I_static_ltree;
+ $T_ct_data  [30]$I_static_dtree;
+ $T_tree_desc  $I_bl_desc;
+ $T_tree_desc  $I_d_desc;
+ $T_tree_desc  $I_l_desc;
+ i32    $I_compressed_len;
+ i32    $I_input_len;
+ i32   $I_zfile;
+ i32  $I_bi_valid;
+ i32  $I_bitcount;
+ i32  $I_compr_level;
+ i32  $I_done;
+ i32  $I_eofile;
+ i32  $I_first_nonopt;
+ i32  $I_heap_len;
+ i32  $I_heap_max;
+ i32  $I_j;
+ i32  $I_last_nonopt;
+ i32  $I_max_len;
+ i32  $I_msg_done = (0);
+ i32  $I_peek_bits;
+ i32  $I_valid;
+ i32  [0]$I_heap;
+ i32  [0]$I_leaves;
+ i32  [0]$I_lit_base;
+ i32  [0]$I_parents;
+ i32  [19]$I_extra_blbits;
+ i32  [29]$I_base_length;
+ i32  [29]$I_extra_lbits;
+ i32  [30]$I_base_dist;
+ i32  [30]$I_extra_dbits;
+ i8  *$I_nextchar;
+ i8  *$I_posixly_correct;
+ i8  **$I_license_msg;
+ i8  **$I_sys_errlist;
+ i8  *[0]$I__sys_siglist;
+ i8  *[0]$I_sys_siglist;
+ u16   $I_io_bitbuf;
+ u16   *$I_cpdext;
+ u16   *$I_cpdist;
+ u16   *$I_cplens;
+ u16   *$I_cplext;
+ u16   [0]$I_bl_count;
+ u16   [256]$I_pt_table;
+ u16  $I_bi_buf;
+ u32   $I_bitbuf;
+ u32   $I_crc;
+ u32   $I_opt_len;
+ u32   $I_orig_len;
+ u32   $I_rsync_chunk_end;
+ u32   $I_rsync_sum;
+ u32   $I_static_len;
+ u32  $I_blocksize;
+ u32  $I_ins_h;
+ u32  $I_last_dist;
+ u32  $I_last_flags;
+ u32  $I_last_lit;
+ u32  $I_lookahead;
+ u32  $I_max_lazy_match;
+ u32  $I_subbitbuf;
+ u32  *$I_border;
+ u8   $I_flag_bit;
+ u8   $I_flags;
+ u8   [0]$I_depth;
+ u8   [0]$I_flag_buf;
+ u8   [0]$I_length_code;
+ u8   [0]$I_pt_len;
+ u8   [19]$I_bl_order;
+ u8   [256]$I_literal;
+ u8   [512]$I_dist_code;
+$T__IO_FILE  *$I_stderr;
+$T__IO_FILE  *$I_stdin;
+$T__IO_FILE  *$I_stdout;
+$T_option  *$I_longopts;
+$T_stat  $I_istat;
+i32    $I_bytes_in;
+i32    $I_bytes_out;
+i32    $I_header_bytes;
+i32    $I_ifile_size;
+i32    $I_time_stamp;
+i32    $I_total_in;
+i32    $I_total_out;
+i32  $I___daylight;
+i32  $I___getopt_initialized;
+i32  $I___timezone;
+i32  $I_ascii = (0);
+i32  $I_block_mode = (128);
+i32  $I_block_start;
+i32  $I_daylight;
+i32  $I_dbits = (6);
+i32  $I_decompress = (0);
+i32  $I_decrypt;
+i32  $I_do_lzw = (0);
+i32  $I_exit_code = (0);
+i32  $I_ext_header = (0);
+i32  $I_force = (0);
+i32  $I_foreground;
+i32  $I_ifd;
+i32  $I_last_member;
+i32  $I_lbits = (9);
+i32  $I_level = (6);
+i32  $I_list = (0);
+i32  $I_maxbits = (16);
+i32  $I_method = (8);
+i32  $I_nice_match;
+i32  $I_no_name = (-(1));
+i32  $I_no_time = (-(1));
+i32  $I_ofd;
+i32  $I_opterr = (1);
+i32  $I_optind = (1);
+i32  $I_optopt = ('?');
+i32  $I_ordering;
+i32  $I_part_nb;
+i32  $I_pkzip = (0);
+i32  $I_quiet = (0);
+i32  $I_recursive = (0);
+i32  $I_remove_ofname = (0);
+i32  $I_rsync = (0);
+i32  $I_save_orig_name;
+i32  $I_sys_nerr;
+i32  $I_test = (0);
+i32  $I_timezone;
+i32  $I_to_stdout = (0);
+i32  $I_verbose = (0);
+i32  *$I_file_method;
+i8  *$I_env;
+i8  *$I_key;
+i8  *$I_optarg;
+i8  *$I_progname;
+i8  *$I_z_suffix;
+i8  **$I___environ;
+i8  **$I_args = ([v0 *]((0)));
+i8  *[2]$I___tzname;
+i8  *[2]$I_tzname;
+i8  [1024]$I_ifname;
+i8  [1024]$I_ofname;
+u16   *$I_file_type;
+u16   *$I_mask_bits;
+u16   [32768]$I_d_buf;
+u16   [65536]$I_prev;
+u32   $I_bb;
+u32   $I_window_size = (([u32  ]((2)))*(32768));
+u32   $I_z_len;
+u32   *$I_crc_32_tab;
+u32  $I_bk;
+u32  $I_good_match;
+u32  $I_hufts;
+u32  $I_inptr;
+u32  $I_insize;
+u32  $I_match_start;
+u32  $I_max_chain_length;
+u32  $I_outcnt;
+u32  $I_prev_length;
+u32  $I_strstart;
+u8   [0]$I_inbuf;
+u8   [0]$I_outbuf;
+u8   [0]$I_window;
+
+// other code:
+  u16  $I___bswap_16(u16  $I___bsx)
+{
+return ($I___bsx);
+}
+
+  u32  $I___bswap_32(u32  $I___bsx)
+{
+return ($I___bsx);
+}
+
+  u32  $I___bswap_64(u32  $I___bsx)
+{
+return ($I___bsx);
+}
+
+  u16  $I___uint16_identity(u16  $I___x)
+{
+return ($I___x);
+}
+
+  u32  $I___uint32_identity(u32  $I___x)
+{
+return ($I___x);
+}
+
+  u32  $I___uint64_identity(u32  $I___x)
+{
+return ($I___x);
+}
+
+v0 $I_bi_init(i32  $I_zipfile)
+{
+(($I_zfile)=($I_zipfile));
+(($I_bi_buf)=(0));
+(($I_bi_valid)=(0));
+if ((($I_zfile)!=(-(1)))) {
+}
+}
+
+v0 $I_send_bits(i32 $I_value, i32 $I_length)
+{
+if ((($I_bi_valid)>(([i32 ]((((8)*(2))*(0))))-($I_length)))) {
+(($I_bi_buf)|=(($I_value)<<($I_bi_valid)));
+if ((($I_outcnt)<((16384)-(2)))) {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((($I_bi_buf)&(255)))));
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((([u16  ](($I_bi_buf)))>>(8)))));
+}
+else {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ]((($I_bi_buf)&(255)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ]((([u16  ](($I_bi_buf)))>>(8)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+(($I_bi_buf)=(([u16  ](($I_value)))>>((((8)*(2))*(0))-($I_bi_valid))));
+(($I_bi_valid)+=(($I_length)-(((8)*(2))*(0))));
+}
+else {
+(($I_bi_buf)|=(($I_value)<<($I_bi_valid)));
+(($I_bi_valid)+=($I_length));
+}
+}
+
+u32 $I_bi_reverse(u32 $I_code, i32 $I_len)
+{
+ u32  $I_res = (0);
+while (((--($I_len))>(0))) {
+(($I_res)|=(($I_code)&(1)));
+}
+return (($I_res)>>(1));
+}
+
+v0 $I_bi_windup()
+{
+if ((($I_bi_valid)>(8))) {
+if ((($I_outcnt)<((16384)-(2)))) {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((($I_bi_buf)&(255)))));
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((([u16  ](($I_bi_buf)))>>(8)))));
+}
+else {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ]((($I_bi_buf)&(255)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ]((([u16  ](($I_bi_buf)))>>(8)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+}
+else {
+if ((($I_bi_valid)>(0))) {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](($I_bi_buf))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+}
+(($I_bi_buf)=(0));
+(($I_bi_valid)=(0));
+}
+
+v0 $I_copy_block(i8 *$I_buf, u32 $I_len, i32 $I_header)
+{
+($I_bi_windup());
+if (($I_header)) {
+if ((($I_outcnt)<((16384)-(2)))) {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((([u16  ](($I_len)))&(255)))));
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((([u16  ](([u16  ](($I_len)))))>>(8)))));
+}
+else {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ]((([u16  ](($I_len)))&(255)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ]((([u16  ](([u16  ](($I_len)))))>>(8)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+if ((($I_outcnt)<((16384)-(2)))) {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((([u16  ]((~($I_len))))&(255)))));
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((([u16  ](([u16  ]((~($I_len))))))>>(8)))));
+}
+else {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ]((([u16  ]((~($I_len))))&(255)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ]((([u16  ](([u16  ]((~($I_len))))))>>(8)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+}
+while ((($I_len)--)) {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((*(($I_buf)++)))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+}
+
+v0 $I_lm_init(i32 $I_pack_level, u16  *$I_flags)
+{
+ u32  $I_j;
+if (((($I_pack_level)<(1))|(($I_pack_level)>(9)))) {
+($I_error(("bad pack level")));
+}
+(($I_compr_level)=($I_pack_level));
+($I_memset(([v0  ](([i8 *]((($I_prev)+(32768)))))), (0), (([u32 ](((1)<<(15))))*(0))));
+(($I_rsync_chunk_end)=(4294967295));
+(($I_rsync_sum)=(0));
+(($I_max_lazy_match)=((($I_configuration_table)[($I_pack_level)]).$I_max_lazy));
+(($I_good_match)=((($I_configuration_table)[($I_pack_level)]).$I_good_length));
+(($I_nice_match)=((($I_configuration_table)[($I_pack_level)]).$I_nice_length));
+(($I_max_chain_length)=((($I_configuration_table)[($I_pack_level)]).$I_max_chain));
+if ((($I_pack_level)==(1))) {
+((*($I_flags))|=(4));
+}
+else {
+if ((($I_pack_level)==(9))) {
+((*($I_flags))|=(2));
+}
+}
+(($I_strstart)=(0));
+(($I_block_start)=(0));
+if (((($I_lookahead)==(0))|(($I_lookahead)==([u32 ]((-(1))))))) {
+return;
+}
+(($I_eofile)=(0));
+while (((($I_lookahead)<(((258)+(3))+(1)))&(!($I_eofile)))) {
+($I_fill_window());
+}
+(($I_ins_h)=(0));
+for ((($I_j)=(0));(($I_j)<((3)-(1))); (($I_j)++)) {
+(($I_ins_h)=(((($I_ins_h)<<((((15)+(3))-(1))/(3)))^(($I_window)[($I_j)]))&(([u32 ](((1)<<(15))))-(1))));
+}
+}
+
+i32 $I_longest_match(u32  $I_cur_match)
+{
+u32  $I_chain_length = ($I_max_chain_length);
+ u8   *$I_scan = (($I_window)+($I_strstart));
+ u8   *$I_match;
+ i32  $I_len;
+i32  $I_best_len = ($I_prev_length);
+u32   $I_limit;
+ u8   *$I_strend = ((($I_window)+($I_strstart))+(258));
+ u8   $I_scan_end1 = (($I_scan)[(($I_best_len)-(1))]);
+ u8   $I_scan_end = (($I_scan)[($I_best_len)]);
+if ((($I_prev_length)>=($I_good_match))) {
+(($I_chain_length)>>=(2));
+}
+while ((((($I_cur_match)=(($I_prev)[(($I_cur_match)&((32768)-(1)))]))>($I_limit))&((--($I_chain_length))!=(0)))) {
+(($I_match)=(($I_window)+($I_cur_match)));
+if ((((((($I_match)[($I_best_len)])!=($I_scan_end))|((($I_match)[(($I_best_len)-(1))])!=($I_scan_end1)))|((*($I_match))!=(*($I_scan))))|((*(++($I_match)))!=(($I_scan)[(1)])))) {
+continue;
+}
+while (((((((((((*(++($I_scan)))==(*(++($I_match))))&((*(++($I_scan)))==(*(++($I_match)))))&((*(++($I_scan)))==(*(++($I_match)))))&((*(++($I_scan)))==(*(++($I_match)))))&((*(++($I_scan)))==(*(++($I_match)))))&((*(++($I_scan)))==(*(++($I_match)))))&((*(++($I_scan)))==(*(++($I_match)))))&((*(++($I_scan)))==(*(++($I_match)))))&(($I_scan)<($I_strend)))) {
+}
+(($I_len)=((258)-([i32 ]((($I_strend)-($I_scan))))));
+(($I_scan)=(($I_strend)-(258)));
+if ((($I_len)>($I_best_len))) {
+(($I_match_start)=($I_cur_match));
+(($I_best_len)=($I_len));
+if ((($I_len)>=($I_nice_match))) {
+break;
+}
+(($I_scan_end1)=(($I_scan)[(($I_best_len)-(1))]));
+(($I_scan_end)=(($I_scan)[($I_best_len)]));
+}
+}
+return ($I_best_len);
+}
+
+ v0 $I_fill_window()
+{
+ u32  $I_n;
+ u32  $I_m;
+u32  $I_more = ([u32 ](((($I_window_size)-([u32  ](($I_lookahead))))-([u32  ](($I_strstart))))));
+if ((($I_more)==([u32 ]((-(1)))))) {
+(($I_more)--);
+}
+else {
+if ((($I_strstart)>=((32768)+((32768)-(((258)+(3))+(1)))))) {
+($I_memcpy(([i8 *](($I_window))), (([i8 *](($I_window)))+(32768)), ([u32 ]((32768)))));
+(($I_match_start)-=(32768));
+(($I_strstart)-=(32768));
+if ((($I_rsync_chunk_end)!=(4294967295))) {
+(($I_rsync_chunk_end)-=(32768));
+}
+(($I_block_start)-=([i32 ]((32768))));
+for ((($I_n)=(0));(($I_n)<([u32 ](((1)<<(15))))); (($I_n)++)) {
+(($I_m)=(($I_prev)[($I_n)]));
+}
+for ((($I_n)=(0));(($I_n)<(32768)); (($I_n)++)) {
+(($I_m)=(($I_prev)[($I_n)]));
+}
+(($I_more)+=(32768));
+}
+}
+if ((!($I_eofile))) {
+if (((($I_n)==(0))|(($I_n)==([u32 ]((-(1))))))) {
+(($I_eofile)=(1));
+}
+else {
+(($I_lookahead)+=($I_n));
+}
+}
+}
+
+ v0 $I_rsync_roll(u32 $I_start, u32 $I_num)
+{
+u32  $I_i;
+if ((($I_start)<(4096))) {
+for ((($I_i)=($I_start));(($I_i)<(4096)); (($I_i)++)) {
+if ((($I_i)==(($I_start)+($I_num)))) {
+return;
+}
+(($I_rsync_sum)+=([u32  ]((($I_window)[($I_i)]))));
+}
+(($I_num)-=((4096)-($I_start)));
+(($I_start)=(4096));
+}
+for ((($I_i)=($I_start));(($I_i)<(($I_start)+($I_num))); (($I_i)++)) {
+(($I_rsync_sum)+=([u32  ]((($I_window)[($I_i)]))));
+(($I_rsync_sum)-=([u32  ]((($I_window)[(($I_i)-(4096))]))));
+if (((($I_rsync_chunk_end)==(4294967295))&((($I_rsync_sum)%(4096))==(0)))) {
+(($I_rsync_chunk_end)=($I_i));
+}
+}
+}
+
+ i32   $I_deflate_fast()
+{
+   u32   $I_hash_head;
+i32  $I_flush;
+u32  $I_match_length = (0);
+(($I_prev_length)=((3)-(1)));
+while ((($I_lookahead)!=(0))) {
+if ((((($I_hash_head)!=(0))&((($I_strstart)-($I_hash_head))<=((32768)-(((258)+(3))+(1)))))&(($I_strstart)<=(($I_window_size)-(((258)+(3))+(1)))))) {
+(($I_match_length)=($I_longest_match(($I_hash_head))));
+if ((($I_match_length)>($I_lookahead))) {
+(($I_match_length)=($I_lookahead));
+}
+}
+if ((($I_match_length)>=(3))) {
+(($I_flush)=($I_ct_tally((($I_strstart)-($I_match_start)), (($I_match_length)-(3)))));
+(($I_lookahead)-=($I_match_length));
+while ((0)) {
+if (($I_rsync)) {
+($I_rsync_roll(($I_strstart), ($I_match_length)));
+}
+}
+if ((($I_match_length)<=($I_max_lazy_match))) {
+(($I_match_length)--);
+while (((--($I_match_length))!=(0))) {
+(($I_strstart)++);
+}
+(($I_strstart)++);
+}
+else {
+(($I_strstart)+=($I_match_length));
+(($I_match_length)=(0));
+(($I_ins_h)=(($I_window)[($I_strstart)]));
+(($I_ins_h)=(((($I_ins_h)<<((((15)+(3))-(1))/(3)))^(($I_window)[(($I_strstart)+(1))]))&(([u32 ](((1)<<(15))))-(1))));
+}
+}
+else {
+(($I_flush)=($I_ct_tally((0), (($I_window)[($I_strstart)]))));
+while ((0)) {
+if (($I_rsync)) {
+($I_rsync_roll(($I_strstart), (1)));
+}
+}
+(($I_lookahead)--);
+(($I_strstart)++);
+}
+if ((($I_rsync)&(($I_strstart)>($I_rsync_chunk_end)))) {
+(($I_rsync_chunk_end)=(4294967295));
+(($I_flush)=(2));
+}
+while (((($I_lookahead)<(((258)+(3))+(1)))&(!($I_eofile)))) {
+($I_fill_window());
+}
+}
+}
+
+i32   $I_deflate()
+{
+   u32   $I_hash_head;
+u32   $I_prev_match;
+i32  $I_flush;
+i32  $I_match_available = (0);
+ u32  $I_match_length = ((3)-(1));
+if ((($I_compr_level)<=(3))) {
+return ($I_deflate_fast());
+}
+while ((($I_lookahead)!=(0))) {
+(($I_match_length)=((3)-(1)));
+if (((((($I_hash_head)!=(0))&(($I_prev_length)<($I_max_lazy_match)))&((($I_strstart)-($I_hash_head))<=((32768)-(((258)+(3))+(1)))))&(($I_strstart)<=(($I_window_size)-(((258)+(3))+(1)))))) {
+(($I_match_length)=($I_longest_match(($I_hash_head))));
+if ((($I_match_length)>($I_lookahead))) {
+(($I_match_length)=($I_lookahead));
+}
+if (((($I_match_length)==(3))&((($I_strstart)-($I_match_start))>(4096)))) {
+(($I_match_length)--);
+}
+}
+if (((($I_prev_length)>=(3))&(($I_match_length)<=($I_prev_length)))) {
+(($I_flush)=($I_ct_tally(((($I_strstart)-(1))-($I_prev_match)), (($I_prev_length)-(3)))));
+(($I_lookahead)-=(($I_prev_length)-(1)));
+(($I_prev_length)-=(2));
+while ((0)) {
+if (($I_rsync)) {
+($I_rsync_roll(($I_strstart), (($I_prev_length)+(1))));
+}
+}
+while (((--($I_prev_length))!=(0))) {
+(($I_strstart)++);
+}
+(($I_match_available)=(0));
+(($I_match_length)=((3)-(1)));
+(($I_strstart)++);
+if ((($I_rsync)&(($I_strstart)>($I_rsync_chunk_end)))) {
+(($I_rsync_chunk_end)=(4294967295));
+(($I_flush)=(2));
+}
+}
+else {
+if (($I_match_available)) {
+(($I_flush)=($I_ct_tally((0), (($I_window)[(($I_strstart)-(1))]))));
+if ((($I_rsync)&(($I_strstart)>($I_rsync_chunk_end)))) {
+(($I_rsync_chunk_end)=(4294967295));
+(($I_flush)=(2));
+}
+while ((0)) {
+if (($I_rsync)) {
+($I_rsync_roll(($I_strstart), (1)));
+}
+}
+(($I_strstart)++);
+(($I_lookahead)--);
+}
+else {
+if ((($I_rsync)&(($I_strstart)>($I_rsync_chunk_end)))) {
+(($I_rsync_chunk_end)=(4294967295));
+(($I_flush)=(2));
+}
+(($I_match_available)=(1));
+while ((0)) {
+if (($I_rsync)) {
+($I_rsync_roll(($I_strstart), (1)));
+}
+}
+(($I_strstart)++);
+(($I_lookahead)--);
+}
+}
+while (((($I_lookahead)<(((258)+(3))+(1)))&(!($I_eofile)))) {
+($I_fill_window());
+}
+}
+if (($I_match_available)) {
+($I_ct_tally((0), (($I_window)[(($I_strstart)-(1))])));
+}
+}
+
+ i8 *$I_strchr( i8 *$I_str, i32 $I_chr)
+{
+while ((*($I_str))) {
+if (((*($I_str))==($I_chr))) {
+return ([i8 *](($I_str)));
+}
+(($I_str)++);
+}
+return (0);
+}
+
+ v0 $I_exchange(i8 **$I_argv)
+{
+i32  $I_bottom = ($I_first_nonopt);
+i32  $I_middle = ($I_last_nonopt);
+i32  $I_top = ($I_optind);
+i8  *$I_tem;
+while (((($I_top)>($I_middle))&(($I_middle)>($I_bottom)))) {
+if (((($I_top)-($I_middle))>(($I_middle)-($I_bottom)))) {
+i32  $I_len = (($I_middle)-($I_bottom));
+ i32  $I_i;
+for ((($I_i)=(0));(($I_i)<($I_len)); (($I_i)++)) {
+(($I_tem)=(($I_argv)[(($I_bottom)+($I_i))]));
+((($I_argv)[(($I_bottom)+($I_i))])=(($I_argv)[((($I_top)-(($I_middle)-($I_bottom)))+($I_i))]));
+((($I_argv)[((($I_top)-(($I_middle)-($I_bottom)))+($I_i))])=($I_tem));
+}
+(($I_top)-=($I_len));
+}
+else {
+i32  $I_len = (($I_top)-($I_middle));
+ i32  $I_i;
+for ((($I_i)=(0));(($I_i)<($I_len)); (($I_i)++)) {
+(($I_tem)=(($I_argv)[(($I_bottom)+($I_i))]));
+((($I_argv)[(($I_bottom)+($I_i))])=(($I_argv)[(($I_middle)+($I_i))]));
+((($I_argv)[(($I_middle)+($I_i))])=($I_tem));
+}
+(($I_bottom)+=($I_len));
+}
+}
+(($I_first_nonopt)+=(($I_optind)-($I_last_nonopt)));
+(($I_last_nonopt)=($I_optind));
+}
+
+  i8 *$I__getopt_initialize(i32 $I_argc, i8 **$I_argv,  i8 *$I_optstring)
+{
+(($I_first_nonopt)=(($I_last_nonopt)=($I_optind)));
+(($I_nextchar)=([v0 *]((0))));
+(($I_posixly_correct)=($I_getenv(("POSIXLY_CORRECT"))));
+if (((($I_optstring)[(0)])==('-'))) {
+(($I_ordering)=($I_RETURN_IN_ORDER));
+(++($I_optstring));
+}
+else {
+if (((($I_optstring)[(0)])==('+'))) {
+(($I_ordering)=($I_REQUIRE_ORDER));
+(++($I_optstring));
+}
+else {
+if ((($I_posixly_correct)!=([v0 *]((0))))) {
+(($I_ordering)=($I_REQUIRE_ORDER));
+}
+else {
+(($I_ordering)=($I_PERMUTE));
+}
+}
+}
+return ($I_optstring);
+}
+
+i32 $I__getopt_internal(i32 $I_argc, i8 **$I_argv,  i8 *$I_optstring,  $T_option *$I_longopts, i32 *$I_longind, i32 $I_long_only)
+{
+i32  $I_print_errors = ($I_opterr);
+if (((($I_optstring)[(0)])==(':'))) {
+(($I_print_errors)=(0));
+}
+if ((($I_argc)<(1))) {
+return (-(1));
+}
+(($I_optarg)=([v0 *]((0))));
+if (((($I_optind)==(0))|(!($I___getopt_initialized)))) {
+if ((($I_optind)==(0))) {
+(($I_optind)=(1));
+}
+(($I_optstring)=($I__getopt_initialize(($I_argc), ($I_argv), ($I_optstring))));
+(($I___getopt_initialized)=(1));
+}
+if (((($I_nextchar)==([v0 *]((0))))|((*($I_nextchar))==('\0')))) {
+if ((($I_last_nonopt)>($I_optind))) {
+(($I_last_nonopt)=($I_optind));
+}
+if ((($I_first_nonopt)>($I_optind))) {
+(($I_first_nonopt)=($I_optind));
+}
+if ((($I_ordering)==($I_PERMUTE))) {
+if (((($I_first_nonopt)!=($I_last_nonopt))&(($I_last_nonopt)!=($I_optind)))) {
+($I_exchange(([i8 **](($I_argv)))));
+}
+else {
+if ((($I_last_nonopt)!=($I_optind))) {
+(($I_first_nonopt)=($I_optind));
+}
+}
+while (((($I_optind)<($I_argc))&((((($I_argv)[($I_optind)])[(0)])!=('-'))|(((($I_argv)[($I_optind)])[(1)])==('\0'))))) {
+(($I_optind)++);
+}
+(($I_last_nonopt)=($I_optind));
+}
+if (((($I_optind)!=($I_argc))&(!($I_strcmp((($I_argv)[($I_optind)]), ("--")))))) {
+(($I_optind)++);
+if (((($I_first_nonopt)!=($I_last_nonopt))&(($I_last_nonopt)!=($I_optind)))) {
+($I_exchange(([i8 **](($I_argv)))));
+}
+else {
+if ((($I_first_nonopt)==($I_last_nonopt))) {
+(($I_first_nonopt)=($I_optind));
+}
+}
+(($I_last_nonopt)=($I_argc));
+(($I_optind)=($I_argc));
+}
+if ((($I_optind)==($I_argc))) {
+if ((($I_first_nonopt)!=($I_last_nonopt))) {
+(($I_optind)=($I_first_nonopt));
+}
+return (-(1));
+}
+if (((((($I_argv)[($I_optind)])[(0)])!=('-'))|(((($I_argv)[($I_optind)])[(1)])==('\0')))) {
+if ((($I_ordering)==($I_REQUIRE_ORDER))) {
+return (-(1));
+}
+(($I_optarg)=(($I_argv)[(($I_optind)++)]));
+return (1);
+}
+(($I_nextchar)=(((($I_argv)[($I_optind)])+(1))+((($I_longopts)!=([v0 *]((0))))&(((($I_argv)[($I_optind)])[(1)])==('-')))));
+}
+if (((($I_longopts)!=([v0 *]((0))))&((((($I_argv)[($I_optind)])[(1)])==('-'))|(($I_long_only)&(((($I_argv)[($I_optind)])[(2)])|(!($I_strchr(($I_optstring), ((($I_argv)[($I_optind)])[(1)]))))))))) {
+i8  *$I_nameend;
+ $T_option  *$I_p;
+ $T_option  *$I_pfound = ([v0 *]((0)));
+i32  $I_exact = (0);
+i32  $I_ambig = (0);
+i32  $I_indfound = (-(1));
+i32  $I_option_index;
+for ((($I_nameend)=($I_nextchar));((*($I_nameend))&((*($I_nameend))!=('='))); (($I_nameend)++)) {
+}
+if ((($I_ambig)&(!($I_exact)))) {
+if (($I_print_errors)) {
+($I_fprintf(($I_stderr), ("%s: option `%s' is ambiguous\n"), (($I_argv)[(0)]), (($I_argv)[($I_optind)])));
+}
+(($I_nextchar)+=($I_strlen(($I_nextchar))));
+(($I_optind)++);
+(($I_optopt)=(0));
+return ('?');
+}
+if ((($I_pfound)!=([v0 *]((0))))) {
+(($I_option_index)=($I_indfound));
+(($I_optind)++);
+if ((*($I_nameend))) {
+if ((($I_pfound)->$I_has_arg)) {
+(($I_optarg)=(($I_nameend)+(1)));
+}
+else {
+if (($I_print_errors)) {
+if ((((($I_argv)[(($I_optind)-(1))])[(1)])==('-'))) {
+($I_fprintf(($I_stderr), ("%s: option `--%s' doesn't allow an argument\n"), (($I_argv)[(0)]), (($I_pfound)->$I_name)));
+}
+else {
+($I_fprintf(($I_stderr), ("%s: option `%c%s' doesn't allow an argument\n"), (($I_argv)[(0)]), ((($I_argv)[(($I_optind)-(1))])[(0)]), (($I_pfound)->$I_name)));
+}
+}
+(($I_nextchar)+=($I_strlen(($I_nextchar))));
+(($I_optopt)=(($I_pfound)->$I_val));
+return ('?');
+}
+}
+else {
+if (((($I_pfound)->$I_has_arg)==(1))) {
+if ((($I_optind)<($I_argc))) {
+(($I_optarg)=(($I_argv)[(($I_optind)++)]));
+}
+else {
+if (($I_print_errors)) {
+($I_fprintf(($I_stderr), ("%s: option `%s' requires an argument\n"), (($I_argv)[(0)]), (($I_argv)[(($I_optind)-(1))])));
+}
+(($I_nextchar)+=($I_strlen(($I_nextchar))));
+(($I_optopt)=(($I_pfound)->$I_val));
+}
+}
+}
+(($I_nextchar)+=($I_strlen(($I_nextchar))));
+if ((($I_longind)!=([v0 *]((0))))) {
+((*($I_longind))=($I_option_index));
+}
+if ((($I_pfound)->$I_flag)) {
+((*(($I_pfound)->$I_flag))=(($I_pfound)->$I_val));
+return (0);
+}
+return (($I_pfound)->$I_val);
+}
+if ((((!($I_long_only))|(((($I_argv)[($I_optind)])[(1)])==('-')))|(($I_strchr(($I_optstring), (*($I_nextchar))))==([v0 *]((0)))))) {
+if (($I_print_errors)) {
+if ((((($I_argv)[($I_optind)])[(1)])==('-'))) {
+($I_fprintf(($I_stderr), ("%s: unrecognized option `--%s'\n"), (($I_argv)[(0)]), ($I_nextchar)));
+}
+else {
+($I_fprintf(($I_stderr), ("%s: unrecognized option `%c%s'\n"), (($I_argv)[(0)]), ((($I_argv)[($I_optind)])[(0)]), ($I_nextchar)));
+}
+}
+(($I_nextchar)=([i8 *]((""))));
+(($I_optind)++);
+(($I_optopt)=(0));
+return ('?');
+}
+}
+i8  $I_c = (*(($I_nextchar)++));
+i8  *$I_temp = ($I_strchr(($I_optstring), ($I_c)));
+if (((*($I_nextchar))==('\0'))) {
+(++($I_optind));
+}
+if (((($I_temp)==([v0 *]((0))))|(($I_c)==(':')))) {
+if (($I_print_errors)) {
+if (($I_posixly_correct)) {
+($I_fprintf(($I_stderr), ("%s: illegal option -- %c\n"), (($I_argv)[(0)]), ($I_c)));
+}
+else {
+($I_fprintf(($I_stderr), ("%s: invalid option -- %c\n"), (($I_argv)[(0)]), ($I_c)));
+}
+}
+(($I_optopt)=($I_c));
+return ('?');
+}
+if ((((($I_temp)[(0)])==('W'))&((($I_temp)[(1)])==(';')))) {
+i8  *$I_nameend;
+ $T_option  *$I_p;
+ $T_option  *$I_pfound = ([v0 *]((0)));
+i32  $I_exact = (0);
+i32  $I_ambig = (0);
+i32  $I_indfound = (0);
+i32  $I_option_index;
+if (((*($I_nextchar))!=('\0'))) {
+(($I_optarg)=($I_nextchar));
+(($I_optind)++);
+}
+else {
+if ((($I_optind)==($I_argc))) {
+if (($I_print_errors)) {
+($I_fprintf(($I_stderr), ("%s: option requires an argument -- %c\n"), (($I_argv)[(0)]), ($I_c)));
+}
+(($I_optopt)=($I_c));
+if (((($I_optstring)[(0)])==(':'))) {
+(($I_c)=(':'));
+}
+else {
+(($I_c)=('?'));
+}
+return ($I_c);
+}
+else {
+(($I_optarg)=(($I_argv)[(($I_optind)++)]));
+}
+}
+for ((($I_nextchar)=(($I_nameend)=($I_optarg)));((*($I_nameend))&((*($I_nameend))!=('='))); (($I_nameend)++)) {
+}
+if ((($I_ambig)&(!($I_exact)))) {
+if (($I_print_errors)) {
+($I_fprintf(($I_stderr), ("%s: option `-W %s' is ambiguous\n"), (($I_argv)[(0)]), (($I_argv)[($I_optind)])));
+}
+(($I_nextchar)+=($I_strlen(($I_nextchar))));
+(($I_optind)++);
+return ('?');
+}
+if ((($I_pfound)!=([v0 *]((0))))) {
+(($I_option_index)=($I_indfound));
+if ((*($I_nameend))) {
+if ((($I_pfound)->$I_has_arg)) {
+(($I_optarg)=(($I_nameend)+(1)));
+}
+else {
+if (($I_print_errors)) {
+($I_fprintf(($I_stderr), ("%s: option `-W %s' doesn't allow an argument\n"), (($I_argv)[(0)]), (($I_pfound)->$I_name)));
+}
+(($I_nextchar)+=($I_strlen(($I_nextchar))));
+return ('?');
+}
+}
+else {
+if (((($I_pfound)->$I_has_arg)==(1))) {
+if ((($I_optind)<($I_argc))) {
+(($I_optarg)=(($I_argv)[(($I_optind)++)]));
+}
+else {
+if (($I_print_errors)) {
+($I_fprintf(($I_stderr), ("%s: option `%s' requires an argument\n"), (($I_argv)[(0)]), (($I_argv)[(($I_optind)-(1))])));
+}
+(($I_nextchar)+=($I_strlen(($I_nextchar))));
+}
+}
+}
+(($I_nextchar)+=($I_strlen(($I_nextchar))));
+if ((($I_longind)!=([v0 *]((0))))) {
+((*($I_longind))=($I_option_index));
+}
+if ((($I_pfound)->$I_flag)) {
+((*(($I_pfound)->$I_flag))=(($I_pfound)->$I_val));
+return (0);
+}
+return (($I_pfound)->$I_val);
+}
+(($I_nextchar)=([v0 *]((0))));
+return ('W');
+}
+if (((($I_temp)[(1)])==(':'))) {
+if (((($I_temp)[(2)])==(':'))) {
+if (((*($I_nextchar))!=('\0'))) {
+(($I_optarg)=($I_nextchar));
+(($I_optind)++);
+}
+else {
+(($I_optarg)=([v0 *]((0))));
+}
+(($I_nextchar)=([v0 *]((0))));
+}
+else {
+if (((*($I_nextchar))!=('\0'))) {
+(($I_optarg)=($I_nextchar));
+(($I_optind)++);
+}
+else {
+if ((($I_optind)==($I_argc))) {
+if (($I_print_errors)) {
+($I_fprintf(($I_stderr), ("%s: option requires an argument -- %c\n"), (($I_argv)[(0)]), ($I_c)));
+}
+(($I_optopt)=($I_c));
+if (((($I_optstring)[(0)])==(':'))) {
+(($I_c)=(':'));
+}
+else {
+(($I_c)=('?'));
+}
+}
+else {
+(($I_optarg)=(($I_argv)[(($I_optind)++)]));
+}
+}
+(($I_nextchar)=([v0 *]((0))));
+}
+}
+return ($I_c);
+}
+
+i32 $I_getopt(i32 $I_argc, i8 **$I_argv,  i8 *$I_optstring)
+{
+return ($I__getopt_internal(($I_argc), ($I_argv), ($I_optstring), ([ $T_option *]((0))), ([i32 *]((0))), (0)));
+}
+
+ v0 $I_usage()
+{
+}
+
+ v0 $I_help()
+{
+ i8  **$I_help_msg;
+i8  **$I_p = ($I_help_msg);
+($I_printf(("%s %s\n(%s)\n"), ($I_progname), ("1.3.5"), ("2002-09-30")));
+($I_usage());
+while ((*($I_p))) {
+($I_printf(("%s\n"), (*(($I_p)++))));
+}
+}
+
+ v0 $I_license()
+{
+i8  **$I_p = ($I_license_msg);
+($I_printf(("%s %s\n(%s)\n"), ($I_progname), ("1.3.5"), ("2002-09-30")));
+while ((*($I_p))) {
+($I_printf(("%s\n"), (*(($I_p)++))));
+}
+}
+
+ v0 $I_version()
+{
+($I_license());
+($I_printf(("Compilation options:\n%s %s "), ("DIRENT"), ("UTIME")));
+($I_printf(("STDC_HEADERS ")));
+($I_printf(("HAVE_UNISTD_H ")));
+($I_printf(("HAVE_MEMORY_H ")));
+($I_printf(("HAVE_STRING_H ")));
+($I_printf(("HAVE_LSTAT ")));
+($I_printf(("\n")));
+($I_printf(("Written by Jean-loup Gailly.\n")));
+}
+
+ v0 $I_progerror(i8 *$I_string)
+{
+i32  $I_e = (*($I___errno_location()));
+($I_fprintf(($I_stderr), ("%s: "), ($I_progname)));
+((*($I___errno_location()))=($I_e));
+($I_perror(($I_string)));
+(($I_exit_code)=(1));
+}
+
+i32 main(i32 $I_argc, i8 **$I_argv)
+{
+i32  $I_file_count;
+i32  $I_proglen;
+i32  $I_optc;
+(($I_progname)=($I_base_name((($I_argv)[(0)]))));
+(($I_proglen)=($I_strlen(($I_progname))));
+if (((($I_proglen)>(4))&(($I_strcmp(((($I_progname)+($I_proglen))-(4)), (".exe")))==(0)))) {
+((($I_progname)[(($I_proglen)-(4))])=('\0'));
+}
+(($I_env)=($I_add_envopt((&($I_argc)), (&($I_argv)), ("GZIP"))));
+if ((($I_env)!=([v0 *]((0))))) {
+(($I_args)=($I_argv));
+}
+(($I_foreground)=(($I_signal((2), ([v0  ]((1)))))!=([v0  ]((1)))));
+if (($I_foreground)) {
+([v0 ](($I_signal((2)))));
+}
+if ((($I_signal((15), ([v0  ]((1)))))!=([v0  ]((1))))) {
+([v0 ](($I_signal((15)))));
+}
+if ((($I_signal((1), ([v0  ]((1)))))!=([v0  ]((1))))) {
+([v0 ](($I_signal((1)))));
+}
+if (((($I_strncmp(($I_progname), ("un"), (2)))==(0))|(($I_strncmp(($I_progname), ("gun"), (3)))==(0)))) {
+(($I_decompress)=(1));
+}
+else {
+if (((($I_strcmp((($I_progname)+(1)), ("cat")))==(0))|(($I_strcmp(($I_progname), ("gzcat")))==(0)))) {
+(($I_decompress)=(($I_to_stdout)=(1)));
+}
+}
+(($I_z_suffix)=(".gz"));
+(($I_z_len)=($I_strlen(($I_z_suffix))));
+while (((($I_optc)=($I_getopt_long(($I_argc), ($I_argv), ("ab:cdfhH?lLmMnNqrS:tvVZ123456789"), ($I_longopts), ([i32 *]((0))))))!=(-(1)))) {
+for (u8 $_grTnHt = 0; $_grTnHt == 0; $_grTnHt = 1) {
+if (($I_optc) == ('a')) {
+(($I_ascii)=(1));
+break;
+}
+else if (($I_optc) == ('b')) {
+(($I_maxbits)=($I_atoi(($I_optarg))));
+for (0;(*($I_optarg)); (($I_optarg)++)) {
+if ((!((('0')<=(*($I_optarg)))&((*($I_optarg))<=('9'))))) {
+($I_fprintf(($I_stderr), ("%s: -b operand is not an integer\n"), ($I_progname)));
+($I_usage());
+($I_do_exit((1)));
+}
+}
+break;
+}
+else if (($I_optc) == ('c')) {
+(($I_to_stdout)=(1));
+break;
+}
+else if (($I_optc) == ('d')) {
+(($I_decompress)=(1));
+break;
+}
+else if (($I_optc) == ('f')) {
+(($I_force)++);
+break;
+}
+else if (($I_optc) == ('h')) {
+($I_help());
+}
+else if (($I_optc) == ('H')) {
+($I_help());
+}
+else if (($I_optc) == ('?')) {
+($I_help());
+($I_do_exit((0)));
+break;
+}
+else if (($I_optc) == ('l')) {
+(($I_list)=(($I_decompress)=(($I_to_stdout)=(1))));
+break;
+}
+else if (($I_optc) == ('L')) {
+($I_license());
+($I_do_exit((0)));
+break;
+}
+else if (($I_optc) == ('m')) {
+(($I_no_time)=(1));
+break;
+}
+else if (($I_optc) == ('M')) {
+(($I_no_time)=(0));
+break;
+}
+else if (($I_optc) == ('n')) {
+(($I_no_name)=(($I_no_time)=(1)));
+break;
+}
+else if (($I_optc) == ('N')) {
+(($I_no_name)=(($I_no_time)=(0)));
+break;
+}
+else if (($I_optc) == ('q')) {
+(($I_quiet)=(1));
+(($I_verbose)=(0));
+break;
+}
+else if (($I_optc) == ('r')) {
+(($I_recursive)=(1));
+break;
+}
+else if (($I_optc) == ('R')) {
+(($I_rsync)=(1));
+break;
+}
+else if (($I_optc) == ('S')) {
+(($I_z_len)=($I_strlen(($I_optarg))));
+(($I_z_suffix)=($I_optarg));
+break;
+}
+else if (($I_optc) == ('t')) {
+(($I_test)=(($I_decompress)=(($I_to_stdout)=(1))));
+break;
+}
+else if (($I_optc) == ('v')) {
+(($I_verbose)++);
+(($I_quiet)=(0));
+break;
+}
+else if (($I_optc) == ('V')) {
+($I_version());
+($I_do_exit((0)));
+break;
+}
+else if (($I_optc) == ('Z')) {
+($I_fprintf(($I_stderr), ("%s: -Z not supported in this version\n"), ($I_progname)));
+($I_usage());
+($I_do_exit((1)));
+break;
+}
+else if (($I_optc) == ('1')) {
+(($I_level)=(($I_optc)-('0')));
+}
+else if (($I_optc) == ('2')) {
+(($I_level)=(($I_optc)-('0')));
+}
+else if (($I_optc) == ('3')) {
+(($I_level)=(($I_optc)-('0')));
+}
+else if (($I_optc) == ('4')) {
+(($I_level)=(($I_optc)-('0')));
+}
+else if (($I_optc) == ('5')) {
+(($I_level)=(($I_optc)-('0')));
+}
+else if (($I_optc) == ('6')) {
+(($I_level)=(($I_optc)-('0')));
+}
+else if (($I_optc) == ('7')) {
+(($I_level)=(($I_optc)-('0')));
+}
+else if (($I_optc) == ('8')) {
+(($I_level)=(($I_optc)-('0')));
+}
+else if (($I_optc) == ('9')) {
+(($I_level)=(($I_optc)-('0')));
+break;
+($I_do_exit((1)));
+}
+else {
+($I_usage());
+}
+}
+}
+if ((($I_quiet)&(($I_signal((13), ([v0  ]((1)))))!=([v0  ]((1)))))) {
+($I_signal((13)));
+}
+if ((($I_no_time)<(0))) {
+(($I_no_time)=($I_decompress));
+}
+if ((($I_no_name)<(0))) {
+(($I_no_name)=($I_decompress));
+}
+(($I_file_count)=(($I_argc)-($I_optind)));
+if ((($I_ascii)&(!($I_quiet)))) {
+($I_fprintf(($I_stderr), ("%s: option --ascii ignored on this system\n"), ($I_progname)));
+}
+if ((((($I_z_len)==(0))&(!($I_decompress)))|(($I_z_len)>(30)))) {
+($I_fprintf(($I_stderr), ("%s: incorrect suffix '%s'\n"), ($I_progname), ($I_z_suffix)));
+($I_do_exit((1)));
+}
+if ((($I_file_count)!=(0))) {
+if ((((($I_to_stdout)&(!($I_test)))&(!($I_list)))&((!($I_decompress))|(!($I_ascii))))) {
+}
+while ((($I_optind)<($I_argc))) {
+($I_treat_file((($I_argv)[(($I_optind)++)])));
+}
+}
+else {
+($I_treat_stdin());
+}
+if (((($I_list)&(!($I_quiet)))&(($I_file_count)>(1)))) {
+($I_do_list((-(1)), (-(1))));
+}
+($I_do_exit(($I_exit_code)));
+return ($I_exit_code);
+}
+
+ i32 $I_input_eof()
+{
+if (((!($I_decompress))|($I_last_member))) {
+return (1);
+}
+if ((($I_inptr)==($I_insize))) {
+if (((($I_insize)!=(32768))|(($I_fill_inbuf((1)))==(-(1))))) {
+return (1);
+}
+(($I_inptr)=(0));
+}
+return (0);
+}
+
+ v0 $I_treat_stdin()
+{
+if ((($I_decompress)|(!($I_ascii)))) {
+}
+if ((((!($I_test))&(!($I_list)))&((!($I_decompress))|(!($I_ascii))))) {
+}
+($I_strcpy(($I_ifname), ("stdin")));
+($I_strcpy(($I_ofname), ("stdout")));
+(($I_time_stamp)=(0));
+if ((($I_list)|(!($I_no_time)))) {
+if ((($I_fstat(($I_fileno(($I_stdin))), (&($I_istat))))!=(0))) {
+($I_progerror(("standard input")));
+($I_do_exit((1)));
+}
+(($I_time_stamp)=((($I_istat).$I_st_mtim).$I_tv_sec));
+}
+(($I_ifile_size)=(-(1)));
+($I_clear_bufs());
+(($I_to_stdout)=(1));
+(($I_part_nb)=(0));
+if (($I_decompress)) {
+(($I_method)=($I_get_method(($I_ifd))));
+if ((($I_method)<(0))) {
+($I_do_exit(($I_exit_code)));
+}
+}
+if (($I_list)) {
+($I_do_list(($I_ifd), ($I_method)));
+return;
+}
+for (0;1; 0) {
+if (($I_input_eof())) {
+break;
+}
+(($I_method)=($I_get_method(($I_ifd))));
+if ((($I_method)<(0))) {
+return;
+}
+(($I_bytes_out)=(0));
+}
+if (($I_verbose)) {
+if (($I_test)) {
+($I_fprintf(($I_stderr), (" OK\n")));
+}
+else {
+if ((!($I_decompress))) {
+($I_display_ratio((($I_bytes_in)-(($I_bytes_out)-($I_header_bytes))), ($I_bytes_in), ($I_stderr)));
+($I_fprintf(($I_stderr), ("\n")));
+}
+}
+}
+}
+
+ v0 $I_treat_file(i8 *$I_iname)
+{
+if ((($I_strcmp(($I_iname), ("-")))==(0))) {
+i32  $I_cflag = ($I_to_stdout);
+($I_treat_stdin());
+(($I_to_stdout)=($I_cflag));
+return;
+}
+if ((($I_get_istat(($I_iname), (&($I_istat))))!=(0))) {
+return;
+}
+if ((((($I_istat).$I_st_mode)&(61440))==(16384))) {
+if (($I_recursive)) {
+$T_stat  $I_st;
+(($I_st)=($I_istat));
+($I_treat_dir(($I_iname)));
+($I_reset_times(($I_iname), (&($I_st))));
+}
+else {
+if ((!($I_quiet))) {
+($I_fprintf(($I_stderr), ("%s: %s is a directory -- ignored\n"), ($I_progname), ($I_ifname)));
+}
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+}
+return;
+}
+if ((!(((($I_istat).$I_st_mode)&(61440))==(32768)))) {
+if ((!($I_quiet))) {
+($I_fprintf(($I_stderr), ("%s: %s is not a directory or a regular file - ignored\n"), ($I_progname), ($I_ifname)));
+}
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+return;
+}
+if (((((($I_istat).$I_st_nlink)>(1))&(!($I_to_stdout)))&(!($I_force)))) {
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+return;
+}
+(($I_ifile_size)=(($I_istat).$I_st_size));
+if (((($I_to_stdout)&(!($I_list)))&(!($I_test)))) {
+($I_strcpy(($I_ofname), ("stdout")));
+}
+else {
+if ((($I_make_ofname())!=(0))) {
+return;
+}
+}
+if ((($I_ifd)==(-(1)))) {
+($I_progerror(($I_ifname)));
+return;
+}
+($I_clear_bufs());
+(($I_part_nb)=(0));
+if (($I_decompress)) {
+(($I_method)=($I_get_method(($I_ifd))));
+if ((($I_method)<(0))) {
+($I_close(($I_ifd)));
+return;
+}
+}
+if (($I_list)) {
+($I_do_list(($I_ifd), ($I_method)));
+($I_close(($I_ifd)));
+return;
+}
+if (($I_to_stdout)) {
+(($I_ofd)=($I_fileno(($I_stdout))));
+}
+else {
+if ((($I_create_outfile())!=(0))) {
+return;
+}
+if (((((!($I_decompress))&($I_save_orig_name))&(!($I_verbose)))&(!($I_quiet)))) {
+($I_fprintf(($I_stderr), ("%s: %s compressed to %s\n"), ($I_progname), ($I_ifname), ($I_ofname)));
+}
+}
+if ((!($I_save_orig_name))) {
+(($I_save_orig_name)=(!($I_no_name)));
+}
+if (($I_verbose)) {
+($I_fprintf(($I_stderr), ("%s:\t"), ($I_ifname)));
+}
+for (0;1; 0) {
+if (($I_input_eof())) {
+break;
+}
+(($I_method)=($I_get_method(($I_ifd))));
+if ((($I_method)<(0))) {
+break;
+}
+(($I_bytes_out)=(0));
+}
+($I_close(($I_ifd)));
+if ((!($I_to_stdout))) {
+($I_copy_stat((&($I_istat))));
+if (($I_close(($I_ofd)))) {
+($I_write_error());
+}
+}
+if ((($I_method)==(-(1)))) {
+if ((!($I_to_stdout))) {
+($I_xunlink(($I_ofname)));
+}
+return;
+}
+if (($I_verbose)) {
+if (($I_test)) {
+($I_fprintf(($I_stderr), (" OK")));
+}
+else {
+if (($I_decompress)) {
+($I_display_ratio((($I_bytes_out)-(($I_bytes_in)-($I_header_bytes))), ($I_bytes_out), ($I_stderr)));
+}
+else {
+($I_display_ratio((($I_bytes_in)-(($I_bytes_out)-($I_header_bytes))), ($I_bytes_in), ($I_stderr)));
+}
+}
+if (((!($I_test))&(!($I_to_stdout)))) {
+($I_fprintf(($I_stderr), (" -- replaced with %s"), ($I_ofname)));
+}
+($I_fprintf(($I_stderr), ("\n")));
+}
+}
+
+ i32 $I_create_outfile()
+{
+$T_stat  $I_ostat;
+i32  $I_flags = ((((1)|(64))|(128))|(0));
+if ((($I_ascii)&($I_decompress))) {
+(($I_flags)&=(~(0)));
+}
+for (0;1; 0) {
+if ((($I_check_ofname())!=(0))) {
+($I_close(($I_ifd)));
+return (1);
+}
+(($I_remove_ofname)=(1));
+(($I_ofd)=($I_open(($I_ofname), ($I_flags), ((256)|(128)))));
+if ((($I_ofd)==(-(1)))) {
+($I_progerror(($I_ofname)));
+($I_close(($I_ifd)));
+return (1);
+}
+if ((($I_fstat(($I_ofd), (&($I_ostat))))!=(0))) {
+($I_progerror(($I_ofname)));
+($I_close(($I_ifd)));
+($I_close(($I_ofd)));
+($I_xunlink(($I_ofname)));
+return (1);
+}
+if ((!($I_name_too_long(($I_ofname), (&($I_ostat)))))) {
+return (0);
+}
+if (($I_decompress)) {
+if ((!($I_quiet))) {
+($I_fprintf(($I_stderr), ("%s: %s: warning, name truncated\n"), ($I_progname), ($I_ofname)));
+}
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+return (0);
+}
+($I_close(($I_ofd)));
+($I_xunlink(($I_ofname)));
+($I_shorten_name(($I_ofname)));
+}
+}
+
+ i32 $I_do_stat(i8 *$I_name, $T_stat *$I_sbuf)
+{
+((*($I___errno_location()))=(0));
+if (((!($I_to_stdout))&(!($I_force)))) {
+return ($I_lstat(($I_name), ($I_sbuf)));
+}
+return ($I_stat(($I_name), ($I_sbuf)));
+}
+
+ i8 *$I_get_suffix(i8 *$I_name)
+{
+i32  $I_nlen;
+i32  $I_slen;
+i8  [0]$I_suffix;
+ i8  **$I_known_suffixes;
+i8  **$I_suf = ($I_known_suffixes);
+((*($I_suf))=($I_z_suffix));
+if ((($I_strcmp(($I_z_suffix), ("z")))==(0))) {
+(($I_suf)++);
+}
+(($I_nlen)=($I_strlen(($I_name))));
+if ((($I_nlen)<=((30)+(2)))) {
+($I_strcpy(($I_suffix), ($I_name)));
+}
+else {
+($I_strcpy(($I_suffix), (((($I_name)+($I_nlen))-(30))-(2))));
+}
+($I_strlwr(($I_suffix)));
+(($I_slen)=($I_strlen(($I_suffix))));
+while (((*(++($I_suf)))!=([v0 *]((0))))) {
+i32  $I_s = ($I_strlen((*($I_suf))));
+if ((((($I_slen)>($I_s))&((($I_suffix)[((($I_slen)-($I_s))-(1))])!=('/')))&(($I_strcmp(((($I_suffix)+($I_slen))-($I_s)), (*($I_suf))))==(0)))) {
+return ((($I_name)+($I_nlen))-($I_s));
+}
+}
+return ([v0 *]((0)));
+}
+
+ i32 $I_get_istat(i8 *$I_iname, $T_stat *$I_sbuf)
+{
+i32  $I_ilen;
+i32  $I_z_suffix_errno = (0);
+ i8  **$I_suffixes;
+i8  **$I_suf = ($I_suffixes);
+i8  *$I_s;
+((*($I_suf))=($I_z_suffix));
+if ((((0)-(1))<=($I_strlen(($I_iname))))) {
+}
+($I_strcpy(($I_ifname), ($I_iname)));
+if ((($I_do_stat(($I_ifname), ($I_sbuf)))==(0))) {
+return (0);
+}
+if (((!($I_decompress))|((*($I___errno_location()))!=(2)))) {
+($I_progerror(($I_ifname)));
+return (1);
+}
+(($I_s)=($I_get_suffix(($I_ifname))));
+if ((($I_s)!=([v0 *]((0))))) {
+($I_progerror(($I_ifname)));
+return (1);
+}
+(($I_ilen)=($I_strlen(($I_ifname))));
+if ((($I_strcmp(($I_z_suffix), (".gz")))==(0))) {
+(($I_suf)++);
+}
+while (((*(++($I_suf)))!=([v0 *]((0))))) {
+i8  *$I_s0 = (($I_s)=(*($I_suf)));
+($I_strcpy(($I_ifname), ($I_iname)));
+if (((0)<=(($I_ilen)+($I_strlen(($I_s)))))) {
+}
+($I_strcat(($I_ifname), ($I_s)));
+if ((($I_do_stat(($I_ifname), ($I_sbuf)))==(0))) {
+return (0);
+}
+if ((($I_strcmp(($I_s0), ($I_z_suffix)))==(0))) {
+(($I_z_suffix_errno)=(*($I___errno_location())));
+}
+}
+($I_strcpy(($I_ifname), ($I_iname)));
+($I_strcat(($I_ifname), ($I_z_suffix)));
+((*($I___errno_location()))=($I_z_suffix_errno));
+($I_progerror(($I_ifname)));
+return (1);
+(($I_exit_code)=(1));
+return (1);
+}
+
+ i32 $I_make_ofname()
+{
+i8  *$I_suff;
+($I_strcpy(($I_ofname), ($I_ifname)));
+(($I_suff)=($I_get_suffix(($I_ofname))));
+if (($I_decompress)) {
+if ((($I_suff)==([v0 *]((0))))) {
+if (((!($I_recursive))&(($I_list)|($I_test)))) {
+return (0);
+}
+if ((($I_verbose)|((!($I_recursive))&(!($I_quiet))))) {
+if ((!($I_quiet))) {
+($I_fprintf(($I_stderr), ("%s: %s: unknown suffix -- ignored\n"), ($I_progname), ($I_ifname)));
+}
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+}
+return (2);
+}
+($I_strlwr(($I_suff)));
+if (((($I_strcmp(($I_suff), (".tgz")))==(0))|(($I_strcmp(($I_suff), (".taz")))==(0)))) {
+($I_strcpy(($I_suff), (".tar")));
+}
+else {
+((*($I_suff))=('\0'));
+}
+}
+else {
+if ((($I_suff)!=([v0 *]((0))))) {
+if ((($I_verbose)|((!($I_recursive))&(!($I_quiet))))) {
+($I_fprintf(($I_stderr), ("%s: %s already has %s suffix -- unchanged\n"), ($I_progname), ($I_ifname), ($I_suff)));
+}
+return (2);
+}
+else {
+(($I_save_orig_name)=(0));
+if (((0)<=(($I_strlen(($I_ofname)))+($I_z_len)))) {
+}
+($I_strcat(($I_ofname), ($I_z_suffix)));
+}
+}
+return (0);
+return (2);
+}
+
+ i32 $I_get_method(i32 $I_in)
+{
+u8   $I_flags;
+i8  [2]$I_magic;
+i32  $I_imagic1;
+u32   $I_stamp;
+if ((($I_force)&($I_to_stdout))) {
+((($I_magic)[(1)])=([i8 ](($I_imagic1))));
+}
+else {
+(($I_imagic1)=(0));
+}
+(($I_method)=(-(1)));
+(($I_part_nb)++);
+(($I_header_bytes)=(0));
+(($I_last_member)=(0));
+if (((($I_memcmp(($I_magic), ("\037\213"), (2)))==(0))|(($I_memcmp(($I_magic), ("\037\236"), (2)))==(0)))) {
+if ((($I_method)!=(8))) {
+($I_fprintf(($I_stderr), ("%s: %s: unknown method %d -- not supported\n"), ($I_progname), ($I_ifname), ($I_method)));
+(($I_exit_code)=(1));
+return (-(1));
+}
+if (((($I_flags)&(32))!=(0))) {
+($I_fprintf(($I_stderr), ("%s: %s is encrypted -- not supported\n"), ($I_progname), ($I_ifname)));
+(($I_exit_code)=(1));
+return (-(1));
+}
+if (((($I_flags)&(2))!=(0))) {
+($I_fprintf(($I_stderr), ("%s: %s is a a multi-part gzip file -- not supported\n"), ($I_progname), ($I_ifname)));
+(($I_exit_code)=(1));
+if ((($I_force)<=(1))) {
+return (-(1));
+}
+}
+if (((($I_flags)&(192))!=(0))) {
+($I_fprintf(($I_stderr), ("%s: %s has flags 0x%x -- not supported\n"), ($I_progname), ($I_ifname), ($I_flags)));
+(($I_exit_code)=(1));
+if ((($I_force)<=(1))) {
+return (-(1));
+}
+}
+if (((($I_stamp)!=(0))&(!($I_no_time)))) {
+(($I_time_stamp)=($I_stamp));
+}
+if (((($I_flags)&(2))!=(0))) {
+u32  $I_part;
+if (($I_verbose)) {
+($I_fprintf(($I_stderr), ("%s: %s: part number %u\n"), ($I_progname), ($I_ifname), ($I_part)));
+}
+}
+if (((($I_flags)&(4))!=(0))) {
+u32  $I_len;
+if (($I_verbose)) {
+($I_fprintf(($I_stderr), ("%s: %s: extra field of %u bytes ignored\n"), ($I_progname), ($I_ifname), ($I_len)));
+}
+}
+if (((($I_flags)&(8))!=(0))) {
+if (((($I_no_name)|(($I_to_stdout)&(!($I_list))))|(($I_part_nb)>(1)))) {
+i8  $I_c;
+while ((($I_c)!=(0))) {
+}
+}
+else {
+i8  *$I_p = ($I_base_name(($I_ofname)));
+i8  *$I_base = ($I_p);
+i8  *$I_base2;
+for (0;1; 0) {
+if (((*(($I_p)++))==('\0'))) {
+break;
+}
+if ((($I_p)>=(($I_ofname)+(0)))) {
+($I_error(("corrupted input -- file name too large")));
+}
+}
+(($I_base2)=($I_base_name(($I_base))));
+($I_strcpy(($I_base), ($I_base2)));
+if ((!($I_list))) {
+if (($I_base)) {
+(($I_list)=(0));
+}
+}
+}
+}
+if (((($I_flags)&(16))!=(0))) {
+}
+if ((($I_part_nb)==(1))) {
+(($I_header_bytes)=(($I_inptr)+((2)*(0))));
+}
+}
+else {
+if ((((($I_memcmp(($I_magic), ("\120\113\003\004"), (2)))==(0))&(($I_inptr)==(2)))&(($I_memcmp(([i8 *](($I_inbuf))), ("\120\113\003\004"), (4)))==(0)))) {
+(($I_inptr)=(0));
+if ((($I_check_zipfile(($I_in)))!=(0))) {
+return (-(1));
+}
+(($I_last_member)=(1));
+}
+else {
+if ((($I_memcmp(($I_magic), ("\037\036"), (2)))==(0))) {
+(($I_method)=(2));
+}
+else {
+if ((($I_memcmp(($I_magic), ("\037\235"), (2)))==(0))) {
+(($I_method)=(1));
+(($I_last_member)=(1));
+}
+else {
+if ((($I_memcmp(($I_magic), ("\037\240"), (2)))==(0))) {
+(($I_method)=(3));
+(($I_last_member)=(1));
+}
+else {
+if (((($I_force)&($I_to_stdout))&(!($I_list)))) {
+(($I_method)=(0));
+(($I_inptr)=(0));
+(($I_last_member)=(1));
+}
+}
+}
+}
+}
+}
+if ((($I_method)>=(0))) {
+return ($I_method);
+}
+if ((($I_part_nb)==(1))) {
+($I_fprintf(($I_stderr), ("\n%s: %s: not in gzip format\n"), ($I_progname), ($I_ifname)));
+(($I_exit_code)=(1));
+return (-(1));
+}
+else {
+if (((($I_magic)[(0)])==(0))) {
+i32  $I_inbyte;
+if ((($I_inbyte)==(-(1)))) {
+if (($I_verbose)) {
+if ((!($I_quiet))) {
+($I_fprintf(($I_stderr), ("\n%s: %s: decompression OK, trailing zero bytes ignored\n"), ($I_progname), ($I_ifname)));
+}
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+}
+return (-(3));
+}
+}
+if ((!($I_quiet))) {
+($I_fprintf(($I_stderr), ("\n%s: %s: decompression OK, trailing garbage ignored\n"), ($I_progname), ($I_ifname)));
+}
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+return (-(2));
+}
+}
+
+ v0 $I_do_list(i32 $I_ifd, i32 $I_method)
+{
+u32   $I_crc;
+ i32  $I_first_time = (1);
+ i8  *[9]$I_methods;
+i8  *$I_date;
+i32  $I_positive_off_t_width = (1);
+i32    $I_o;
+for ((($I_o)=((~([i32   ]((0))))-((~([i32   ]((0))))<<(((0)*(8))-(1)))));((9)<($I_o)); (($I_o)/=(10))) {
+(($I_positive_off_t_width)++);
+}
+if ((($I_first_time)&(($I_method)>=(0)))) {
+(($I_first_time)=(0));
+if (($I_verbose)) {
+($I_printf(("method  crc     date  time  ")));
+}
+if ((!($I_quiet))) {
+($I_printf(("%*.*s %*.*s  ratio uncompressed_name\n"), ($I_positive_off_t_width), ($I_positive_off_t_width), ("compressed"), ($I_positive_off_t_width), ($I_positive_off_t_width), ("uncompressed")));
+}
+}
+else {
+if ((($I_method)<(0))) {
+if (((($I_total_in)<=(0))|(($I_total_out)<=(0)))) {
+return;
+}
+if (($I_verbose)) {
+($I_printf(("                            ")));
+}
+if ((($I_verbose)|(!($I_quiet)))) {
+($I_fprint_off(($I_stdout), ($I_total_in), ($I_positive_off_t_width)));
+($I_printf((" ")));
+($I_fprint_off(($I_stdout), ($I_total_out), ($I_positive_off_t_width)));
+($I_printf((" ")));
+}
+($I_display_ratio((($I_total_out)-(($I_total_in)-($I_header_bytes))), ($I_total_out), ($I_stdout)));
+($I_printf((" (totals)\n")));
+return;
+}
+}
+(($I_crc)=([u32  ]((~(0)))));
+(($I_bytes_out)=(-(1)));
+(($I_bytes_in)=($I_ifile_size));
+if (((($I_method)==(8))&(!($I_last_member)))) {
+(($I_bytes_in)=($I_lseek(($I_ifd), ([i32   ]((-(8)))), (2))));
+if ((($I_bytes_in)!=(-(1)))) {
+u8   [8]$I_buf;
+(($I_bytes_in)+=(8));
+if ((($I_read(($I_ifd), ([i8 *](($I_buf))), (0)))!=(0))) {
+($I_read_error());
+}
+(($I_crc)=(([u32  ]((([u16  ](([u8  ]((($I_buf)[(0)])))))|(([u16  ](([u8  ]((($I_buf)[(1)])))))<<(8)))))|(([u32  ]((([u16  ](([u8  ](((($I_buf))[(0)])))))|(([u16  ](([u8  ](((($I_buf))[(1)])))))<<(8)))))<<(16))));
+(($I_bytes_out)=(([u32  ]((([u16  ](([u8  ](((($I_buf))[(0)])))))|(([u16  ](([u8  ](((($I_buf))[(1)])))))<<(8)))))|(([u32  ]((([u16  ](([u8  ]((((($I_buf)))[(0)])))))|(([u16  ](([u8  ]((((($I_buf)))[(1)])))))<<(8)))))<<(16))));
+}
+}
+(($I_date)=(($I_ctime(([i32   *]((&($I_time_stamp))))))+(4)));
+((($I_date)[(12)])=('\0'));
+if (($I_verbose)) {
+($I_printf(("%5s %08lx %11s "), (($I_methods)[($I_method)]), ($I_crc), ($I_date)));
+}
+($I_fprint_off(($I_stdout), ($I_bytes_in), ($I_positive_off_t_width)));
+($I_printf((" ")));
+($I_fprint_off(($I_stdout), ($I_bytes_out), ($I_positive_off_t_width)));
+($I_printf((" ")));
+if ((($I_bytes_in)==(-(1)))) {
+(($I_total_in)=(-(1)));
+(($I_bytes_in)=(($I_bytes_out)=(($I_header_bytes)=(0))));
+}
+else {
+if ((($I_total_in)>=(0))) {
+(($I_total_in)+=($I_bytes_in));
+}
+}
+if ((($I_bytes_out)==(-(1)))) {
+(($I_total_out)=(-(1)));
+(($I_bytes_in)=(($I_bytes_out)=(($I_header_bytes)=(0))));
+}
+else {
+if ((($I_total_out)>=(0))) {
+(($I_total_out)+=($I_bytes_out));
+}
+}
+($I_display_ratio((($I_bytes_out)-(($I_bytes_in)-($I_header_bytes))), ($I_bytes_out), ($I_stdout)));
+($I_printf((" %s\n"), ($I_ofname)));
+}
+
+ i32 $I_same_file($T_stat *$I_stat1, $T_stat *$I_stat2)
+{
+return (((($I_stat1)->$I_st_ino)==(($I_stat2)->$I_st_ino))&((($I_stat1)->$I_st_dev)==(($I_stat2)->$I_st_dev)));
+}
+
+ i32 $I_name_too_long(i8 *$I_name, $T_stat *$I_statb)
+{
+i32  $I_s = ($I_strlen(($I_name)));
+i8  $I_c = (($I_name)[(($I_s)-(1))]);
+$T_stat  $I_tstat;
+i32  $I_res;
+(($I_tstat)=(*($I_statb)));
+((($I_name)[(($I_s)-(1))])=('\0'));
+(($I_res)=((($I_lstat(($I_name), (&($I_tstat))))==(0))&($I_same_file(($I_statb), (&($I_tstat))))));
+((($I_name)[(($I_s)-(1))])=($I_c));
+return ($I_res);
+}
+
+ v0 $I_shorten_name(i8 *$I_name)
+{
+i32  $I_len;
+i8  *$I_trunc = ([v0 *]((0)));
+i32  $I_plen;
+i32  $I_min_part = (3);
+i8  *$I_p;
+(($I_len)=($I_strlen(($I_name))));
+if (($I_decompress)) {
+if ((($I_len)<=(1))) {
+($I_error(("name too short")));
+}
+((($I_name)[(($I_len)-(1))])=('\0'));
+return;
+}
+(($I_p)=($I_get_suffix(($I_name))));
+if ((($I_p)==([v0 *]((0))))) {
+($I_error(("can't recover suffix\n")));
+}
+((*($I_p))=('\0'));
+(($I_save_orig_name)=(1));
+if (((($I_len)>(4))&(($I_strcmp((($I_p)-(4)), (".tar")))==(0)))) {
+($I_strcpy((($I_p)-(4)), (".tgz")));
+return;
+}
+while (((($I_trunc)==([v0 *]((0))))&((--($I_min_part))!=(0)))) {
+(($I_p)=($I_strrchr(($I_name), ('/'))));
+while ((*($I_p))) {
+(($I_plen)=($I_strcspn(($I_p), ("."))));
+(($I_p)+=($I_plen));
+if ((($I_plen)>($I_min_part))) {
+(($I_trunc)=(($I_p)-(1)));
+}
+if ((*($I_p))) {
+(($I_p)++);
+}
+}
+}
+if ((($I_trunc)!=([v0 *]((0))))) {
+while ((*(($I_trunc)++))) {
+((($I_trunc)[(0)])=(($I_trunc)[(1)]));
+}
+(($I_trunc)--);
+}
+else {
+(($I_trunc)=($I_strrchr(($I_name), (('.')))));
+if ((($I_trunc)==([v0 *]((0))))) {
+($I_error(("internal error in shorten_name")));
+}
+if (((($I_trunc)[(1)])==('\0'))) {
+(($I_trunc)--);
+}
+}
+($I_strcpy(($I_trunc), ($I_z_suffix)));
+}
+
+ i32 $I_check_ofname()
+{
+$T_stat  $I_ostat;
+((*($I___errno_location()))=(0));
+while ((($I_lstat(($I_ofname), (&($I_ostat))))!=(0))) {
+if (((*($I___errno_location()))!=(36))) {
+return (0);
+}
+($I_shorten_name(($I_ofname)));
+}
+if (((!($I_decompress))&($I_name_too_long(($I_ofname), (&($I_ostat)))))) {
+($I_shorten_name(($I_ofname)));
+if ((($I_lstat(($I_ofname), (&($I_ostat))))!=(0))) {
+return (0);
+}
+}
+if (($I_same_file((&($I_istat)), (&($I_ostat))))) {
+if ((($I_strcmp(($I_ifname), ($I_ofname)))==(0))) {
+}
+else {
+($I_fprintf(($I_stderr), ("%s: %s and %s are the same file\n"), ($I_progname), ($I_ifname), ($I_ofname)));
+}
+(($I_exit_code)=(1));
+return (1);
+}
+if ((!($I_force))) {
+i32  $I_ok = (0);
+($I_fprintf(($I_stderr), ("%s: %s already exists;"), ($I_progname), ($I_ofname)));
+if ((($I_foreground)&($I_isatty(($I_fileno(($I_stdin))))))) {
+($I_fprintf(($I_stderr), (" do you wish to overwrite (y or n)? ")));
+($I_fflush(($I_stderr)));
+(($I_ok)=($I_yesno()));
+}
+if ((!($I_ok))) {
+($I_fprintf(($I_stderr), ("\tnot overwritten\n")));
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+return (1);
+}
+}
+if (($I_xunlink(($I_ofname)))) {
+($I_progerror(($I_ofname)));
+return (1);
+}
+return (0);
+}
+
+ v0 $I_reset_times(i8 *$I_name, $T_stat *$I_statb)
+{
+$T_utimbuf  $I_timep;
+((($I_timep).$I_actime)=((($I_statb)->$I_st_atim).$I_tv_sec));
+((($I_timep).$I_modtime)=((($I_statb)->$I_st_mtim).$I_tv_sec));
+if ((($I_utime(($I_name), (&($I_timep))))&(!(((($I_statb)->$I_st_mode)&(61440))==(16384))))) {
+i32  $I_e = (*($I___errno_location()));
+if ((!($I_quiet))) {
+($I_fprintf(($I_stderr), ("%s: "), ($I_progname)));
+}
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+if ((!($I_quiet))) {
+((*($I___errno_location()))=($I_e));
+($I_perror(($I_ofname)));
+}
+}
+}
+
+ v0 $I_copy_stat($T_stat *$I_ifstat)
+{
+if (((($I_decompress)&(($I_time_stamp)!=(0)))&(((($I_ifstat)->$I_st_mtim).$I_tv_sec)!=($I_time_stamp)))) {
+(((($I_ifstat)->$I_st_mtim).$I_tv_sec)=($I_time_stamp));
+if ((($I_verbose)>(1))) {
+($I_fprintf(($I_stderr), ("%s: time stamp restored\n"), ($I_ofname)));
+}
+}
+($I_reset_times(($I_ofname), ($I_ifstat)));
+if (($I_fchmod(($I_ofd), ((($I_ifstat)->$I_st_mode)&(4095))))) {
+i32  $I_e = (*($I___errno_location()));
+if ((!($I_quiet))) {
+($I_fprintf(($I_stderr), ("%s: "), ($I_progname)));
+}
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+if ((!($I_quiet))) {
+((*($I___errno_location()))=($I_e));
+($I_perror(($I_ofname)));
+}
+}
+($I_fchown(($I_ofd), (($I_ifstat)->$I_st_uid), (($I_ifstat)->$I_st_gid)));
+(($I_remove_ofname)=(0));
+if (($I_xunlink(($I_ifname)))) {
+i32  $I_e = (*($I___errno_location()));
+if ((!($I_quiet))) {
+($I_fprintf(($I_stderr), ("%s: "), ($I_progname)));
+}
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+if ((!($I_quiet))) {
+((*($I___errno_location()))=($I_e));
+($I_perror(($I_ifname)));
+}
+}
+}
+
+ v0 $I_treat_dir(i8 *$I_dir)
+{
+$T_dirent  *$I_dp;
+$T___dirstream  *$I_dirp;
+i8  [1024]$I_nbuf;
+i32  $I_len;
+(($I_dirp)=($I_opendir(($I_dir))));
+if ((($I_dirp)==([v0 *]((0))))) {
+($I_progerror(($I_dir)));
+return;
+}
+if (((*($I___errno_location()))!=(0))) {
+($I_progerror(($I_dir)));
+}
+if ((($I_closedir(($I_dirp)))!=(0))) {
+($I_progerror(($I_dir)));
+}
+}
+
+ v0 $I_do_exit(i32 $I_exitcode)
+{
+ i32  $I_in_exit = (0);
+if (($I_in_exit)) {
+($I_exit(($I_exitcode)));
+}
+(($I_in_exit)=(1));
+($I_exit(($I_exitcode)));
+}
+
+ v0 $I_do_remove()
+{
+if (($I_remove_ofname)) {
+($I_close(($I_ofd)));
+($I_xunlink(($I_ofname)));
+}
+}
+
+v0 $I_abort_gzip()
+{
+($I_do_remove());
+($I_do_exit((1)));
+}
+
+v0 $I_abort_gzip_signal()
+{
+($I_do_remove());
+($I__exit((1)));
+}
+
+i32 $I_huft_build(u32 *$I_b, u32 $I_n, u32 $I_s, u16  *$I_d, u16  *$I_e, $T_huft **$I_t, i32 *$I_m)
+{
+u32  $I_a;
+u32  [0]$I_c;
+u32  $I_f;
+i32  $I_g;
+i32  $I_h;
+ u32  $I_i;
+ u32  $I_j;
+ i32  $I_k;
+i32  $I_l;
+ u32  *$I_p;
+ $T_huft  *$I_q;
+$T_huft  $I_r;
+$T_huft  *[16]$I_u;
+u32  [288]$I_v;
+ i32  $I_w;
+u32  [0]$I_x;
+u32  *$I_xp;
+i32  $I_y;
+u32  $I_z;
+($I_memset(([v0  ](($I_c))), (0), (0)));
+(($I_p)=($I_b));
+(($I_i)=($I_n));
+while ((--($I_i))) {
+((($I_c)[(*($I_p))])++);
+(($I_p)++);
+}
+if (((($I_c)[(0)])==($I_n))) {
+((*($I_t))=([$T_huft *](([v0 *]((0))))));
+((*($I_m))=(0));
+return (0);
+}
+(($I_l)=(*($I_m)));
+for ((($I_j)=(1));(($I_j)<=(16)); (($I_j)++)) {
+if ((($I_c)[($I_j)])) {
+break;
+}
+}
+(($I_k)=($I_j));
+if ((([u32 ](($I_l)))<($I_j))) {
+(($I_l)=($I_j));
+}
+for ((($I_i)=(16));($I_i); (($I_i)--)) {
+if ((($I_c)[($I_i)])) {
+break;
+}
+}
+(($I_g)=($I_i));
+if ((([u32 ](($I_l)))>($I_i))) {
+(($I_l)=($I_i));
+}
+((*($I_m))=($I_l));
+if (((($I_y)-=(($I_c)[($I_i)]))<(0))) {
+return (2);
+}
+((($I_c)[($I_i)])+=($I_y));
+((($I_x)[(1)])=(($I_j)=(0)));
+(($I_p)=(($I_c)+(1)));
+(($I_xp)=(($I_x)+(2)));
+while ((--($I_i))) {
+((*(($I_xp)++))=(($I_j)+=(*(($I_p)++))));
+}
+(($I_p)=($I_b));
+(($I_i)=(0));
+while (((++($I_i))<($I_n))) {
+if (((($I_j)=(*(($I_p)++)))!=(0))) {
+((($I_v)[((($I_x)[($I_j)])++)])=($I_i));
+}
+}
+(($I_n)=(($I_x)[($I_g)]));
+((($I_x)[(0)])=(($I_i)=(0)));
+(($I_p)=($I_v));
+(($I_h)=(-(1)));
+(($I_w)=(-($I_l)));
+((($I_u)[(0)])=([$T_huft *](([v0 *]((0))))));
+(($I_q)=([$T_huft *](([v0 *]((0))))));
+(($I_z)=(0));
+for (0;(($I_k)<=($I_g)); (($I_k)++)) {
+(($I_a)=(($I_c)[($I_k)]));
+while ((($I_a)--)) {
+while ((($I_k)>(($I_w)+($I_l)))) {
+(($I_h)++);
+(($I_w)+=($I_l));
+if (((($I_f)=((1)<<(($I_j)=(($I_k)-($I_w)))))>(($I_a)+(1)))) {
+(($I_f)-=(($I_a)+(1)));
+(($I_xp)=(($I_c)+($I_k)));
+if ((($I_j)<($I_z))) {
+while (((++($I_j))<($I_z))) {
+if (((($I_f)<<=(1))<=(*(++($I_xp))))) {
+break;
+}
+(($I_f)-=(*($I_xp)));
+}
+}
+}
+(($I_z)=((1)<<($I_j)));
+if (((($I_q)=([$T_huft *](($I_malloc(((($I_z)+(1))*(0)))))))==([$T_huft *](([v0 *]((0))))))) {
+if (($I_h)) {
+($I_huft_free((($I_u)[(0)])));
+}
+return (3);
+}
+(($I_hufts)+=(($I_z)+(1)));
+((*($I_t))=(($I_q)+(1)));
+((*(($I_t)=(&((($I_q)->$I_v).$I_t))))=([$T_huft *](([v0 *]((0))))));
+((($I_u)[($I_h)])=(++($I_q)));
+if (($I_h)) {
+((($I_x)[($I_h)])=($I_i));
+((($I_r).$I_b)=([u8  ](($I_l))));
+((($I_r).$I_e)=([u8  ](((16)+($I_j)))));
+(((($I_r).$I_v).$I_t)=($I_q));
+(($I_j)=(($I_i)>>(($I_w)-($I_l))));
+(((($I_u)[(($I_h)-(1))])[($I_j)])=($I_r));
+}
+}
+((($I_r).$I_b)=([u8  ]((($I_k)-($I_w)))));
+if ((($I_p)>=(($I_v)+($I_n)))) {
+((($I_r).$I_e)=(99));
+}
+else {
+if (((*($I_p))<($I_s))) {
+(((($I_r).$I_v).$I_n)=([u16  ]((*($I_p)))));
+(($I_p)++);
+}
+else {
+((($I_r).$I_e)=([u8  ]((($I_e)[((*($I_p))-($I_s))]))));
+(((($I_r).$I_v).$I_n)=(($I_d)[((*(($I_p)++))-($I_s))]));
+}
+}
+(($I_f)=((1)<<(($I_k)-($I_w))));
+for ((($I_j)=(($I_i)>>($I_w)));(($I_j)<($I_z)); (($I_j)+=($I_f))) {
+((($I_q)[($I_j)])=($I_r));
+}
+for ((($I_j)=((1)<<(($I_k)-(1))));(($I_i)&($I_j)); (($I_j)>>=(1))) {
+(($I_i)^=($I_j));
+}
+(($I_i)^=($I_j));
+while (((($I_i)&(((1)<<($I_w))-(1)))!=(($I_x)[($I_h)]))) {
+(($I_h)--);
+(($I_w)-=($I_l));
+}
+}
+}
+return ((($I_y)!=(0))&(($I_g)!=(1)));
+}
+
+i32 $I_huft_free($T_huft *$I_t)
+{
+ $T_huft  *$I_p;
+ $T_huft  *$I_q;
+(($I_p)=($I_t));
+while ((($I_p)!=([$T_huft *](([v0 *]((0))))))) {
+(($I_q)=(((--($I_p))->$I_v).$I_t));
+($I_free(([i8 *](($I_p)))));
+(($I_p)=($I_q));
+}
+return (0);
+}
+
+i32 $I_inflate_codes($T_huft *$I_tl, $T_huft *$I_td, i32 $I_bl, i32 $I_bd)
+{
+ u32  $I_e;
+u32  $I_n;
+u32  $I_d;
+u32  $I_w;
+$T_huft  *$I_t;
+u32  $I_ml;
+u32  $I_md;
+ u32   $I_b;
+ u32  $I_k;
+(($I_b)=($I_bb));
+(($I_k)=($I_bk));
+(($I_w)=($I_outcnt));
+(($I_ml)=(($I_mask_bits)[($I_bl)]));
+(($I_md)=(($I_mask_bits)[($I_bd)]));
+for (0;1; 0) {
+while ((($I_k)<([u32 ](($I_bl))))) {
+(($I_k)+=(8));
+}
+if (((($I_e)=((($I_t)=(($I_tl)+(([u32 ](($I_b)))&($I_ml))))->$I_e))>(16))) {
+while (((($I_e)=((($I_t)=(((($I_t)->$I_v).$I_t)+(([u32 ](($I_b)))&(($I_mask_bits)[($I_e)]))))->$I_e))>(16))) {
+if ((($I_e)==(99))) {
+return (1);
+}
+(($I_b)>>=(($I_t)->$I_b));
+(($I_k)-=(($I_t)->$I_b));
+(($I_e)-=(16));
+while ((($I_k)<($I_e))) {
+(($I_k)+=(8));
+}
+}
+}
+(($I_b)>>=(($I_t)->$I_b));
+(($I_k)-=(($I_t)->$I_b));
+if ((($I_e)==(16))) {
+((($I_window)[(($I_w)++)])=([u8  ](((($I_t)->$I_v).$I_n))));
+if ((($I_w)==(32768))) {
+(($I_w)=(0));
+}
+}
+else {
+if ((($I_e)==(15))) {
+break;
+}
+while ((($I_k)<($I_e))) {
+(($I_k)+=(8));
+}
+(($I_n)=(((($I_t)->$I_v).$I_n)+(([u32 ](($I_b)))&(($I_mask_bits)[($I_e)]))));
+(($I_b)>>=($I_e));
+(($I_k)-=($I_e));
+while ((($I_k)<([u32 ](($I_bd))))) {
+(($I_k)+=(8));
+}
+if (((($I_e)=((($I_t)=(($I_td)+(([u32 ](($I_b)))&($I_md))))->$I_e))>(16))) {
+while (((($I_e)=((($I_t)=(((($I_t)->$I_v).$I_t)+(([u32 ](($I_b)))&(($I_mask_bits)[($I_e)]))))->$I_e))>(16))) {
+if ((($I_e)==(99))) {
+return (1);
+}
+(($I_b)>>=(($I_t)->$I_b));
+(($I_k)-=(($I_t)->$I_b));
+(($I_e)-=(16));
+while ((($I_k)<($I_e))) {
+(($I_k)+=(8));
+}
+}
+}
+(($I_b)>>=(($I_t)->$I_b));
+(($I_k)-=(($I_t)->$I_b));
+while ((($I_k)<($I_e))) {
+(($I_k)+=(8));
+}
+(($I_d)=((($I_w)-((($I_t)->$I_v).$I_n))-(([u32 ](($I_b)))&(($I_mask_bits)[($I_e)]))));
+(($I_b)>>=($I_e));
+(($I_k)-=($I_e));
+while (($I_n)) {
+if (((($I_w)-($I_d))>=($I_e))) {
+($I_memcpy((($I_window)+($I_w)), (($I_window)+($I_d)), ($I_e)));
+(($I_w)+=($I_e));
+(($I_d)+=($I_e));
+}
+else {
+while ((--($I_e))) {
+((($I_window)[(($I_w)++)])=(($I_window)[(($I_d)++)]));
+}
+}
+if ((($I_w)==(32768))) {
+(($I_w)=(0));
+}
+}
+}
+}
+(($I_outcnt)=($I_w));
+(($I_bb)=($I_b));
+(($I_bk)=($I_k));
+return (0);
+}
+
+i32 $I_inflate_stored()
+{
+u32  $I_n;
+u32  $I_w;
+ u32   $I_b;
+ u32  $I_k;
+(($I_b)=($I_bb));
+(($I_k)=($I_bk));
+(($I_w)=($I_outcnt));
+(($I_n)=(($I_k)&(7)));
+(($I_b)>>=($I_n));
+(($I_k)-=($I_n));
+while ((($I_k)<(16))) {
+(($I_k)+=(8));
+}
+(($I_n)=(([u32 ](($I_b)))&(65535)));
+(($I_b)>>=(16));
+(($I_k)-=(16));
+while ((($I_k)<(16))) {
+(($I_k)+=(8));
+}
+if ((($I_n)!=([u32 ](((~($I_b))&(65535)))))) {
+return (1);
+}
+(($I_b)>>=(16));
+(($I_k)-=(16));
+while ((($I_n)--)) {
+while ((($I_k)<(8))) {
+(($I_k)+=(8));
+}
+((($I_window)[(($I_w)++)])=([u8  ](($I_b))));
+if ((($I_w)==(32768))) {
+(($I_w)=(0));
+}
+(($I_b)>>=(8));
+(($I_k)-=(8));
+}
+(($I_outcnt)=($I_w));
+(($I_bb)=($I_b));
+(($I_bk)=($I_k));
+return (0);
+}
+
+i32 $I_inflate_fixed()
+{
+i32  $I_i;
+$T_huft  *$I_tl;
+$T_huft  *$I_td;
+i32  $I_bl;
+i32  $I_bd;
+u32  [288]$I_l;
+for ((($I_i)=(0));(($I_i)<(144)); (($I_i)++)) {
+((($I_l)[($I_i)])=(8));
+}
+for (0;(($I_i)<(256)); (($I_i)++)) {
+((($I_l)[($I_i)])=(9));
+}
+for (0;(($I_i)<(280)); (($I_i)++)) {
+((($I_l)[($I_i)])=(7));
+}
+for (0;(($I_i)<(288)); (($I_i)++)) {
+((($I_l)[($I_i)])=(8));
+}
+(($I_bl)=(7));
+if (((($I_i)=($I_huft_build(($I_l), (288), (257), ($I_cplens), ($I_cplext), (&($I_tl)), (&($I_bl)))))!=(0))) {
+return ($I_i);
+}
+for ((($I_i)=(0));(($I_i)<(30)); (($I_i)++)) {
+((($I_l)[($I_i)])=(5));
+}
+(($I_bd)=(5));
+if (((($I_i)=($I_huft_build(($I_l), (30), (0), ($I_cpdist), ($I_cpdext), (&($I_td)), (&($I_bd)))))>(1))) {
+($I_huft_free(($I_tl)));
+return ($I_i);
+}
+if (($I_inflate_codes(($I_tl), ($I_td), ($I_bl), ($I_bd)))) {
+return (1);
+}
+($I_huft_free(($I_tl)));
+($I_huft_free(($I_td)));
+return (0);
+}
+
+i32 $I_inflate_dynamic()
+{
+i32  $I_i;
+u32  $I_j;
+u32  $I_l;
+u32  $I_m;
+u32  $I_n;
+u32  $I_w;
+$T_huft  *$I_tl;
+$T_huft  *$I_td;
+i32  $I_bl;
+i32  $I_bd;
+u32  $I_nb;
+u32  $I_nl;
+u32  $I_nd;
+u32  [0]$I_ll;
+ u32   $I_b;
+ u32  $I_k;
+(($I_b)=($I_bb));
+(($I_k)=($I_bk));
+(($I_w)=($I_outcnt));
+while ((($I_k)<(5))) {
+(($I_k)+=(8));
+}
+(($I_nl)=((257)+(([u32 ](($I_b)))&(31))));
+(($I_b)>>=(5));
+(($I_k)-=(5));
+while ((($I_k)<(5))) {
+(($I_k)+=(8));
+}
+(($I_nd)=((1)+(([u32 ](($I_b)))&(31))));
+(($I_b)>>=(5));
+(($I_k)-=(5));
+while ((($I_k)<(4))) {
+(($I_k)+=(8));
+}
+(($I_nb)=((4)+(([u32 ](($I_b)))&(15))));
+(($I_b)>>=(4));
+(($I_k)-=(4));
+if (((($I_nl)>(286))|(($I_nd)>(30)))) {
+return (1);
+}
+for ((($I_j)=(0));(($I_j)<($I_nb)); (($I_j)++)) {
+while ((($I_k)<(3))) {
+(($I_k)+=(8));
+}
+((($I_ll)[(($I_border)[($I_j)])])=(([u32 ](($I_b)))&(7)));
+(($I_b)>>=(3));
+(($I_k)-=(3));
+}
+for (0;(($I_j)<(19)); (($I_j)++)) {
+((($I_ll)[(($I_border)[($I_j)])])=(0));
+}
+(($I_bl)=(7));
+if (((($I_i)=($I_huft_build(($I_ll), (19), (19), ([v0 *]((0))), ([v0 *]((0))), (&($I_tl)), (&($I_bl)))))!=(0))) {
+if ((($I_i)==(1))) {
+($I_huft_free(($I_tl)));
+}
+return ($I_i);
+}
+if ((($I_tl)==([v0 *]((0))))) {
+return (2);
+}
+(($I_n)=(($I_nl)+($I_nd)));
+(($I_m)=(($I_mask_bits)[($I_bl)]));
+(($I_i)=(($I_l)=(0)));
+while ((([u32 ](($I_i)))<($I_n))) {
+while ((($I_k)<([u32 ](($I_bl))))) {
+(($I_k)+=(8));
+}
+(($I_j)=((($I_td)=(($I_tl)+(([u32 ](($I_b)))&($I_m))))->$I_b));
+(($I_b)>>=($I_j));
+(($I_k)-=($I_j));
+(($I_j)=((($I_td)->$I_v).$I_n));
+if ((($I_j)<(16))) {
+((($I_ll)[(($I_i)++)])=(($I_l)=($I_j)));
+}
+else {
+if ((($I_j)==(16))) {
+while ((($I_k)<(2))) {
+(($I_k)+=(8));
+}
+(($I_j)=((3)+(([u32 ](($I_b)))&(3))));
+(($I_b)>>=(2));
+(($I_k)-=(2));
+if (((([u32 ](($I_i)))+($I_j))>($I_n))) {
+return (1);
+}
+while ((($I_j)--)) {
+((($I_ll)[(($I_i)++)])=($I_l));
+}
+}
+else {
+if ((($I_j)==(17))) {
+while ((($I_k)<(3))) {
+(($I_k)+=(8));
+}
+(($I_j)=((3)+(([u32 ](($I_b)))&(7))));
+(($I_b)>>=(3));
+(($I_k)-=(3));
+if (((([u32 ](($I_i)))+($I_j))>($I_n))) {
+return (1);
+}
+while ((($I_j)--)) {
+((($I_ll)[(($I_i)++)])=(0));
+}
+(($I_l)=(0));
+}
+else {
+while ((($I_k)<(7))) {
+(($I_k)+=(8));
+}
+(($I_j)=((11)+(([u32 ](($I_b)))&(127))));
+(($I_b)>>=(7));
+(($I_k)-=(7));
+if (((([u32 ](($I_i)))+($I_j))>($I_n))) {
+return (1);
+}
+while ((($I_j)--)) {
+((($I_ll)[(($I_i)++)])=(0));
+}
+(($I_l)=(0));
+}
+}
+}
+}
+($I_huft_free(($I_tl)));
+(($I_bb)=($I_b));
+(($I_bk)=($I_k));
+(($I_bl)=($I_lbits));
+if (((($I_i)=($I_huft_build(($I_ll), ($I_nl), (257), ($I_cplens), ($I_cplext), (&($I_tl)), (&($I_bl)))))!=(0))) {
+if ((($I_i)==(1))) {
+($I_fprintf(($I_stderr), (" incomplete literal tree\n")));
+($I_huft_free(($I_tl)));
+}
+return ($I_i);
+}
+(($I_bd)=($I_dbits));
+if (((($I_i)=($I_huft_build((($I_ll)+($I_nl)), ($I_nd), (0), ($I_cpdist), ($I_cpdext), (&($I_td)), (&($I_bd)))))!=(0))) {
+if ((($I_i)==(1))) {
+($I_fprintf(($I_stderr), (" incomplete distance tree\n")));
+($I_huft_free(($I_td)));
+}
+($I_huft_free(($I_tl)));
+return ($I_i);
+}
+if (($I_inflate_codes(($I_tl), ($I_td), ($I_bl), ($I_bd)))) {
+return (1);
+}
+($I_huft_free(($I_tl)));
+($I_huft_free(($I_td)));
+return (0);
+}
+
+i32 $I_inflate_block(i32 *$I_e)
+{
+u32  $I_t;
+u32  $I_w;
+ u32   $I_b;
+ u32  $I_k;
+(($I_b)=($I_bb));
+(($I_k)=($I_bk));
+(($I_w)=($I_outcnt));
+while ((($I_k)<(1))) {
+(($I_k)+=(8));
+}
+((*($I_e))=(([i32 ](($I_b)))&(1)));
+(($I_b)>>=(1));
+(($I_k)-=(1));
+while ((($I_k)<(2))) {
+(($I_k)+=(8));
+}
+(($I_t)=(([u32 ](($I_b)))&(3)));
+(($I_b)>>=(2));
+(($I_k)-=(2));
+(($I_bb)=($I_b));
+(($I_bk)=($I_k));
+if ((($I_t)==(2))) {
+return ($I_inflate_dynamic());
+}
+if ((($I_t)==(0))) {
+return ($I_inflate_stored());
+}
+if ((($I_t)==(1))) {
+return ($I_inflate_fixed());
+}
+return (2);
+}
+
+i32 $I_inflate()
+{
+i32  $I_e;
+i32  $I_r;
+u32  $I_h;
+(($I_outcnt)=(0));
+(($I_bk)=(0));
+(($I_bb)=(0));
+(($I_h)=(0));
+while ((!($I_e))) {
+(($I_hufts)=(0));
+if (((($I_r)=($I_inflate_block((&($I_e)))))!=(0))) {
+return ($I_r);
+}
+if ((($I_hufts)>($I_h))) {
+(($I_h)=($I_hufts));
+}
+}
+while ((($I_bk)>=(8))) {
+(($I_bk)-=(8));
+(($I_inptr)--);
+}
+return (0);
+}
+
+i32 $I_lzw(i32 $I_in, i32 $I_out)
+{
+if (($I_msg_done)) {
+return (1);
+}
+(($I_msg_done)=(1));
+($I_fprintf(($I_stderr), ("output in compress .Z format not supported\n")));
+if ((($I_in)!=($I_out))) {
+(($I_exit_code)=(1));
+}
+return (1);
+}
+
+v0 $I_ct_init(u16  *$I_attr, i32 *$I_methodp)
+{
+i32  $I_n;
+i32  $I_bits;
+i32  $I_length;
+i32  $I_code;
+i32  $I_dist;
+(($I_file_type)=($I_attr));
+(($I_file_method)=($I_methodp));
+(($I_compressed_len)=(($I_input_len)=(0)));
+if (((((($I_static_dtree)[(0)]).$I_dl).$I_len)!=(0))) {
+return;
+}
+(($I_length)=(0));
+for ((($I_code)=(0));(($I_code)<((29)-(1))); (($I_code)++)) {
+((($I_base_length)[($I_code)])=($I_length));
+for ((($I_n)=(0));(($I_n)<((1)<<(($I_extra_lbits)[($I_code)]))); (($I_n)++)) {
+((($I_length_code)[(($I_length)++)])=([u8  ](($I_code))));
+}
+}
+((($I_length_code)[(($I_length)-(1))])=([u8  ](($I_code))));
+(($I_dist)=(0));
+for ((($I_code)=(0));(($I_code)<(16)); (($I_code)++)) {
+((($I_base_dist)[($I_code)])=($I_dist));
+for ((($I_n)=(0));(($I_n)<((1)<<(($I_extra_dbits)[($I_code)]))); (($I_n)++)) {
+((($I_dist_code)[(($I_dist)++)])=([u8  ](($I_code))));
+}
+}
+(($I_dist)>>=(7));
+for (0;(($I_code)<(30)); (($I_code)++)) {
+((($I_base_dist)[($I_code)])=(($I_dist)<<(7)));
+for ((($I_n)=(0));(($I_n)<((1)<<((($I_extra_dbits)[($I_code)])-(7)))); (($I_n)++)) {
+((($I_dist_code)[((256)+(($I_dist)++))])=([u8  ](($I_code))));
+}
+}
+for ((($I_bits)=(0));(($I_bits)<=(15)); (($I_bits)++)) {
+((($I_bl_count)[($I_bits)])=(0));
+}
+(($I_n)=(0));
+($I_gen_codes(([$T_ct_data *](($I_static_ltree))), ((((256)+(1))+(29))+(1))));
+for ((($I_n)=(0));(($I_n)<(30)); (($I_n)++)) {
+((((($I_static_dtree)[($I_n)]).$I_dl).$I_len)=(5));
+((((($I_static_dtree)[($I_n)]).$I_fc).$I_code)=($I_bi_reverse(($I_n), (5))));
+}
+($I_init_block());
+}
+
+ v0 $I_init_block()
+{
+i32  $I_n;
+for ((($I_n)=(0));(($I_n)<(((256)+(1))+(29))); (($I_n)++)) {
+((((($I_dyn_ltree)[($I_n)]).$I_fc).$I_freq)=(0));
+}
+for ((($I_n)=(0));(($I_n)<(30)); (($I_n)++)) {
+((((($I_dyn_dtree)[($I_n)]).$I_fc).$I_freq)=(0));
+}
+for ((($I_n)=(0));(($I_n)<(19)); (($I_n)++)) {
+((((($I_bl_tree)[($I_n)]).$I_fc).$I_freq)=(0));
+}
+((((($I_dyn_ltree)[(256)]).$I_fc).$I_freq)=(1));
+(($I_opt_len)=(($I_static_len)=(0)));
+(($I_last_lit)=(($I_last_dist)=(($I_last_flags)=(0))));
+(($I_flags)=(0));
+(($I_flag_bit)=(1));
+}
+
+ v0 $I_pqdownheap($T_ct_data *$I_tree, i32 $I_k)
+{
+i32  $I_v = (($I_heap)[($I_k)]);
+i32  $I_j = (($I_k)<<(1));
+while ((($I_j)<=($I_heap_len))) {
+if (((($I_j)<($I_heap_len))&(((((($I_tree)[(($I_heap)[(($I_j)+(1))])]).$I_fc).$I_freq)<(((($I_tree)[(($I_heap)[($I_j)])]).$I_fc).$I_freq))|(((((($I_tree)[(($I_heap)[(($I_j)+(1))])]).$I_fc).$I_freq)==(((($I_tree)[(($I_heap)[($I_j)])]).$I_fc).$I_freq))&((($I_depth)[(($I_heap)[(($I_j)+(1))])])<=(($I_depth)[(($I_heap)[($I_j)])])))))) {
+(($I_j)++);
+}
+if ((((((($I_tree)[($I_v)]).$I_fc).$I_freq)<(((($I_tree)[(($I_heap)[($I_j)])]).$I_fc).$I_freq))|(((((($I_tree)[($I_v)]).$I_fc).$I_freq)==(((($I_tree)[(($I_heap)[($I_j)])]).$I_fc).$I_freq))&((($I_depth)[($I_v)])<=(($I_depth)[(($I_heap)[($I_j)])]))))) {
+break;
+}
+((($I_heap)[($I_k)])=(($I_heap)[($I_j)]));
+(($I_k)=($I_j));
+(($I_j)<<=(1));
+}
+((($I_heap)[($I_k)])=($I_v));
+}
+
+ v0 $I_gen_bitlen($T_tree_desc *$I_desc)
+{
+$T_ct_data  *$I_tree = (($I_desc)->$I_dyn_tree);
+i32  *$I_extra = (($I_desc)->$I_extra_bits);
+i32  $I_base = (($I_desc)->$I_extra_base);
+i32  $I_max_code = (($I_desc)->$I_max_code);
+i32  $I_max_length = (($I_desc)->$I_max_length);
+$T_ct_data  *$I_stree = (($I_desc)->$I_static_tree);
+i32  $I_h;
+i32  $I_n;
+i32  $I_m;
+i32  $I_bits;
+i32  $I_xbits;
+u16   $I_f;
+i32  $I_overflow = (0);
+for ((($I_bits)=(0));(($I_bits)<=(15)); (($I_bits)++)) {
+((($I_bl_count)[($I_bits)])=(0));
+}
+((((($I_tree)[(($I_heap)[($I_heap_max)])]).$I_dl).$I_len)=(0));
+for ((($I_h)=(($I_heap_max)+(1)));(($I_h)<(((2)*(((256)+(1))+(29)))+(1))); (($I_h)++)) {
+(($I_n)=(($I_heap)[($I_h)]));
+(($I_bits)=((((($I_tree)[(((($I_tree)[($I_n)]).$I_dl).$I_dad)]).$I_dl).$I_len)+(1)));
+((((($I_tree)[($I_n)]).$I_dl).$I_len)=([u16  ](($I_bits))));
+if ((($I_n)>($I_max_code))) {
+continue;
+}
+((($I_bl_count)[($I_bits)])++);
+(($I_xbits)=(0));
+if ((($I_n)>=($I_base))) {
+(($I_xbits)=(($I_extra)[(($I_n)-($I_base))]));
+}
+(($I_f)=(((($I_tree)[($I_n)]).$I_fc).$I_freq));
+(($I_opt_len)+=(([u32  ](($I_f)))*(($I_bits)+($I_xbits))));
+if (($I_stree)) {
+(($I_static_len)+=(([u32  ](($I_f)))*((((($I_stree)[($I_n)]).$I_dl).$I_len)+($I_xbits))));
+}
+}
+if ((($I_overflow)==(0))) {
+return;
+}
+while ((($I_overflow)>(0))) {
+(($I_bits)=(($I_max_length)-(1)));
+while (((($I_bl_count)[($I_bits)])==(0))) {
+(($I_bits)--);
+}
+((($I_bl_count)[($I_bits)])--);
+((($I_bl_count)[(($I_bits)+(1))])+=(2));
+((($I_bl_count)[($I_max_length)])--);
+(($I_overflow)-=(2));
+}
+for ((($I_bits)=($I_max_length));(($I_bits)!=(0)); (($I_bits)--)) {
+(($I_n)=(($I_bl_count)[($I_bits)]));
+while ((($I_n)!=(0))) {
+(($I_m)=(($I_heap)[(--($I_h))]));
+if ((($I_m)>($I_max_code))) {
+continue;
+}
+if (((((($I_tree)[($I_m)]).$I_dl).$I_len)!=([u32 ](($I_bits))))) {
+(($I_opt_len)+=((([i32 ](($I_bits)))-([i32 ]((((($I_tree)[($I_m)]).$I_dl).$I_len))))*([i32 ]((((($I_tree)[($I_m)]).$I_fc).$I_freq)))));
+((((($I_tree)[($I_m)]).$I_dl).$I_len)=([u16  ](($I_bits))));
+}
+(($I_n)--);
+}
+}
+}
+
+ v0 $I_gen_codes($T_ct_data *$I_tree, i32 $I_max_code)
+{
+u16   [0]$I_next_code;
+u16   $I_code = (0);
+i32  $I_bits;
+i32  $I_n;
+for ((($I_bits)=(1));(($I_bits)<=(15)); (($I_bits)++)) {
+((($I_next_code)[($I_bits)])=(($I_code)=((($I_code)+(($I_bl_count)[(($I_bits)-(1))]))<<(1))));
+}
+for ((($I_n)=(0));(($I_n)<=($I_max_code)); (($I_n)++)) {
+i32  $I_len = (((($I_tree)[($I_n)]).$I_dl).$I_len);
+if ((($I_len)==(0))) {
+continue;
+}
+((((($I_tree)[($I_n)]).$I_fc).$I_code)=($I_bi_reverse(((($I_next_code)[($I_len)])++), ($I_len))));
+}
+}
+
+ v0 $I_build_tree_1($T_tree_desc *$I_desc)
+{
+$T_ct_data  *$I_tree = (($I_desc)->$I_dyn_tree);
+$T_ct_data  *$I_stree = (($I_desc)->$I_static_tree);
+i32  $I_elems = (($I_desc)->$I_elems);
+i32  $I_n;
+i32  $I_m;
+i32  $I_max_code = (-(1));
+i32  $I_node = ($I_elems);
+for ((($I_n)=(0));(($I_n)<($I_elems)); (($I_n)++)) {
+if (((((($I_tree)[($I_n)]).$I_fc).$I_freq)!=(0))) {
+((($I_heap)[(++($I_heap_len))])=(($I_max_code)=($I_n)));
+((($I_depth)[($I_n)])=(0));
+}
+else {
+((((($I_tree)[($I_n)]).$I_dl).$I_len)=(0));
+}
+}
+while ((($I_heap_len)<(2))) {
+i32  $I_new;
+((((($I_tree)[($I_new)]).$I_fc).$I_freq)=(1));
+((($I_depth)[($I_new)])=(0));
+(($I_opt_len)--);
+if (($I_stree)) {
+(($I_static_len)-=(((($I_stree)[($I_new)]).$I_dl).$I_len));
+}
+}
+((($I_desc)->$I_max_code)=($I_max_code));
+for ((($I_n)=(($I_heap_len)/(2)));(($I_n)>=(1)); (($I_n)--)) {
+($I_pqdownheap(($I_tree), ($I_n)));
+}
+while ((($I_heap_len)>=(2))) {
+(($I_n)=(($I_heap)[(1)]));
+((($I_heap)[(1)])=(($I_heap)[(($I_heap_len)--)]));
+($I_pqdownheap(($I_tree), (1)));
+(($I_m)=(($I_heap)[(1)]));
+((($I_heap)[(--($I_heap_max))])=($I_n));
+((($I_heap)[(--($I_heap_max))])=($I_m));
+((((($I_tree)[($I_node)]).$I_fc).$I_freq)=((((($I_tree)[($I_n)]).$I_fc).$I_freq)+(((($I_tree)[($I_m)]).$I_fc).$I_freq)));
+((((($I_tree)[($I_n)]).$I_dl).$I_dad)=((((($I_tree)[($I_m)]).$I_dl).$I_dad)=([u16  ](($I_node)))));
+((($I_heap)[(1)])=(($I_node)++));
+($I_pqdownheap(($I_tree), (1)));
+}
+((($I_heap)[(--($I_heap_max))])=(($I_heap)[(1)]));
+($I_gen_bitlen(([$T_tree_desc *](($I_desc)))));
+($I_gen_codes(([$T_ct_data *](($I_tree))), ($I_max_code)));
+}
+
+ v0 $I_scan_tree($T_ct_data *$I_tree, i32 $I_max_code)
+{
+i32  $I_n;
+i32  $I_prevlen = (-(1));
+i32  $I_curlen;
+i32  $I_nextlen = (((($I_tree)[(0)]).$I_dl).$I_len);
+i32  $I_count = (0);
+i32  $I_max_count = (7);
+i32  $I_min_count = (4);
+((((($I_tree)[(($I_max_code)+(1))]).$I_dl).$I_len)=([u16  ]((65535))));
+for ((($I_n)=(0));(($I_n)<=($I_max_code)); (($I_n)++)) {
+(($I_curlen)=($I_nextlen));
+(($I_nextlen)=(((($I_tree)[(($I_n)+(1))]).$I_dl).$I_len));
+if ((((++($I_count))<($I_max_count))&(($I_curlen)==($I_nextlen)))) {
+continue;
+}
+else {
+if ((($I_count)<($I_min_count))) {
+((((($I_bl_tree)[($I_curlen)]).$I_fc).$I_freq)+=($I_count));
+}
+else {
+if ((($I_curlen)!=(0))) {
+if ((($I_curlen)!=($I_prevlen))) {
+((((($I_bl_tree)[($I_curlen)]).$I_fc).$I_freq)++);
+}
+((((($I_bl_tree)[(16)]).$I_fc).$I_freq)++);
+}
+else {
+if ((($I_count)<=(10))) {
+((((($I_bl_tree)[(17)]).$I_fc).$I_freq)++);
+}
+else {
+((((($I_bl_tree)[(18)]).$I_fc).$I_freq)++);
+}
+}
+}
+}
+(($I_count)=(0));
+(($I_prevlen)=($I_curlen));
+if ((($I_nextlen)==(0))) {
+}
+else {
+if ((($I_curlen)==($I_nextlen))) {
+}
+else {
+}
+}
+}
+}
+
+ v0 $I_send_tree($T_ct_data *$I_tree, i32 $I_max_code)
+{
+i32  $I_n;
+i32  $I_prevlen = (-(1));
+i32  $I_curlen;
+i32  $I_nextlen = (((($I_tree)[(0)]).$I_dl).$I_len);
+i32  $I_count = (0);
+i32  $I_max_count = (7);
+i32  $I_min_count = (4);
+for ((($I_n)=(0));(($I_n)<=($I_max_code)); (($I_n)++)) {
+(($I_curlen)=($I_nextlen));
+(($I_nextlen)=(((($I_tree)[(($I_n)+(1))]).$I_dl).$I_len));
+if ((((++($I_count))<($I_max_count))&(($I_curlen)==($I_nextlen)))) {
+continue;
+}
+else {
+if ((($I_count)<($I_min_count))) {
+while (((--($I_count))!=(0))) {
+($I_send_bits((((($I_bl_tree)[($I_curlen)]).$I_fc).$I_code), (((($I_bl_tree)[($I_curlen)]).$I_dl).$I_len)));
+}
+}
+else {
+if ((($I_curlen)!=(0))) {
+if ((($I_curlen)!=($I_prevlen))) {
+($I_send_bits((((($I_bl_tree)[($I_curlen)]).$I_fc).$I_code), (((($I_bl_tree)[($I_curlen)]).$I_dl).$I_len)));
+(($I_count)--);
+}
+($I_send_bits((((($I_bl_tree)[(16)]).$I_fc).$I_code), (((($I_bl_tree)[(16)]).$I_dl).$I_len)));
+($I_send_bits((($I_count)-(3)), (2)));
+}
+else {
+if ((($I_count)<=(10))) {
+($I_send_bits((((($I_bl_tree)[(17)]).$I_fc).$I_code), (((($I_bl_tree)[(17)]).$I_dl).$I_len)));
+($I_send_bits((($I_count)-(3)), (3)));
+}
+else {
+($I_send_bits((((($I_bl_tree)[(18)]).$I_fc).$I_code), (((($I_bl_tree)[(18)]).$I_dl).$I_len)));
+($I_send_bits((($I_count)-(11)), (7)));
+}
+}
+}
+}
+(($I_count)=(0));
+(($I_prevlen)=($I_curlen));
+if ((($I_nextlen)==(0))) {
+}
+else {
+if ((($I_curlen)==($I_nextlen))) {
+}
+else {
+}
+}
+}
+}
+
+ i32 $I_build_bl_tree()
+{
+i32  $I_max_blindex;
+($I_scan_tree(([$T_ct_data *](($I_dyn_ltree))), (($I_l_desc).$I_max_code)));
+($I_scan_tree(([$T_ct_data *](($I_dyn_dtree))), (($I_d_desc).$I_max_code)));
+($I_build_tree_1(([$T_tree_desc *]((&($I_bl_desc))))));
+for ((($I_max_blindex)=((19)-(1)));(($I_max_blindex)>=(3)); (($I_max_blindex)--)) {
+if (((((($I_bl_tree)[(($I_bl_order)[($I_max_blindex)])]).$I_dl).$I_len)!=(0))) {
+break;
+}
+}
+(($I_opt_len)+=(((((3)*(($I_max_blindex)+(1)))+(5))+(5))+(4)));
+return ($I_max_blindex);
+}
+
+ v0 $I_send_all_trees(i32 $I_lcodes, i32 $I_dcodes, i32 $I_blcodes)
+{
+i32  $I_rank;
+($I_send_bits((($I_lcodes)-(257)), (5)));
+($I_send_bits((($I_dcodes)-(1)), (5)));
+($I_send_bits((($I_blcodes)-(4)), (4)));
+for ((($I_rank)=(0));(($I_rank)<($I_blcodes)); (($I_rank)++)) {
+($I_send_bits((((($I_bl_tree)[(($I_bl_order)[($I_rank)])]).$I_dl).$I_len), (3)));
+}
+($I_send_tree(([$T_ct_data *](($I_dyn_ltree))), (($I_lcodes)-(1))));
+($I_send_tree(([$T_ct_data *](($I_dyn_dtree))), (($I_dcodes)-(1))));
+}
+
+i32   $I_flush_block(i8 *$I_buf, u32  $I_stored_len, i32 $I_pad, i32 $I_eof)
+{
+u32   $I_opt_lenb;
+u32   $I_static_lenb;
+i32  $I_max_blindex;
+((($I_flag_buf)[($I_last_flags)])=($I_flags));
+if (((*($I_file_type))==([u16  ]((65535))))) {
+($I_set_file_type());
+}
+($I_build_tree_1(([$T_tree_desc *]((&($I_l_desc))))));
+($I_build_tree_1(([$T_tree_desc *]((&($I_d_desc))))));
+(($I_max_blindex)=($I_build_bl_tree()));
+(($I_opt_lenb)=(((($I_opt_len)+(3))+(7))>>(3)));
+(($I_static_lenb)=(((($I_static_len)+(3))+(7))>>(3)));
+(($I_input_len)+=($I_stored_len));
+if ((($I_static_lenb)<=($I_opt_lenb))) {
+(($I_opt_lenb)=($I_static_lenb));
+}
+if (((((($I_stored_len)<=($I_opt_lenb))&($I_eof))&(($I_compressed_len)==(0)))&(0))) {
+if ((($I_buf)==([i8 *]((0))))) {
+($I_error(("block vanished")));
+}
+($I_copy_block(($I_buf), ([u32 ](($I_stored_len))), (0)));
+(($I_compressed_len)=(($I_stored_len)<<(3)));
+((*($I_file_method))=(0));
+}
+else {
+if ((((($I_stored_len)+(4))<=($I_opt_lenb))&(($I_buf)!=([i8 *]((0)))))) {
+($I_send_bits((((0)<<(1))+($I_eof)), (3)));
+(($I_compressed_len)=(((($I_compressed_len)+(3))+(7))&(~(7))));
+(($I_compressed_len)+=((($I_stored_len)+(4))<<(3)));
+($I_copy_block(($I_buf), ([u32 ](($I_stored_len))), (1)));
+}
+else {
+if ((($I_static_lenb)==($I_opt_lenb))) {
+($I_send_bits((((1)<<(1))+($I_eof)), (3)));
+($I_compress_block(([$T_ct_data *](($I_static_ltree))), ([$T_ct_data *](($I_static_dtree)))));
+(($I_compressed_len)+=((3)+($I_static_len)));
+}
+else {
+($I_send_bits((((2)<<(1))+($I_eof)), (3)));
+($I_send_all_trees(((($I_l_desc).$I_max_code)+(1)), ((($I_d_desc).$I_max_code)+(1)), (($I_max_blindex)+(1))));
+($I_compress_block(([$T_ct_data *](($I_dyn_ltree))), ([$T_ct_data *](($I_dyn_dtree)))));
+(($I_compressed_len)+=((3)+($I_opt_len)));
+}
+}
+}
+($I_init_block());
+if (($I_eof)) {
+($I_bi_windup());
+(($I_compressed_len)+=(7));
+}
+else {
+if ((($I_pad)&((($I_compressed_len)%(8))!=(0)))) {
+($I_send_bits((((0)<<(1))+($I_eof)), (3)));
+(($I_compressed_len)=(((($I_compressed_len)+(3))+(7))&(~(7))));
+($I_copy_block(($I_buf), (0), (1)));
+}
+}
+return (($I_compressed_len)>>(3));
+}
+
+i32 $I_ct_tally(i32 $I_dist, i32 $I_lc)
+{
+((($I_inbuf)[(($I_last_lit)++)])=([u8  ](($I_lc))));
+if ((($I_dist)==(0))) {
+((((($I_dyn_ltree)[($I_lc)]).$I_fc).$I_freq)++);
+}
+else {
+(($I_dist)--);
+((((($I_dyn_ltree)[(((($I_length_code)[($I_lc)])+(256))+(1))]).$I_fc).$I_freq)++);
+((($I_d_buf)[(($I_last_dist)++)])=([u16  ](($I_dist))));
+(($I_flags)|=($I_flag_bit));
+}
+(($I_flag_bit)<<=(1));
+if (((($I_last_lit)&(7))==(0))) {
+((($I_flag_buf)[(($I_last_flags)++)])=($I_flags));
+}
+if (((($I_level)>(2))&((($I_last_lit)&(4095))==(0)))) {
+u32   $I_out_length = (([u32  ](($I_last_lit)))*(8));
+u32   $I_in_length = (([u32  ](($I_strstart)))-($I_block_start));
+i32  $I_dcode;
+for ((($I_dcode)=(0));(($I_dcode)<(30)); (($I_dcode)++)) {
+(($I_out_length)+=(([u32  ]((((($I_dyn_dtree)[($I_dcode)]).$I_fc).$I_freq)))*((5)+(($I_extra_dbits)[($I_dcode)]))));
+}
+(($I_out_length)>>=(3));
+if (((($I_last_dist)<(($I_last_lit)/(2)))&(($I_out_length)<(($I_in_length)/(2))))) {
+return (1);
+}
+}
+return ((($I_last_lit)==((32768)-(1)))|(($I_last_dist)==(32768)));
+}
+
+ v0 $I_compress_block($T_ct_data *$I_ltree, $T_ct_data *$I_dtree)
+{
+u32  $I_dist;
+i32  $I_lc;
+u32  $I_lx = (0);
+u32  $I_dx = (0);
+u32  $I_fx = (0);
+u8   $I_flag = (0);
+u32  $I_code;
+i32  $I_extra;
+if ((($I_last_lit)!=(0))) {
+while ((($I_lx)<($I_last_lit))) {
+if (((($I_lx)&(7))==(0))) {
+(($I_flag)=(($I_flag_buf)[(($I_fx)++)]));
+}
+(($I_lc)=(($I_inbuf)[(($I_lx)++)]));
+if (((($I_flag)&(1))==(0))) {
+($I_send_bits((((($I_ltree)[($I_lc)]).$I_fc).$I_code), (((($I_ltree)[($I_lc)]).$I_dl).$I_len)));
+}
+else {
+(($I_code)=(($I_length_code)[($I_lc)]));
+($I_send_bits((((($I_ltree)[((($I_code)+(256))+(1))]).$I_fc).$I_code), (((($I_ltree)[((($I_code)+(256))+(1))]).$I_dl).$I_len)));
+(($I_extra)=(($I_extra_lbits)[($I_code)]));
+if ((($I_extra)!=(0))) {
+(($I_lc)-=(($I_base_length)[($I_code)]));
+($I_send_bits(($I_lc), ($I_extra)));
+}
+(($I_dist)=(($I_d_buf)[(($I_dx)++)]));
+($I_send_bits((((($I_dtree)[($I_code)]).$I_fc).$I_code), (((($I_dtree)[($I_code)]).$I_dl).$I_len)));
+(($I_extra)=(($I_extra_dbits)[($I_code)]));
+if ((($I_extra)!=(0))) {
+(($I_dist)-=(($I_base_dist)[($I_code)]));
+($I_send_bits(($I_dist), ($I_extra)));
+}
+}
+(($I_flag)>>=(1));
+}
+}
+($I_send_bits((((($I_ltree)[(256)]).$I_fc).$I_code), (((($I_ltree)[(256)]).$I_dl).$I_len)));
+}
+
+ v0 $I_set_file_type()
+{
+i32  $I_n = (0);
+u32  $I_ascii_freq = (0);
+u32  $I_bin_freq = (0);
+while ((($I_n)<(7))) {
+(($I_bin_freq)+=(((($I_dyn_ltree)[(($I_n)++)]).$I_fc).$I_freq));
+}
+while ((($I_n)<(128))) {
+(($I_ascii_freq)+=(((($I_dyn_ltree)[(($I_n)++)]).$I_fc).$I_freq));
+}
+while ((($I_n)<(256))) {
+(($I_bin_freq)+=(((($I_dyn_ltree)[(($I_n)++)]).$I_fc).$I_freq));
+}
+if ((((*($I_file_type))==(0))&(0))) {
+($I_warning(("-l used on binary file")));
+}
+}
+
+ v0 $I_fillbuf(i32 $I_n)
+{
+(($I_io_bitbuf)<<=($I_n));
+while ((($I_n)>($I_bitcount))) {
+(($I_io_bitbuf)|=(($I_subbitbuf)<<(($I_n)-=($I_bitcount))));
+if ((([i32 ](($I_subbitbuf)))==(-(1)))) {
+(($I_subbitbuf)=(0));
+}
+(($I_bitcount)=(8));
+}
+(($I_io_bitbuf)|=(($I_subbitbuf)>>(($I_bitcount)-=($I_n))));
+}
+
+ u32 $I_getbits(i32 $I_n)
+{
+u32  $I_x;
+(($I_x)=(($I_io_bitbuf)>>((((8)*(2))*(0))-($I_n))));
+($I_fillbuf(($I_n)));
+return ($I_x);
+}
+
+ v0 $I_init_getbits()
+{
+(($I_io_bitbuf)=(0));
+(($I_subbitbuf)=(0));
+(($I_bitcount)=(0));
+($I_fillbuf((((8)*(2))*(0))));
+}
+
+ v0 $I_make_table(i32 $I_nchar, u8  *$I_bitlen, i32 $I_tablebits, u16  *$I_table)
+{
+u16   [17]$I_count;
+u16   [17]$I_weight;
+u16   [18]$I_start;
+u16   *$I_p;
+u32  $I_i;
+u32  $I_k;
+u32  $I_len;
+u32  $I_ch;
+u32  $I_jutbits;
+u32  $I_avail;
+u32  $I_nextcode;
+u32  $I_mask;
+for ((($I_i)=(1));(($I_i)<=(16)); (($I_i)++)) {
+((($I_count)[($I_i)])=(0));
+}
+for ((($I_i)=(0));(($I_i)<([u32 ](($I_nchar)))); (($I_i)++)) {
+((($I_count)[(($I_bitlen)[($I_i)])])++);
+}
+((($I_start)[(1)])=(0));
+for ((($I_i)=(1));(($I_i)<=(16)); (($I_i)++)) {
+((($I_start)[(($I_i)+(1))])=((($I_start)[($I_i)])+((($I_count)[($I_i)])<<((16)-($I_i)))));
+}
+if ((((($I_start)[(17)])&(65535))!=(0))) {
+($I_error(("Bad table\n")));
+}
+(($I_jutbits)=((16)-($I_tablebits)));
+for ((($I_i)=(1));(($I_i)<=([u32 ](($I_tablebits)))); (($I_i)++)) {
+((($I_start)[($I_i)])>>=($I_jutbits));
+((($I_weight)[($I_i)])=(([u32 ]((1)))<<(($I_tablebits)-($I_i))));
+}
+while ((($I_i)<=(16))) {
+((($I_weight)[($I_i)])=(([u32 ]((1)))<<((16)-($I_i))));
+(($I_i)++);
+}
+(($I_i)=((($I_start)[(($I_tablebits)+(1))])>>($I_jutbits)));
+if ((($I_i)!=(0))) {
+(($I_k)=((1)<<($I_tablebits)));
+while ((($I_i)!=($I_k))) {
+((($I_table)[(($I_i)++)])=(0));
+}
+}
+(($I_avail)=($I_nchar));
+(($I_mask)=(([u32 ]((1)))<<((15)-($I_tablebits))));
+for ((($I_ch)=(0));(($I_ch)<([u32 ](($I_nchar)))); (($I_ch)++)) {
+if (((($I_len)=(($I_bitlen)[($I_ch)]))==(0))) {
+continue;
+}
+(($I_nextcode)=((($I_start)[($I_len)])+(($I_weight)[($I_len)])));
+if ((($I_len)<=([u32 ](($I_tablebits))))) {
+for ((($I_i)=(($I_start)[($I_len)]));(($I_i)<($I_nextcode)); (($I_i)++)) {
+((($I_table)[($I_i)])=($I_ch));
+}
+}
+else {
+(($I_k)=(($I_start)[($I_len)]));
+(($I_p)=(&(($I_table)[(($I_k)>>($I_jutbits))])));
+(($I_i)=(($I_len)-($I_tablebits)));
+while ((($I_i)!=(0))) {
+if (((*($I_p))==(0))) {
+(((($I_prev))[($I_avail)])=((($I_prev)[($I_avail)])=(0)));
+((*($I_p))=(($I_avail)++));
+}
+if ((($I_k)&($I_mask))) {
+(($I_p)=(&((($I_prev))[(*($I_p))])));
+}
+else {
+(($I_p)=(&(($I_prev)[(*($I_p))])));
+}
+(($I_k)<<=(1));
+(($I_i)--);
+}
+((*($I_p))=($I_ch));
+}
+((($I_start)[($I_len)])=($I_nextcode));
+}
+}
+
+ v0 $I_read_pt_len(i32 $I_nn, i32 $I_nbit, i32 $I_i_special)
+{
+i32  $I_i;
+i32  $I_c;
+i32  $I_n;
+u32  $I_mask;
+(($I_n)=($I_getbits(($I_nbit))));
+if ((($I_n)==(0))) {
+(($I_c)=($I_getbits(($I_nbit))));
+for ((($I_i)=(0));(($I_i)<($I_nn)); (($I_i)++)) {
+((($I_pt_len)[($I_i)])=(0));
+}
+for ((($I_i)=(0));(($I_i)<(256)); (($I_i)++)) {
+((($I_pt_table)[($I_i)])=($I_c));
+}
+}
+else {
+(($I_i)=(0));
+while ((($I_i)<($I_n))) {
+(($I_c)=(($I_io_bitbuf)>>((((8)*(2))*(0))-(3))));
+if ((($I_c)==(7))) {
+(($I_mask)=(([u32 ]((1)))<<(((((8)*(2))*(0))-(1))-(3))));
+while ((($I_mask)&($I_io_bitbuf))) {
+(($I_mask)>>=(1));
+(($I_c)++);
+}
+}
+((($I_pt_len)[(($I_i)++)])=($I_c));
+if ((($I_i)==($I_i_special))) {
+(($I_c)=($I_getbits((2))));
+while (((--($I_c))>=(0))) {
+((($I_pt_len)[(($I_i)++)])=(0));
+}
+}
+}
+while ((($I_i)<($I_nn))) {
+((($I_pt_len)[(($I_i)++)])=(0));
+}
+($I_make_table(($I_nn), ($I_pt_len), (8), ($I_pt_table)));
+}
+}
+
+ v0 $I_read_c_len()
+{
+i32  $I_i;
+i32  $I_c;
+i32  $I_n;
+u32  $I_mask;
+(($I_n)=($I_getbits((9))));
+if ((($I_n)==(0))) {
+(($I_c)=($I_getbits((9))));
+for ((($I_i)=(0));(($I_i)<((((((127)*(2))+(1))+(256))+(2))-(3))); (($I_i)++)) {
+((($I_outbuf)[($I_i)])=(0));
+}
+for ((($I_i)=(0));(($I_i)<(4096)); (($I_i)++)) {
+((($I_d_buf)[($I_i)])=($I_c));
+}
+}
+else {
+(($I_i)=(0));
+while ((($I_i)<($I_n))) {
+(($I_c)=(($I_pt_table)[(($I_io_bitbuf)>>((((8)*(2))*(0))-(8)))]));
+if ((($I_c)>=((16)+(3)))) {
+(($I_mask)=(([u32 ]((1)))<<(((((8)*(2))*(0))-(1))-(8))));
+while ((($I_c)>=((16)+(3)))) {
+if ((($I_io_bitbuf)&($I_mask))) {
+(($I_c)=((($I_prev))[($I_c)]));
+}
+else {
+(($I_c)=(($I_prev)[($I_c)]));
+}
+(($I_mask)>>=(1));
+}
+}
+($I_fillbuf(([i32 ]((($I_pt_len)[($I_c)])))));
+if ((($I_c)<=(2))) {
+if ((($I_c)==(0))) {
+(($I_c)=(1));
+}
+else {
+if ((($I_c)==(1))) {
+(($I_c)=(($I_getbits((4)))+(3)));
+}
+else {
+(($I_c)=(($I_getbits((9)))+(20)));
+}
+}
+while (((--($I_c))>=(0))) {
+((($I_outbuf)[(($I_i)++)])=(0));
+}
+}
+else {
+((($I_outbuf)[(($I_i)++)])=(($I_c)-(2)));
+}
+}
+while ((($I_i)<((((((127)*(2))+(1))+(256))+(2))-(3)))) {
+((($I_outbuf)[(($I_i)++)])=(0));
+}
+($I_make_table(((((((127)*(2))+(1))+(256))+(2))-(3)), ($I_outbuf), (12), ($I_d_buf)));
+}
+}
+
+ u32 $I_decode_c()
+{
+u32  $I_j;
+u32  $I_mask;
+if ((($I_blocksize)==(0))) {
+(($I_blocksize)=($I_getbits((16))));
+if ((($I_blocksize)==(0))) {
+return ((((((127)*(2))+(1))+(256))+(2))-(3));
+}
+($I_read_pt_len(((16)+(3)), (5), (3)));
+($I_read_c_len());
+($I_read_pt_len(((13)+(1)), (4), (-(1))));
+}
+(($I_blocksize)--);
+(($I_j)=(($I_d_buf)[(($I_io_bitbuf)>>((((8)*(2))*(0))-(12)))]));
+if ((($I_j)>=((((((127)*(2))+(1))+(256))+(2))-(3)))) {
+(($I_mask)=(([u32 ]((1)))<<(((((8)*(2))*(0))-(1))-(12))));
+while ((($I_j)>=((((((127)*(2))+(1))+(256))+(2))-(3)))) {
+if ((($I_io_bitbuf)&($I_mask))) {
+(($I_j)=((($I_prev))[($I_j)]));
+}
+else {
+(($I_j)=(($I_prev)[($I_j)]));
+}
+(($I_mask)>>=(1));
+}
+}
+($I_fillbuf(([i32 ]((($I_outbuf)[($I_j)])))));
+return ($I_j);
+}
+
+ u32 $I_decode_p()
+{
+u32  $I_j;
+u32  $I_mask;
+(($I_j)=(($I_pt_table)[(($I_io_bitbuf)>>((((8)*(2))*(0))-(8)))]));
+if ((($I_j)>=((13)+(1)))) {
+(($I_mask)=(([u32 ]((1)))<<(((((8)*(2))*(0))-(1))-(8))));
+while ((($I_j)>=((13)+(1)))) {
+if ((($I_io_bitbuf)&($I_mask))) {
+(($I_j)=((($I_prev))[($I_j)]));
+}
+else {
+(($I_j)=(($I_prev)[($I_j)]));
+}
+(($I_mask)>>=(1));
+}
+}
+($I_fillbuf(([i32 ]((($I_pt_len)[($I_j)])))));
+if ((($I_j)!=(0))) {
+(($I_j)=((([u32 ]((1)))<<(($I_j)-(1)))+($I_getbits(([i32 ]((($I_j)-(1))))))));
+}
+return ($I_j);
+}
+
+ v0 $I_huf_decode_start()
+{
+($I_init_getbits());
+(($I_blocksize)=(0));
+}
+
+ v0 $I_decode_start()
+{
+($I_huf_decode_start());
+(($I_j)=(0));
+(($I_done)=(0));
+}
+
+ u32 $I_decode(u32 $I_count, u8  *$I_buffer)
+{
+ u32  $I_i;
+u32  $I_r;
+u32  $I_c;
+(($I_r)=(0));
+while (((--($I_j))>=(0))) {
+((($I_buffer)[($I_r)])=(($I_buffer)[($I_i)]));
+(($I_i)=((($I_i)+(1))&((([u32 ]((1)))<<(13))-(1))));
+if (((++($I_r))==($I_count))) {
+return ($I_r);
+}
+}
+for (0;1; 0) {
+(($I_c)=($I_decode_c()));
+if ((($I_c)==((((((127)*(2))+(1))+(256))+(2))-(3)))) {
+(($I_done)=(1));
+return ($I_r);
+}
+if ((($I_c)<=(((127)*(2))+(1)))) {
+((($I_buffer)[($I_r)])=($I_c));
+if (((++($I_r))==($I_count))) {
+return ($I_r);
+}
+}
+else {
+(($I_j)=(($I_c)-(((((127)*(2))+(1))+(1))-(3))));
+(($I_i)=(((($I_r)-($I_decode_p()))-(1))&((([u32 ]((1)))<<(13))-(1))));
+while (((--($I_j))>=(0))) {
+((($I_buffer)[($I_r)])=(($I_buffer)[($I_i)]));
+(($I_i)=((($I_i)+(1))&((([u32 ]((1)))<<(13))-(1))));
+if (((++($I_r))==($I_count))) {
+return ($I_r);
+}
+}
+}
+}
+}
+
+i32 $I_unlzh(i32 $I_in, i32 $I_out)
+{
+u32  $I_n;
+(($I_ifd)=($I_in));
+(($I_ofd)=($I_out));
+($I_decode_start());
+while ((!($I_done))) {
+(($I_n)=($I_decode(([u32 ]((([u32 ]((1)))<<(13)))), ($I_window))));
+if (((!($I_test))&(($I_n)>(0)))) {
+($I_write_buf(($I_out), ([i8 *](($I_window))), ($I_n)));
+}
+}
+return (0);
+}
+
+i32 $I_unlzw(i32 $I_in, i32 $I_out)
+{
+ u8   *$I_stackp;
+i32   $I_code;
+i32  $I_finchar;
+i32   $I_oldcode;
+i32   $I_incode;
+i32  $I_inbits;
+i32  $I_posbits;
+i32  $I_outpos;
+u32  $I_bitmask;
+i32   $I_free_ent;
+i32   $I_maxcode;
+i32   $I_maxmaxcode;
+i32  $I_n_bits;
+i32  $I_rsize;
+(($I_block_mode)=(($I_maxbits)&(128)));
+if (((($I_maxbits)&(96))!=(0))) {
+if ((!($I_quiet))) {
+($I_fprintf(($I_stderr), ("\n%s: %s: warning, unknown flags 0x%x\n"), ($I_progname), ($I_ifname), (($I_maxbits)&(96))));
+}
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+}
+(($I_maxbits)&=(31));
+(($I_maxmaxcode)=((1)<<($I_maxbits)));
+if ((($I_maxbits)>(16))) {
+($I_fprintf(($I_stderr), ("\n%s: %s: compressed with %d bits, can only handle %d bits\n"), ($I_progname), ($I_ifname), ($I_maxbits), (16)));
+(($I_exit_code)=(1));
+return (1);
+}
+(($I_rsize)=($I_insize));
+(($I_maxcode)=(((1)<<(($I_n_bits)=(9)))-(1)));
+(($I_bitmask)=(((1)<<($I_n_bits))-(1)));
+(($I_oldcode)=(-(1)));
+(($I_finchar)=(0));
+(($I_outpos)=(0));
+(($I_posbits)=(($I_inptr)<<(3)));
+($I_memset(([v0  ](($I_prev))), (0), (256)));
+for ((($I_code)=(255));(($I_code)>=(0)); (--($I_code))) {
+((($I_window)[($I_code)])=([u8  ](($I_code))));
+}
+while ((($I_rsize)!=(0))) {
+ i32  $I_i;
+i32  $I_e;
+i32  $I_o;
+for ((($I_i)=(0));(($I_i)<($I_e)); (++($I_i))) {
+((($I_inbuf)[($I_i)])=(($I_inbuf)[(($I_i)+($I_o))]));
+}
+(($I_insize)=($I_e));
+(($I_posbits)=(0));
+if ((($I_insize)<(64))) {
+if (((($I_rsize)=($I_read(($I_in), (([i8 *](($I_inbuf)))+($I_insize)), (32768))))==(-(1)))) {
+($I_read_error());
+}
+(($I_insize)+=($I_rsize));
+(($I_bytes_in)+=([i32   ](($I_rsize))));
+}
+while ((($I_inbits)>($I_posbits))) {
+if ((($I_free_ent)>($I_maxcode))) {
+(($I_posbits)=((($I_posbits)-(1))+((($I_n_bits)<<(3))-(((($I_posbits)-(1))+(($I_n_bits)<<(3)))%(($I_n_bits)<<(3))))));
+(++($I_n_bits));
+if ((($I_n_bits)==($I_maxbits))) {
+(($I_maxcode)=($I_maxmaxcode));
+}
+else {
+(($I_maxcode)=(((1)<<($I_n_bits))-(1)));
+}
+(($I_bitmask)=(((1)<<($I_n_bits))-(1)));
+}
+ u8   *$I_p = (&(($I_inbuf)[(($I_posbits)>>(3))]));
+(($I_code)=((((([i32 ]((($I_p)[(0)])))|(([i32 ]((($I_p)[(1)])))<<(8)))|(([i32 ]((($I_p)[(2)])))<<(16)))>>(($I_posbits)&(7)))&($I_bitmask)));
+(($I_posbits)+=($I_n_bits));
+if ((($I_oldcode)==(-(1)))) {
+if ((($I_code)>=(256))) {
+($I_error(("corrupt input.")));
+}
+((($I_outbuf)[(($I_outpos)++)])=([u8  ]((($I_finchar)=([i32 ]((($I_oldcode)=($I_code))))))));
+continue;
+}
+if (((($I_code)==(256))&($I_block_mode))) {
+($I_memset(([v0  ](($I_prev))), (0), (256)));
+(($I_free_ent)=(((256)+(1))-(1)));
+(($I_posbits)=((($I_posbits)-(1))+((($I_n_bits)<<(3))-(((($I_posbits)-(1))+(($I_n_bits)<<(3)))%(($I_n_bits)<<(3))))));
+(($I_maxcode)=(((1)<<(($I_n_bits)=(9)))-(1)));
+(($I_bitmask)=(((1)<<($I_n_bits))-(1)));
+}
+(($I_incode)=($I_code));
+(($I_stackp)=([u8  *]((&(($I_d_buf)[((32768)-(1))])))));
+if ((($I_code)>=($I_free_ent))) {
+if ((($I_code)>($I_free_ent))) {
+if (((!($I_test))&(($I_outpos)>(0)))) {
+($I_write_buf(($I_out), ([i8 *](($I_outbuf))), ($I_outpos)));
+(($I_bytes_out)+=([i32   ](($I_outpos))));
+}
+}
+((*(--($I_stackp)))=([u8  ](($I_finchar))));
+(($I_code)=($I_oldcode));
+}
+while ((([u32  ](($I_code)))>=([u32  ]((256))))) {
+((*(--($I_stackp)))=(($I_window)[($I_code)]));
+(($I_code)=(($I_prev)[($I_code)]));
+}
+((*(--($I_stackp)))=([u8  ]((($I_finchar)=(($I_window)[($I_code)])))));
+ i32  $I_i;
+if (((($I_outpos)+(($I_i)=(([u8  *]((&(($I_d_buf)[((32768)-(1))]))))-($I_stackp))))>=(16384))) {
+while (((($I_i)=(([u8  *]((&(($I_d_buf)[((32768)-(1))]))))-($I_stackp)))>(0))) {
+if ((($I_i)>((16384)-($I_outpos)))) {
+(($I_i)=((16384)-($I_outpos)));
+}
+if ((($I_i)>(0))) {
+($I_memcpy((($I_outbuf)+($I_outpos)), ($I_stackp), ($I_i)));
+(($I_outpos)+=($I_i));
+}
+if ((($I_outpos)>=(16384))) {
+if ((!($I_test))) {
+($I_write_buf(($I_out), ([i8 *](($I_outbuf))), ($I_outpos)));
+(($I_bytes_out)+=([i32   ](($I_outpos))));
+}
+(($I_outpos)=(0));
+}
+(($I_stackp)+=($I_i));
+}
+}
+else {
+($I_memcpy((($I_outbuf)+($I_outpos)), ($I_stackp), ($I_i)));
+(($I_outpos)+=($I_i));
+}
+if (((($I_code)=($I_free_ent))<($I_maxmaxcode))) {
+((($I_prev)[($I_code)])=([u16 ](($I_oldcode))));
+((($I_window)[($I_code)])=([u8  ](($I_finchar))));
+(($I_free_ent)=(($I_code)+(1)));
+}
+(($I_oldcode)=($I_incode));
+}
+}
+if (((!($I_test))&(($I_outpos)>(0)))) {
+($I_write_buf(($I_out), ([i8 *](($I_outbuf))), ($I_outpos)));
+(($I_bytes_out)+=([i32   ](($I_outpos))));
+}
+return (0);
+}
+
+ v0 $I_read_tree()
+{
+i32  $I_len;
+i32  $I_base;
+i32  $I_n;
+(($I_orig_len)=(0));
+if ((($I_max_len)>(25))) {
+($I_error(("invalid compressed data -- Huffman code > 32 bits")));
+}
+(($I_n)=(0));
+for ((($I_len)=(1));(($I_len)<=($I_max_len)); (($I_len)++)) {
+(($I_n)+=(($I_leaves)[($I_len)]));
+}
+if ((($I_n)>(256))) {
+($I_error(("too many leaves in Huffman tree")));
+}
+((($I_leaves)[($I_max_len)])++);
+(($I_base)=(0));
+for ((($I_len)=(1));(($I_len)<=($I_max_len)); (($I_len)++)) {
+((($I_lit_base)[($I_len)])=($I_base));
+for ((($I_n)=(($I_leaves)[($I_len)]));(($I_n)>(0)); (($I_n)--)) {
+}
+}
+((($I_leaves)[($I_max_len)])++);
+}
+
+ v0 $I_build_tree()
+{
+i32  $I_nodes = (0);
+i32  $I_len;
+u8   *$I_prefixp;
+for ((($I_len)=($I_max_len));(($I_len)>=(1)); (($I_len)--)) {
+(($I_nodes)>>=(1));
+((($I_parents)[($I_len)])=($I_nodes));
+((($I_lit_base)[($I_len)])-=($I_nodes));
+(($I_nodes)+=(($I_leaves)[($I_len)]));
+}
+(($I_prefixp)=(&(($I_outbuf)[((1)<<($I_peek_bits))])));
+for ((($I_len)=(1));(($I_len)<=($I_peek_bits)); (($I_len)++)) {
+i32  $I_prefixes = ((($I_leaves)[($I_len)])<<(($I_peek_bits)-($I_len)));
+while ((($I_prefixes)--)) {
+((*(--($I_prefixp)))=([u8  ](($I_len))));
+}
+}
+while ((($I_prefixp)>($I_outbuf))) {
+((*(--($I_prefixp)))=(0));
+}
+}
+
+i32 $I_unpack(i32 $I_in, i32 $I_out)
+{
+i32  $I_len;
+u32  $I_eob;
+ u32  $I_peek;
+u32  $I_peek_mask;
+(($I_ifd)=($I_in));
+(($I_ofd)=($I_out));
+($I_read_tree());
+($I_build_tree());
+(($I_peek_mask)=(((1)<<($I_peek_bits))-(1)));
+(($I_eob)=((($I_leaves)[($I_max_len)])-(1)));
+for (0;1; 0) {
+(($I_peek)=((($I_bitbuf)>>(($I_valid)-($I_peek_bits)))&($I_peek_mask)));
+(($I_len)=(($I_outbuf)[($I_peek)]));
+if ((($I_len)>(0))) {
+(($I_peek)>>=(($I_peek_bits)-($I_len)));
+}
+else {
+u32   $I_mask = ($I_peek_mask);
+(($I_len)=($I_peek_bits));
+while ((($I_peek)<([u32 ]((($I_parents)[($I_len)]))))) {
+(($I_peek)=((($I_bitbuf)>>(($I_valid)-($I_len)))&($I_mask)));
+}
+}
+if (((($I_peek)==($I_eob))&(($I_len)==($I_max_len)))) {
+break;
+}
+((($I_window)[(($I_outcnt)++)])=([u8  ]((($I_literal)[(($I_peek)+(($I_lit_base)[($I_len)]))]))));
+if ((($I_outcnt)==(32768))) {
+($I_flush_window());
+}
+(($I_valid)-=($I_len));
+}
+($I_flush_window());
+if ((($I_orig_len)!=([u32  ]((($I_bytes_out)&(4294967295)))))) {
+($I_error(("invalid compressed data--length error")));
+}
+return (0);
+}
+
+i32 $I_check_zipfile(i32 $I_in)
+{
+u8   *$I_h = (($I_inbuf)+($I_inptr));
+(($I_ifd)=($I_in));
+(($I_inptr)+=(((30)+(([u16  ](([u8  ](((($I_h))[(0)])))))|(([u16  ](([u8  ](((($I_h))[(1)])))))<<(8))))+(([u16  ](([u8  ](((($I_h))[(0)])))))|(([u16  ](([u8  ](((($I_h))[(1)])))))<<(8)))));
+if (((($I_inptr)>($I_insize))|((([u32  ]((([u16  ](([u8  ]((($I_h)[(0)])))))|(([u16  ](([u8  ]((($I_h)[(1)])))))<<(8)))))|(([u32  ]((([u16  ](([u8  ](((($I_h))[(0)])))))|(([u16  ](([u8  ](((($I_h))[(1)])))))<<(8)))))<<(16)))!=(67324752)))) {
+($I_fprintf(($I_stderr), ("\n%s: %s: not a valid zip file\n"), ($I_progname), ($I_ifname)));
+(($I_exit_code)=(1));
+return (1);
+}
+(($I_method)=(($I_h)[(8)]));
+if (((($I_method)!=(0))&(($I_method)!=(8)))) {
+($I_fprintf(($I_stderr), ("\n%s: %s: first entry not deflated or stored -- use unzip\n"), ($I_progname), ($I_ifname)));
+(($I_exit_code)=(1));
+return (1);
+}
+if (((($I_decrypt)=((($I_h)[(6)])&(1)))!=(0))) {
+($I_fprintf(($I_stderr), ("\n%s: %s: encrypted file -- use unzip\n"), ($I_progname), ($I_ifname)));
+(($I_exit_code)=(1));
+return (1);
+}
+(($I_ext_header)=(((($I_h)[(6)])&(8))!=(0)));
+(($I_pkzip)=(1));
+return (0);
+}
+
+i32 $I_unzip(i32 $I_in, i32 $I_out)
+{
+u32   $I_orig_crc = (0);
+u32   $I_orig_len = (0);
+i32  $I_n;
+u8   [16]$I_buf;
+i32  $I_err = (0);
+(($I_ifd)=($I_in));
+(($I_ofd)=($I_out));
+($I_updcrc(([v0 *]((0))), (0)));
+if ((($I_pkzip)&(!($I_ext_header)))) {
+(($I_orig_crc)=(([u32  ]((([u16  ](([u8  ](((($I_inbuf))[(0)])))))|(([u16  ](([u8  ](((($I_inbuf))[(1)])))))<<(8)))))|(([u32  ]((([u16  ](([u8  ]((((($I_inbuf)))[(0)])))))|(([u16  ](([u8  ]((((($I_inbuf)))[(1)])))))<<(8)))))<<(16))));
+(($I_orig_len)=(([u32  ]((([u16  ](([u8  ](((($I_inbuf))[(0)])))))|(([u16  ](([u8  ](((($I_inbuf))[(1)])))))<<(8)))))|(([u32  ]((([u16  ](([u8  ]((((($I_inbuf)))[(0)])))))|(([u16  ](([u8  ]((((($I_inbuf)))[(1)])))))<<(8)))))<<(16))));
+}
+if ((($I_method)==(8))) {
+i32  $I_res = ($I_inflate());
+if ((($I_res)==(3))) {
+($I_error(("out of memory")));
+}
+else {
+if ((($I_res)!=(0))) {
+($I_error(("invalid compressed data--format violated")));
+}
+}
+}
+else {
+if ((($I_pkzip)&(($I_method)==(0)))) {
+ u32   $I_n = (([u32  ]((([u16  ](([u8  ](((($I_inbuf))[(0)])))))|(([u16  ](([u8  ](((($I_inbuf))[(1)])))))<<(8)))))|(([u32  ]((([u16  ](([u8  ]((((($I_inbuf)))[(0)])))))|(([u16  ](([u8  ]((((($I_inbuf)))[(1)])))))<<(8)))))<<(16)));
+while ((($I_n)--)) {
+u8   $I_c;
+((($I_window)[(($I_outcnt)++)])=([u8  ](($I_c))));
+if ((($I_outcnt)==(32768))) {
+($I_flush_window());
+}
+}
+($I_flush_window());
+}
+else {
+($I_error(("internal error, invalid method")));
+}
+}
+if ((!($I_pkzip))) {
+for ((($I_n)=(0));(($I_n)<(8)); (($I_n)++)) {
+}
+(($I_orig_crc)=(([u32  ]((([u16  ](([u8  ]((($I_buf)[(0)])))))|(([u16  ](([u8  ]((($I_buf)[(1)])))))<<(8)))))|(([u32  ]((([u16  ](([u8  ](((($I_buf))[(0)])))))|(([u16  ](([u8  ](((($I_buf))[(1)])))))<<(8)))))<<(16))));
+(($I_orig_len)=(([u32  ]((([u16  ](([u8  ](((($I_buf))[(0)])))))|(([u16  ](([u8  ](((($I_buf))[(1)])))))<<(8)))))|(([u32  ]((([u16  ](([u8  ]((((($I_buf)))[(0)])))))|(([u16  ](([u8  ]((((($I_buf)))[(1)])))))<<(8)))))<<(16))));
+}
+else {
+if (($I_ext_header)) {
+for ((($I_n)=(0));(($I_n)<(16)); (($I_n)++)) {
+}
+(($I_orig_crc)=(([u32  ]((([u16  ](([u8  ](((($I_buf))[(0)])))))|(([u16  ](([u8  ](((($I_buf))[(1)])))))<<(8)))))|(([u32  ]((([u16  ](([u8  ]((((($I_buf)))[(0)])))))|(([u16  ](([u8  ]((((($I_buf)))[(1)])))))<<(8)))))<<(16))));
+(($I_orig_len)=(([u32  ]((([u16  ](([u8  ](((($I_buf))[(0)])))))|(([u16  ](([u8  ](((($I_buf))[(1)])))))<<(8)))))|(([u32  ]((([u16  ](([u8  ]((((($I_buf)))[(0)])))))|(([u16  ](([u8  ]((((($I_buf)))[(1)])))))<<(8)))))<<(16))));
+}
+}
+if ((($I_orig_crc)!=($I_updcrc(($I_outbuf), (0))))) {
+($I_fprintf(($I_stderr), ("\n%s: %s: invalid compressed data--crc error\n"), ($I_progname), ($I_ifname)));
+(($I_err)=(1));
+}
+if ((($I_orig_len)!=([u32  ]((($I_bytes_out)&(4294967295)))))) {
+($I_fprintf(($I_stderr), ("\n%s: %s: invalid compressed data--length error\n"), ($I_progname), ($I_ifname)));
+(($I_err)=(1));
+}
+if (((($I_pkzip)&((($I_inptr))<($I_insize)))&((([u32  ]((([u16  ](([u8  ](((($I_inbuf))[(0)])))))|(([u16  ](([u8  ](((($I_inbuf))[(1)])))))<<(8)))))|(([u32  ]((([u16  ](([u8  ]((((($I_inbuf)))[(0)])))))|(([u16  ](([u8  ]((((($I_inbuf)))[(1)])))))<<(8)))))<<(16)))==(67324752)))) {
+if (($I_to_stdout)) {
+if ((!($I_quiet))) {
+($I_fprintf(($I_stderr), ("%s: %s has more than one entry--rest ignored\n"), ($I_progname), ($I_ifname)));
+}
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+}
+else {
+($I_fprintf(($I_stderr), ("%s: %s has more than one entry -- unchanged\n"), ($I_progname), ($I_ifname)));
+(($I_err)=(1));
+}
+}
+(($I_ext_header)=(($I_pkzip)=(0)));
+if ((($I_err)==(0))) {
+return (0);
+}
+(($I_exit_code)=(1));
+if ((!($I_test))) {
+($I_abort_gzip());
+}
+return ($I_err);
+}
+
+i32 $I_copy(i32 $I_in, i32 $I_out)
+{
+((*($I___errno_location()))=(0));
+while (((($I_insize)!=(0))&(([i32 ](($I_insize)))!=(-(1))))) {
+($I_write_buf(($I_out), ([i8 *](($I_inbuf))), ($I_insize)));
+(($I_bytes_out)+=($I_insize));
+(($I_insize)=($I_read(($I_in), ([i8 *](($I_inbuf))), (32768))));
+}
+if ((([i32 ](($I_insize)))==(-(1)))) {
+($I_read_error());
+}
+(($I_bytes_in)=($I_bytes_out));
+return (0);
+}
+
+u32  $I_updcrc(u8  *$I_s, u32 $I_n)
+{
+ u32   $I_c;
+ u32   $I_crc = ([u32  ]((4294967295)));
+if ((($I_s)==([v0 *]((0))))) {
+(($I_c)=(4294967295));
+}
+else {
+(($I_c)=($I_crc));
+if (($I_n)) {
+while ((--($I_n))) {
+(($I_c)=((($I_crc_32_tab)[((([i32 ](($I_c)))^(*(($I_s)++)))&(255))])^(($I_c)>>(8))));
+}
+}
+}
+(($I_crc)=($I_c));
+return (($I_c)^(4294967295));
+}
+
+v0 $I_clear_bufs()
+{
+(($I_outcnt)=(0));
+(($I_insize)=(($I_inptr)=(0)));
+(($I_bytes_in)=(($I_bytes_out)=(0)));
+}
+
+i32 $I_fill_inbuf(i32 $I_eof_ok)
+{
+i32  $I_len;
+(($I_insize)=(0));
+while ((($I_insize)<(32768))) {
+(($I_len)=($I_read(($I_ifd), (([i8 *](($I_inbuf)))+($I_insize)), ((32768)-($I_insize)))));
+if ((($I_len)==(0))) {
+break;
+}
+if ((($I_len)==(-(1)))) {
+($I_read_error());
+break;
+}
+(($I_insize)+=($I_len));
+}
+if ((($I_insize)==(0))) {
+if (($I_eof_ok)) {
+return (-(1));
+}
+($I_flush_window());
+((*($I___errno_location()))=(0));
+($I_read_error());
+}
+(($I_bytes_in)+=([i32   ](($I_insize))));
+(($I_inptr)=(1));
+return (($I_inbuf)[(0)]);
+}
+
+v0 $I_flush_outbuf()
+{
+if ((($I_outcnt)==(0))) {
+return;
+}
+($I_write_buf(($I_ofd), ([i8 *](($I_outbuf))), ($I_outcnt)));
+(($I_bytes_out)+=([i32   ](($I_outcnt))));
+(($I_outcnt)=(0));
+}
+
+v0 $I_flush_window()
+{
+if ((($I_outcnt)==(0))) {
+return;
+}
+($I_updcrc(($I_window), ($I_outcnt)));
+if ((!($I_test))) {
+($I_write_buf(($I_ofd), ([i8 *](($I_window))), ($I_outcnt)));
+}
+(($I_bytes_out)+=([i32   ](($I_outcnt))));
+(($I_outcnt)=(0));
+}
+
+v0 $I_write_buf(i32 $I_fd, v0  $I_buf, u32 $I_cnt)
+{
+u32  $I_n;
+while (((($I_n)=($I_write(($I_fd), ($I_buf), ($I_cnt))))!=($I_cnt))) {
+if ((($I_n)==([u32 ]((-(1)))))) {
+($I_write_error());
+}
+(($I_cnt)-=($I_n));
+(($I_buf)=([v0  ]((([i8 *](($I_buf)))+($I_n)))));
+}
+}
+
+i8 *$I_strlwr(i8 *$I_s)
+{
+i8  *$I_t;
+return ($I_s);
+}
+
+i8 *$I_base_name(i8 *$I_fname)
+{
+i8  *$I_p;
+if (((($I_p)=($I_strrchr(($I_fname), ('/'))))!=([v0 *]((0))))) {
+(($I_fname)=(($I_p)+(1)));
+}
+if ((('A')==('a'))) {
+($I_strlwr(($I_fname)));
+}
+return ($I_fname);
+}
+
+i32 $I_xunlink(i8 *$I_filename)
+{
+i32  $I_r = ($I_unlink(($I_filename)));
+return ($I_r);
+}
+
+v0 $I_make_simple_name(i8 *$I_name)
+{
+i8  *$I_p = ($I_strrchr(($I_name), ('.')));
+if ((($I_p)==([v0 *]((0))))) {
+return;
+}
+if ((($I_p)==($I_name))) {
+(($I_p)++);
+}
+while ((($I_p)!=($I_name))) {
+if (((*(--($I_p)))==('.'))) {
+((*($I_p))=('_'));
+}
+}
+}
+
+i8 *$I_add_envopt(i32 *$I_argcp, i8 ***$I_argvp, i8 *$I_env)
+{
+i8  *$I_p;
+i8  **$I_oargv;
+i8  **$I_nargv;
+i32  $I_oargc = (*($I_argcp));
+i32  $I_nargc = (0);
+(($I_env)=([i8 *](($I_getenv(($I_env))))));
+if ((($I_env)==([v0 *]((0))))) {
+return ([v0 *]((0)));
+}
+(($I_p)=([i8 *](($I_xmalloc((($I_strlen(($I_env)))+(1)))))));
+(($I_env)=($I_strcpy(($I_p), ($I_env))));
+for ((($I_p)=($I_env));(*($I_p)); (($I_nargc)++)) {
+(($I_p)+=($I_strspn(($I_p), (" \t"))));
+if (((*($I_p))==('\0'))) {
+break;
+}
+(($I_p)+=($I_strcspn(($I_p), (" \t"))));
+if ((*($I_p))) {
+((*(($I_p)++))=('\0'));
+}
+}
+if ((($I_nargc)==(0))) {
+($I_free(($I_env)));
+return ([v0 *]((0)));
+}
+((*($I_argcp))+=($I_nargc));
+(($I_nargv)=([i8 **](($I_calloc(((*($I_argcp))+(1)), (0))))));
+if ((($I_nargv)==([v0 *]((0))))) {
+($I_error(("out of memory")));
+}
+(($I_oargv)=(*($I_argvp)));
+((*($I_argvp))=($I_nargv));
+if (((($I_oargc)--)<(0))) {
+($I_error(("argc<=0")));
+}
+((*(($I_nargv)++))=(*(($I_oargv)++)));
+for ((($I_p)=($I_env));(($I_nargc)>(0)); (($I_nargc)--)) {
+(($I_p)+=($I_strspn(($I_p), (" \t"))));
+((*(($I_nargv)++))=($I_p));
+while ((*(($I_p)++))) {
+}
+}
+while ((($I_oargc)--)) {
+((*(($I_nargv)++))=(*(($I_oargv)++)));
+}
+((*($I_nargv))=([v0 *]((0))));
+return ($I_env);
+}
+
+v0 $I_error(i8 *$I_m)
+{
+($I_fprintf(($I_stderr), ("\n%s: %s: %s\n"), ($I_progname), ($I_ifname), ($I_m)));
+($I_abort_gzip());
+}
+
+v0 $I_warning(i8 *$I_m)
+{
+if ((!($I_quiet))) {
+($I_fprintf(($I_stderr), ("%s: %s: warning: %s\n"), ($I_progname), ($I_ifname), ($I_m)));
+}
+if ((($I_exit_code)==(0))) {
+(($I_exit_code)=(2));
+}
+}
+
+v0 $I_read_error()
+{
+i32  $I_e = (*($I___errno_location()));
+($I_fprintf(($I_stderr), ("\n%s: "), ($I_progname)));
+if ((($I_e)!=(0))) {
+((*($I___errno_location()))=($I_e));
+($I_perror(($I_ifname)));
+}
+else {
+($I_fprintf(($I_stderr), ("%s: unexpected end of file\n"), ($I_ifname)));
+}
+($I_abort_gzip());
+}
+
+v0 $I_write_error()
+{
+i32  $I_e = (*($I___errno_location()));
+($I_fprintf(($I_stderr), ("\n%s: "), ($I_progname)));
+((*($I___errno_location()))=($I_e));
+($I_perror(($I_ofname)));
+($I_abort_gzip());
+}
+
+v0 $I_display_ratio(i32   $I_num, i32   $I_den, $T__IO_FILE *$I_file)
+{
+}
+
+v0 $I_fprint_off($T__IO_FILE *$I_file, i32   $I_offset, i32 $I_width)
+{
+i8  [0]$I_buf;
+i8  *$I_p = (($I_buf)+(0));
+if ((($I_offset)<(0))) {
+while (((($I_offset)/=(10))!=(0))) {
+((*(--($I_p)))=(('0')-(($I_offset)%(10))));
+}
+((*(--($I_p)))=('-'));
+}
+else {
+while (((($I_offset)/=(10))!=(0))) {
+((*(--($I_p)))=(('0')+(($I_offset)%(10))));
+}
+}
+(($I_width)-=((($I_buf)+(0))-($I_p)));
+while (((0)<(($I_width)--))) {
+($I_putc((' '), ($I_file)));
+}
+for (0;(($I_p)<(($I_buf)+(0))); (($I_p)++)) {
+($I_putc((*($I_p)), ($I_file)));
+}
+}
+
+v0  $I_xmalloc(u32 $I_size)
+{
+v0   $I_cp = ([v0  ](($I_malloc(($I_size)))));
+if ((($I_cp)==([v0 *]((0))))) {
+($I_error(("out of memory")));
+}
+return ($I_cp);
+}
+
+i32 $I_yesno()
+{
+i8  [128]$I_buf;
+i32  $I_len = (0);
+i32  $I_c;
+while ((((($I_c)=($I_getchar()))!=(-(1)))&(($I_c)!=('\n')))) {
+if ((((($I_len)>(0))&(($I_len)<(127)))|((($I_len)==(0))&(!(((*($I___ctype_b_loc()))[([i32 ](($I_c)))])&([u16 ](($I__ISspace)))))))) {
+((($I_buf)[(($I_len)++)])=($I_c));
+}
+}
+((($I_buf)[($I_len)])=('\0'));
+return (($I_rpmatch(($I_buf)))==(1));
+}
+
+i32 $I_zip(i32 $I_in, i32 $I_out)
+{
+u8   $I_flags = (0);
+u16   $I_attr = (0);
+u16   $I_deflate_flags = (0);
+(($I_ifd)=($I_in));
+(($I_ofd)=($I_out));
+(($I_outcnt)=(0));
+(($I_method)=(8));
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((('\037')))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((('\037')))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((8))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+if (($I_save_orig_name)) {
+(($I_flags)|=(8));
+}
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](($I_flags))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+if ((($I_outcnt)<((16384)-(2)))) {
+}
+else {
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+if ((($I_outcnt)<((16384)-(2)))) {
+}
+else {
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+(($I_crc)=($I_updcrc((0), (0))));
+($I_bi_init(($I_out)));
+($I_ct_init((&($I_attr)), (&($I_method))));
+($I_lm_init(($I_level), (&($I_deflate_flags))));
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ](($I_deflate_flags))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((3))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+if (($I_save_orig_name)) {
+i8  *$I_p = ($I_base_name(($I_ifname)));
+while ((*(($I_p)++))) {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((*($I_p)))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+}
+(($I_header_bytes)=([i32   ](($I_outcnt))));
+([v0 ](($I_deflate())));
+if ((($I_outcnt)<((16384)-(2)))) {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](((($I_crc)&(65535))&(255)))));
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((([u16  ]((($I_crc)&(65535))))>>(8)))));
+}
+else {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ](((($I_crc)&(65535))&(255)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ]((([u16  ]((($I_crc)&(65535))))>>(8)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+if ((($I_outcnt)<((16384)-(2)))) {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](((([u32  ](($I_crc)))>>(16))&(255)))));
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((([u16  ]((([u32  ](($I_crc)))>>(16))))>>(8)))));
+}
+else {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ](((([u32  ](($I_crc)))>>(16))&(255)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ]((([u16  ]((([u32  ](($I_crc)))>>(16))))>>(8)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+if ((($I_outcnt)<((16384)-(2)))) {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](((([u32  ](($I_bytes_in)))&(65535))&(255)))));
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((([u16  ]((([u32  ](($I_bytes_in)))&(65535))))>>(8)))));
+}
+else {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ](((([u32  ](($I_bytes_in)))&(65535))&(255)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ]((([u16  ]((([u32  ](($I_bytes_in)))&(65535))))>>(8)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+if ((($I_outcnt)<((16384)-(2)))) {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](((([u32  ](([u32  ](($I_bytes_in)))))>>(16))&(255)))));
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ]((([u16  ]((([u32  ](([u32  ](($I_bytes_in)))))>>(16))))>>(8)))));
+}
+else {
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ](((([u32  ](([u32  ](($I_bytes_in)))))>>(16))&(255)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+((($I_outbuf)[(($I_outcnt)++)])=([u8  ](([u8  ]((([u16  ]((([u32  ](([u32  ](($I_bytes_in)))))>>(16))))>>(8)))))));
+if ((($I_outcnt)==(16384))) {
+($I_flush_outbuf());
+}
+}
+(($I_header_bytes)+=((2)*(0)));
+($I_flush_outbuf());
+return (0);
+}
+
+i32 $I_file_read(i8 *$I_buf, u32 $I_size)
+{
+u32  $I_len;
+(($I_len)=($I_read(($I_ifd), ($I_buf), ($I_size))));
+if ((($I_len)==(0))) {
+return ([i32 ](($I_len)));
+}
+if ((($I_len)==([u32 ]((-(1)))))) {
+($I_read_error());
+return (-(1));
+}
+(($I_crc)=($I_updcrc(([u8  *](($I_buf))), ($I_len))));
+(($I_bytes_in)+=([i32   ](($I_len))));
+return ([i32 ](($I_len)));
+}
+
+i32 $I_rpmatch( i8 *$I_response)
+{
+}
+
+i32 $I_getopt_long(i32 $I_argc, i8 **$I_argv,  i8 *$I_options,  $T_option *$I_long_options, i32 *$I_opt_index)
+{
+return ($I__getopt_internal(($I_argc), ($I_argv), ($I_options), ($I_long_options), ($I_opt_index), (0)));
+}
+
+i32 $I_getopt_long_only(i32 $I_argc, i8 **$I_argv,  i8 *$I_options,  $T_option *$I_long_options, i32 *$I_opt_index)
+{
+return ($I__getopt_internal(($I_argc), ($I_argv), ($I_options), ($I_long_options), ($I_opt_index), (1)));
+}
+
+
