@@ -61,113 +61,49 @@ struct OffsetExpression final : public WriteValue
 	store(Assembler &assembler, uint8_t value_reg)
 		const override
 	{
+		// Multiply the offset by the byte size.
+
 		Type pointed_type  = type;
 		uint8_t offset_reg = assembler.get_register();
 		offset->get_value(assembler, offset_reg);
 
 		uint8_t temp_reg = assembler.get_register();
 
-		// Local variable or parameter
+		uint byte_size = type.byte_size();
+		assembler.move_lit(byte_size, temp_reg);
+		assembler.mul_int_64(temp_reg, offset_reg);
 
-		if (location_data.is_at_frame_top())
-		{
-			switch (type.byte_size())
-			{
-			case 1:
-				assembler.move_lit(pointed_type.byte_size(), temp_reg);
-				assembler.mul_int_64(offset_reg, temp_reg);
-				assembler.add_int_64(R_FRAME_PTR, offset_reg);
-				assembler.move_lit(location_data.offset, temp_reg);
-				assembler.add_int_64(temp_reg, offset_reg);
-				assembler.store_ptr_8(value_reg, offset_reg);
-				break;
+		// Add the offset into the pointer.
 
-			case 2:
-
-				assembler.move_lit(pointed_type.byte_size(), temp_reg);
-				assembler.mul_int_64(offset_reg, temp_reg);
-				assembler.add_int_64(R_FRAME_PTR, offset_reg);
-				assembler.move_lit(location_data.offset, temp_reg);
-				assembler.add_int_64(temp_reg, offset_reg);
-				assembler.store_ptr_16(value_reg, offset_reg);
-				break;
-
-			case 4:
-				assembler.move_lit(pointed_type.byte_size(), temp_reg);
-				assembler.mul_int_64(offset_reg, temp_reg);
-				assembler.add_int_64(R_FRAME_PTR, offset_reg);
-				assembler.move_lit(location_data.offset, temp_reg);
-				assembler.add_int_64(temp_reg, offset_reg);
-				assembler.store_ptr_32(value_reg, offset_reg);
-				break;
-
-			case 8:
-				assembler.move_lit(pointed_type.byte_size(), temp_reg);
-				assembler.mul_int_64(offset_reg, temp_reg);
-				assembler.add_int_64(R_FRAME_PTR, offset_reg);
-				assembler.move_lit(location_data.offset, temp_reg);
-				assembler.add_int_64(temp_reg, offset_reg);
-				assembler.store_ptr_64(value_reg, offset_reg);
-				break;
-
-			default:
-				err_at_token(pointer->accountable_token,
-					"Type Error",
-					"Variable doesn't fit in register\n"
-					"Support for this is not implemented yet");
-			}
-		}
-		else
-		{
-			// Global variable
-
-			switch (type.byte_size())
-			{
-			case 1:
-				assembler.move_lit(pointed_type.byte_size(), temp_reg);
-				assembler.mul_int_64(offset_reg, temp_reg);
-				assembler.add_int_64(R_STACK_TOP_PTR, offset_reg);
-				assembler.move_lit(location_data.offset, temp_reg);
-				assembler.add_int_64(temp_reg, offset_reg);
-				assembler.store_ptr_8(value_reg, offset_reg);
-				break;
-
-			case 2:
-				assembler.move_lit(pointed_type.byte_size(), temp_reg);
-				assembler.mul_int_64(offset_reg, temp_reg);
-				assembler.add_int_64(R_STACK_TOP_PTR, offset_reg);
-				assembler.move_lit(location_data.offset, temp_reg);
-				assembler.add_int_64(temp_reg, offset_reg);
-				assembler.store_ptr_16(value_reg, offset_reg);
-				break;
-
-			case 4:
-				assembler.move_lit(pointed_type.byte_size(), temp_reg);
-				assembler.mul_int_64(offset_reg, temp_reg);
-				assembler.add_int_64(R_STACK_TOP_PTR, offset_reg);
-				assembler.move_lit(location_data.offset, temp_reg);
-				assembler.add_int_64(temp_reg, offset_reg);
-				assembler.store_ptr_32(value_reg, offset_reg);
-				break;
-
-			case 8:
-				assembler.move_lit(pointed_type.byte_size(), temp_reg);
-				assembler.mul_int_64(offset_reg, temp_reg);
-				assembler.add_int_64(R_STACK_TOP_PTR, offset_reg);
-				assembler.move_lit(location_data.offset, temp_reg);
-				assembler.add_int_64(temp_reg, offset_reg);
-				assembler.store_ptr_64(value_reg, offset_reg);
-				break;
-
-			default:
-				err_at_token(pointer->accountable_token,
-					"Type Error",
-					"Variable doesn't fit in register\n"
-					"Support for this is not implemented yet");
-			}
-		}
-
+		pointer->get_value(assembler, temp_reg);
+		assembler.add_int_64(offset_reg, temp_reg);
 		assembler.free_register(offset_reg);
+
+		// Store the value in the pointed location.
+
+		switch (byte_size)
+		{
+		case 1:
+			assembler.store_ptr_8(value_reg, temp_reg);
+			break;
+
+		case 2:
+			assembler.store_ptr_16(value_reg, temp_reg);
+			break;
+
+		case 4:
+			assembler.store_ptr_32(value_reg, temp_reg);
+			break;
+
+		case 8:
+			assembler.store_ptr_64(value_reg, temp_reg);
+			break;
+
+		default:
+			assembler.mem_copy(value_reg, temp_reg, byte_size);
+			break;
+		}
+
 		assembler.free_register(temp_reg);
 	}
 
