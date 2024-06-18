@@ -53,7 +53,7 @@ struct Type
 
 	// If the subtype is a user-defined class,
 	// this field will hold the id of the class.
-	uint32_t class_id;
+	uint32_t class_id {};
 
 	/**
 	 * @brief Default constructor.
