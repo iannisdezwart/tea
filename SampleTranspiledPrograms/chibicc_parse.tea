@@ -1,0 +1,4055 @@
+// enum decls:
+i32 $I_P_ALL = 0;
+i32 $I_P_PID = 1;
+i32 $I_P_PGID = 2;
+i32 $I__CLOCK_REALTIME = 0;
+i32 $I__CLOCK_MONOTONIC = 1;
+i32 $I__CLOCK_PROCESS_CPUTIME_ID = 2;
+i32 $I__CLOCK_THREAD_CPUTIME_ID = 3;
+i32 $I_TK_IDENT = 0;
+i32 $I_TK_PUNCT = 1;
+i32 $I_TK_KEYWORD = 2;
+i32 $I_TK_STR = 3;
+i32 $I_TK_NUM = 4;
+i32 $I_TK_PP_NUM = 5;
+i32 $I_TK_EOF = 6;
+i32 $I_ND_NULL_EXPR = 0;
+i32 $I_ND_ADD = 1;
+i32 $I_ND_SUB = 2;
+i32 $I_ND_MUL = 3;
+i32 $I_ND_DIV = 4;
+i32 $I_ND_NEG = 5;
+i32 $I_ND_MOD = 6;
+i32 $I_ND_BITAND = 7;
+i32 $I_ND_BITOR = 8;
+i32 $I_ND_BITXOR = 9;
+i32 $I_ND_SHL = 10;
+i32 $I_ND_SHR = 11;
+i32 $I_ND_EQ = 12;
+i32 $I_ND_NE = 13;
+i32 $I_ND_LT = 14;
+i32 $I_ND_LE = 15;
+i32 $I_ND_ASSIGN = 16;
+i32 $I_ND_COND = 17;
+i32 $I_ND_COMMA = 18;
+i32 $I_ND_MEMBER = 19;
+i32 $I_ND_ADDR = 20;
+i32 $I_ND_DEREF = 21;
+i32 $I_ND_NOT = 22;
+i32 $I_ND_BITNOT = 23;
+i32 $I_ND_LOGAND = 24;
+i32 $I_ND_LOGOR = 25;
+i32 $I_ND_RETURN = 26;
+i32 $I_ND_IF = 27;
+i32 $I_ND_FOR = 28;
+i32 $I_ND_DO = 29;
+i32 $I_ND_SWITCH = 30;
+i32 $I_ND_CASE = 31;
+i32 $I_ND_BLOCK = 32;
+i32 $I_ND_GOTO = 33;
+i32 $I_ND_GOTO_EXPR = 34;
+i32 $I_ND_LABEL = 35;
+i32 $I_ND_LABEL_VAL = 36;
+i32 $I_ND_FUNCALL = 37;
+i32 $I_ND_EXPR_STMT = 38;
+i32 $I_ND_STMT_EXPR = 39;
+i32 $I_ND_VAR = 40;
+i32 $I_ND_VLA_PTR = 41;
+i32 $I_ND_NUM = 42;
+i32 $I_ND_CAST = 43;
+i32 $I_ND_MEMZERO = 44;
+i32 $I_ND_ASM = 45;
+i32 $I_ND_CAS = 46;
+i32 $I_ND_EXCH = 47;
+i32 $I_TY_VOID = 0;
+i32 $I_TY_BOOL = 1;
+i32 $I_TY_CHAR = 2;
+i32 $I_TY_SHORT = 3;
+i32 $I_TY_INT = 4;
+i32 $I_TY_LONG = 5;
+i32 $I_TY_FLOAT = 6;
+i32 $I_TY_DOUBLE = 7;
+i32 $I_TY_LDOUBLE = 8;
+i32 $I_TY_ENUM = 9;
+i32 $I_TY_PTR = 10;
+i32 $I_TY_FUNC = 11;
+i32 $I_TY_ARRAY = 12;
+i32 $I_TY_VLA = 13;
+i32 $I_TY_STRUCT = 14;
+i32 $I_TY_UNION = 15;
+i32 $I_VOID = 0;
+i32 $I_BOOL = 1;
+i32 $I_CHAR = 2;
+i32 $I_SHORT = 3;
+i32 $I_INT = 4;
+i32 $I_LONG = 5;
+i32 $I_FLOAT = 6;
+i32 $I_DOUBLE = 7;
+i32 $I_OTHER = 8;
+i32 $I_SIGNED = 9;
+i32 $I_UNSIGNED = 10;
+// hoisted nested struct decls:
+class $T_anon_Lqne5c {
+};
+
+// hoisted empty struct decls:
+class $T___sFILEX {};
+
+// non-empty struct decls:
+class $T_anon_YwHSZM {
+} ;
+class $T_anon_npRFIr {
+i8 [128]$I___mbstate8;
+i64 $I__mbstateL;
+} ;
+class $T___darwin_pthread_handler_rec {
+v0 *$I___arg;
+$T___darwin_pthread_handler_rec *$I___next;
+} ;
+class $T__opaque_pthread_attr_t {
+i32 $I___sig;
+i8 [56]$I___opaque;
+} ;
+class $T__opaque_pthread_cond_t {
+i32 $I___sig;
+i8 [40]$I___opaque;
+} ;
+class $T__opaque_pthread_condattr_t {
+i32 $I___sig;
+i8 [8]$I___opaque;
+} ;
+class $T__opaque_pthread_mutex_t {
+i32 $I___sig;
+i8 [56]$I___opaque;
+} ;
+class $T__opaque_pthread_mutexattr_t {
+i32 $I___sig;
+i8 [8]$I___opaque;
+} ;
+class $T__opaque_pthread_once_t {
+i32 $I___sig;
+i8 [8]$I___opaque;
+} ;
+class $T__opaque_pthread_rwlock_t {
+i32 $I___sig;
+i8 [192]$I___opaque;
+} ;
+class $T__opaque_pthread_rwlockattr_t {
+i32 $I___sig;
+i8 [16]$I___opaque;
+} ;
+class $T__opaque_pthread_t {
+i32 $I___sig;
+$T___darwin_pthread_handler_rec *$I___cleanup_stack;
+i8 [8176]$I___opaque;
+} ;
+class $T_anon_JwLyQZ {
+i32   $I___min;
+i32   $I___max;
+i32   $I___map;
+u32  *$I___types;
+} ;
+class $T_anon_jWXFr5 {
+i32 $I___nranges;
+$T_anon_JwLyQZ *$I___ranges;
+} ;
+class $T_anon_1cATxe {
+i8 [14]$I___name;
+u32  $I___mask;
+} ;
+class $T_anon_i5e1WI {
+i8 [8]$I___magic;
+i8 [32]$I___encoding;
+i32   $I___invalid_rune;
+u32  [256]$I___runetype;
+i32   [256]$I___maplower;
+i32   [256]$I___mapupper;
+$T_anon_jWXFr5 $I___runetype_ext;
+$T_anon_jWXFr5 $I___maplower_ext;
+$T_anon_jWXFr5 $I___mapupper_ext;
+v0 *$I___variable;
+i32 $I___variable_len;
+i32 $I___ncharclasses;
+$T_anon_1cATxe *$I___charclasses;
+} ;
+class $T_anon_KAyajZ {
+u32   $I_gl_pathc;
+i32 $I_gl_matchc;
+u32   $I_gl_offs;
+i32 $I_gl_flags;
+i8 **$I_gl_pathv;
+} ;
+class $T___sbuf {
+u8 *$I__base;
+i32 $I__size;
+} ;
+class $T___sFILE {
+u8 *$I__p;
+i32 $I__r;
+i32 $I__w;
+i16 $I__flags;
+i16 $I__file;
+$T___sbuf $I__bf;
+i32 $I__lbfsize;
+v0 *$I__cookie;
+$T___sbuf $I__ub;
+$T___sFILEX *$I__extra;
+i32 $I__ur;
+u8 [3]$I__ubuf;
+u8 [1]$I__nbuf;
+$T___sbuf $I__lb;
+i32 $I__blksize;
+i64    $I__offset;
+} ;
+class $T___darwin_arm_exception_state {
+u32  $I___exception;
+u32  $I___fsr;
+u32  $I___far;
+} ;
+class $T___darwin_arm_exception_state64 {
+u64  $I___far;
+u32  $I___esr;
+u32  $I___exception;
+} ;
+class $T___darwin_arm_thread_state {
+u32  [13]$I___r;
+u32  $I___sp;
+u32  $I___lr;
+u32  $I___pc;
+u32  $I___cpsr;
+} ;
+class $T___darwin_arm_thread_state64 {
+u64  [29]$I___x;
+u64  $I___fp;
+u64  $I___lr;
+u64  $I___sp;
+u64  $I___pc;
+u32  $I___cpsr;
+u32  $I___pad;
+} ;
+class $T___darwin_arm_vfp_state {
+u32  [64]$I___r;
+u32  $I___fpscr;
+} ;
+class $T___darwin_arm_neon_state64 {
+u64  [32]$I___v;
+u32  $I___fpsr;
+u32  $I___fpcr;
+} ;
+class $T___darwin_arm_neon_state {
+u64  [16]$I___v;
+u32  $I___fpsr;
+u32  $I___fpcr;
+} ;
+class $T___arm_pagein_state {
+i32 $I___pagein_error;
+} ;
+class $T___arm_legacy_debug_state {
+u32  [16]$I___bvr;
+u32  [16]$I___bcr;
+u32  [16]$I___wvr;
+u32  [16]$I___wcr;
+} ;
+class $T___darwin_arm_debug_state32 {
+u32  [16]$I___bvr;
+u32  [16]$I___bcr;
+u32  [16]$I___wvr;
+u32  [16]$I___wcr;
+u64  $I___mdscr_el1;
+} ;
+class $T___darwin_arm_debug_state64 {
+u64  [16]$I___bvr;
+u64  [16]$I___bcr;
+u64  [16]$I___wvr;
+u64  [16]$I___wcr;
+u64  $I___mdscr_el1;
+} ;
+class $T___darwin_arm_cpmu_state64 {
+u64  [16]$I___ctrs;
+} ;
+class $T___darwin_mcontext32 {
+$T___darwin_arm_exception_state $I___es;
+$T___darwin_arm_thread_state $I___ss;
+$T___darwin_arm_vfp_state $I___fs;
+} ;
+class $T___darwin_mcontext64 {
+$T___darwin_arm_exception_state64 $I___es;
+$T___darwin_arm_thread_state64 $I___ss;
+$T___darwin_arm_neon_state64 $I___ns;
+} ;
+class $T___darwin_sigaltstack {
+v0 *$I_ss_sp;
+u32  $I_ss_size;
+i32 $I_ss_flags;
+} ;
+class $T___darwin_ucontext {
+i32 $I_uc_onstack;
+u32   $I_uc_sigmask;
+$T___darwin_sigaltstack $I_uc_stack;
+$T___darwin_ucontext *$I_uc_link;
+u32  $I_uc_mcsize;
+$T___darwin_mcontext64 *$I_uc_mcontext;
+} ;
+class $T_sigval {
+i32 $I_sival_int;
+v0 *$I_sival_ptr;
+} ;
+class $T_sigevent {
+i32 $I_sigev_notify;
+i32 $I_sigev_signo;
+$T_sigval $I_sigev_value;
+$T__opaque_pthread_attr_t  *$I_sigev_notify_attributes;
+} ;
+class $T___siginfo {
+i32 $I_si_signo;
+i32 $I_si_errno;
+i32 $I_si_code;
+i32    $I_si_pid;
+u32    $I_si_uid;
+i32 $I_si_status;
+v0 *$I_si_addr;
+$T_sigval $I_si_value;
+i32 $I_si_band;
+u32 [7]$I___pad;
+} ;
+class $T___sigaction_u {
+} ;
+class $T___sigaction {
+$T___sigaction_u $I___sigaction_u;
+u32    $I_sa_mask;
+i32 $I_sa_flags;
+} ;
+class $T_sigaction {
+$T___sigaction_u $I___sigaction_u;
+u32    $I_sa_mask;
+i32 $I_sa_flags;
+} ;
+class $T_sigstack {
+i8 *$I_ss_sp;
+i32 $I_ss_onstack;
+} ;
+class $T_timeval {
+i32  $I_tv_sec;
+i32   $I_tv_usec;
+} ;
+class $T_rusage {
+$T_timeval $I_ru_utime;
+$T_timeval $I_ru_stime;
+i32 [14]$I_ru_opaque;
+} ;
+class $T_rlimit {
+u64   $I_rlim_cur;
+u64   $I_rlim_max;
+} ;
+class $T_anon_ek9iKe {
+i32 $I_quot;
+i32 $I_rem;
+} ;
+class $T_anon_XcpZXu {
+i32 $I_quot;
+i32 $I_rem;
+} ;
+class $T_anon_wV1dbA {
+i64 $I_quot;
+i64 $I_rem;
+} ;
+class $T_timespec {
+i32  $I_tv_sec;
+i32 $I_tv_nsec;
+} ;
+class $T_stat {
+i32    $I_st_dev;
+u16    $I_st_mode;
+u16   $I_st_nlink;
+u64   $I_st_ino;
+u32    $I_st_uid;
+u32    $I_st_gid;
+i32    $I_st_rdev;
+i32   $I_st_atime;
+i32 $I_st_atimensec;
+i32   $I_st_mtime;
+i32 $I_st_mtimensec;
+i32   $I_st_ctime;
+i32 $I_st_ctimensec;
+i32   $I_st_birthtime;
+i32 $I_st_birthtimensec;
+i64    $I_st_size;
+i64    $I_st_blocks;
+i32    $I_st_blksize;
+u32  $I_st_flags;
+u32  $I_st_gen;
+i32  $I_st_lspare;
+i64  [2]$I_st_qspare;
+} ;
+class $T_tm {
+i32 $I_tm_sec;
+i32 $I_tm_min;
+i32 $I_tm_hour;
+i32 $I_tm_mday;
+i32 $I_tm_mon;
+i32 $I_tm_year;
+i32 $I_tm_wday;
+i32 $I_tm_yday;
+i32 $I_tm_isdst;
+i32 $I_tm_gmtoff;
+i8 *$I_tm_zone;
+} ;
+class $T_anon_lhBDg6 {
+i8 **$I_data;
+i32 $I_capacity;
+i32 $I_len;
+} ;
+class $T_anon_9fyvgE {
+i8 *$I_name;
+i32 $I_file_no;
+i8 *$I_contents;
+i8 *$I_display_name;
+i32 $I_line_delta;
+} ;
+class $T_Token {
+i32 $I_kind;
+$T_Token *$I_next;
+i64  $I_val;
+f64 $I_fval;
+i8 *$I_loc;
+i32 $I_len;
+$T_Type *$I_ty;
+i8 *$I_str;
+$T_anon_9fyvgE *$I_file;
+i8 *$I_filename;
+i32 $I_line_no;
+i32 $I_line_delta;
+i8 $I_at_bol;
+i8 $I_has_space;
+$T_Token *$I_origin;
+} ;
+class $T_Obj {
+$T_Obj *$I_next;
+i8 *$I_name;
+$T_Type *$I_ty;
+$T_Token *$I_tok;
+i8 $I_is_local;
+i32 $I_align;
+i32 $I_offset;
+i8 $I_is_function;
+i8 $I_is_definition;
+i8 $I_is_static;
+i8 $I_is_tentative;
+i8 $I_is_tls;
+i8 *$I_init_data;
+$T_Relocation *$I_rel;
+i8 $I_is_inline;
+$T_Obj *$I_params;
+$T_Node *$I_body;
+$T_Obj *$I_locals;
+$T_Obj *$I_va_area;
+$T_Obj *$I_alloca_bottom;
+i32 $I_stack_size;
+i8 $I_is_live;
+i8 $I_is_root;
+$T_anon_lhBDg6 $I_refs;
+} ;
+class $T_Relocation {
+$T_Relocation *$I_next;
+i32 $I_offset;
+i8 **$I_label;
+i32 $I_addend;
+} ;
+class $T_Node {
+i32 $I_kind;
+$T_Node *$I_next;
+$T_Type *$I_ty;
+$T_Token *$I_tok;
+$T_Node *$I_lhs;
+$T_Node *$I_rhs;
+$T_Node *$I_cond;
+$T_Node *$I_then;
+$T_Node *$I_els;
+$T_Node *$I_init;
+$T_Node *$I_inc;
+i8 *$I_brk_label;
+i8 *$I_cont_label;
+$T_Node *$I_body;
+$T_Member *$I_member;
+$T_Type *$I_func_ty;
+$T_Node *$I_args;
+i8 $I_pass_by_stack;
+$T_Obj *$I_ret_buffer;
+i8 *$I_label;
+i8 *$I_unique_label;
+$T_Node *$I_goto_next;
+$T_Node *$I_case_next;
+$T_Node *$I_default_case;
+i32 $I_begin;
+i32 $I_end;
+i8 *$I_asm_str;
+$T_Node *$I_cas_addr;
+$T_Node *$I_cas_old;
+$T_Node *$I_cas_new;
+$T_Obj *$I_atomic_addr;
+$T_Node *$I_atomic_expr;
+$T_Obj *$I_var;
+i64  $I_val;
+f64 $I_fval;
+} ;
+class $T_Type {
+i32 $I_kind;
+i32 $I_size;
+i32 $I_align;
+i8 $I_is_unsigned;
+i8 $I_is_atomic;
+$T_Type *$I_origin;
+$T_Type *$I_base;
+$T_Token *$I_name;
+$T_Token *$I_name_pos;
+i32 $I_array_len;
+$T_Node *$I_vla_len;
+$T_Obj *$I_vla_size;
+$T_Member *$I_members;
+i8 $I_is_flexible;
+i8 $I_is_packed;
+$T_Type *$I_return_ty;
+$T_Type *$I_params;
+i8 $I_is_variadic;
+$T_Type *$I_next;
+} ;
+class $T_Member {
+$T_Member *$I_next;
+$T_Type *$I_ty;
+$T_Token *$I_tok;
+$T_Token *$I_name;
+i32 $I_idx;
+i32 $I_align;
+i32 $I_offset;
+i8 $I_is_bitfield;
+i32 $I_bit_offset;
+i32 $I_bit_width;
+} ;
+class $T_anon_hrMWoN {
+i8 *$I_key;
+i32 $I_keylen;
+v0 *$I_val;
+} ;
+class $T_anon_ijePDX {
+$T_anon_hrMWoN *$I_buckets;
+i32 $I_capacity;
+i32 $I_used;
+} ;
+class $T_anon_YcSHOx {
+$T_Obj *$I_var;
+$T_Type *$I_type_def;
+$T_Type *$I_enum_ty;
+i32 $I_enum_val;
+} ;
+class $T_Scope {
+$T_Scope *$I_next;
+$T_anon_ijePDX $I_vars;
+$T_anon_ijePDX $I_tags;
+} ;
+class $T_anon_9Xm4fk {
+i8 $I_is_typedef;
+i8 $I_is_static;
+i8 $I_is_extern;
+i8 $I_is_inline;
+i8 $I_is_tls;
+i32 $I_align;
+} ;
+class $T_Initializer {
+$T_Initializer *$I_next;
+$T_Type *$I_ty;
+$T_Token *$I_tok;
+i8 $I_is_flexible;
+$T_Node *$I_expr;
+$T_Initializer **$I_children;
+$T_Member *$I_mem;
+} ;
+class $T_InitDesg {
+$T_InitDesg *$I_next;
+i32 $I_idx;
+$T_Member *$I_member;
+$T_Obj *$I_var;
+} ;
+
+// top-level fn decls:
+i32  $I_fclose($T___sFILE *$A_0){}
+i8  *$I_ctermid(i8 *$A_0){}
+i32  $I_putc_unlocked(i32 $A_0, $T___sFILE *$A_1){}
+i64  $I_atoll( i8 *$A_0){}
+v0  $I_exit(i32 $A_0){}
+i32  $I_getc($T___sFILE *$A_0){}
+i8  *$I_ctime( i32   *$A_0){}
+u32     $I_geteuid(v0 $A_0){}
+i32  $I_mrand48(v0 $A_0){}
+ v0  $I_error_at(i8 *$I_loc, i8 *$I_fmt){}
+u32  $I_sleep(u32 $A_0){}
+i32  $I_lchown( i8 *$A_0, u32    $A_1, u32    $A_2){}
+i32  $I_putc(i32 $A_0, $T___sFILE *$A_1){}
+i32  $I_getlogin_r(i8 *$A_0, u32   $A_1){}
+u32    $I_fwrite( v0 *$I___ptr, u32   $I___size, u32   $I___nitems, $T___sFILE *$I___stream){}
+v0  $I_undef_macro(i8 *$I_name){}
+i64  $I_strtoll( i8 *$I___str, i8 **$I___endptr, i32 $I___base){}
+i32    $I_time(i32   *$A_0){}
+f64  $I_drand48(v0 $A_0){}
+i32  $I_chdir( i8 *$A_0){}
+i32  $I_setegid(u32    $A_0){}
+i32  $I_align_to(i32 $I_n, i32 $I_align){}
+i32     $I_getpgrp(v0 $A_0){}
+i32  $I_fprintf($T___sFILE *$A_0,  i8 *$A_1){}
+v0  $I_funlockfile($T___sFILE *$A_0){}
+i32  $I_chown( i8 *$A_0, u32    $A_1, u32    $A_2){}
+i32  $I_unsetenv( i8 *$A_0){}
+i32  $I_setpgid(i32    $A_0, i32    $A_1){}
+i32     $I_vfork(v0 $A_0){}
+i32  $I_faccessat(i32 $A_0,  i8 *$A_1, i32 $A_2, i32 $A_3){}
+ i32  $I_vsprintf(i8 *$A_0,  i8 *$A_1, $T_anon_YwHSZM   $A_2){}
+u32    $I_confstr(i32 $A_0, i8 *$A_1, u32   $A_2){}
+f64  $I_strtod( i8 *$A_0, i8 **$A_1){}
+$T_Token  *$I_preprocess($T_Token *$I_tok){}
+i32  $I_fileno($T___sFILE *$A_0){}
+i8  *$I_strpbrk( i8 *$I___s,  i8 *$I___charset){}
+i32  $I_mkfifoat(i32 $A_0,  i8 *$A_1, u16    $A_2){}
+i32  $I_access( i8 *$A_0, i32 $A_1){}
+i64  $I_llabs(i64 $A_0){}
+i32  $I_pathconf( i8 *$A_0, i32 $A_1){}
+i32  $I_rand(v0 $A_0){}
+i32  $I_getchar_unlocked(v0 $A_0){}
+i8  *$I_strsignal(i32 $I___sig){}
+v0  $I_setbuf($T___sFILE *$A_0, i8 *$A_1){}
+i32  $I_renameat(i32 $A_0,  i8 *$A_1, i32 $A_2,  i8 *$A_3){}
+i32  $I_vsnprintf(i8 *$I___str, u32   $I___size,  i8 *$I___format, $T_anon_YwHSZM   $A_3){}
+u32    $I_wcstombs(i8 *$A_0,  i32   *$A_1, u32   $A_2){}
+v0  *$I_malloc(u32   $I___size){}
+i8  *$I_ptsname(i32 $A_0){}
+u32     $I_getegid(v0 $A_0){}
+i8  *$I_strtok_r(i8 *$I___str,  i8 *$I___sep, i8 **$I___lasts){}
+i32  $I_remove( i8 *$A_0){}
+$T_anon_XcpZXu  $I_ldiv(i32 $A_0, i32 $A_1){}
+i8  *$I_asctime( $T_tm *$A_0){}
+i32  $I_random(v0 $A_0){}
+i32  $I_mknodat(i32 $A_0,  i8 *$A_1, u16    $A_2, i32    $A_3){}
+u32     $I_getgid(v0 $A_0){}
+i8  $I_equal($T_Token *$I_tok, i8 *$I_op){}
+i32  $I_link( i8 *$A_0,  i8 *$A_1){}
+i8  $I_is_numeric($T_Type *$I_ty){}
+i32  $I_sscanf( i8 *$A_0,  i8 *$A_1){}
+$T_tm  *$I_getdate( i8 *$A_0){}
+u32     $I_ualarm(u32    $A_0, u32    $A_1){}
+i32  $I_getchar(v0 $A_0){}
+i8  *$I_strtok(i8 *$I___str,  i8 *$I___sep){}
+v0  $I_init_macros(v0 $A_0){}
+v0  $I_hashmap_test(v0 $A_0){}
+i64     $I_ftello($T___sFILE *$I___stream){}
+u32  $I_strtoul( i8 *$I___str, i8 **$I___endptr, i32 $I___base){}
+u32    $I_clock(v0 $A_0){}
+i8  $I_is_ident1(u32  $I_c){}
+v0  $I_srand(u32 $A_0){}
+i32  $I_wctomb(i8 *$A_0, i32   $A_1){}
+$T_Type  *$I_struct_type(v0 $A_0){}
+u32    $I_strlen( i8 *$I___s){}
+i8  *$I_initstate(u32 $A_0, i8 *$A_1, u32   $A_2){}
+i32  $I_fputs( i8 *$A_0, $T___sFILE *$A_1){}
+i32  $I_puts( i8 *$A_0){}
+i8  *$I_strncpy(i8 *$I___dst,  i8 *$I___src, u32   $I___n){}
+i8  *$I_asctime_r( $T_tm *$A_0, i8 *$A_1){}
+$T_Token  *$I_skip($T_Token *$I_tok, i8 *$I_op){}
+v0  $I_codegen($T_Obj *$I_prog, $T___sFILE *$I_out){}
+u32    $I_strspn( i8 *$I___s,  i8 *$I___charset){}
+i32  $I_setuid(u32    $A_0){}
+i32  $I_feof($T___sFILE *$A_0){}
+i64     $I_lseek(i32 $A_0, i64    $A_1, i32 $A_2){}
+i32    $I_readlink( i8 *$A_0, i8 *$A_1, u32   $A_2){}
+u32   $I_decode_utf8(i8 **$I_new_pos, i8 *$I_p){}
+i32  $I_setvbuf($T___sFILE *$A_0, i8 *$A_1, i32 $A_2, u32   $A_3){}
+i8  *$I_strptime( i8 *$A_0,  i8 *$A_1, $T_tm *$A_2){}
+$T_Type  *$I_pointer_to($T_Type *$I_base){}
+i32  $I_usleep(u32    $A_0){}
+i8  *$I_stpncpy(i8 *$I___dst,  i8 *$I___src, u32   $I___n){}
+i32  $I_lrand48(v0 $A_0){}
+i32  $I_execl( i8 *$I___path,  i8 *$I___arg0){}
+i32  $I_pipe(i32 [2]$A_0){}
+i32  $I_scanf( i8 *$A_0){}
+    i32  $I_clock_getres(i32 $I___clock_id, $T_timespec *$I___res){}
+i32  $I_gethostname(i8 *$A_0, u32   $A_1){}
+$T_Token  *$I_tokenize_string_literal($T_Token *$I_tok, $T_Type *$I_basety){}
+v0  *$I_calloc(u32   $I___count, u32   $I___size){}
+i8  *$I_fcvt(f64 $A_0, i32 $A_1, i32 *$A_2, i32 *$A_3){}
+i32  $I_mbtowc(i32   *$A_0,  i8 *$A_1, u32   $A_2){}
+v0  *$I_memset(v0 *$I___b, i32 $I___c, u32   $I___len){}
+i32  $I_setreuid(u32    $A_0, u32    $A_1){}
+i32  $I_putchar(i32 $A_0){}
+i32  $I_stat( i8 *$A_0, $T_stat *$A_1){}
+i32   $I____tolower(i32  $A_0){}
+ i32  $I_sprintf(i8 *$A_0,  i8 *$A_1){}
+v0  *$I_memccpy(v0 *$I___dst,  v0 *$I___src, i32 $I___c, u32   $I___n){}
+i32  $I_setgid(u32    $A_0){}
+$T_anon_wV1dbA  $I_lldiv(i64 $A_0, i64 $A_1){}
+i32  $I___maskrune(i32  $A_0, u32 $A_1){}
+i32  $I_fchown(i32 $A_0, u32    $A_1, u32    $A_2){}
+i8  *$I_ttyname(i32 $A_0){}
+i32  $I_fputc(i32 $A_0, $T___sFILE *$A_1){}
+i32  $I___swbuf(i32 $A_0, $T___sFILE *$A_1){}
+i8  *$I_strrchr( i8 *$I___s, i32 $I___c){}
+i8  *$I_realpath( i8 *$A_0, i8 *$A_1){}
+v0  $I__Exit(i32 $A_0){}
+i32  $I_mknod( i8 *$A_0, u16    $A_1, i32    $A_2){}
+$T_Token  *$I_tokenize($T_anon_9fyvgE *$I_file){}
+i32  $I_setrlimit(i32 $A_0,  $T_rlimit *$A_1){}
+ i8  *$I_tmpnam(i8 *$A_0){}
+i32  $I_ungetc(i32 $A_0, $T___sFILE *$A_1){}
+i32  $I_vscanf( i8 *$I___format, $T_anon_YwHSZM   $A_1){}
+v0  $I_lcong48(u16 [7]$A_0){}
+u16  *$I_seed48(u16 [3]$A_0){}
+ v0  $I_error_tok($T_Token *$I_tok, i8 *$I_fmt){}
+i32  $I_dprintf(i32 $A_0,  i8 *$A_1){}
+i8  *$I_basename(i8 *$A_0){}
+i32  $I_posix_memalign(v0 **$I___memptr, u32   $I___alignment, u32   $I___size){}
+i32  $I_labs(i32 $A_0){}
+i8  $I_is_integer($T_Type *$I_ty){}
+i32   $I____toupper(i32  $A_0){}
+i8  *$I_strcat(i8 *$I___s1,  i8 *$I___s2){}
+i32  $I_display_width(i8 *$I_p, i32 $I_len){}
+i32    $I_mktime($T_tm *$A_0){}
+i8  *$I_ecvt(f64 $A_0, i32 $A_1, i32 *$A_2, i32 *$A_3){}
+i32  $I_dup2(i32 $A_0, i32 $A_1){}
+v0  $I_swab( v0 *$A_0, v0 *$A_1, i32   $A_2){}
+v0  $I_globfree($T_anon_KAyajZ *$A_0){}
+i32  $I_lstat( i8 *$A_0, $T_stat *$A_1){}
+i32    $I_getline(i8 **$I___linep, u32   *$I___linecapp, $T___sFILE *$I___stream){}
+i8  *$I_gets(i8 *$A_0){}
+i32   $I___tolower(i32  $A_0){}
+i8  *$I_getlogin(v0 $A_0){}
+i8  *$I_strndup( i8 *$I___s1, u32   $I___n){}
+i32  $I_unlinkat(i32 $A_0,  i8 *$A_1, i32 $A_2){}
+i32  $I_sysconf(i32 $A_0){}
+u16     $I_umask(u16    $A_0){}
+i32  $I___snprintf_chk(i8 *$A_0, u32   $A_1, i32 $A_2, u32   $A_3,  i8 *$A_4){}
+v0  $I_clearerr($T___sFILE *$A_0){}
+i32  $I_fseeko($T___sFILE *$I___stream, i64    $I___offset, i32 $I___whence){}
+$T___sFILE  *$I_fmemopen(v0 *$I___buf, u32   $I___size,  i8 *$I___mode){}
+i32  $I_vfprintf($T___sFILE *$A_0,  i8 *$A_1, $T_anon_YwHSZM   $A_2){}
+$T___sFILE  *$I_popen( i8 *$A_0,  i8 *$A_1){}
+i32  $I_putchar_unlocked(i32 $A_0){}
+i32  $I_getgroups(i32 $A_0, u32    *$A_1){}
+i32  $I_vdprintf(i32 $A_0,  i8 *$A_1, $T_anon_YwHSZM   $A_2){}
+i32  $I_vsscanf( i8 *$I___str,  i8 *$I___format, $T_anon_YwHSZM   $A_2){}
+i32  $I_symlinkat( i8 *$A_0, i32 $A_1,  i8 *$A_2){}
+v0  $I_srand48(i32 $A_0){}
+i32  $I_setenv( i8 *$I___name,  i8 *$I___value, i32 $I___overwrite){}
+i32  $I_vfscanf($T___sFILE *$I___stream,  i8 *$I___format, $T_anon_YwHSZM   $A_2){}
+i32  $I_memcmp( v0 *$I___s1,  v0 *$I___s2, u32   $I___n){}
+f32  $I_strtof( i8 *$A_0, i8 **$A_1){}
+i8  *$I_getcwd(i8 *$A_0, u32   $A_1){}
+i8  *$I_search_include_paths(i8 *$I_filename){}
+i32  $I_a64l( i8 *$A_0){}
+i32  $I_vprintf( i8 *$A_0, $T_anon_YwHSZM   $A_1){}
+i32     $I_setpgrp(v0 $A_0){}
+i32  $I_linkat(i32 $A_0,  i8 *$A_1, i32 $A_2,  i8 *$A_3, i32 $A_4){}
+i32  $I_unlink( i8 *$A_0){}
+v0  $I_sync(v0 $A_0){}
+i32  $I_encode_utf8(i8 *$I_buf, u32  $I_c){}
+i32  $I_waitid(i32 $A_0, u32    $A_1, $T___siginfo *$A_2, i32 $A_3){}
+i8  *$I_strncat(i8 *$I___s1,  i8 *$I___s2, u32   $I___n){}
+i8  *$I_stpcpy(i8 *$I___dst,  i8 *$I___src){}
+i32    $I_write(i32 $I___fd,  v0 *$I___buf, u32   $I___nbyte){}
+i32    $I_pread(i32 $I___fd, v0 *$I___buf, u32   $I___nbyte, i64    $I___offset){}
+i32  $I_close(i32 $A_0){}
+i32  $I_fchdir(i32 $A_0){}
+$T_Type  *$I_array_of($T_Type *$I_base, i32 $I_size){}
+$T_tm  *$I_localtime_r( i32   *$A_0, $T_tm *$A_1){}
+i32  $I___vsnprintf_chk(i8 *$A_0, u32   $A_1, i32 $A_2, u32   $A_3,  i8 *$A_4, $T_anon_YwHSZM   $A_5){}
+i32  $I_ftrylockfile($T___sFILE *$A_0){}
+v0  $I_hashmap_put2($T_anon_ijePDX *$I_map, i8 *$I_key, i32 $I_keylen, v0 *$I_val){}
+i32  $I_snprintf(i8 *$I___str, u32   $I___size,  i8 *$I___format){}
+i32  $I_mblen( i8 *$I___s, u32   $I___n){}
+u32    $I_mbstowcs(i32   *$A_0,  i8 *$A_1, u32   $A_2){}
+i32  $I_strtol( i8 *$I___str, i8 **$I___endptr, i32 $I___base){}
+v0  $I_hashmap_put($T_anon_ijePDX *$I_map, i8 *$I_key, v0 *$I_val){}
+i32  $I_truncate( i8 *$A_0, i64    $A_1){}
+i8  $I_is_ident2(u32  $I_c){}
+i32     $I_fork(v0 $A_0){}
+i32  *$I___error(v0 $A_0){}
+i32  $I_utimensat(i32 $I___fd,  i8 *$I___path,  $T_timespec [2]$I___times, i32 $I___flag){}
+$T_Type  *$I_copy_type($T_Type *$I_ty){}
+i8  *$I_strstr( i8 *$I___big,  i8 *$I___little){}
+i32     $I_getppid(v0 $A_0){}
+i32  $I_setregid(u32    $A_0, u32    $A_1){}
+i32  $I_fsetpos($T___sFILE *$A_0,  i64    *$A_1){}
+i32  $I_strcasecmp( i8 *$A_0,  i8 *$A_1){}
+i32  $I_lockf(i32 $A_0, i32 $A_1, i64    $A_2){}
+u32     $I_getuid(v0 $A_0){}
+v0  $I_convert_pp_tokens($T_Token *$I_tok){}
+i8  $I_file_exists(i8 *$I_path){}
+v0  $I_abort(v0 $A_0){}
+i32  $I_strncmp( i8 *$I___s1,  i8 *$I___s2, u32   $I___n){}
+i32  $I_fstat(i32 $A_0, $T_stat *$A_1){}
+i8  $I_is_compatible($T_Type *$I_t1, $T_Type *$I_t2){}
+v0  *$I_memcpy(v0 *$I___dst,  v0 *$I___src, u32   $I___n){}
+i32  $I___vsprintf_chk(i8 *$A_0, i32 $A_1, u32   $A_2,  i8 *$A_3, $T_anon_YwHSZM   $A_4){}
+i8  *$I_mktemp(i8 *$A_0){}
+i32  $I_strerror_r(i32 $I___errnum, i8 *$I___strerrbuf, u32   $I___buflen){}
+v0  *$I_aligned_alloc(u32   $I___alignment, u32   $I___size){}
+i32  $I_mkdirat(i32 $A_0,  i8 *$A_1, u16    $A_2){}
+i8  *$I_dirname(i8 *$A_0){}
+i32  $I_getrlimit(i32 $A_0, $T_rlimit *$A_1){}
+i32  $I_grantpt(i32 $A_0){}
+i32  $I_gethostid(v0 $A_0){}
+i32  $I_seteuid(u32    $A_0){}
+i8  $I_is_flonum($T_Type *$I_ty){}
+i8  *$I_gcvt(f64 $A_0, i32 $A_1, i8 *$A_2){}
+i32     $I_getpgid(i32    $A_0){}
+i32  $I_abs(i32 $A_0){}
+$T_tm  *$I_gmtime( i32   *$A_0){}
+i32     $I_waitpid(i32    $A_0, i32 *$A_1, i32 $A_2){}
+i32  $I_mkstemp(i8 *$A_0){}
+$T_anon_9fyvgE  *$I_new_file(i8 *$I_name, i32 $I_file_no, i8 *$I_contents){}
+v0  *$I_realloc(v0 *$I___ptr, u32   $I___size){}
+i8  *$I_ctime_r( i32   *$A_0, i8 *$A_1){}
+i32  $I_atoi( i8 *$A_0){}
+u32    $I_strcspn( i8 *$I___s,  i8 *$I___charset){}
+i32    $I_read(i32 $A_0, v0 *$A_1, u32   $A_2){}
+v0  $I_strarray_push($T_anon_lhBDg6 *$I_arr, i8 *$I_s){}
+ i8  *$I_tempnam( i8 *$I___dir,  i8 *$I___prefix){}
+$T_anon_ek9iKe  $I_div(i32 $A_0, i32 $A_1){}
+i32  $I_fgetpos($T___sFILE *$A_0, i64    *$A_1){}
+i32  $I_putenv(i8 *$A_0){}
+i32  $I_strcmp( i8 *$I___s1,  i8 *$I___s2){}
+i32  $I_pclose($T___sFILE *$A_0){}
+i32  $I___srget($T___sFILE *$A_0){}
+i8  *$I_strchr( i8 *$I___s, i32 $I___c){}
+i32  $I___sprintf_chk(i8 *$A_0, i32 $A_1, u32   $A_2,  i8 *$A_3){}
+u32    $I_strxfrm(i8 *$I___s1,  i8 *$I___s2, u32   $I___n){}
+i32  $I_chmod( i8 *$A_0, u16    $A_1){}
+i32   $I___toupper(i32  $A_0){}
+i32     $I_tcgetpgrp(i32 $A_0){}
+i8  *$I_crypt( i8 *$A_0,  i8 *$A_1){}
+v0  *$I_hashmap_get($T_anon_ijePDX *$I_map, i8 *$I_key){}
+i32  $I___svfscanf($T___sFILE *$A_0,  i8 *$A_1, $T_anon_YwHSZM   $A_2){}
+i32  $I_futimens(i32 $I___fd,  $T_timespec [2]$I___times){}
+i32     $I_getpid(v0 $A_0){}
+i8  *$I_strdup( i8 *$I___s1){}
+i32  $I_execlp( i8 *$I___file,  i8 *$I___arg0){}
+v0  $I_hashmap_delete($T_anon_ijePDX *$I_map, i8 *$I_key){}
+i32  $I_ftell($T___sFILE *$A_0){}
+i32  $I_jrand48(u16 [3]$A_0){}
+i32  $I_atol( i8 *$A_0){}
+i32  $I_execv( i8 *$I___path, i8 **$I___argv){}
+i32  $I_pause(v0 $A_0){}
+i32  $I_strncasecmp( i8 *$A_0,  i8 *$A_1, u32   $A_2){}
+i32    $I_readlinkat(i32 $A_0,  i8 *$A_1, i8 *$A_2, u32   $A_3){}
+$T_tm  *$I_localtime( i32   *$A_0){}
+f64  $I_difftime(i32   $A_0, i32   $A_1){}
+v0  $I_free(v0 *$A_0){}
+v0  $I_flockfile($T___sFILE *$A_0){}
+f64  $I_atof( i8 *$A_0){}
+i32  $I_mkdir( i8 *$A_0, u16    $A_1){}
+v0  *$I_hashmap_get2($T_anon_ijePDX *$I_map, i8 *$I_key, i32 $I_keylen){}
+v0  $I_define_macro(i8 *$I_name, i8 *$I_buf){}
+i32  $I_setpriority(i32 $A_0, u32    $A_1, i32 $A_2){}
+v0  $I___assert_rtn( i8 *$A_0,  i8 *$A_1, i32 $A_2,  i8 *$A_3){}
+i32  $I_posix_openpt(i32 $A_0){}
+i32  $I_fstatat(i32 $A_0,  i8 *$A_1, $T_stat *$A_2, i32 $A_3){}
+i32  $I_nice(i32 $A_0){}
+i32  $I_fchownat(i32 $A_0,  i8 *$A_1, u32    $A_2, u32    $A_3, i32 $A_4){}
+v0  $I_tzset(v0 $A_0){}
+i32  $I_tcsetpgrp(i32 $A_0, i32    $A_1){}
+i32  $I_rmdir( i8 *$A_0){}
+i32  $I_getsubopt(i8 **$A_0, i8 **$A_1, i8 **$A_2){}
+i32  $I_symlink( i8 *$A_0,  i8 *$A_1){}
+i8  *$I_setstate( i8 *$A_0){}
+$T_Type  *$I_enum_type(v0 $A_0){}
+i32  $I_dup(i32 $A_0){}
+$T_Type  *$I_func_type($T_Type *$I_return_ty){}
+i32  $I_fpathconf(i32 $A_0, i32 $A_1){}
+v0  $I_perror( i8 *$A_0){}
+i32     $I_wait(i32 *$A_0){}
+i8  *$I_getenv( i8 *$A_0){}
+i8  *$I_strerror(i32 $I___errnum){}
+i32  $I_ffs(i32 $A_0){}
+v0  $I_setkey( i8 *$A_0){}
+i32  $I_fflush($T___sFILE *$A_0){}
+v0  $I_rewind($T___sFILE *$A_0){}
+i32  $I_unlockpt(i32 $A_0){}
+i32  $I_execle( i8 *$I___path,  i8 *$I___arg0){}
+i32  $I_execvp( i8 *$I___file, i8 **$I___argv){}
+i32  $I_ttyname_r(i32 $A_0, i8 *$A_1, u32   $A_2){}
+i32     $I_setsid(v0 $A_0){}
+u32  $I_alarm(u32 $A_0){}
+v0  $I_encrypt(i8 *$A_0, i32 $A_1){}
+i8  *$I_format(i8 *$I_fmt){}
+$T_Token  *$I_tokenize_file(i8 *$I_filename){}
+i32  $I_mkfifo( i8 *$A_0, u16    $A_1){}
+v0  $I_add_type($T_Node *$I_node){}
+i8  *$I_strcpy(i8 *$I___dst,  i8 *$I___src){}
+i32  $I_ftruncate(i32 $A_0, i64    $A_1){}
+u32    $I_strnlen( i8 *$I___s1, u32   $I___n){}
+i8  *$I_fgets(i8 *$A_0, i32 $A_1, $T___sFILE *$A_2){}
+i32  $I_ferror($T___sFILE *$A_0){}
+v0  *$I_memchr( v0 *$I___s, i32 $I___c, u32   $I___n){}
+i32  $I_strcoll( i8 *$I___s1,  i8 *$I___s2){}
+$T_tm  *$I_gmtime_r( i32   *$A_0, $T_tm *$A_1){}
+     i32  $I_system( i8 *$A_0){}
+i32  $I_rename( i8 *$I___old,  i8 *$I___new){}
+i32  $I_fchmod(i32 $A_0, u16    $A_1){}
+$T___sFILE  *$I_fopen( i8 *$I___filename,  i8 *$I___mode){}
+i32  $I_printf( i8 *$A_0){}
+i32  $I_getc_unlocked($T___sFILE *$A_0){}
+i32  $I_getpriority(i32 $A_0, u32    $A_1){}
+i8  *$I_l64a(i32 $A_0){}
+    i32  $I_timespec_get($T_timespec *$I_ts, i32 $I_base){}
+u32  $I____runetype(i32  $A_0){}
+i32  $I_getrusage(i32 $A_0, $T_rusage *$A_1){}
+i32  $I_execve( i8 *$I___file, i8 **$I___argv, i8 **$I___envp){}
+i32    $I_pwrite(i32 $I___fd,  v0 *$I___buf, u32   $I___nbyte, i64    $I___offset){}
+$T_anon_9fyvgE  **$I_get_input_files(v0 $A_0){}
+i32  $I_fgetc($T___sFILE *$A_0){}
+i32  $I_rand_r(u32 *$A_0){}
+v0  $I_warn_tok($T_Token *$I_tok, i8 *$I_fmt){}
+$T_Type  *$I_vla_of($T_Type *$I_base, $T_Node *$I_expr){}
+v0  $I_hashmap_delete2($T_anon_ijePDX *$I_map, i8 *$I_key, i32 $I_keylen){}
+ v0  $I_error(i8 *$I_fmt){}
+i32  $I_isatty(i32 $A_0){}
+i32  $I_fchmodat(i32 $A_0,  i8 *$A_1, u16    $A_2, i32 $A_3){}
+i32  $I_fseek($T___sFILE *$A_0, i32 $A_1, i32 $A_2){}
+$T___sFILE  *$I_freopen( i8 *$A_0,  i8 *$A_1, $T___sFILE *$A_2){}
+$T___sFILE  *$I_tmpfile(v0 $A_0){}
+u32    $I_strftime(i8 *$A_0, u32   $A_1,  i8 *$A_2,  $T_tm *$A_3){}
+$T___sFILE  *$I_fdopen(i32 $A_0,  i8 *$A_1){}
+f64  $I_erand48(u16 [3]$A_0){}
+v0  $I_srandom(u32 $A_0){}
+i32  $I_nanosleep( $T_timespec *$I___rqtp, $T_timespec *$I___rmtp){}
+i32  $I_fscanf($T___sFILE *$A_0,  i8 *$A_1){}
+    i32  $I_clock_gettime(i32 $I___clock_id, $T_timespec *$I___tp){}
+v0  $I__exit(i32 $A_0){}
+i32  $I_getopt(i32 $A_0, i8 **$A_1,  i8 *$A_2){}
+f64  $I_strtold( i8 *$A_0, i8 **$A_1){}
+i32  $I_nrand48(u16 [3]$A_0){}
+u64  $I_strtoull( i8 *$I___str, i8 **$I___endptr, i32 $I___base){}
+i32     $I_getsid(i32    $A_0){}
+i32  $I_fsync(i32 $A_0){}
+    i32  $I_clock_settime(i32 $I___clock_id,  $T_timespec *$I___tp){}
+$T___sFILE  *$I_open_memstream(i8 **$I___bufp, u32   *$I___sizep){}
+u32    $I_fread(v0 *$I___ptr, u32   $I___size, u32   $I___nitems, $T___sFILE *$I___stream){}
+i32    $I_getdelim(i8 **$I___linep, u32   *$I___linecapp, i32 $I___delimiter, $T___sFILE *$I___stream){}
+i8  $I_consume($T_Token **$I_rest, $T_Token *$I_tok, i8 *$I_str){}
+v0  *$I_memmove(v0 *$I___dst,  v0 *$I___src, u32   $I___len){}
+
+// top-level var decls:
+ $T_Node  *$I_current_switch;
+ $T_Node  *$I_gotos;
+ $T_Node  *$I_labels;
+ $T_Obj  *$I_builtin_alloca;
+ $T_Obj  *$I_current_fn;
+ $T_Obj  *$I_globals;
+ $T_Obj  *$I_locals;
+ $T_Scope  $I_scope_;
+ $T_Scope  *$I_scope = (&($I_scope_));
+ i8  *$I_brk_label;
+ i8  *$I_cont_label;
+$T_Type  *$I_ty_bool;
+$T_Type  *$I_ty_char;
+$T_Type  *$I_ty_double;
+$T_Type  *$I_ty_float;
+$T_Type  *$I_ty_int;
+$T_Type  *$I_ty_ldouble;
+$T_Type  *$I_ty_long;
+$T_Type  *$I_ty_short;
+$T_Type  *$I_ty_uchar;
+$T_Type  *$I_ty_uint;
+$T_Type  *$I_ty_ulong;
+$T_Type  *$I_ty_ushort;
+$T_Type  *$I_ty_void;
+$T___sFILE  *$I___stderrp;
+$T___sFILE  *$I___stdinp;
+$T___sFILE  *$I___stdoutp;
+$T_anon_i5e1WI  $I__DefaultRuneLocale;
+$T_anon_i5e1WI  *$I__CurrentRuneLocale;
+$T_anon_lhBDg6  $I_include_paths;
+i32  $I___mb_cur_max;
+i32  $I_daylight;
+i32  $I_getdate_err;
+i32  $I_opterr;
+i32  $I_optind;
+i32  $I_optopt;
+i32  $I_timezone;
+i8  $I_opt_fcommon;
+i8  $I_opt_fpic;
+i8  *$I_base_file;
+i8  *$I_optarg;
+i8  **$I_tzname;
+
+// other code:
+ i32 $I_isascii(i32 $I__c)
+{
+return ((($I__c)&(~(127)))==(0));
+}
+
+ i32 $I___istype(i32  $I__c, u32 $I__f)
+{
+}
+
+ i32  $I___isctype(i32  $I__c, u32 $I__f)
+{
+}
+
+ i32 $I___wcwidth(i32  $I__c)
+{
+u32  $I__x;
+if ((($I__c)==(0))) {
+return (0);
+}
+(($I__x)=([u32 ](($I___maskrune(($I__c), ((3758096384)|(262144)))))));
+if (((($I__x)&(3758096384))!=(0))) {
+return ((($I__x)&(3758096384))>>(30));
+}
+}
+
+ i32 $I_isalnum(i32 $I__c)
+{
+return ($I___istype(($I__c), ((256)|(1024))));
+}
+
+ i32 $I_isalpha(i32 $I__c)
+{
+return ($I___istype(($I__c), (256)));
+}
+
+ i32 $I_isblank(i32 $I__c)
+{
+return ($I___istype(($I__c), (131072)));
+}
+
+ i32 $I_iscntrl(i32 $I__c)
+{
+return ($I___istype(($I__c), (512)));
+}
+
+ i32 $I_isdigit(i32 $I__c)
+{
+return ($I___isctype(($I__c), (1024)));
+}
+
+ i32 $I_isgraph(i32 $I__c)
+{
+return ($I___istype(($I__c), (2048)));
+}
+
+ i32 $I_islower(i32 $I__c)
+{
+return ($I___istype(($I__c), (4096)));
+}
+
+ i32 $I_isprint(i32 $I__c)
+{
+return ($I___istype(($I__c), (262144)));
+}
+
+ i32 $I_ispunct(i32 $I__c)
+{
+return ($I___istype(($I__c), (8192)));
+}
+
+ i32 $I_isspace(i32 $I__c)
+{
+return ($I___istype(($I__c), (16384)));
+}
+
+ i32 $I_isupper(i32 $I__c)
+{
+return ($I___istype(($I__c), (32768)));
+}
+
+ i32 $I_isxdigit(i32 $I__c)
+{
+return ($I___isctype(($I__c), (65536)));
+}
+
+ i32 $I_toascii(i32 $I__c)
+{
+return (($I__c)&(127));
+}
+
+ i32 $I_tolower(i32 $I__c)
+{
+return ($I___tolower(($I__c)));
+}
+
+ i32 $I_toupper(i32 $I__c)
+{
+return ($I___toupper(($I__c)));
+}
+
+  i32 $I___sputc(i32 $I__c, $T___sFILE *$I__p)
+{
+if ((((--(($I__p)->$I__w))>=(0))|(((($I__p)->$I__w)>=(($I__p)->$I__lbfsize))&(([i8 ](($I__c)))!=('\n'))))) {
+return ((*((($I__p)->$I__p)++))=($I__c));
+}
+else {
+return ($I___swbuf(($I__c), ($I__p)));
+}
+}
+
+ i32 $I_align_down(i32 $I_n, i32 $I_align)
+{
+return ($I_align_to(((($I_n)-($I_align))+(1)), ($I_align)));
+}
+
+ v0 $I_enter_scope(v0 $A_0)
+{
+$T_Scope  *$I_sc = ($I_calloc((1), (0)));
+((($I_sc)->$I_next)=($I_scope));
+(($I_scope)=($I_sc));
+}
+
+ v0 $I_leave_scope(v0 $A_0)
+{
+(($I_scope)=(($I_scope)->$I_next));
+}
+
+ $T_anon_YcSHOx *$I_find_var($T_Token *$I_tok)
+{
+for ($T_Scope  *$I_sc = ($I_scope);
+($I_sc); (($I_sc)=(($I_sc)->$I_next))) {
+$T_anon_YcSHOx  *$I_sc2 = ($I_hashmap_get2((&(($I_sc)->$I_vars)), (($I_tok)->$I_loc), (($I_tok)->$I_len)));
+if (($I_sc2)) {
+return ($I_sc2);
+}
+}
+return ([v0 *]((0)));
+}
+
+ $T_Type *$I_find_tag($T_Token *$I_tok)
+{
+for ($T_Scope  *$I_sc = ($I_scope);
+($I_sc); (($I_sc)=(($I_sc)->$I_next))) {
+$T_Type  *$I_ty = ($I_hashmap_get2((&(($I_sc)->$I_tags)), (($I_tok)->$I_loc), (($I_tok)->$I_len)));
+if (($I_ty)) {
+return ($I_ty);
+}
+}
+return ([v0 *]((0)));
+}
+
+ $T_Node *$I_new_node(i32 $I_kind, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_calloc((1), (0)));
+((($I_node)->$I_kind)=($I_kind));
+((($I_node)->$I_tok)=($I_tok));
+return ($I_node);
+}
+
+ $T_Node *$I_new_binary(i32 $I_kind, $T_Node *$I_lhs, $T_Node *$I_rhs, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_new_node(($I_kind), ($I_tok)));
+((($I_node)->$I_lhs)=($I_lhs));
+((($I_node)->$I_rhs)=($I_rhs));
+return ($I_node);
+}
+
+ $T_Node *$I_new_unary(i32 $I_kind, $T_Node *$I_expr, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_new_node(($I_kind), ($I_tok)));
+((($I_node)->$I_lhs)=($I_expr));
+return ($I_node);
+}
+
+ $T_Node *$I_new_num(i64  $I_val, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_new_node(($I_ND_NUM), ($I_tok)));
+((($I_node)->$I_val)=($I_val));
+return ($I_node);
+}
+
+ $T_Node *$I_new_long(i64  $I_val, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_new_node(($I_ND_NUM), ($I_tok)));
+((($I_node)->$I_val)=($I_val));
+((($I_node)->$I_ty)=($I_ty_long));
+return ($I_node);
+}
+
+ $T_Node *$I_new_ulong(i32 $I_val, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_new_node(($I_ND_NUM), ($I_tok)));
+((($I_node)->$I_val)=($I_val));
+((($I_node)->$I_ty)=($I_ty_ulong));
+return ($I_node);
+}
+
+ $T_Node *$I_new_var_node($T_Obj *$I_var, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_new_node(($I_ND_VAR), ($I_tok)));
+((($I_node)->$I_var)=($I_var));
+return ($I_node);
+}
+
+ $T_Node *$I_new_vla_ptr($T_Obj *$I_var, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_new_node(($I_ND_VLA_PTR), ($I_tok)));
+((($I_node)->$I_var)=($I_var));
+return ($I_node);
+}
+
+$T_Node *$I_new_cast($T_Node *$I_expr, $T_Type *$I_ty)
+{
+($I_add_type(($I_expr)));
+$T_Node  *$I_node = ($I_calloc((1), (0)));
+((($I_node)->$I_kind)=($I_ND_CAST));
+((($I_node)->$I_tok)=(($I_expr)->$I_tok));
+((($I_node)->$I_lhs)=($I_expr));
+((($I_node)->$I_ty)=($I_copy_type(($I_ty))));
+return ($I_node);
+}
+
+ $T_anon_YcSHOx *$I_push_scope(i8 *$I_name)
+{
+$T_anon_YcSHOx  *$I_sc = ($I_calloc((1), (0)));
+($I_hashmap_put((&(($I_scope)->$I_vars)), ($I_name), ($I_sc)));
+return ($I_sc);
+}
+
+ $T_Initializer *$I_new_initializer($T_Type *$I_ty, i8 $I_is_flexible)
+{
+$T_Initializer  *$I_init = ($I_calloc((1), (0)));
+((($I_init)->$I_ty)=($I_ty));
+if (((($I_ty)->$I_kind)==($I_TY_ARRAY))) {
+if ((($I_is_flexible)&((($I_ty)->$I_size)<(0)))) {
+((($I_init)->$I_is_flexible)=(1));
+return ($I_init);
+}
+((($I_init)->$I_children)=($I_calloc((($I_ty)->$I_array_len), (0))));
+for (i32  $I_i = (0);
+(($I_i)<(($I_ty)->$I_array_len)); (($I_i)++)) {
+(((($I_init)->$I_children)[($I_i)])=($I_new_initializer((($I_ty)->$I_base), (0))));
+}
+return ($I_init);
+}
+if ((((($I_ty)->$I_kind)==($I_TY_STRUCT))|((($I_ty)->$I_kind)==($I_TY_UNION)))) {
+i32  $I_len = (0);
+for ($T_Member  *$I_mem = (($I_ty)->$I_members);
+($I_mem); (($I_mem)=(($I_mem)->$I_next))) {
+(($I_len)++);
+}
+((($I_init)->$I_children)=($I_calloc(($I_len), (0))));
+for ($T_Member  *$I_mem = (($I_ty)->$I_members);
+($I_mem); (($I_mem)=(($I_mem)->$I_next))) {
+if (((($I_is_flexible)&(($I_ty)->$I_is_flexible))&(!(($I_mem)->$I_next)))) {
+$T_Initializer  *$I_child = ($I_calloc((1), (0)));
+((($I_child)->$I_ty)=(($I_mem)->$I_ty));
+((($I_child)->$I_is_flexible)=(1));
+(((($I_init)->$I_children)[(($I_mem)->$I_idx)])=($I_child));
+}
+else {
+(((($I_init)->$I_children)[(($I_mem)->$I_idx)])=($I_new_initializer((($I_mem)->$I_ty), (0))));
+}
+}
+return ($I_init);
+}
+return ($I_init);
+}
+
+ $T_Obj *$I_new_var(i8 *$I_name, $T_Type *$I_ty)
+{
+$T_Obj  *$I_var = ($I_calloc((1), (0)));
+((($I_var)->$I_name)=($I_name));
+((($I_var)->$I_ty)=($I_ty));
+((($I_var)->$I_align)=(($I_ty)->$I_align));
+((($I_push_scope(($I_name)))->$I_var)=($I_var));
+return ($I_var);
+}
+
+ $T_Obj *$I_new_lvar(i8 *$I_name, $T_Type *$I_ty)
+{
+$T_Obj  *$I_var = ($I_new_var(($I_name), ($I_ty)));
+((($I_var)->$I_is_local)=(1));
+((($I_var)->$I_next)=($I_locals));
+(($I_locals)=($I_var));
+return ($I_var);
+}
+
+ $T_Obj *$I_new_gvar(i8 *$I_name, $T_Type *$I_ty)
+{
+$T_Obj  *$I_var = ($I_new_var(($I_name), ($I_ty)));
+((($I_var)->$I_next)=($I_globals));
+((($I_var)->$I_is_static)=(1));
+((($I_var)->$I_is_definition)=(1));
+(($I_globals)=($I_var));
+return ($I_var);
+}
+
+ i8 *$I_new_unique_name(v0 $A_0)
+{
+ i32  $I_id = (0);
+return ($I_format((".L..%d"), (($I_id)++)));
+}
+
+ $T_Obj *$I_new_anon_gvar($T_Type *$I_ty)
+{
+return ($I_new_gvar(($I_new_unique_name()), ($I_ty)));
+}
+
+ $T_Obj *$I_new_string_literal(i8 *$I_p, $T_Type *$I_ty)
+{
+$T_Obj  *$I_var = ($I_new_anon_gvar(($I_ty)));
+((($I_var)->$I_init_data)=($I_p));
+return ($I_var);
+}
+
+ i8 *$I_get_ident($T_Token *$I_tok)
+{
+if (((($I_tok)->$I_kind)!=($I_TK_IDENT))) {
+($I_error_tok(($I_tok), ("expected an identifier")));
+}
+return ($I_strndup((($I_tok)->$I_loc), (($I_tok)->$I_len)));
+}
+
+ $T_Type *$I_find_typedef($T_Token *$I_tok)
+{
+if (((($I_tok)->$I_kind)==($I_TK_IDENT))) {
+$T_anon_YcSHOx  *$I_sc = ($I_find_var(($I_tok)));
+if (($I_sc)) {
+return (($I_sc)->$I_type_def);
+}
+}
+return ([v0 *]((0)));
+}
+
+ v0 $I_push_tag_scope($T_Token *$I_tok, $T_Type *$I_ty)
+{
+($I_hashmap_put2((&(($I_scope)->$I_tags)), (($I_tok)->$I_loc), (($I_tok)->$I_len), ($I_ty)));
+}
+
+ $T_Type *$I_declspec($T_Token **$I_rest, $T_Token *$I_tok, $T_anon_9Xm4fk *$I_attr)
+{
+$T_Type  *$I_ty = ($I_ty_int);
+i32  $I_counter = (0);
+i8  $I_is_atomic = (0);
+while (($I_is_typename(($I_tok)))) {
+if ((((((($I_equal(($I_tok), ("typedef")))|($I_equal(($I_tok), ("static"))))|($I_equal(($I_tok), ("extern"))))|($I_equal(($I_tok), ("inline"))))|($I_equal(($I_tok), ("_Thread_local"))))|($I_equal(($I_tok), ("__thread"))))) {
+if ((!($I_attr))) {
+($I_error_tok(($I_tok), ("storage class specifier is not allowed in this context")));
+}
+if (($I_equal(($I_tok), ("typedef")))) {
+((($I_attr)->$I_is_typedef)=(1));
+}
+else {
+if (($I_equal(($I_tok), ("static")))) {
+((($I_attr)->$I_is_static)=(1));
+}
+else {
+if (($I_equal(($I_tok), ("extern")))) {
+((($I_attr)->$I_is_extern)=(1));
+}
+else {
+if (($I_equal(($I_tok), ("inline")))) {
+((($I_attr)->$I_is_inline)=(1));
+}
+else {
+((($I_attr)->$I_is_tls)=(1));
+}
+}
+}
+}
+if (((($I_attr)->$I_is_typedef)&(((((($I_attr)->$I_is_static)+(($I_attr)->$I_is_extern))+(($I_attr)->$I_is_inline))+(($I_attr)->$I_is_tls))>(1)))) {
+($I_error_tok(($I_tok), ("typedef may not be used together with static, extern, inline, __thread or _Thread_local")));
+}
+(($I_tok)=(($I_tok)->$I_next));
+continue;
+}
+if ((((((((($I_consume((&($I_tok)), ($I_tok), ("const")))|($I_consume((&($I_tok)), ($I_tok), ("volatile"))))|($I_consume((&($I_tok)), ($I_tok), ("auto"))))|($I_consume((&($I_tok)), ($I_tok), ("register"))))|($I_consume((&($I_tok)), ($I_tok), ("restrict"))))|($I_consume((&($I_tok)), ($I_tok), ("__restrict"))))|($I_consume((&($I_tok)), ($I_tok), ("__restrict__"))))|($I_consume((&($I_tok)), ($I_tok), ("_Noreturn"))))) {
+continue;
+}
+if (($I_equal(($I_tok), ("_Atomic")))) {
+(($I_tok)=(($I_tok)->$I_next));
+if (($I_equal(($I_tok), ("(")))) {
+(($I_ty)=($I_typename((&($I_tok)), (($I_tok)->$I_next))));
+(($I_tok)=($I_skip(($I_tok), (")"))));
+}
+(($I_is_atomic)=(1));
+continue;
+}
+if (($I_equal(($I_tok), ("_Alignas")))) {
+if ((!($I_attr))) {
+($I_error_tok(($I_tok), ("_Alignas is not allowed in this context")));
+}
+(($I_tok)=($I_skip((($I_tok)->$I_next), ("("))));
+if (($I_is_typename(($I_tok)))) {
+((($I_attr)->$I_align)=(($I_typename((&($I_tok)), ($I_tok)))->$I_align));
+}
+else {
+((($I_attr)->$I_align)=($I_const_expr((&($I_tok)), ($I_tok))));
+}
+(($I_tok)=($I_skip(($I_tok), (")"))));
+continue;
+}
+$T_Type  *$I_ty2 = ($I_find_typedef(($I_tok)));
+if (((((($I_equal(($I_tok), ("struct")))|($I_equal(($I_tok), ("union"))))|($I_equal(($I_tok), ("enum"))))|($I_equal(($I_tok), ("typeof"))))|($I_ty2))) {
+if (($I_counter)) {
+break;
+}
+if (($I_equal(($I_tok), ("struct")))) {
+(($I_ty)=($I_struct_decl((&($I_tok)), (($I_tok)->$I_next))));
+}
+else {
+if (($I_equal(($I_tok), ("union")))) {
+(($I_ty)=($I_union_decl((&($I_tok)), (($I_tok)->$I_next))));
+}
+else {
+if (($I_equal(($I_tok), ("enum")))) {
+(($I_ty)=($I_enum_specifier((&($I_tok)), (($I_tok)->$I_next))));
+}
+else {
+if (($I_equal(($I_tok), ("typeof")))) {
+(($I_ty)=($I_typeof_specifier((&($I_tok)), (($I_tok)->$I_next))));
+}
+else {
+(($I_ty)=($I_ty2));
+(($I_tok)=(($I_tok)->$I_next));
+}
+}
+}
+}
+(($I_counter)+=($I_OTHER));
+continue;
+}
+if (($I_equal(($I_tok), ("void")))) {
+(($I_counter)+=($I_VOID));
+}
+else {
+if (($I_equal(($I_tok), ("_Bool")))) {
+(($I_counter)+=($I_BOOL));
+}
+else {
+if (($I_equal(($I_tok), ("char")))) {
+(($I_counter)+=($I_CHAR));
+}
+else {
+if (($I_equal(($I_tok), ("short")))) {
+(($I_counter)+=($I_SHORT));
+}
+else {
+if (($I_equal(($I_tok), ("int")))) {
+(($I_counter)+=($I_INT));
+}
+else {
+if (($I_equal(($I_tok), ("long")))) {
+(($I_counter)+=($I_LONG));
+}
+else {
+if (($I_equal(($I_tok), ("float")))) {
+(($I_counter)+=($I_FLOAT));
+}
+else {
+if (($I_equal(($I_tok), ("double")))) {
+(($I_counter)+=($I_DOUBLE));
+}
+else {
+if (($I_equal(($I_tok), ("signed")))) {
+(($I_counter)|=($I_SIGNED));
+}
+else {
+if (($I_equal(($I_tok), ("unsigned")))) {
+(($I_counter)|=($I_UNSIGNED));
+}
+else {
+($I_error(("internal error at %s:%d"), ("code/chibicc/parse.c"), (510)));
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+for (u8 $_Bgh0ou = 0; $_Bgh0ou == 0; $_Bgh0ou = 1) {
+if (($I_counter) == ($I_VOID)) {
+(($I_ty)=($I_ty_void));
+break;
+}
+else if (($I_counter) == ($I_BOOL)) {
+(($I_ty)=($I_ty_bool));
+break;
+}
+else if (($I_counter) == ($I_CHAR)) {
+(($I_ty)=($I_ty_char));
+}
+else if (($I_counter) == (($I_SIGNED)+($I_CHAR))) {
+(($I_ty)=($I_ty_char));
+break;
+}
+else if (($I_counter) == (($I_UNSIGNED)+($I_CHAR))) {
+(($I_ty)=($I_ty_uchar));
+break;
+}
+else if (($I_counter) == ($I_SHORT)) {
+(($I_ty)=($I_ty_short));
+}
+else if (($I_counter) == (($I_SHORT)+($I_INT))) {
+(($I_ty)=($I_ty_short));
+}
+else if (($I_counter) == (($I_SIGNED)+($I_SHORT))) {
+(($I_ty)=($I_ty_short));
+}
+else if (($I_counter) == ((($I_SIGNED)+($I_SHORT))+($I_INT))) {
+(($I_ty)=($I_ty_short));
+break;
+}
+else if (($I_counter) == (($I_UNSIGNED)+($I_SHORT))) {
+(($I_ty)=($I_ty_ushort));
+}
+else if (($I_counter) == ((($I_UNSIGNED)+($I_SHORT))+($I_INT))) {
+(($I_ty)=($I_ty_ushort));
+break;
+}
+else if (($I_counter) == ($I_INT)) {
+(($I_ty)=($I_ty_int));
+}
+else if (($I_counter) == ($I_SIGNED)) {
+(($I_ty)=($I_ty_int));
+}
+else if (($I_counter) == (($I_SIGNED)+($I_INT))) {
+(($I_ty)=($I_ty_int));
+break;
+}
+else if (($I_counter) == ($I_UNSIGNED)) {
+(($I_ty)=($I_ty_uint));
+}
+else if (($I_counter) == (($I_UNSIGNED)+($I_INT))) {
+(($I_ty)=($I_ty_uint));
+break;
+}
+else if (($I_counter) == ($I_LONG)) {
+(($I_ty)=($I_ty_long));
+}
+else if (($I_counter) == (($I_LONG)+($I_INT))) {
+(($I_ty)=($I_ty_long));
+}
+else if (($I_counter) == (($I_LONG)+($I_LONG))) {
+(($I_ty)=($I_ty_long));
+}
+else if (($I_counter) == ((($I_LONG)+($I_LONG))+($I_INT))) {
+(($I_ty)=($I_ty_long));
+}
+else if (($I_counter) == (($I_SIGNED)+($I_LONG))) {
+(($I_ty)=($I_ty_long));
+}
+else if (($I_counter) == ((($I_SIGNED)+($I_LONG))+($I_INT))) {
+(($I_ty)=($I_ty_long));
+}
+else if (($I_counter) == ((($I_SIGNED)+($I_LONG))+($I_LONG))) {
+(($I_ty)=($I_ty_long));
+}
+else if (($I_counter) == (((($I_SIGNED)+($I_LONG))+($I_LONG))+($I_INT))) {
+(($I_ty)=($I_ty_long));
+break;
+}
+else if (($I_counter) == (($I_UNSIGNED)+($I_LONG))) {
+(($I_ty)=($I_ty_ulong));
+}
+else if (($I_counter) == ((($I_UNSIGNED)+($I_LONG))+($I_INT))) {
+(($I_ty)=($I_ty_ulong));
+}
+else if (($I_counter) == ((($I_UNSIGNED)+($I_LONG))+($I_LONG))) {
+(($I_ty)=($I_ty_ulong));
+}
+else if (($I_counter) == (((($I_UNSIGNED)+($I_LONG))+($I_LONG))+($I_INT))) {
+(($I_ty)=($I_ty_ulong));
+break;
+}
+else if (($I_counter) == ($I_FLOAT)) {
+(($I_ty)=($I_ty_float));
+break;
+}
+else if (($I_counter) == ($I_DOUBLE)) {
+(($I_ty)=($I_ty_double));
+break;
+}
+else if (($I_counter) == (($I_LONG)+($I_DOUBLE))) {
+(($I_ty)=($I_ty_ldouble));
+break;
+}
+else {
+($I_error_tok(($I_tok), ("invalid type")));
+}
+}
+(($I_tok)=(($I_tok)->$I_next));
+}
+if (($I_is_atomic)) {
+(($I_ty)=($I_copy_type(($I_ty))));
+((($I_ty)->$I_is_atomic)=(1));
+}
+((*($I_rest))=($I_tok));
+return ($I_ty);
+}
+
+ $T_Type *$I_func_params($T_Token **$I_rest, $T_Token *$I_tok, $T_Type *$I_ty)
+{
+if ((($I_equal(($I_tok), ("void")))&($I_equal((($I_tok)->$I_next), (")"))))) {
+((*($I_rest))=((($I_tok)->$I_next)->$I_next));
+return ($I_func_type(($I_ty)));
+}
+$T_Type  $I_head;
+$T_Type  *$I_cur = (&($I_head));
+i8  $I_is_variadic = (0);
+while ((!($I_equal(($I_tok), (")"))))) {
+if ((($I_cur)!=(&($I_head)))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+if (($I_equal(($I_tok), ("...")))) {
+(($I_is_variadic)=(1));
+(($I_tok)=(($I_tok)->$I_next));
+($I_skip(($I_tok), (")")));
+break;
+}
+$T_Type  *$I_ty2 = ($I_declspec((&($I_tok)), ($I_tok), ([v0 *]((0)))));
+(($I_ty2)=($I_declarator((&($I_tok)), ($I_tok), ($I_ty2))));
+$T_Token  *$I_name = (($I_ty2)->$I_name);
+if (((($I_ty2)->$I_kind)==($I_TY_ARRAY))) {
+(($I_ty2)=($I_pointer_to((($I_ty2)->$I_base))));
+((($I_ty2)->$I_name)=($I_name));
+}
+else {
+if (((($I_ty2)->$I_kind)==($I_TY_FUNC))) {
+(($I_ty2)=($I_pointer_to(($I_ty2))));
+((($I_ty2)->$I_name)=($I_name));
+}
+}
+(($I_cur)=((($I_cur)->$I_next)=($I_copy_type(($I_ty2)))));
+}
+if ((($I_cur)==(&($I_head)))) {
+(($I_is_variadic)=(1));
+}
+(($I_ty)=($I_func_type(($I_ty))));
+((($I_ty)->$I_params)=(($I_head).$I_next));
+((($I_ty)->$I_is_variadic)=($I_is_variadic));
+((*($I_rest))=(($I_tok)->$I_next));
+return ($I_ty);
+}
+
+ $T_Type *$I_array_dimensions($T_Token **$I_rest, $T_Token *$I_tok, $T_Type *$I_ty)
+{
+while ((($I_equal(($I_tok), ("static")))|($I_equal(($I_tok), ("restrict"))))) {
+(($I_tok)=(($I_tok)->$I_next));
+}
+if (($I_equal(($I_tok), ("]")))) {
+(($I_ty)=($I_type_suffix(($I_rest), (($I_tok)->$I_next), ($I_ty))));
+return ($I_array_of(($I_ty), (-(1))));
+}
+$T_Node  *$I_expr = ($I_conditional((&($I_tok)), ($I_tok)));
+(($I_tok)=($I_skip(($I_tok), ("]"))));
+(($I_ty)=($I_type_suffix(($I_rest), ($I_tok), ($I_ty))));
+if ((((($I_ty)->$I_kind)==($I_TY_VLA))|(!($I_is_const_expr(($I_expr)))))) {
+return ($I_vla_of(($I_ty), ($I_expr)));
+}
+return ($I_array_of(($I_ty), ($I_eval(($I_expr)))));
+}
+
+ $T_Type *$I_type_suffix($T_Token **$I_rest, $T_Token *$I_tok, $T_Type *$I_ty)
+{
+if (($I_equal(($I_tok), ("(")))) {
+return ($I_func_params(($I_rest), (($I_tok)->$I_next), ($I_ty)));
+}
+if (($I_equal(($I_tok), ("[")))) {
+return ($I_array_dimensions(($I_rest), (($I_tok)->$I_next), ($I_ty)));
+}
+((*($I_rest))=($I_tok));
+return ($I_ty);
+}
+
+ $T_Type *$I_pointers($T_Token **$I_rest, $T_Token *$I_tok, $T_Type *$I_ty)
+{
+while (($I_consume((&($I_tok)), ($I_tok), ("*")))) {
+(($I_ty)=($I_pointer_to(($I_ty))));
+while (((((($I_equal(($I_tok), ("const")))|($I_equal(($I_tok), ("volatile"))))|($I_equal(($I_tok), ("restrict"))))|($I_equal(($I_tok), ("__restrict"))))|($I_equal(($I_tok), ("__restrict__"))))) {
+(($I_tok)=(($I_tok)->$I_next));
+}
+}
+((*($I_rest))=($I_tok));
+return ($I_ty);
+}
+
+ $T_Type *$I_declarator($T_Token **$I_rest, $T_Token *$I_tok, $T_Type *$I_ty)
+{
+(($I_ty)=($I_pointers((&($I_tok)), ($I_tok), ($I_ty))));
+if (($I_equal(($I_tok), ("(")))) {
+$T_Token  *$I_start = ($I_tok);
+$T_Type  $I_dummy;
+($I_declarator((&($I_tok)), (($I_start)->$I_next), (&($I_dummy))));
+(($I_tok)=($I_skip(($I_tok), (")"))));
+(($I_ty)=($I_type_suffix(($I_rest), ($I_tok), ($I_ty))));
+return ($I_declarator((&($I_tok)), (($I_start)->$I_next), ($I_ty)));
+}
+$T_Token  *$I_name = ([v0 *]((0)));
+$T_Token  *$I_name_pos = ($I_tok);
+if (((($I_tok)->$I_kind)==($I_TK_IDENT))) {
+(($I_name)=($I_tok));
+(($I_tok)=(($I_tok)->$I_next));
+}
+(($I_ty)=($I_type_suffix(($I_rest), ($I_tok), ($I_ty))));
+((($I_ty)->$I_name)=($I_name));
+((($I_ty)->$I_name_pos)=($I_name_pos));
+return ($I_ty);
+}
+
+ $T_Type *$I_abstract_declarator($T_Token **$I_rest, $T_Token *$I_tok, $T_Type *$I_ty)
+{
+(($I_ty)=($I_pointers((&($I_tok)), ($I_tok), ($I_ty))));
+if (($I_equal(($I_tok), ("(")))) {
+$T_Token  *$I_start = ($I_tok);
+$T_Type  $I_dummy;
+($I_abstract_declarator((&($I_tok)), (($I_start)->$I_next), (&($I_dummy))));
+(($I_tok)=($I_skip(($I_tok), (")"))));
+(($I_ty)=($I_type_suffix(($I_rest), ($I_tok), ($I_ty))));
+return ($I_abstract_declarator((&($I_tok)), (($I_start)->$I_next), ($I_ty)));
+}
+return ($I_type_suffix(($I_rest), ($I_tok), ($I_ty)));
+}
+
+ $T_Type *$I_typename($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Type  *$I_ty = ($I_declspec((&($I_tok)), ($I_tok), ([v0 *]((0)))));
+return ($I_abstract_declarator(($I_rest), ($I_tok), ($I_ty)));
+}
+
+ i8 $I_is_end($T_Token *$I_tok)
+{
+return (($I_equal(($I_tok), ("}")))|(($I_equal(($I_tok), (",")))&($I_equal((($I_tok)->$I_next), ("}")))));
+}
+
+ i8 $I_consume_end($T_Token **$I_rest, $T_Token *$I_tok)
+{
+if (($I_equal(($I_tok), ("}")))) {
+((*($I_rest))=(($I_tok)->$I_next));
+return (1);
+}
+if ((($I_equal(($I_tok), (",")))&($I_equal((($I_tok)->$I_next), ("}"))))) {
+((*($I_rest))=((($I_tok)->$I_next)->$I_next));
+return (1);
+}
+return (0);
+}
+
+ $T_Type *$I_enum_specifier($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Type  *$I_ty = ($I_enum_type());
+$T_Token  *$I_tag = ([v0 *]((0)));
+if (((($I_tok)->$I_kind)==($I_TK_IDENT))) {
+(($I_tag)=($I_tok));
+(($I_tok)=(($I_tok)->$I_next));
+}
+if ((($I_tag)&(!($I_equal(($I_tok), ("{")))))) {
+$T_Type  *$I_ty = ($I_find_tag(($I_tag)));
+if ((!($I_ty))) {
+($I_error_tok(($I_tag), ("unknown enum type")));
+}
+if (((($I_ty)->$I_kind)!=($I_TY_ENUM))) {
+($I_error_tok(($I_tag), ("not an enum tag")));
+}
+((*($I_rest))=($I_tok));
+return ($I_ty);
+}
+(($I_tok)=($I_skip(($I_tok), ("{"))));
+i32  $I_i = (0);
+i32  $I_val = (0);
+while ((!($I_consume_end(($I_rest), ($I_tok))))) {
+if (((($I_i)++)>(0))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+i8  *$I_name = ($I_get_ident(($I_tok)));
+(($I_tok)=(($I_tok)->$I_next));
+if (($I_equal(($I_tok), ("=")))) {
+(($I_val)=($I_const_expr((&($I_tok)), (($I_tok)->$I_next))));
+}
+$T_anon_YcSHOx  *$I_sc = ($I_push_scope(($I_name)));
+((($I_sc)->$I_enum_ty)=($I_ty));
+((($I_sc)->$I_enum_val)=(($I_val)++));
+}
+if (($I_tag)) {
+($I_push_tag_scope(($I_tag), ($I_ty)));
+}
+return ($I_ty);
+}
+
+ $T_Type *$I_typeof_specifier($T_Token **$I_rest, $T_Token *$I_tok)
+{
+(($I_tok)=($I_skip(($I_tok), ("("))));
+$T_Type  *$I_ty;
+if (($I_is_typename(($I_tok)))) {
+(($I_ty)=($I_typename((&($I_tok)), ($I_tok))));
+}
+else {
+$T_Node  *$I_node = ($I_expr((&($I_tok)), ($I_tok)));
+($I_add_type(($I_node)));
+(($I_ty)=(($I_node)->$I_ty));
+}
+((*($I_rest))=($I_skip(($I_tok), (")"))));
+return ($I_ty);
+}
+
+ $T_Node *$I_compute_vla_size($T_Type *$I_ty, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_new_node(($I_ND_NULL_EXPR), ($I_tok)));
+if ((($I_ty)->$I_base)) {
+(($I_node)=($I_new_binary(($I_ND_COMMA), ($I_node), ($I_compute_vla_size((($I_ty)->$I_base), ($I_tok))), ($I_tok))));
+}
+if (((($I_ty)->$I_kind)!=($I_TY_VLA))) {
+return ($I_node);
+}
+$T_Node  *$I_base_sz;
+if ((((($I_ty)->$I_base)->$I_kind)==($I_TY_VLA))) {
+(($I_base_sz)=($I_new_var_node(((($I_ty)->$I_base)->$I_vla_size), ($I_tok))));
+}
+else {
+(($I_base_sz)=($I_new_num(((($I_ty)->$I_base)->$I_size), ($I_tok))));
+}
+((($I_ty)->$I_vla_size)=($I_new_lvar((""), ($I_ty_ulong))));
+$T_Node  *$I_expr = ($I_new_binary(($I_ND_ASSIGN), ($I_new_var_node((($I_ty)->$I_vla_size), ($I_tok))), ($I_new_binary(($I_ND_MUL), (($I_ty)->$I_vla_len), ($I_base_sz), ($I_tok))), ($I_tok)));
+return ($I_new_binary(($I_ND_COMMA), ($I_node), ($I_expr), ($I_tok)));
+}
+
+ $T_Node *$I_new_alloca($T_Node *$I_sz)
+{
+$T_Node  *$I_node = ($I_new_unary(($I_ND_FUNCALL), ($I_new_var_node(($I_builtin_alloca), (($I_sz)->$I_tok))), (($I_sz)->$I_tok)));
+((($I_node)->$I_func_ty)=(($I_builtin_alloca)->$I_ty));
+((($I_node)->$I_ty)=((($I_builtin_alloca)->$I_ty)->$I_return_ty));
+((($I_node)->$I_args)=($I_sz));
+($I_add_type(($I_sz)));
+return ($I_node);
+}
+
+ $T_Node *$I_declaration($T_Token **$I_rest, $T_Token *$I_tok, $T_Type *$I_basety, $T_anon_9Xm4fk *$I_attr)
+{
+$T_Node  $I_head;
+$T_Node  *$I_cur = (&($I_head));
+i32  $I_i = (0);
+while ((!($I_equal(($I_tok), (";"))))) {
+if (((($I_i)++)>(0))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+$T_Type  *$I_ty = ($I_declarator((&($I_tok)), ($I_tok), ($I_basety)));
+if (((($I_ty)->$I_kind)==($I_TY_VOID))) {
+($I_error_tok(($I_tok), ("variable declared void")));
+}
+if ((!(($I_ty)->$I_name))) {
+($I_error_tok((($I_ty)->$I_name_pos), ("variable name omitted")));
+}
+if ((($I_attr)&(($I_attr)->$I_is_static))) {
+$T_Obj  *$I_var = ($I_new_anon_gvar(($I_ty)));
+((($I_push_scope(($I_get_ident((($I_ty)->$I_name)))))->$I_var)=($I_var));
+if (($I_equal(($I_tok), ("=")))) {
+($I_gvar_initializer((&($I_tok)), (($I_tok)->$I_next), ($I_var)));
+}
+continue;
+}
+(($I_cur)=((($I_cur)->$I_next)=($I_new_unary(($I_ND_EXPR_STMT), ($I_compute_vla_size(($I_ty), ($I_tok))), ($I_tok)))));
+if (((($I_ty)->$I_kind)==($I_TY_VLA))) {
+if (($I_equal(($I_tok), ("=")))) {
+($I_error_tok(($I_tok), ("variable-sized object may not be initialized")));
+}
+$T_Obj  *$I_var = ($I_new_lvar(($I_get_ident((($I_ty)->$I_name))), ($I_ty)));
+$T_Token  *$I_tok = (($I_ty)->$I_name);
+$T_Node  *$I_expr = ($I_new_binary(($I_ND_ASSIGN), ($I_new_vla_ptr(($I_var), ($I_tok))), ($I_new_alloca(($I_new_var_node((($I_ty)->$I_vla_size), ($I_tok))))), ($I_tok)));
+(($I_cur)=((($I_cur)->$I_next)=($I_new_unary(($I_ND_EXPR_STMT), ($I_expr), ($I_tok)))));
+continue;
+}
+$T_Obj  *$I_var = ($I_new_lvar(($I_get_ident((($I_ty)->$I_name))), ($I_ty)));
+if ((($I_attr)&(($I_attr)->$I_align))) {
+((($I_var)->$I_align)=(($I_attr)->$I_align));
+}
+if (($I_equal(($I_tok), ("=")))) {
+$T_Node  *$I_expr = ($I_lvar_initializer((&($I_tok)), (($I_tok)->$I_next), ($I_var)));
+(($I_cur)=((($I_cur)->$I_next)=($I_new_unary(($I_ND_EXPR_STMT), ($I_expr), ($I_tok)))));
+}
+if ((((($I_var)->$I_ty)->$I_size)<(0))) {
+($I_error_tok((($I_ty)->$I_name), ("variable has incomplete type")));
+}
+if ((((($I_var)->$I_ty)->$I_kind)==($I_TY_VOID))) {
+($I_error_tok((($I_ty)->$I_name), ("variable declared void")));
+}
+}
+$T_Node  *$I_node = ($I_new_node(($I_ND_BLOCK), ($I_tok)));
+((($I_node)->$I_body)=(($I_head).$I_next));
+((*($I_rest))=(($I_tok)->$I_next));
+return ($I_node);
+}
+
+ $T_Token *$I_skip_excess_element($T_Token *$I_tok)
+{
+if (($I_equal(($I_tok), ("{")))) {
+(($I_tok)=($I_skip_excess_element((($I_tok)->$I_next))));
+return ($I_skip(($I_tok), ("}")));
+}
+($I_assign((&($I_tok)), ($I_tok)));
+return ($I_tok);
+}
+
+ v0 $I_string_initializer($T_Token **$I_rest, $T_Token *$I_tok, $T_Initializer *$I_init)
+{
+if ((($I_init)->$I_is_flexible)) {
+((*($I_init))=(*($I_new_initializer(($I_array_of(((($I_init)->$I_ty)->$I_base), ((($I_tok)->$I_ty)->$I_array_len))), (0)))));
+}
+i32  $I_len;
+for (u8 $_9LJqp1 = 0; $_9LJqp1 == 0; $_9LJqp1 = 1) {
+if ((((($I_init)->$I_ty)->$I_base)->$I_size) == (1)) {
+i8  *$I_str = (($I_tok)->$I_str);
+for (i32  $I_i = (0);
+(($I_i)<($I_len)); (($I_i)++)) {
+((((($I_init)->$I_children)[($I_i)])->$I_expr)=($I_new_num((($I_str)[($I_i)]), ($I_tok))));
+}
+break;
+}
+else if ((((($I_init)->$I_ty)->$I_base)->$I_size) == (2)) {
+u16   *$I_str = ([u16  *]((($I_tok)->$I_str)));
+for (i32  $I_i = (0);
+(($I_i)<($I_len)); (($I_i)++)) {
+((((($I_init)->$I_children)[($I_i)])->$I_expr)=($I_new_num((($I_str)[($I_i)]), ($I_tok))));
+}
+break;
+}
+else if ((((($I_init)->$I_ty)->$I_base)->$I_size) == (4)) {
+u32   *$I_str = ([u32  *]((($I_tok)->$I_str)));
+for (i32  $I_i = (0);
+(($I_i)<($I_len)); (($I_i)++)) {
+((((($I_init)->$I_children)[($I_i)])->$I_expr)=($I_new_num((($I_str)[($I_i)]), ($I_tok))));
+}
+break;
+}
+else {
+($I_error(("internal error at %s:%d"), ("code/chibicc/parse.c"), (952)));
+}
+}
+((*($I_rest))=(($I_tok)->$I_next));
+}
+
+ v0 $I_array_designator($T_Token **$I_rest, $T_Token *$I_tok, $T_Type *$I_ty, i32 *$I_begin, i32 *$I_end)
+{
+((*($I_begin))=($I_const_expr((&($I_tok)), (($I_tok)->$I_next))));
+if (((*($I_begin))>=(($I_ty)->$I_array_len))) {
+($I_error_tok(($I_tok), ("array designator index exceeds array bounds")));
+}
+if (($I_equal(($I_tok), ("...")))) {
+((*($I_end))=($I_const_expr((&($I_tok)), (($I_tok)->$I_next))));
+if (((*($I_end))>=(($I_ty)->$I_array_len))) {
+($I_error_tok(($I_tok), ("array designator index exceeds array bounds")));
+}
+if (((*($I_end))<(*($I_begin)))) {
+($I_error_tok(($I_tok), ("array designator range [%d, %d] is empty"), (*($I_begin)), (*($I_end))));
+}
+}
+else {
+((*($I_end))=(*($I_begin)));
+}
+((*($I_rest))=($I_skip(($I_tok), ("]"))));
+}
+
+ $T_Member *$I_struct_designator($T_Token **$I_rest, $T_Token *$I_tok, $T_Type *$I_ty)
+{
+$T_Token  *$I_start = ($I_tok);
+(($I_tok)=($I_skip(($I_tok), ("."))));
+if (((($I_tok)->$I_kind)!=($I_TK_IDENT))) {
+($I_error_tok(($I_tok), ("expected a field designator")));
+}
+for ($T_Member  *$I_mem = (($I_ty)->$I_members);
+($I_mem); (($I_mem)=(($I_mem)->$I_next))) {
+if (((((($I_mem)->$I_ty)->$I_kind)==($I_TY_STRUCT))&(!(($I_mem)->$I_name)))) {
+if (($I_get_struct_member((($I_mem)->$I_ty), ($I_tok)))) {
+((*($I_rest))=($I_start));
+return ($I_mem);
+}
+continue;
+}
+if (((((($I_mem)->$I_name)->$I_len)==(($I_tok)->$I_len))&(!($I_strncmp(((($I_mem)->$I_name)->$I_loc), (($I_tok)->$I_loc), (($I_tok)->$I_len)))))) {
+((*($I_rest))=(($I_tok)->$I_next));
+return ($I_mem);
+}
+}
+($I_error_tok(($I_tok), ("struct has no such member")));
+}
+
+ v0 $I_designation($T_Token **$I_rest, $T_Token *$I_tok, $T_Initializer *$I_init)
+{
+if (($I_equal(($I_tok), ("[")))) {
+if ((((($I_init)->$I_ty)->$I_kind)!=($I_TY_ARRAY))) {
+($I_error_tok(($I_tok), ("array index in non-array initializer")));
+}
+i32  $I_begin;
+i32  $I_end;
+($I_array_designator((&($I_tok)), ($I_tok), (($I_init)->$I_ty), (&($I_begin)), (&($I_end))));
+$T_Token  *$I_tok2;
+for (i32  $I_i = ($I_begin);
+(($I_i)<=($I_end)); (($I_i)++)) {
+($I_designation((&($I_tok2)), ($I_tok), ((($I_init)->$I_children)[($I_i)])));
+}
+($I_array_initializer2(($I_rest), ($I_tok2), ($I_init), (($I_begin)+(1))));
+return;
+}
+if ((($I_equal(($I_tok), (".")))&(((($I_init)->$I_ty)->$I_kind)==($I_TY_STRUCT)))) {
+$T_Member  *$I_mem = ($I_struct_designator((&($I_tok)), ($I_tok), (($I_init)->$I_ty)));
+($I_designation((&($I_tok)), ($I_tok), ((($I_init)->$I_children)[(($I_mem)->$I_idx)])));
+((($I_init)->$I_expr)=([v0 *]((0))));
+($I_struct_initializer2(($I_rest), ($I_tok), ($I_init), (($I_mem)->$I_next)));
+return;
+}
+if ((($I_equal(($I_tok), (".")))&(((($I_init)->$I_ty)->$I_kind)==($I_TY_UNION)))) {
+$T_Member  *$I_mem = ($I_struct_designator((&($I_tok)), ($I_tok), (($I_init)->$I_ty)));
+((($I_init)->$I_mem)=($I_mem));
+($I_designation(($I_rest), ($I_tok), ((($I_init)->$I_children)[(($I_mem)->$I_idx)])));
+return;
+}
+if (($I_equal(($I_tok), (".")))) {
+($I_error_tok(($I_tok), ("field name not in struct or union initializer")));
+}
+if (($I_equal(($I_tok), ("=")))) {
+(($I_tok)=(($I_tok)->$I_next));
+}
+($I_initializer2(($I_rest), ($I_tok), ($I_init)));
+}
+
+ i32 $I_count_array_init_elements($T_Token *$I_tok, $T_Type *$I_ty)
+{
+i8  $I_first = (1);
+$T_Initializer  *$I_dummy = ($I_new_initializer((($I_ty)->$I_base), (1)));
+i32  $I_i = (0);
+i32  $I_max = (0);
+while ((!($I_consume_end((&($I_tok)), ($I_tok))))) {
+if ((!($I_first))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+(($I_first)=(0));
+if (($I_equal(($I_tok), ("[")))) {
+(($I_i)=($I_const_expr((&($I_tok)), (($I_tok)->$I_next))));
+if (($I_equal(($I_tok), ("...")))) {
+(($I_i)=($I_const_expr((&($I_tok)), (($I_tok)->$I_next))));
+}
+(($I_tok)=($I_skip(($I_tok), ("]"))));
+($I_designation((&($I_tok)), ($I_tok), ($I_dummy)));
+}
+else {
+($I_initializer2((&($I_tok)), ($I_tok), ($I_dummy)));
+}
+(($I_i)++);
+}
+return ($I_max);
+}
+
+ v0 $I_array_initializer1($T_Token **$I_rest, $T_Token *$I_tok, $T_Initializer *$I_init)
+{
+(($I_tok)=($I_skip(($I_tok), ("{"))));
+if ((($I_init)->$I_is_flexible)) {
+i32  $I_len = ($I_count_array_init_elements(($I_tok), (($I_init)->$I_ty)));
+((*($I_init))=(*($I_new_initializer(($I_array_of(((($I_init)->$I_ty)->$I_base), ($I_len))), (0)))));
+}
+i8  $I_first = (1);
+if ((($I_init)->$I_is_flexible)) {
+i32  $I_len = ($I_count_array_init_elements(($I_tok), (($I_init)->$I_ty)));
+((*($I_init))=(*($I_new_initializer(($I_array_of(((($I_init)->$I_ty)->$I_base), ($I_len))), (0)))));
+}
+for (i32  $I_i = (0);
+(!($I_consume_end(($I_rest), ($I_tok)))); (($I_i)++)) {
+if ((!($I_first))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+(($I_first)=(0));
+if (($I_equal(($I_tok), ("[")))) {
+i32  $I_begin;
+i32  $I_end;
+($I_array_designator((&($I_tok)), ($I_tok), (($I_init)->$I_ty), (&($I_begin)), (&($I_end))));
+$T_Token  *$I_tok2;
+for (i32  $I_j = ($I_begin);
+(($I_j)<=($I_end)); (($I_j)++)) {
+($I_designation((&($I_tok2)), ($I_tok), ((($I_init)->$I_children)[($I_j)])));
+}
+(($I_tok)=($I_tok2));
+(($I_i)=($I_end));
+continue;
+}
+if ((($I_i)<((($I_init)->$I_ty)->$I_array_len))) {
+($I_initializer2((&($I_tok)), ($I_tok), ((($I_init)->$I_children)[($I_i)])));
+}
+else {
+(($I_tok)=($I_skip_excess_element(($I_tok))));
+}
+}
+}
+
+ v0 $I_array_initializer2($T_Token **$I_rest, $T_Token *$I_tok, $T_Initializer *$I_init, i32 $I_i)
+{
+if ((($I_init)->$I_is_flexible)) {
+i32  $I_len = ($I_count_array_init_elements(($I_tok), (($I_init)->$I_ty)));
+((*($I_init))=(*($I_new_initializer(($I_array_of(((($I_init)->$I_ty)->$I_base), ($I_len))), (0)))));
+}
+for (0;((($I_i)<((($I_init)->$I_ty)->$I_array_len))&(!($I_is_end(($I_tok))))); (($I_i)++)) {
+$T_Token  *$I_start = ($I_tok);
+if ((($I_i)>(0))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+if ((($I_equal(($I_tok), ("[")))|($I_equal(($I_tok), ("."))))) {
+((*($I_rest))=($I_start));
+return;
+}
+($I_initializer2((&($I_tok)), ($I_tok), ((($I_init)->$I_children)[($I_i)])));
+}
+((*($I_rest))=($I_tok));
+}
+
+ v0 $I_struct_initializer1($T_Token **$I_rest, $T_Token *$I_tok, $T_Initializer *$I_init)
+{
+(($I_tok)=($I_skip(($I_tok), ("{"))));
+$T_Member  *$I_mem = ((($I_init)->$I_ty)->$I_members);
+i8  $I_first = (1);
+while ((!($I_consume_end(($I_rest), ($I_tok))))) {
+if ((!($I_first))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+(($I_first)=(0));
+if (($I_equal(($I_tok), (".")))) {
+(($I_mem)=($I_struct_designator((&($I_tok)), ($I_tok), (($I_init)->$I_ty))));
+($I_designation((&($I_tok)), ($I_tok), ((($I_init)->$I_children)[(($I_mem)->$I_idx)])));
+(($I_mem)=(($I_mem)->$I_next));
+continue;
+}
+if (($I_mem)) {
+($I_initializer2((&($I_tok)), ($I_tok), ((($I_init)->$I_children)[(($I_mem)->$I_idx)])));
+(($I_mem)=(($I_mem)->$I_next));
+}
+else {
+(($I_tok)=($I_skip_excess_element(($I_tok))));
+}
+}
+}
+
+ v0 $I_struct_initializer2($T_Token **$I_rest, $T_Token *$I_tok, $T_Initializer *$I_init, $T_Member *$I_mem)
+{
+i8  $I_first = (1);
+for (0;(($I_mem)&(!($I_is_end(($I_tok))))); (($I_mem)=(($I_mem)->$I_next))) {
+$T_Token  *$I_start = ($I_tok);
+if ((!($I_first))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+(($I_first)=(0));
+if ((($I_equal(($I_tok), ("[")))|($I_equal(($I_tok), ("."))))) {
+((*($I_rest))=($I_start));
+return;
+}
+($I_initializer2((&($I_tok)), ($I_tok), ((($I_init)->$I_children)[(($I_mem)->$I_idx)])));
+}
+((*($I_rest))=($I_tok));
+}
+
+ v0 $I_union_initializer($T_Token **$I_rest, $T_Token *$I_tok, $T_Initializer *$I_init)
+{
+if ((($I_equal(($I_tok), ("{")))&($I_equal((($I_tok)->$I_next), ("."))))) {
+$T_Member  *$I_mem = ($I_struct_designator((&($I_tok)), (($I_tok)->$I_next), (($I_init)->$I_ty)));
+((($I_init)->$I_mem)=($I_mem));
+($I_designation((&($I_tok)), ($I_tok), ((($I_init)->$I_children)[(($I_mem)->$I_idx)])));
+((*($I_rest))=($I_skip(($I_tok), ("}"))));
+return;
+}
+((($I_init)->$I_mem)=((($I_init)->$I_ty)->$I_members));
+if (($I_equal(($I_tok), ("{")))) {
+($I_initializer2((&($I_tok)), (($I_tok)->$I_next), ((($I_init)->$I_children)[(0)])));
+($I_consume((&($I_tok)), ($I_tok), (",")));
+((*($I_rest))=($I_skip(($I_tok), ("}"))));
+}
+else {
+($I_initializer2(($I_rest), ($I_tok), ((($I_init)->$I_children)[(0)])));
+}
+}
+
+ v0 $I_initializer2($T_Token **$I_rest, $T_Token *$I_tok, $T_Initializer *$I_init)
+{
+if (((((($I_init)->$I_ty)->$I_kind)==($I_TY_ARRAY))&((($I_tok)->$I_kind)==($I_TK_STR)))) {
+($I_string_initializer(($I_rest), ($I_tok), ($I_init)));
+return;
+}
+if ((((($I_init)->$I_ty)->$I_kind)==($I_TY_ARRAY))) {
+if (($I_equal(($I_tok), ("{")))) {
+($I_array_initializer1(($I_rest), ($I_tok), ($I_init)));
+}
+else {
+($I_array_initializer2(($I_rest), ($I_tok), ($I_init), (0)));
+}
+return;
+}
+if ((((($I_init)->$I_ty)->$I_kind)==($I_TY_STRUCT))) {
+if (($I_equal(($I_tok), ("{")))) {
+($I_struct_initializer1(($I_rest), ($I_tok), ($I_init)));
+return;
+}
+$T_Node  *$I_expr = ($I_assign(($I_rest), ($I_tok)));
+($I_add_type(($I_expr)));
+if ((((($I_expr)->$I_ty)->$I_kind)==($I_TY_STRUCT))) {
+((($I_init)->$I_expr)=($I_expr));
+return;
+}
+($I_struct_initializer2(($I_rest), ($I_tok), ($I_init), ((($I_init)->$I_ty)->$I_members)));
+return;
+}
+if ((((($I_init)->$I_ty)->$I_kind)==($I_TY_UNION))) {
+($I_union_initializer(($I_rest), ($I_tok), ($I_init)));
+return;
+}
+if (($I_equal(($I_tok), ("{")))) {
+($I_initializer2((&($I_tok)), (($I_tok)->$I_next), ($I_init)));
+((*($I_rest))=($I_skip(($I_tok), ("}"))));
+return;
+}
+((($I_init)->$I_expr)=($I_assign(($I_rest), ($I_tok))));
+}
+
+ $T_Type *$I_copy_struct_type($T_Type *$I_ty)
+{
+(($I_ty)=($I_copy_type(($I_ty))));
+$T_Member  $I_head;
+$T_Member  *$I_cur = (&($I_head));
+for ($T_Member  *$I_mem = (($I_ty)->$I_members);
+($I_mem); (($I_mem)=(($I_mem)->$I_next))) {
+$T_Member  *$I_m = ($I_calloc((1), (0)));
+((*($I_m))=(*($I_mem)));
+(($I_cur)=((($I_cur)->$I_next)=($I_m)));
+}
+((($I_ty)->$I_members)=(($I_head).$I_next));
+return ($I_ty);
+}
+
+ $T_Initializer *$I_initializer($T_Token **$I_rest, $T_Token *$I_tok, $T_Type *$I_ty, $T_Type **$I_new_ty)
+{
+$T_Initializer  *$I_init = ($I_new_initializer(($I_ty), (1)));
+($I_initializer2(($I_rest), ($I_tok), ($I_init)));
+if (((((($I_ty)->$I_kind)==($I_TY_STRUCT))|((($I_ty)->$I_kind)==($I_TY_UNION)))&(($I_ty)->$I_is_flexible))) {
+(($I_ty)=($I_copy_struct_type(($I_ty))));
+$T_Member  *$I_mem = (($I_ty)->$I_members);
+while ((($I_mem)->$I_next)) {
+(($I_mem)=(($I_mem)->$I_next));
+}
+((($I_mem)->$I_ty)=(((($I_init)->$I_children)[(($I_mem)->$I_idx)])->$I_ty));
+((($I_ty)->$I_size)+=((($I_mem)->$I_ty)->$I_size));
+((*($I_new_ty))=($I_ty));
+return ($I_init);
+}
+((*($I_new_ty))=(($I_init)->$I_ty));
+return ($I_init);
+}
+
+ $T_Node *$I_init_desg_expr($T_InitDesg *$I_desg, $T_Token *$I_tok)
+{
+if ((($I_desg)->$I_var)) {
+return ($I_new_var_node((($I_desg)->$I_var), ($I_tok)));
+}
+if ((($I_desg)->$I_member)) {
+$T_Node  *$I_node = ($I_new_unary(($I_ND_MEMBER), ($I_init_desg_expr((($I_desg)->$I_next), ($I_tok))), ($I_tok)));
+((($I_node)->$I_member)=(($I_desg)->$I_member));
+return ($I_node);
+}
+$T_Node  *$I_lhs = ($I_init_desg_expr((($I_desg)->$I_next), ($I_tok)));
+$T_Node  *$I_rhs = ($I_new_num((($I_desg)->$I_idx), ($I_tok)));
+return ($I_new_unary(($I_ND_DEREF), ($I_new_add(($I_lhs), ($I_rhs), ($I_tok))), ($I_tok)));
+}
+
+ $T_Node *$I_create_lvar_init($T_Initializer *$I_init, $T_Type *$I_ty, $T_InitDesg *$I_desg, $T_Token *$I_tok)
+{
+if (((($I_ty)->$I_kind)==($I_TY_ARRAY))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_NULL_EXPR), ($I_tok)));
+for (i32  $I_i = (0);
+(($I_i)<(($I_ty)->$I_array_len)); (($I_i)++)) {
+$T_InitDesg  $I_desg2;
+$T_Node  *$I_rhs = ($I_create_lvar_init(((($I_init)->$I_children)[($I_i)]), (($I_ty)->$I_base), (&($I_desg2)), ($I_tok)));
+(($I_node)=($I_new_binary(($I_ND_COMMA), ($I_node), ($I_rhs), ($I_tok))));
+}
+return ($I_node);
+}
+if ((((($I_ty)->$I_kind)==($I_TY_STRUCT))&(!(($I_init)->$I_expr)))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_NULL_EXPR), ($I_tok)));
+for ($T_Member  *$I_mem = (($I_ty)->$I_members);
+($I_mem); (($I_mem)=(($I_mem)->$I_next))) {
+$T_InitDesg  $I_desg2;
+$T_Node  *$I_rhs = ($I_create_lvar_init(((($I_init)->$I_children)[(($I_mem)->$I_idx)]), (($I_mem)->$I_ty), (&($I_desg2)), ($I_tok)));
+(($I_node)=($I_new_binary(($I_ND_COMMA), ($I_node), ($I_rhs), ($I_tok))));
+}
+return ($I_node);
+}
+if (((($I_ty)->$I_kind)==($I_TY_UNION))) {
+$T_Member  *$I_mem;
+$T_InitDesg  $I_desg2;
+return ($I_create_lvar_init(((($I_init)->$I_children)[(($I_mem)->$I_idx)]), (($I_mem)->$I_ty), (&($I_desg2)), ($I_tok)));
+}
+if ((!(($I_init)->$I_expr))) {
+return ($I_new_node(($I_ND_NULL_EXPR), ($I_tok)));
+}
+$T_Node  *$I_lhs = ($I_init_desg_expr(($I_desg), ($I_tok)));
+return ($I_new_binary(($I_ND_ASSIGN), ($I_lhs), (($I_init)->$I_expr), ($I_tok)));
+}
+
+ $T_Node *$I_lvar_initializer($T_Token **$I_rest, $T_Token *$I_tok, $T_Obj *$I_var)
+{
+$T_Initializer  *$I_init = ($I_initializer(($I_rest), ($I_tok), (($I_var)->$I_ty), (&(($I_var)->$I_ty))));
+$T_InitDesg  $I_desg;
+$T_Node  *$I_lhs = ($I_new_node(($I_ND_MEMZERO), ($I_tok)));
+((($I_lhs)->$I_var)=($I_var));
+$T_Node  *$I_rhs = ($I_create_lvar_init(($I_init), (($I_var)->$I_ty), (&($I_desg)), ($I_tok)));
+return ($I_new_binary(($I_ND_COMMA), ($I_lhs), ($I_rhs), ($I_tok)));
+}
+
+ u64  $I_read_buf(i8 *$I_buf, i32 $I_sz)
+{
+if ((($I_sz)==(1))) {
+return (*($I_buf));
+}
+if ((($I_sz)==(2))) {
+return (*([u16  *](($I_buf))));
+}
+if ((($I_sz)==(4))) {
+return (*([u32  *](($I_buf))));
+}
+if ((($I_sz)==(8))) {
+return (*([u64  *](($I_buf))));
+}
+($I_error(("internal error at %s:%d"), ("code/chibicc/parse.c"), (1404)));
+}
+
+ v0 $I_write_buf(i8 *$I_buf, u64  $I_val, i32 $I_sz)
+{
+if ((($I_sz)==(1))) {
+((*($I_buf))=($I_val));
+}
+else {
+if ((($I_sz)==(2))) {
+((*([u16  *](($I_buf))))=($I_val));
+}
+else {
+if ((($I_sz)==(4))) {
+((*([u32  *](($I_buf))))=($I_val));
+}
+else {
+if ((($I_sz)==(8))) {
+((*([u64  *](($I_buf))))=($I_val));
+}
+else {
+($I_error(("internal error at %s:%d"), ("code/chibicc/parse.c"), (1417)));
+}
+}
+}
+}
+}
+
+ $T_Relocation *$I_write_gvar_data($T_Relocation *$I_cur, $T_Initializer *$I_init, $T_Type *$I_ty, i8 *$I_buf, i32 $I_offset)
+{
+if (((($I_ty)->$I_kind)==($I_TY_ARRAY))) {
+i32  $I_sz = ((($I_ty)->$I_base)->$I_size);
+for (i32  $I_i = (0);
+(($I_i)<(($I_ty)->$I_array_len)); (($I_i)++)) {
+(($I_cur)=($I_write_gvar_data(($I_cur), ((($I_init)->$I_children)[($I_i)]), (($I_ty)->$I_base), ($I_buf), (($I_offset)+(($I_sz)*($I_i))))));
+}
+return ($I_cur);
+}
+if (((($I_ty)->$I_kind)==($I_TY_STRUCT))) {
+for ($T_Member  *$I_mem = (($I_ty)->$I_members);
+($I_mem); (($I_mem)=(($I_mem)->$I_next))) {
+if ((($I_mem)->$I_is_bitfield)) {
+$T_Node  *$I_expr = (((($I_init)->$I_children)[(($I_mem)->$I_idx)])->$I_expr);
+if ((!($I_expr))) {
+break;
+}
+i8  *$I_loc = ((($I_buf)+($I_offset))+(($I_mem)->$I_offset));
+u64   $I_oldval = ($I_read_buf(($I_loc), ((($I_mem)->$I_ty)->$I_size)));
+u64   $I_newval = ($I_eval(($I_expr)));
+u64   $I_mask = (((1)<<(($I_mem)->$I_bit_width))-(1));
+u64   $I_combined = (($I_oldval)|((($I_newval)&($I_mask))<<(($I_mem)->$I_bit_offset)));
+($I_write_buf(($I_loc), ($I_combined), ((($I_mem)->$I_ty)->$I_size)));
+}
+else {
+(($I_cur)=($I_write_gvar_data(($I_cur), ((($I_init)->$I_children)[(($I_mem)->$I_idx)]), (($I_mem)->$I_ty), ($I_buf), (($I_offset)+(($I_mem)->$I_offset)))));
+}
+}
+return ($I_cur);
+}
+if (((($I_ty)->$I_kind)==($I_TY_UNION))) {
+if ((!(($I_init)->$I_mem))) {
+return ($I_cur);
+}
+return ($I_write_gvar_data(($I_cur), ((($I_init)->$I_children)[((($I_init)->$I_mem)->$I_idx)]), ((($I_init)->$I_mem)->$I_ty), ($I_buf), ($I_offset)));
+}
+if ((!(($I_init)->$I_expr))) {
+return ($I_cur);
+}
+if (((($I_ty)->$I_kind)==($I_TY_FLOAT))) {
+((*([f32 *]((($I_buf)+($I_offset)))))=($I_eval_double((($I_init)->$I_expr))));
+return ($I_cur);
+}
+if (((($I_ty)->$I_kind)==($I_TY_DOUBLE))) {
+((*([f64 *]((($I_buf)+($I_offset)))))=($I_eval_double((($I_init)->$I_expr))));
+return ($I_cur);
+}
+i8  **$I_label = ([v0 *]((0)));
+u64   $I_val = ($I_eval2((($I_init)->$I_expr), (&($I_label))));
+if ((!($I_label))) {
+($I_write_buf((($I_buf)+($I_offset)), ($I_val), (($I_ty)->$I_size)));
+return ($I_cur);
+}
+$T_Relocation  *$I_rel = ($I_calloc((1), (0)));
+((($I_rel)->$I_offset)=($I_offset));
+((($I_rel)->$I_label)=($I_label));
+((($I_rel)->$I_addend)=($I_val));
+((($I_cur)->$I_next)=($I_rel));
+return (($I_cur)->$I_next);
+}
+
+ v0 $I_gvar_initializer($T_Token **$I_rest, $T_Token *$I_tok, $T_Obj *$I_var)
+{
+$T_Initializer  *$I_init = ($I_initializer(($I_rest), ($I_tok), (($I_var)->$I_ty), (&(($I_var)->$I_ty))));
+$T_Relocation  $I_head;
+i8  *$I_buf = ($I_calloc((1), ((($I_var)->$I_ty)->$I_size)));
+($I_write_gvar_data((&($I_head)), ($I_init), (($I_var)->$I_ty), ($I_buf), (0)));
+((($I_var)->$I_init_data)=($I_buf));
+((($I_var)->$I_rel)=(($I_head).$I_next));
+}
+
+ i8 $I_is_typename($T_Token *$I_tok)
+{
+ $T_anon_ijePDX  $I_map;
+if (((($I_map).$I_capacity)==(0))) {
+ i8  **$I_kw;
+for (i32  $I_i = (0);
+(($I_i)<((0)/(0))); (($I_i)++)) {
+($I_hashmap_put((&($I_map)), (($I_kw)[($I_i)]), ([v0 *]((1)))));
+}
+}
+return (($I_hashmap_get2((&($I_map)), (($I_tok)->$I_loc), (($I_tok)->$I_len)))|($I_find_typedef(($I_tok))));
+}
+
+ $T_Node *$I_asm_stmt($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_new_node(($I_ND_ASM), ($I_tok)));
+(($I_tok)=(($I_tok)->$I_next));
+while ((($I_equal(($I_tok), ("volatile")))|($I_equal(($I_tok), ("inline"))))) {
+(($I_tok)=(($I_tok)->$I_next));
+}
+(($I_tok)=($I_skip(($I_tok), ("("))));
+if ((((($I_tok)->$I_kind)!=($I_TK_STR))|((((($I_tok)->$I_ty)->$I_base)->$I_kind)!=($I_TY_CHAR)))) {
+($I_error_tok(($I_tok), ("expected string literal")));
+}
+((($I_node)->$I_asm_str)=(($I_tok)->$I_str));
+((*($I_rest))=($I_skip((($I_tok)->$I_next), (")"))));
+return ($I_node);
+}
+
+ $T_Node *$I_stmt($T_Token **$I_rest, $T_Token *$I_tok)
+{
+if (($I_equal(($I_tok), ("return")))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_RETURN), ($I_tok)));
+if (($I_consume(($I_rest), (($I_tok)->$I_next), (";")))) {
+return ($I_node);
+}
+$T_Node  *$I_exp = ($I_expr((&($I_tok)), (($I_tok)->$I_next)));
+((*($I_rest))=($I_skip(($I_tok), (";"))));
+($I_add_type(($I_exp)));
+$T_Type  *$I_ty = ((($I_current_fn)->$I_ty)->$I_return_ty);
+if ((((($I_ty)->$I_kind)!=($I_TY_STRUCT))&((($I_ty)->$I_kind)!=($I_TY_UNION)))) {
+(($I_exp)=($I_new_cast(($I_exp), ((($I_current_fn)->$I_ty)->$I_return_ty))));
+}
+((($I_node)->$I_lhs)=($I_exp));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("if")))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_IF), ($I_tok)));
+(($I_tok)=($I_skip((($I_tok)->$I_next), ("("))));
+((($I_node)->$I_cond)=($I_expr((&($I_tok)), ($I_tok))));
+(($I_tok)=($I_skip(($I_tok), (")"))));
+((($I_node)->$I_then)=($I_stmt((&($I_tok)), ($I_tok))));
+if (($I_equal(($I_tok), ("else")))) {
+((($I_node)->$I_els)=($I_stmt((&($I_tok)), (($I_tok)->$I_next))));
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("switch")))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_SWITCH), ($I_tok)));
+(($I_tok)=($I_skip((($I_tok)->$I_next), ("("))));
+((($I_node)->$I_cond)=($I_expr((&($I_tok)), ($I_tok))));
+(($I_tok)=($I_skip(($I_tok), (")"))));
+$T_Node  *$I_sw = ($I_current_switch);
+(($I_current_switch)=($I_node));
+i8  *$I_brk = ($I_brk_label);
+(($I_brk_label)=((($I_node)->$I_brk_label)=($I_new_unique_name())));
+((($I_node)->$I_then)=($I_stmt(($I_rest), ($I_tok))));
+(($I_current_switch)=($I_sw));
+(($I_brk_label)=($I_brk));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("case")))) {
+if ((!($I_current_switch))) {
+($I_error_tok(($I_tok), ("stray case")));
+}
+$T_Node  *$I_node = ($I_new_node(($I_ND_CASE), ($I_tok)));
+i32  $I_begin = ($I_const_expr((&($I_tok)), (($I_tok)->$I_next)));
+i32  $I_end;
+if (($I_equal(($I_tok), ("...")))) {
+(($I_end)=($I_const_expr((&($I_tok)), (($I_tok)->$I_next))));
+if ((($I_end)<($I_begin))) {
+($I_error_tok(($I_tok), ("empty case range specified")));
+}
+}
+else {
+(($I_end)=($I_begin));
+}
+(($I_tok)=($I_skip(($I_tok), (":"))));
+((($I_node)->$I_label)=($I_new_unique_name()));
+((($I_node)->$I_lhs)=($I_stmt(($I_rest), ($I_tok))));
+((($I_node)->$I_begin)=($I_begin));
+((($I_node)->$I_end)=($I_end));
+((($I_node)->$I_case_next)=(($I_current_switch)->$I_case_next));
+((($I_current_switch)->$I_case_next)=($I_node));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("default")))) {
+if ((!($I_current_switch))) {
+($I_error_tok(($I_tok), ("stray default")));
+}
+$T_Node  *$I_node = ($I_new_node(($I_ND_CASE), ($I_tok)));
+(($I_tok)=($I_skip((($I_tok)->$I_next), (":"))));
+((($I_node)->$I_label)=($I_new_unique_name()));
+((($I_node)->$I_lhs)=($I_stmt(($I_rest), ($I_tok))));
+((($I_current_switch)->$I_default_case)=($I_node));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("for")))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_FOR), ($I_tok)));
+(($I_tok)=($I_skip((($I_tok)->$I_next), ("("))));
+($I_enter_scope());
+i8  *$I_brk = ($I_brk_label);
+i8  *$I_cont = ($I_cont_label);
+(($I_brk_label)=((($I_node)->$I_brk_label)=($I_new_unique_name())));
+(($I_cont_label)=((($I_node)->$I_cont_label)=($I_new_unique_name())));
+if (($I_is_typename(($I_tok)))) {
+$T_Type  *$I_basety = ($I_declspec((&($I_tok)), ($I_tok), ([v0 *]((0)))));
+((($I_node)->$I_init)=($I_declaration((&($I_tok)), ($I_tok), ($I_basety), ([v0 *]((0))))));
+}
+else {
+((($I_node)->$I_init)=($I_expr_stmt((&($I_tok)), ($I_tok))));
+}
+if ((!($I_equal(($I_tok), (";"))))) {
+((($I_node)->$I_cond)=($I_expr((&($I_tok)), ($I_tok))));
+}
+(($I_tok)=($I_skip(($I_tok), (";"))));
+if ((!($I_equal(($I_tok), (")"))))) {
+((($I_node)->$I_inc)=($I_expr((&($I_tok)), ($I_tok))));
+}
+(($I_tok)=($I_skip(($I_tok), (")"))));
+((($I_node)->$I_then)=($I_stmt(($I_rest), ($I_tok))));
+($I_leave_scope());
+(($I_brk_label)=($I_brk));
+(($I_cont_label)=($I_cont));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("while")))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_FOR), ($I_tok)));
+(($I_tok)=($I_skip((($I_tok)->$I_next), ("("))));
+((($I_node)->$I_cond)=($I_expr((&($I_tok)), ($I_tok))));
+(($I_tok)=($I_skip(($I_tok), (")"))));
+i8  *$I_brk = ($I_brk_label);
+i8  *$I_cont = ($I_cont_label);
+(($I_brk_label)=((($I_node)->$I_brk_label)=($I_new_unique_name())));
+(($I_cont_label)=((($I_node)->$I_cont_label)=($I_new_unique_name())));
+((($I_node)->$I_then)=($I_stmt(($I_rest), ($I_tok))));
+(($I_brk_label)=($I_brk));
+(($I_cont_label)=($I_cont));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("do")))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_DO), ($I_tok)));
+i8  *$I_brk = ($I_brk_label);
+i8  *$I_cont = ($I_cont_label);
+(($I_brk_label)=((($I_node)->$I_brk_label)=($I_new_unique_name())));
+(($I_cont_label)=((($I_node)->$I_cont_label)=($I_new_unique_name())));
+((($I_node)->$I_then)=($I_stmt((&($I_tok)), (($I_tok)->$I_next))));
+(($I_brk_label)=($I_brk));
+(($I_cont_label)=($I_cont));
+(($I_tok)=($I_skip(($I_tok), ("while"))));
+(($I_tok)=($I_skip(($I_tok), ("("))));
+((($I_node)->$I_cond)=($I_expr((&($I_tok)), ($I_tok))));
+(($I_tok)=($I_skip(($I_tok), (")"))));
+((*($I_rest))=($I_skip(($I_tok), (";"))));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("asm")))) {
+return ($I_asm_stmt(($I_rest), ($I_tok)));
+}
+if (($I_equal(($I_tok), ("goto")))) {
+if (($I_equal((($I_tok)->$I_next), ("*")))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_GOTO_EXPR), ($I_tok)));
+((($I_node)->$I_lhs)=($I_expr((&($I_tok)), ((($I_tok)->$I_next)->$I_next))));
+((*($I_rest))=($I_skip(($I_tok), (";"))));
+return ($I_node);
+}
+$T_Node  *$I_node = ($I_new_node(($I_ND_GOTO), ($I_tok)));
+((($I_node)->$I_label)=($I_get_ident((($I_tok)->$I_next))));
+((($I_node)->$I_goto_next)=($I_gotos));
+(($I_gotos)=($I_node));
+((*($I_rest))=($I_skip(((($I_tok)->$I_next)->$I_next), (";"))));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("break")))) {
+if ((!($I_brk_label))) {
+($I_error_tok(($I_tok), ("stray break")));
+}
+$T_Node  *$I_node = ($I_new_node(($I_ND_GOTO), ($I_tok)));
+((($I_node)->$I_unique_label)=($I_brk_label));
+((*($I_rest))=($I_skip((($I_tok)->$I_next), (";"))));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("continue")))) {
+if ((!($I_cont_label))) {
+($I_error_tok(($I_tok), ("stray continue")));
+}
+$T_Node  *$I_node = ($I_new_node(($I_ND_GOTO), ($I_tok)));
+((($I_node)->$I_unique_label)=($I_cont_label));
+((*($I_rest))=($I_skip((($I_tok)->$I_next), (";"))));
+return ($I_node);
+}
+if ((((($I_tok)->$I_kind)==($I_TK_IDENT))&($I_equal((($I_tok)->$I_next), (":"))))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_LABEL), ($I_tok)));
+((($I_node)->$I_label)=($I_strndup((($I_tok)->$I_loc), (($I_tok)->$I_len))));
+((($I_node)->$I_unique_label)=($I_new_unique_name()));
+((($I_node)->$I_lhs)=($I_stmt(($I_rest), ((($I_tok)->$I_next)->$I_next))));
+((($I_node)->$I_goto_next)=($I_labels));
+(($I_labels)=($I_node));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("{")))) {
+return ($I_compound_stmt(($I_rest), (($I_tok)->$I_next)));
+}
+return ($I_expr_stmt(($I_rest), ($I_tok)));
+}
+
+ $T_Node *$I_compound_stmt($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_new_node(($I_ND_BLOCK), ($I_tok)));
+$T_Node  $I_head;
+$T_Node  *$I_cur = (&($I_head));
+($I_enter_scope());
+while ((!($I_equal(($I_tok), ("}"))))) {
+if ((($I_is_typename(($I_tok)))&(!($I_equal((($I_tok)->$I_next), (":")))))) {
+$T_anon_9Xm4fk  $I_attr;
+$T_Type  *$I_basety = ($I_declspec((&($I_tok)), ($I_tok), (&($I_attr))));
+if ((($I_attr).$I_is_typedef)) {
+(($I_tok)=($I_parse_typedef(($I_tok), ($I_basety))));
+continue;
+}
+if (($I_is_function(($I_tok)))) {
+(($I_tok)=($I_function(($I_tok), ($I_basety), (&($I_attr)))));
+continue;
+}
+if ((($I_attr).$I_is_extern)) {
+(($I_tok)=($I_global_variable(($I_tok), ($I_basety), (&($I_attr)))));
+continue;
+}
+(($I_cur)=((($I_cur)->$I_next)=($I_declaration((&($I_tok)), ($I_tok), ($I_basety), (&($I_attr))))));
+}
+else {
+(($I_cur)=((($I_cur)->$I_next)=($I_stmt((&($I_tok)), ($I_tok)))));
+}
+($I_add_type(($I_cur)));
+}
+($I_leave_scope());
+((($I_node)->$I_body)=(($I_head).$I_next));
+((*($I_rest))=(($I_tok)->$I_next));
+return ($I_node);
+}
+
+ $T_Node *$I_expr_stmt($T_Token **$I_rest, $T_Token *$I_tok)
+{
+if (($I_equal(($I_tok), (";")))) {
+((*($I_rest))=(($I_tok)->$I_next));
+return ($I_new_node(($I_ND_BLOCK), ($I_tok)));
+}
+$T_Node  *$I_node = ($I_new_node(($I_ND_EXPR_STMT), ($I_tok)));
+((($I_node)->$I_lhs)=($I_expr((&($I_tok)), ($I_tok))));
+((*($I_rest))=($I_skip(($I_tok), (";"))));
+return ($I_node);
+}
+
+ $T_Node *$I_expr($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_assign((&($I_tok)), ($I_tok)));
+if (($I_equal(($I_tok), (",")))) {
+return ($I_new_binary(($I_ND_COMMA), ($I_node), ($I_expr(($I_rest), (($I_tok)->$I_next))), ($I_tok)));
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+
+ i64  $I_eval($T_Node *$I_node)
+{
+return ($I_eval2(($I_node), ([v0 *]((0)))));
+}
+
+ i64  $I_eval2($T_Node *$I_node, i8 ***$I_label)
+{
+($I_add_type(($I_node)));
+if (($I_is_flonum((($I_node)->$I_ty)))) {
+return ($I_eval_double(($I_node)));
+}
+for (u8 $_0DcUdu = 0; $_0DcUdu == 0; $_0DcUdu = 1) {
+if ((($I_node)->$I_kind) == ($I_ND_ADD)) {
+return (($I_eval2((($I_node)->$I_lhs), ($I_label)))+($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_SUB)) {
+return (($I_eval2((($I_node)->$I_lhs), ($I_label)))-($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_MUL)) {
+return (($I_eval((($I_node)->$I_lhs)))*($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_DIV)) {
+if (((($I_node)->$I_ty)->$I_is_unsigned)) {
+return (([u64  ](($I_eval((($I_node)->$I_lhs)))))/($I_eval((($I_node)->$I_rhs))));
+}
+return (($I_eval((($I_node)->$I_lhs)))/($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_NEG)) {
+return (-($I_eval((($I_node)->$I_lhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_MOD)) {
+if (((($I_node)->$I_ty)->$I_is_unsigned)) {
+return (([u64  ](($I_eval((($I_node)->$I_lhs)))))%($I_eval((($I_node)->$I_rhs))));
+}
+return (($I_eval((($I_node)->$I_lhs)))%($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_BITAND)) {
+return (($I_eval((($I_node)->$I_lhs)))&($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_BITOR)) {
+return (($I_eval((($I_node)->$I_lhs)))|($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_BITXOR)) {
+return (($I_eval((($I_node)->$I_lhs)))^($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_SHL)) {
+return (($I_eval((($I_node)->$I_lhs)))<<($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_SHR)) {
+if ((((($I_node)->$I_ty)->$I_is_unsigned)&(((($I_node)->$I_ty)->$I_size)==(8)))) {
+return (([u64  ](($I_eval((($I_node)->$I_lhs)))))>>($I_eval((($I_node)->$I_rhs))));
+}
+return (($I_eval((($I_node)->$I_lhs)))>>($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_EQ)) {
+return (($I_eval((($I_node)->$I_lhs)))==($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_NE)) {
+return (($I_eval((($I_node)->$I_lhs)))!=($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_LT)) {
+if ((((($I_node)->$I_lhs)->$I_ty)->$I_is_unsigned)) {
+return (([u64  ](($I_eval((($I_node)->$I_lhs)))))<($I_eval((($I_node)->$I_rhs))));
+}
+return (($I_eval((($I_node)->$I_lhs)))<($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_LE)) {
+if ((((($I_node)->$I_lhs)->$I_ty)->$I_is_unsigned)) {
+return (([u64  ](($I_eval((($I_node)->$I_lhs)))))<=($I_eval((($I_node)->$I_rhs))));
+}
+return (($I_eval((($I_node)->$I_lhs)))<=($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_COND)) {
+}
+else if ((($I_node)->$I_kind) == ($I_ND_COMMA)) {
+return ($I_eval2((($I_node)->$I_rhs), ($I_label)));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_NOT)) {
+return (!($I_eval((($I_node)->$I_lhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_BITNOT)) {
+return (~($I_eval((($I_node)->$I_lhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_LOGAND)) {
+return (($I_eval((($I_node)->$I_lhs)))&($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_LOGOR)) {
+return (($I_eval((($I_node)->$I_lhs)))|($I_eval((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_CAST)) {
+i64   $I_val = ($I_eval2((($I_node)->$I_lhs), ($I_label)));
+if (($I_is_integer((($I_node)->$I_ty)))) {
+for (u8 $_UVQzDF = 0; $_UVQzDF == 0; $_UVQzDF = 1) {
+if (((($I_node)->$I_ty)->$I_size) == (1)) {
+}
+else if (((($I_node)->$I_ty)->$I_size) == (2)) {
+}
+else if (((($I_node)->$I_ty)->$I_size) == (4)) {
+}
+}
+}
+return ($I_val);
+}
+else if ((($I_node)->$I_kind) == ($I_ND_ADDR)) {
+return ($I_eval_rval((($I_node)->$I_lhs), ($I_label)));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_LABEL_VAL)) {
+((*($I_label))=(&(($I_node)->$I_unique_label)));
+return (0);
+}
+else if ((($I_node)->$I_kind) == ($I_ND_MEMBER)) {
+if ((!($I_label))) {
+($I_error_tok((($I_node)->$I_tok), ("not a compile-time constant")));
+}
+if ((((($I_node)->$I_ty)->$I_kind)!=($I_TY_ARRAY))) {
+($I_error_tok((($I_node)->$I_tok), ("invalid initializer")));
+}
+return (($I_eval_rval((($I_node)->$I_lhs), ($I_label)))+((($I_node)->$I_member)->$I_offset));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_VAR)) {
+if ((!($I_label))) {
+($I_error_tok((($I_node)->$I_tok), ("not a compile-time constant")));
+}
+if ((((((($I_node)->$I_var)->$I_ty)->$I_kind)!=($I_TY_ARRAY))&((((($I_node)->$I_var)->$I_ty)->$I_kind)!=($I_TY_FUNC)))) {
+($I_error_tok((($I_node)->$I_tok), ("invalid initializer")));
+}
+((*($I_label))=(&((($I_node)->$I_var)->$I_name)));
+return (0);
+}
+else if ((($I_node)->$I_kind) == ($I_ND_NUM)) {
+return (($I_node)->$I_val);
+}
+}
+($I_error_tok((($I_node)->$I_tok), ("not a compile-time constant")));
+}
+
+ i64  $I_eval_rval($T_Node *$I_node, i8 ***$I_label)
+{
+for (u8 $_9yEHoQ = 0; $_9yEHoQ == 0; $_9yEHoQ = 1) {
+if ((($I_node)->$I_kind) == ($I_ND_VAR)) {
+if (((($I_node)->$I_var)->$I_is_local)) {
+($I_error_tok((($I_node)->$I_tok), ("not a compile-time constant")));
+}
+((*($I_label))=(&((($I_node)->$I_var)->$I_name)));
+return (0);
+}
+else if ((($I_node)->$I_kind) == ($I_ND_DEREF)) {
+return ($I_eval2((($I_node)->$I_lhs), ($I_label)));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_MEMBER)) {
+return (($I_eval_rval((($I_node)->$I_lhs), ($I_label)))+((($I_node)->$I_member)->$I_offset));
+}
+}
+($I_error_tok((($I_node)->$I_tok), ("invalid initializer")));
+}
+
+ i8 $I_is_const_expr($T_Node *$I_node)
+{
+($I_add_type(($I_node)));
+for (u8 $_ZhM0Av = 0; $_ZhM0Av == 0; $_ZhM0Av = 1) {
+if ((($I_node)->$I_kind) == ($I_ND_ADD)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_SUB)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_MUL)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_DIV)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_BITAND)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_BITOR)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_BITXOR)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_SHL)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_SHR)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_EQ)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_NE)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_LT)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_LE)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_LOGAND)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_LOGOR)) {
+return (($I_is_const_expr((($I_node)->$I_lhs)))&($I_is_const_expr((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_COND)) {
+if ((!($I_is_const_expr((($I_node)->$I_cond))))) {
+return (0);
+}
+}
+else if ((($I_node)->$I_kind) == ($I_ND_COMMA)) {
+return ($I_is_const_expr((($I_node)->$I_rhs)));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_NEG)) {
+return ($I_is_const_expr((($I_node)->$I_lhs)));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_NOT)) {
+return ($I_is_const_expr((($I_node)->$I_lhs)));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_BITNOT)) {
+return ($I_is_const_expr((($I_node)->$I_lhs)));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_CAST)) {
+return ($I_is_const_expr((($I_node)->$I_lhs)));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_NUM)) {
+return (1);
+}
+}
+return (0);
+}
+
+i64  $I_const_expr($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_conditional(($I_rest), ($I_tok)));
+return ($I_eval(($I_node)));
+}
+
+ f64 $I_eval_double($T_Node *$I_node)
+{
+($I_add_type(($I_node)));
+if (($I_is_integer((($I_node)->$I_ty)))) {
+if (((($I_node)->$I_ty)->$I_is_unsigned)) {
+return ([u32 ](($I_eval(($I_node)))));
+}
+return ($I_eval(($I_node)));
+}
+for (u8 $_8JqvNJ = 0; $_8JqvNJ == 0; $_8JqvNJ = 1) {
+if ((($I_node)->$I_kind) == ($I_ND_ADD)) {
+return (($I_eval_double((($I_node)->$I_lhs)))+($I_eval_double((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_SUB)) {
+return (($I_eval_double((($I_node)->$I_lhs)))-($I_eval_double((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_MUL)) {
+return (($I_eval_double((($I_node)->$I_lhs)))*($I_eval_double((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_DIV)) {
+return (($I_eval_double((($I_node)->$I_lhs)))/($I_eval_double((($I_node)->$I_rhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_NEG)) {
+return (-($I_eval_double((($I_node)->$I_lhs))));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_COND)) {
+}
+else if ((($I_node)->$I_kind) == ($I_ND_COMMA)) {
+return ($I_eval_double((($I_node)->$I_rhs)));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_CAST)) {
+if (($I_is_flonum(((($I_node)->$I_lhs)->$I_ty)))) {
+return ($I_eval_double((($I_node)->$I_lhs)));
+}
+return ($I_eval((($I_node)->$I_lhs)));
+}
+else if ((($I_node)->$I_kind) == ($I_ND_NUM)) {
+return (($I_node)->$I_fval);
+}
+}
+($I_error_tok((($I_node)->$I_tok), ("not a compile-time constant")));
+}
+
+ $T_Node *$I_to_assign($T_Node *$I_binary)
+{
+($I_add_type((($I_binary)->$I_lhs)));
+($I_add_type((($I_binary)->$I_rhs)));
+$T_Token  *$I_tok = (($I_binary)->$I_tok);
+if ((((($I_binary)->$I_lhs)->$I_kind)==($I_ND_MEMBER))) {
+$T_Obj  *$I_var = ($I_new_lvar((""), ($I_pointer_to((((($I_binary)->$I_lhs)->$I_lhs)->$I_ty)))));
+$T_Node  *$I_expr1 = ($I_new_binary(($I_ND_ASSIGN), ($I_new_var_node(($I_var), ($I_tok))), ($I_new_unary(($I_ND_ADDR), ((($I_binary)->$I_lhs)->$I_lhs), ($I_tok))), ($I_tok)));
+$T_Node  *$I_expr2 = ($I_new_unary(($I_ND_MEMBER), ($I_new_unary(($I_ND_DEREF), ($I_new_var_node(($I_var), ($I_tok))), ($I_tok))), ($I_tok)));
+((($I_expr2)->$I_member)=((($I_binary)->$I_lhs)->$I_member));
+$T_Node  *$I_expr3 = ($I_new_unary(($I_ND_MEMBER), ($I_new_unary(($I_ND_DEREF), ($I_new_var_node(($I_var), ($I_tok))), ($I_tok))), ($I_tok)));
+((($I_expr3)->$I_member)=((($I_binary)->$I_lhs)->$I_member));
+$T_Node  *$I_expr4 = ($I_new_binary(($I_ND_ASSIGN), ($I_expr2), ($I_new_binary((($I_binary)->$I_kind), ($I_expr3), (($I_binary)->$I_rhs), ($I_tok))), ($I_tok)));
+return ($I_new_binary(($I_ND_COMMA), ($I_expr1), ($I_expr4), ($I_tok)));
+}
+if ((((($I_binary)->$I_lhs)->$I_ty)->$I_is_atomic)) {
+$T_Node  $I_head;
+$T_Node  *$I_cur = (&($I_head));
+$T_Obj  *$I_addr = ($I_new_lvar((""), ($I_pointer_to(((($I_binary)->$I_lhs)->$I_ty)))));
+$T_Obj  *$I_val = ($I_new_lvar((""), ((($I_binary)->$I_rhs)->$I_ty)));
+$T_Obj  *$I_old = ($I_new_lvar((""), ((($I_binary)->$I_lhs)->$I_ty)));
+$T_Obj  *$I_new = ($I_new_lvar((""), ((($I_binary)->$I_lhs)->$I_ty)));
+(($I_cur)=((($I_cur)->$I_next)=($I_new_unary(($I_ND_EXPR_STMT), ($I_new_binary(($I_ND_ASSIGN), ($I_new_var_node(($I_addr), ($I_tok))), ($I_new_unary(($I_ND_ADDR), (($I_binary)->$I_lhs), ($I_tok))), ($I_tok))), ($I_tok)))));
+(($I_cur)=((($I_cur)->$I_next)=($I_new_unary(($I_ND_EXPR_STMT), ($I_new_binary(($I_ND_ASSIGN), ($I_new_var_node(($I_val), ($I_tok))), (($I_binary)->$I_rhs), ($I_tok))), ($I_tok)))));
+(($I_cur)=((($I_cur)->$I_next)=($I_new_unary(($I_ND_EXPR_STMT), ($I_new_binary(($I_ND_ASSIGN), ($I_new_var_node(($I_old), ($I_tok))), ($I_new_unary(($I_ND_DEREF), ($I_new_var_node(($I_addr), ($I_tok))), ($I_tok))), ($I_tok))), ($I_tok)))));
+$T_Node  *$I_loop = ($I_new_node(($I_ND_DO), ($I_tok)));
+((($I_loop)->$I_brk_label)=($I_new_unique_name()));
+((($I_loop)->$I_cont_label)=($I_new_unique_name()));
+$T_Node  *$I_body = ($I_new_binary(($I_ND_ASSIGN), ($I_new_var_node(($I_new), ($I_tok))), ($I_new_binary((($I_binary)->$I_kind), ($I_new_var_node(($I_old), ($I_tok))), ($I_new_var_node(($I_val), ($I_tok))), ($I_tok))), ($I_tok)));
+((($I_loop)->$I_then)=($I_new_node(($I_ND_BLOCK), ($I_tok))));
+(((($I_loop)->$I_then)->$I_body)=($I_new_unary(($I_ND_EXPR_STMT), ($I_body), ($I_tok))));
+$T_Node  *$I_cas = ($I_new_node(($I_ND_CAS), ($I_tok)));
+((($I_cas)->$I_cas_addr)=($I_new_var_node(($I_addr), ($I_tok))));
+((($I_cas)->$I_cas_old)=($I_new_unary(($I_ND_ADDR), ($I_new_var_node(($I_old), ($I_tok))), ($I_tok))));
+((($I_cas)->$I_cas_new)=($I_new_var_node(($I_new), ($I_tok))));
+((($I_loop)->$I_cond)=($I_new_unary(($I_ND_NOT), ($I_cas), ($I_tok))));
+(($I_cur)=((($I_cur)->$I_next)=($I_loop)));
+(($I_cur)=((($I_cur)->$I_next)=($I_new_unary(($I_ND_EXPR_STMT), ($I_new_var_node(($I_new), ($I_tok))), ($I_tok)))));
+$T_Node  *$I_node = ($I_new_node(($I_ND_STMT_EXPR), ($I_tok)));
+((($I_node)->$I_body)=(($I_head).$I_next));
+return ($I_node);
+}
+$T_Obj  *$I_var = ($I_new_lvar((""), ($I_pointer_to(((($I_binary)->$I_lhs)->$I_ty)))));
+$T_Node  *$I_expr1 = ($I_new_binary(($I_ND_ASSIGN), ($I_new_var_node(($I_var), ($I_tok))), ($I_new_unary(($I_ND_ADDR), (($I_binary)->$I_lhs), ($I_tok))), ($I_tok)));
+$T_Node  *$I_expr2 = ($I_new_binary(($I_ND_ASSIGN), ($I_new_unary(($I_ND_DEREF), ($I_new_var_node(($I_var), ($I_tok))), ($I_tok))), ($I_new_binary((($I_binary)->$I_kind), ($I_new_unary(($I_ND_DEREF), ($I_new_var_node(($I_var), ($I_tok))), ($I_tok))), (($I_binary)->$I_rhs), ($I_tok))), ($I_tok)));
+return ($I_new_binary(($I_ND_COMMA), ($I_expr1), ($I_expr2), ($I_tok)));
+}
+
+ $T_Node *$I_assign($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_conditional((&($I_tok)), ($I_tok)));
+if (($I_equal(($I_tok), ("=")))) {
+return ($I_new_binary(($I_ND_ASSIGN), ($I_node), ($I_assign(($I_rest), (($I_tok)->$I_next))), ($I_tok)));
+}
+if (($I_equal(($I_tok), ("+=")))) {
+return ($I_to_assign(($I_new_add(($I_node), ($I_assign(($I_rest), (($I_tok)->$I_next))), ($I_tok)))));
+}
+if (($I_equal(($I_tok), ("-=")))) {
+return ($I_to_assign(($I_new_sub(($I_node), ($I_assign(($I_rest), (($I_tok)->$I_next))), ($I_tok)))));
+}
+if (($I_equal(($I_tok), ("*=")))) {
+return ($I_to_assign(($I_new_binary(($I_ND_MUL), ($I_node), ($I_assign(($I_rest), (($I_tok)->$I_next))), ($I_tok)))));
+}
+if (($I_equal(($I_tok), ("/=")))) {
+return ($I_to_assign(($I_new_binary(($I_ND_DIV), ($I_node), ($I_assign(($I_rest), (($I_tok)->$I_next))), ($I_tok)))));
+}
+if (($I_equal(($I_tok), ("%=")))) {
+return ($I_to_assign(($I_new_binary(($I_ND_MOD), ($I_node), ($I_assign(($I_rest), (($I_tok)->$I_next))), ($I_tok)))));
+}
+if (($I_equal(($I_tok), ("&=")))) {
+return ($I_to_assign(($I_new_binary(($I_ND_BITAND), ($I_node), ($I_assign(($I_rest), (($I_tok)->$I_next))), ($I_tok)))));
+}
+if (($I_equal(($I_tok), ("|=")))) {
+return ($I_to_assign(($I_new_binary(($I_ND_BITOR), ($I_node), ($I_assign(($I_rest), (($I_tok)->$I_next))), ($I_tok)))));
+}
+if (($I_equal(($I_tok), ("^=")))) {
+return ($I_to_assign(($I_new_binary(($I_ND_BITXOR), ($I_node), ($I_assign(($I_rest), (($I_tok)->$I_next))), ($I_tok)))));
+}
+if (($I_equal(($I_tok), ("<<=")))) {
+return ($I_to_assign(($I_new_binary(($I_ND_SHL), ($I_node), ($I_assign(($I_rest), (($I_tok)->$I_next))), ($I_tok)))));
+}
+if (($I_equal(($I_tok), (">>=")))) {
+return ($I_to_assign(($I_new_binary(($I_ND_SHR), ($I_node), ($I_assign(($I_rest), (($I_tok)->$I_next))), ($I_tok)))));
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+
+ $T_Node *$I_conditional($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_cond = ($I_logor((&($I_tok)), ($I_tok)));
+if ((!($I_equal(($I_tok), ("?"))))) {
+((*($I_rest))=($I_tok));
+return ($I_cond);
+}
+if (($I_equal((($I_tok)->$I_next), (":")))) {
+($I_add_type(($I_cond)));
+$T_Obj  *$I_var = ($I_new_lvar((""), (($I_cond)->$I_ty)));
+$T_Node  *$I_lhs = ($I_new_binary(($I_ND_ASSIGN), ($I_new_var_node(($I_var), ($I_tok))), ($I_cond), ($I_tok)));
+$T_Node  *$I_rhs = ($I_new_node(($I_ND_COND), ($I_tok)));
+((($I_rhs)->$I_cond)=($I_new_var_node(($I_var), ($I_tok))));
+((($I_rhs)->$I_then)=($I_new_var_node(($I_var), ($I_tok))));
+((($I_rhs)->$I_els)=($I_conditional(($I_rest), ((($I_tok)->$I_next)->$I_next))));
+return ($I_new_binary(($I_ND_COMMA), ($I_lhs), ($I_rhs), ($I_tok)));
+}
+$T_Node  *$I_node = ($I_new_node(($I_ND_COND), ($I_tok)));
+((($I_node)->$I_cond)=($I_cond));
+((($I_node)->$I_then)=($I_expr((&($I_tok)), (($I_tok)->$I_next))));
+(($I_tok)=($I_skip(($I_tok), (":"))));
+((($I_node)->$I_els)=($I_conditional(($I_rest), ($I_tok))));
+return ($I_node);
+}
+
+ $T_Node *$I_logor($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_logand((&($I_tok)), ($I_tok)));
+while (($I_equal(($I_tok), ("||")))) {
+$T_Token  *$I_start = ($I_tok);
+(($I_node)=($I_new_binary(($I_ND_LOGOR), ($I_node), ($I_logand((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+
+ $T_Node *$I_logand($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_bitor((&($I_tok)), ($I_tok)));
+while (($I_equal(($I_tok), ("&&")))) {
+$T_Token  *$I_start = ($I_tok);
+(($I_node)=($I_new_binary(($I_ND_LOGAND), ($I_node), ($I_bitor((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+
+ $T_Node *$I_bitor($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_bitxor((&($I_tok)), ($I_tok)));
+while (($I_equal(($I_tok), ("|")))) {
+$T_Token  *$I_start = ($I_tok);
+(($I_node)=($I_new_binary(($I_ND_BITOR), ($I_node), ($I_bitxor((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+
+ $T_Node *$I_bitxor($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_bitand((&($I_tok)), ($I_tok)));
+while (($I_equal(($I_tok), ("^")))) {
+$T_Token  *$I_start = ($I_tok);
+(($I_node)=($I_new_binary(($I_ND_BITXOR), ($I_node), ($I_bitand((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+
+ $T_Node *$I_bitand($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_equality((&($I_tok)), ($I_tok)));
+while (($I_equal(($I_tok), ("&")))) {
+$T_Token  *$I_start = ($I_tok);
+(($I_node)=($I_new_binary(($I_ND_BITAND), ($I_node), ($I_equality((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+
+ $T_Node *$I_equality($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_relational((&($I_tok)), ($I_tok)));
+for (0;1; 0) {
+$T_Token  *$I_start = ($I_tok);
+if (($I_equal(($I_tok), ("==")))) {
+(($I_node)=($I_new_binary(($I_ND_EQ), ($I_node), ($I_relational((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+continue;
+}
+if (($I_equal(($I_tok), ("!=")))) {
+(($I_node)=($I_new_binary(($I_ND_NE), ($I_node), ($I_relational((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+continue;
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+}
+
+ $T_Node *$I_relational($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_shift((&($I_tok)), ($I_tok)));
+for (0;1; 0) {
+$T_Token  *$I_start = ($I_tok);
+if (($I_equal(($I_tok), ("<")))) {
+(($I_node)=($I_new_binary(($I_ND_LT), ($I_node), ($I_shift((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+continue;
+}
+if (($I_equal(($I_tok), ("<=")))) {
+(($I_node)=($I_new_binary(($I_ND_LE), ($I_node), ($I_shift((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+continue;
+}
+if (($I_equal(($I_tok), (">")))) {
+(($I_node)=($I_new_binary(($I_ND_LT), ($I_shift((&($I_tok)), (($I_tok)->$I_next))), ($I_node), ($I_start))));
+continue;
+}
+if (($I_equal(($I_tok), (">=")))) {
+(($I_node)=($I_new_binary(($I_ND_LE), ($I_shift((&($I_tok)), (($I_tok)->$I_next))), ($I_node), ($I_start))));
+continue;
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+}
+
+ $T_Node *$I_shift($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_add((&($I_tok)), ($I_tok)));
+for (0;1; 0) {
+$T_Token  *$I_start = ($I_tok);
+if (($I_equal(($I_tok), ("<<")))) {
+(($I_node)=($I_new_binary(($I_ND_SHL), ($I_node), ($I_add((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+continue;
+}
+if (($I_equal(($I_tok), (">>")))) {
+(($I_node)=($I_new_binary(($I_ND_SHR), ($I_node), ($I_add((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+continue;
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+}
+
+ $T_Node *$I_new_add($T_Node *$I_lhs, $T_Node *$I_rhs, $T_Token *$I_tok)
+{
+($I_add_type(($I_lhs)));
+($I_add_type(($I_rhs)));
+if ((($I_is_numeric((($I_lhs)->$I_ty)))&($I_is_numeric((($I_rhs)->$I_ty))))) {
+return ($I_new_binary(($I_ND_ADD), ($I_lhs), ($I_rhs), ($I_tok)));
+}
+if ((((($I_lhs)->$I_ty)->$I_base)&((($I_rhs)->$I_ty)->$I_base))) {
+($I_error_tok(($I_tok), ("invalid operands")));
+}
+if (((!((($I_lhs)->$I_ty)->$I_base))&((($I_rhs)->$I_ty)->$I_base))) {
+$T_Node  *$I_tmp = ($I_lhs);
+(($I_lhs)=($I_rhs));
+(($I_rhs)=($I_tmp));
+}
+if (((((($I_lhs)->$I_ty)->$I_base)->$I_kind)==($I_TY_VLA))) {
+(($I_rhs)=($I_new_binary(($I_ND_MUL), ($I_rhs), ($I_new_var_node((((($I_lhs)->$I_ty)->$I_base)->$I_vla_size), ($I_tok))), ($I_tok))));
+return ($I_new_binary(($I_ND_ADD), ($I_lhs), ($I_rhs), ($I_tok)));
+}
+(($I_rhs)=($I_new_binary(($I_ND_MUL), ($I_rhs), ($I_new_long((((($I_lhs)->$I_ty)->$I_base)->$I_size), ($I_tok))), ($I_tok))));
+return ($I_new_binary(($I_ND_ADD), ($I_lhs), ($I_rhs), ($I_tok)));
+}
+
+ $T_Node *$I_new_sub($T_Node *$I_lhs, $T_Node *$I_rhs, $T_Token *$I_tok)
+{
+($I_add_type(($I_lhs)));
+($I_add_type(($I_rhs)));
+if ((($I_is_numeric((($I_lhs)->$I_ty)))&($I_is_numeric((($I_rhs)->$I_ty))))) {
+return ($I_new_binary(($I_ND_SUB), ($I_lhs), ($I_rhs), ($I_tok)));
+}
+if (((((($I_lhs)->$I_ty)->$I_base)->$I_kind)==($I_TY_VLA))) {
+(($I_rhs)=($I_new_binary(($I_ND_MUL), ($I_rhs), ($I_new_var_node((((($I_lhs)->$I_ty)->$I_base)->$I_vla_size), ($I_tok))), ($I_tok))));
+($I_add_type(($I_rhs)));
+$T_Node  *$I_node = ($I_new_binary(($I_ND_SUB), ($I_lhs), ($I_rhs), ($I_tok)));
+((($I_node)->$I_ty)=(($I_lhs)->$I_ty));
+return ($I_node);
+}
+if ((((($I_lhs)->$I_ty)->$I_base)&($I_is_integer((($I_rhs)->$I_ty))))) {
+(($I_rhs)=($I_new_binary(($I_ND_MUL), ($I_rhs), ($I_new_long((((($I_lhs)->$I_ty)->$I_base)->$I_size), ($I_tok))), ($I_tok))));
+($I_add_type(($I_rhs)));
+$T_Node  *$I_node = ($I_new_binary(($I_ND_SUB), ($I_lhs), ($I_rhs), ($I_tok)));
+((($I_node)->$I_ty)=(($I_lhs)->$I_ty));
+return ($I_node);
+}
+if ((((($I_lhs)->$I_ty)->$I_base)&((($I_rhs)->$I_ty)->$I_base))) {
+$T_Node  *$I_node = ($I_new_binary(($I_ND_SUB), ($I_lhs), ($I_rhs), ($I_tok)));
+((($I_node)->$I_ty)=($I_ty_long));
+return ($I_new_binary(($I_ND_DIV), ($I_node), ($I_new_num((((($I_lhs)->$I_ty)->$I_base)->$I_size), ($I_tok))), ($I_tok)));
+}
+($I_error_tok(($I_tok), ("invalid operands")));
+}
+
+ $T_Node *$I_add($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_mul((&($I_tok)), ($I_tok)));
+for (0;1; 0) {
+$T_Token  *$I_start = ($I_tok);
+if (($I_equal(($I_tok), ("+")))) {
+(($I_node)=($I_new_add(($I_node), ($I_mul((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+continue;
+}
+if (($I_equal(($I_tok), ("-")))) {
+(($I_node)=($I_new_sub(($I_node), ($I_mul((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+continue;
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+}
+
+ $T_Node *$I_mul($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Node  *$I_node = ($I_cast((&($I_tok)), ($I_tok)));
+for (0;1; 0) {
+$T_Token  *$I_start = ($I_tok);
+if (($I_equal(($I_tok), ("*")))) {
+(($I_node)=($I_new_binary(($I_ND_MUL), ($I_node), ($I_cast((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+continue;
+}
+if (($I_equal(($I_tok), ("/")))) {
+(($I_node)=($I_new_binary(($I_ND_DIV), ($I_node), ($I_cast((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+continue;
+}
+if (($I_equal(($I_tok), ("%")))) {
+(($I_node)=($I_new_binary(($I_ND_MOD), ($I_node), ($I_cast((&($I_tok)), (($I_tok)->$I_next))), ($I_start))));
+continue;
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+}
+
+ $T_Node *$I_cast($T_Token **$I_rest, $T_Token *$I_tok)
+{
+if ((($I_equal(($I_tok), ("(")))&($I_is_typename((($I_tok)->$I_next))))) {
+$T_Token  *$I_start = ($I_tok);
+$T_Type  *$I_ty = ($I_typename((&($I_tok)), (($I_tok)->$I_next)));
+(($I_tok)=($I_skip(($I_tok), (")"))));
+if (($I_equal(($I_tok), ("{")))) {
+return ($I_unary(($I_rest), ($I_start)));
+}
+$T_Node  *$I_node = ($I_new_cast(($I_cast(($I_rest), ($I_tok))), ($I_ty)));
+((($I_node)->$I_tok)=($I_start));
+return ($I_node);
+}
+return ($I_unary(($I_rest), ($I_tok)));
+}
+
+ $T_Node *$I_unary($T_Token **$I_rest, $T_Token *$I_tok)
+{
+if (($I_equal(($I_tok), ("+")))) {
+return ($I_cast(($I_rest), (($I_tok)->$I_next)));
+}
+if (($I_equal(($I_tok), ("-")))) {
+return ($I_new_unary(($I_ND_NEG), ($I_cast(($I_rest), (($I_tok)->$I_next))), ($I_tok)));
+}
+if (($I_equal(($I_tok), ("&")))) {
+$T_Node  *$I_lhs = ($I_cast(($I_rest), (($I_tok)->$I_next)));
+($I_add_type(($I_lhs)));
+if ((((($I_lhs)->$I_kind)==($I_ND_MEMBER))&((($I_lhs)->$I_member)->$I_is_bitfield))) {
+($I_error_tok(($I_tok), ("cannot take address of bitfield")));
+}
+return ($I_new_unary(($I_ND_ADDR), ($I_lhs), ($I_tok)));
+}
+if (($I_equal(($I_tok), ("*")))) {
+$T_Node  *$I_node = ($I_cast(($I_rest), (($I_tok)->$I_next)));
+($I_add_type(($I_node)));
+if ((((($I_node)->$I_ty)->$I_kind)==($I_TY_FUNC))) {
+return ($I_node);
+}
+return ($I_new_unary(($I_ND_DEREF), ($I_node), ($I_tok)));
+}
+if (($I_equal(($I_tok), ("!")))) {
+return ($I_new_unary(($I_ND_NOT), ($I_cast(($I_rest), (($I_tok)->$I_next))), ($I_tok)));
+}
+if (($I_equal(($I_tok), ("~")))) {
+return ($I_new_unary(($I_ND_BITNOT), ($I_cast(($I_rest), (($I_tok)->$I_next))), ($I_tok)));
+}
+if (($I_equal(($I_tok), ("++")))) {
+return ($I_to_assign(($I_new_add(($I_unary(($I_rest), (($I_tok)->$I_next))), ($I_new_num((1), ($I_tok))), ($I_tok)))));
+}
+if (($I_equal(($I_tok), ("--")))) {
+return ($I_to_assign(($I_new_sub(($I_unary(($I_rest), (($I_tok)->$I_next))), ($I_new_num((1), ($I_tok))), ($I_tok)))));
+}
+if (($I_equal(($I_tok), ("&&")))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_LABEL_VAL), ($I_tok)));
+((($I_node)->$I_label)=($I_get_ident((($I_tok)->$I_next))));
+((($I_node)->$I_goto_next)=($I_gotos));
+(($I_gotos)=($I_node));
+((*($I_rest))=((($I_tok)->$I_next)->$I_next));
+return ($I_node);
+}
+return ($I_postfix(($I_rest), ($I_tok)));
+}
+
+ v0 $I_struct_members($T_Token **$I_rest, $T_Token *$I_tok, $T_Type *$I_ty)
+{
+$T_Member  $I_head;
+$T_Member  *$I_cur = (&($I_head));
+i32  $I_idx = (0);
+while ((!($I_equal(($I_tok), ("}"))))) {
+$T_anon_9Xm4fk  $I_attr;
+$T_Type  *$I_basety = ($I_declspec((&($I_tok)), ($I_tok), (&($I_attr))));
+i8  $I_first = (1);
+if (((((($I_basety)->$I_kind)==($I_TY_STRUCT))|((($I_basety)->$I_kind)==($I_TY_UNION)))&($I_consume((&($I_tok)), ($I_tok), (";"))))) {
+$T_Member  *$I_mem = ($I_calloc((1), (0)));
+((($I_mem)->$I_ty)=($I_basety));
+((($I_mem)->$I_idx)=(($I_idx)++));
+(($I_cur)=((($I_cur)->$I_next)=($I_mem)));
+continue;
+}
+while ((!($I_consume((&($I_tok)), ($I_tok), (";"))))) {
+if ((!($I_first))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+(($I_first)=(0));
+$T_Member  *$I_mem = ($I_calloc((1), (0)));
+((($I_mem)->$I_ty)=($I_declarator((&($I_tok)), ($I_tok), ($I_basety))));
+((($I_mem)->$I_name)=((($I_mem)->$I_ty)->$I_name));
+((($I_mem)->$I_idx)=(($I_idx)++));
+if (($I_consume((&($I_tok)), ($I_tok), (":")))) {
+((($I_mem)->$I_is_bitfield)=(1));
+((($I_mem)->$I_bit_width)=($I_const_expr((&($I_tok)), ($I_tok))));
+}
+(($I_cur)=((($I_cur)->$I_next)=($I_mem)));
+}
+}
+if ((((($I_cur)!=(&($I_head)))&(((($I_cur)->$I_ty)->$I_kind)==($I_TY_ARRAY)))&(((($I_cur)->$I_ty)->$I_array_len)<(0)))) {
+((($I_cur)->$I_ty)=($I_array_of(((($I_cur)->$I_ty)->$I_base), (0))));
+((($I_ty)->$I_is_flexible)=(1));
+}
+((*($I_rest))=(($I_tok)->$I_next));
+((($I_ty)->$I_members)=(($I_head).$I_next));
+}
+
+ $T_Token *$I_attribute_list($T_Token *$I_tok, $T_Type *$I_ty)
+{
+while (($I_consume((&($I_tok)), ($I_tok), ("__attribute__")))) {
+(($I_tok)=($I_skip(($I_tok), ("("))));
+(($I_tok)=($I_skip(($I_tok), ("("))));
+i8  $I_first = (1);
+while ((!($I_consume((&($I_tok)), ($I_tok), (")"))))) {
+if ((!($I_first))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+(($I_first)=(0));
+if (($I_consume((&($I_tok)), ($I_tok), ("packed")))) {
+((($I_ty)->$I_is_packed)=(1));
+continue;
+}
+if (($I_consume((&($I_tok)), ($I_tok), ("aligned")))) {
+(($I_tok)=($I_skip(($I_tok), ("("))));
+((($I_ty)->$I_align)=($I_const_expr((&($I_tok)), ($I_tok))));
+(($I_tok)=($I_skip(($I_tok), (")"))));
+continue;
+}
+($I_error_tok(($I_tok), ("unknown attribute")));
+}
+(($I_tok)=($I_skip(($I_tok), (")"))));
+}
+return ($I_tok);
+}
+
+ $T_Type *$I_struct_union_decl($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Type  *$I_ty = ($I_struct_type());
+(($I_tok)=($I_attribute_list(($I_tok), ($I_ty))));
+$T_Token  *$I_tag = ([v0 *]((0)));
+if (((($I_tok)->$I_kind)==($I_TK_IDENT))) {
+(($I_tag)=($I_tok));
+(($I_tok)=(($I_tok)->$I_next));
+}
+if ((($I_tag)&(!($I_equal(($I_tok), ("{")))))) {
+((*($I_rest))=($I_tok));
+$T_Type  *$I_ty2 = ($I_find_tag(($I_tag)));
+if (($I_ty2)) {
+return ($I_ty2);
+}
+((($I_ty)->$I_size)=(-(1)));
+($I_push_tag_scope(($I_tag), ($I_ty)));
+return ($I_ty);
+}
+(($I_tok)=($I_skip(($I_tok), ("{"))));
+($I_struct_members((&($I_tok)), ($I_tok), ($I_ty)));
+((*($I_rest))=($I_attribute_list(($I_tok), ($I_ty))));
+if (($I_tag)) {
+$T_Type  *$I_ty2 = ($I_hashmap_get2((&(($I_scope)->$I_tags)), (($I_tag)->$I_loc), (($I_tag)->$I_len)));
+if (($I_ty2)) {
+((*($I_ty2))=(*($I_ty)));
+return ($I_ty2);
+}
+($I_push_tag_scope(($I_tag), ($I_ty)));
+}
+return ($I_ty);
+}
+
+ $T_Type *$I_struct_decl($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Type  *$I_ty = ($I_struct_union_decl(($I_rest), ($I_tok)));
+((($I_ty)->$I_kind)=($I_TY_STRUCT));
+if (((($I_ty)->$I_size)<(0))) {
+return ($I_ty);
+}
+i32  $I_bits = (0);
+for ($T_Member  *$I_mem = (($I_ty)->$I_members);
+($I_mem); (($I_mem)=(($I_mem)->$I_next))) {
+if (((($I_mem)->$I_is_bitfield)&((($I_mem)->$I_bit_width)==(0)))) {
+(($I_bits)=($I_align_to(($I_bits), (((($I_mem)->$I_ty)->$I_size)*(8)))));
+}
+else {
+if ((($I_mem)->$I_is_bitfield)) {
+i32  $I_sz = ((($I_mem)->$I_ty)->$I_size);
+if (((($I_bits)/(($I_sz)*(8)))!=(((($I_bits)+(($I_mem)->$I_bit_width))-(1))/(($I_sz)*(8))))) {
+(($I_bits)=($I_align_to(($I_bits), (($I_sz)*(8)))));
+}
+((($I_mem)->$I_offset)=($I_align_down((($I_bits)/(8)), ($I_sz))));
+((($I_mem)->$I_bit_offset)=(($I_bits)%(($I_sz)*(8))));
+(($I_bits)+=(($I_mem)->$I_bit_width));
+}
+else {
+if ((!(($I_ty)->$I_is_packed))) {
+(($I_bits)=($I_align_to(($I_bits), ((($I_mem)->$I_align)*(8)))));
+}
+((($I_mem)->$I_offset)=(($I_bits)/(8)));
+(($I_bits)+=(((($I_mem)->$I_ty)->$I_size)*(8)));
+}
+}
+if (((!(($I_ty)->$I_is_packed))&((($I_ty)->$I_align)<(($I_mem)->$I_align)))) {
+((($I_ty)->$I_align)=(($I_mem)->$I_align));
+}
+}
+((($I_ty)->$I_size)=(($I_align_to(($I_bits), ((($I_ty)->$I_align)*(8))))/(8)));
+return ($I_ty);
+}
+
+ $T_Type *$I_union_decl($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Type  *$I_ty = ($I_struct_union_decl(($I_rest), ($I_tok)));
+((($I_ty)->$I_kind)=($I_TY_UNION));
+if (((($I_ty)->$I_size)<(0))) {
+return ($I_ty);
+}
+for ($T_Member  *$I_mem = (($I_ty)->$I_members);
+($I_mem); (($I_mem)=(($I_mem)->$I_next))) {
+if (((($I_ty)->$I_align)<(($I_mem)->$I_align))) {
+((($I_ty)->$I_align)=(($I_mem)->$I_align));
+}
+if (((($I_ty)->$I_size)<((($I_mem)->$I_ty)->$I_size))) {
+((($I_ty)->$I_size)=((($I_mem)->$I_ty)->$I_size));
+}
+}
+((($I_ty)->$I_size)=($I_align_to((($I_ty)->$I_size), (($I_ty)->$I_align))));
+return ($I_ty);
+}
+
+ $T_Member *$I_get_struct_member($T_Type *$I_ty, $T_Token *$I_tok)
+{
+for ($T_Member  *$I_mem = (($I_ty)->$I_members);
+($I_mem); (($I_mem)=(($I_mem)->$I_next))) {
+if ((((((($I_mem)->$I_ty)->$I_kind)==($I_TY_STRUCT))|(((($I_mem)->$I_ty)->$I_kind)==($I_TY_UNION)))&(!(($I_mem)->$I_name)))) {
+if (($I_get_struct_member((($I_mem)->$I_ty), ($I_tok)))) {
+return ($I_mem);
+}
+continue;
+}
+if (((((($I_mem)->$I_name)->$I_len)==(($I_tok)->$I_len))&(!($I_strncmp(((($I_mem)->$I_name)->$I_loc), (($I_tok)->$I_loc), (($I_tok)->$I_len)))))) {
+return ($I_mem);
+}
+}
+return ([v0 *]((0)));
+}
+
+ $T_Node *$I_struct_ref($T_Node *$I_node, $T_Token *$I_tok)
+{
+($I_add_type(($I_node)));
+if (((((($I_node)->$I_ty)->$I_kind)!=($I_TY_STRUCT))&(((($I_node)->$I_ty)->$I_kind)!=($I_TY_UNION)))) {
+($I_error_tok((($I_node)->$I_tok), ("not a struct nor a union")));
+}
+$T_Type  *$I_ty = (($I_node)->$I_ty);
+for (0;1; 0) {
+$T_Member  *$I_mem = ($I_get_struct_member(($I_ty), ($I_tok)));
+if ((!($I_mem))) {
+($I_error_tok(($I_tok), ("no such member")));
+}
+(($I_node)=($I_new_unary(($I_ND_MEMBER), ($I_node), ($I_tok))));
+((($I_node)->$I_member)=($I_mem));
+if ((($I_mem)->$I_name)) {
+break;
+}
+(($I_ty)=(($I_mem)->$I_ty));
+}
+return ($I_node);
+}
+
+ $T_Node *$I_new_inc_dec($T_Node *$I_node, $T_Token *$I_tok, i32 $I_addend)
+{
+($I_add_type(($I_node)));
+return ($I_new_cast(($I_new_add(($I_to_assign(($I_new_add(($I_node), ($I_new_num(($I_addend), ($I_tok))), ($I_tok))))), ($I_new_num((-($I_addend)), ($I_tok))), ($I_tok))), (($I_node)->$I_ty)));
+}
+
+ $T_Node *$I_postfix($T_Token **$I_rest, $T_Token *$I_tok)
+{
+if ((($I_equal(($I_tok), ("(")))&($I_is_typename((($I_tok)->$I_next))))) {
+$T_Token  *$I_start = ($I_tok);
+$T_Type  *$I_ty = ($I_typename((&($I_tok)), (($I_tok)->$I_next)));
+(($I_tok)=($I_skip(($I_tok), (")"))));
+if (((($I_scope)->$I_next)==([v0 *]((0))))) {
+$T_Obj  *$I_var = ($I_new_anon_gvar(($I_ty)));
+($I_gvar_initializer(($I_rest), ($I_tok), ($I_var)));
+return ($I_new_var_node(($I_var), ($I_start)));
+}
+$T_Obj  *$I_var = ($I_new_lvar((""), ($I_ty)));
+$T_Node  *$I_lhs = ($I_lvar_initializer(($I_rest), ($I_tok), ($I_var)));
+$T_Node  *$I_rhs = ($I_new_var_node(($I_var), ($I_tok)));
+return ($I_new_binary(($I_ND_COMMA), ($I_lhs), ($I_rhs), ($I_start)));
+}
+$T_Node  *$I_node = ($I_primary((&($I_tok)), ($I_tok)));
+for (0;1; 0) {
+if (($I_equal(($I_tok), ("(")))) {
+(($I_node)=($I_funcall((&($I_tok)), (($I_tok)->$I_next), ($I_node))));
+continue;
+}
+if (($I_equal(($I_tok), ("[")))) {
+$T_Token  *$I_start = ($I_tok);
+$T_Node  *$I_idx = ($I_expr((&($I_tok)), (($I_tok)->$I_next)));
+(($I_tok)=($I_skip(($I_tok), ("]"))));
+(($I_node)=($I_new_unary(($I_ND_DEREF), ($I_new_add(($I_node), ($I_idx), ($I_start))), ($I_start))));
+continue;
+}
+if (($I_equal(($I_tok), (".")))) {
+(($I_node)=($I_struct_ref(($I_node), (($I_tok)->$I_next))));
+(($I_tok)=((($I_tok)->$I_next)->$I_next));
+continue;
+}
+if (($I_equal(($I_tok), ("->")))) {
+(($I_node)=($I_new_unary(($I_ND_DEREF), ($I_node), ($I_tok))));
+(($I_node)=($I_struct_ref(($I_node), (($I_tok)->$I_next))));
+(($I_tok)=((($I_tok)->$I_next)->$I_next));
+continue;
+}
+if (($I_equal(($I_tok), ("++")))) {
+(($I_node)=($I_new_inc_dec(($I_node), ($I_tok), (1))));
+(($I_tok)=(($I_tok)->$I_next));
+continue;
+}
+if (($I_equal(($I_tok), ("--")))) {
+(($I_node)=($I_new_inc_dec(($I_node), ($I_tok), (-(1)))));
+(($I_tok)=(($I_tok)->$I_next));
+continue;
+}
+((*($I_rest))=($I_tok));
+return ($I_node);
+}
+}
+
+ $T_Node *$I_funcall($T_Token **$I_rest, $T_Token *$I_tok, $T_Node *$I_fn)
+{
+($I_add_type(($I_fn)));
+if (((((($I_fn)->$I_ty)->$I_kind)!=($I_TY_FUNC))&((((($I_fn)->$I_ty)->$I_kind)!=($I_TY_PTR))|((((($I_fn)->$I_ty)->$I_base)->$I_kind)!=($I_TY_FUNC))))) {
+($I_error_tok((($I_fn)->$I_tok), ("not a function")));
+}
+$T_Type  *$I_ty;
+$T_Type  *$I_param_ty = (($I_ty)->$I_params);
+$T_Node  $I_head;
+$T_Node  *$I_cur = (&($I_head));
+while ((!($I_equal(($I_tok), (")"))))) {
+if ((($I_cur)!=(&($I_head)))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+$T_Node  *$I_arg = ($I_assign((&($I_tok)), ($I_tok)));
+($I_add_type(($I_arg)));
+if (((!($I_param_ty))&(!(($I_ty)->$I_is_variadic)))) {
+($I_error_tok(($I_tok), ("too many arguments")));
+}
+if (($I_param_ty)) {
+if ((((($I_param_ty)->$I_kind)!=($I_TY_STRUCT))&((($I_param_ty)->$I_kind)!=($I_TY_UNION)))) {
+(($I_arg)=($I_new_cast(($I_arg), ($I_param_ty))));
+}
+(($I_param_ty)=(($I_param_ty)->$I_next));
+}
+else {
+if ((((($I_arg)->$I_ty)->$I_kind)==($I_TY_FLOAT))) {
+(($I_arg)=($I_new_cast(($I_arg), ($I_ty_double))));
+}
+}
+(($I_cur)=((($I_cur)->$I_next)=($I_arg)));
+}
+if (($I_param_ty)) {
+($I_error_tok(($I_tok), ("too few arguments")));
+}
+((*($I_rest))=($I_skip(($I_tok), (")"))));
+$T_Node  *$I_node = ($I_new_unary(($I_ND_FUNCALL), ($I_fn), ($I_tok)));
+((($I_node)->$I_func_ty)=($I_ty));
+((($I_node)->$I_ty)=(($I_ty)->$I_return_ty));
+((($I_node)->$I_args)=(($I_head).$I_next));
+if (((((($I_node)->$I_ty)->$I_kind)==($I_TY_STRUCT))|(((($I_node)->$I_ty)->$I_kind)==($I_TY_UNION)))) {
+((($I_node)->$I_ret_buffer)=($I_new_lvar((""), (($I_node)->$I_ty))));
+}
+return ($I_node);
+}
+
+ $T_Node *$I_generic_selection($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Token  *$I_start = ($I_tok);
+(($I_tok)=($I_skip(($I_tok), ("("))));
+$T_Node  *$I_ctrl = ($I_assign((&($I_tok)), ($I_tok)));
+($I_add_type(($I_ctrl)));
+$T_Type  *$I_t1 = (($I_ctrl)->$I_ty);
+if (((($I_t1)->$I_kind)==($I_TY_FUNC))) {
+(($I_t1)=($I_pointer_to(($I_t1))));
+}
+else {
+if (((($I_t1)->$I_kind)==($I_TY_ARRAY))) {
+(($I_t1)=($I_pointer_to((($I_t1)->$I_base))));
+}
+}
+$T_Node  *$I_ret = ([v0 *]((0)));
+while ((!($I_consume(($I_rest), ($I_tok), (")"))))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+if (($I_equal(($I_tok), ("default")))) {
+(($I_tok)=($I_skip((($I_tok)->$I_next), (":"))));
+$T_Node  *$I_node = ($I_assign((&($I_tok)), ($I_tok)));
+if ((!($I_ret))) {
+(($I_ret)=($I_node));
+}
+continue;
+}
+$T_Type  *$I_t2 = ($I_typename((&($I_tok)), ($I_tok)));
+(($I_tok)=($I_skip(($I_tok), (":"))));
+$T_Node  *$I_node = ($I_assign((&($I_tok)), ($I_tok)));
+if (($I_is_compatible(($I_t1), ($I_t2)))) {
+(($I_ret)=($I_node));
+}
+}
+if ((!($I_ret))) {
+($I_error_tok(($I_start), ("controlling expression type not compatible with any generic association type")));
+}
+return ($I_ret);
+}
+
+ $T_Node *$I_primary($T_Token **$I_rest, $T_Token *$I_tok)
+{
+$T_Token  *$I_start = ($I_tok);
+if ((($I_equal(($I_tok), ("(")))&($I_equal((($I_tok)->$I_next), ("{"))))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_STMT_EXPR), ($I_tok)));
+((($I_node)->$I_body)=(($I_compound_stmt((&($I_tok)), ((($I_tok)->$I_next)->$I_next)))->$I_body));
+((*($I_rest))=($I_skip(($I_tok), (")"))));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("(")))) {
+$T_Node  *$I_node = ($I_expr((&($I_tok)), (($I_tok)->$I_next)));
+((*($I_rest))=($I_skip(($I_tok), (")"))));
+return ($I_node);
+}
+if (((($I_equal(($I_tok), ("sizeof")))&($I_equal((($I_tok)->$I_next), ("("))))&($I_is_typename(((($I_tok)->$I_next)->$I_next))))) {
+$T_Type  *$I_ty = ($I_typename((&($I_tok)), ((($I_tok)->$I_next)->$I_next)));
+((*($I_rest))=($I_skip(($I_tok), (")"))));
+if (((($I_ty)->$I_kind)==($I_TY_VLA))) {
+if ((($I_ty)->$I_vla_size)) {
+return ($I_new_var_node((($I_ty)->$I_vla_size), ($I_tok)));
+}
+$T_Node  *$I_lhs = ($I_compute_vla_size(($I_ty), ($I_tok)));
+$T_Node  *$I_rhs = ($I_new_var_node((($I_ty)->$I_vla_size), ($I_tok)));
+return ($I_new_binary(($I_ND_COMMA), ($I_lhs), ($I_rhs), ($I_tok)));
+}
+return ($I_new_ulong((($I_ty)->$I_size), ($I_start)));
+}
+if (($I_equal(($I_tok), ("sizeof")))) {
+$T_Node  *$I_node = ($I_unary(($I_rest), (($I_tok)->$I_next)));
+($I_add_type(($I_node)));
+if ((((($I_node)->$I_ty)->$I_kind)==($I_TY_VLA))) {
+return ($I_new_var_node(((($I_node)->$I_ty)->$I_vla_size), ($I_tok)));
+}
+return ($I_new_ulong(((($I_node)->$I_ty)->$I_size), ($I_tok)));
+}
+if (((($I_equal(($I_tok), ("_Alignof")))&($I_equal((($I_tok)->$I_next), ("("))))&($I_is_typename(((($I_tok)->$I_next)->$I_next))))) {
+$T_Type  *$I_ty = ($I_typename((&($I_tok)), ((($I_tok)->$I_next)->$I_next)));
+((*($I_rest))=($I_skip(($I_tok), (")"))));
+return ($I_new_ulong((($I_ty)->$I_align), ($I_tok)));
+}
+if (($I_equal(($I_tok), ("_Alignof")))) {
+$T_Node  *$I_node = ($I_unary(($I_rest), (($I_tok)->$I_next)));
+($I_add_type(($I_node)));
+return ($I_new_ulong(((($I_node)->$I_ty)->$I_align), ($I_tok)));
+}
+if (($I_equal(($I_tok), ("_Generic")))) {
+return ($I_generic_selection(($I_rest), (($I_tok)->$I_next)));
+}
+if (($I_equal(($I_tok), ("__builtin_types_compatible_p")))) {
+(($I_tok)=($I_skip((($I_tok)->$I_next), ("("))));
+$T_Type  *$I_t1 = ($I_typename((&($I_tok)), ($I_tok)));
+(($I_tok)=($I_skip(($I_tok), (","))));
+$T_Type  *$I_t2 = ($I_typename((&($I_tok)), ($I_tok)));
+((*($I_rest))=($I_skip(($I_tok), (")"))));
+return ($I_new_num(($I_is_compatible(($I_t1), ($I_t2))), ($I_start)));
+}
+if (($I_equal(($I_tok), ("__builtin_reg_class")))) {
+(($I_tok)=($I_skip((($I_tok)->$I_next), ("("))));
+$T_Type  *$I_ty = ($I_typename((&($I_tok)), ($I_tok)));
+((*($I_rest))=($I_skip(($I_tok), (")"))));
+if ((($I_is_integer(($I_ty)))|((($I_ty)->$I_kind)==($I_TY_PTR)))) {
+return ($I_new_num((0), ($I_start)));
+}
+if (($I_is_flonum(($I_ty)))) {
+return ($I_new_num((1), ($I_start)));
+}
+return ($I_new_num((2), ($I_start)));
+}
+if (($I_equal(($I_tok), ("__builtin_compare_and_swap")))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_CAS), ($I_tok)));
+(($I_tok)=($I_skip((($I_tok)->$I_next), ("("))));
+((($I_node)->$I_cas_addr)=($I_assign((&($I_tok)), ($I_tok))));
+(($I_tok)=($I_skip(($I_tok), (","))));
+((($I_node)->$I_cas_old)=($I_assign((&($I_tok)), ($I_tok))));
+(($I_tok)=($I_skip(($I_tok), (","))));
+((($I_node)->$I_cas_new)=($I_assign((&($I_tok)), ($I_tok))));
+((*($I_rest))=($I_skip(($I_tok), (")"))));
+return ($I_node);
+}
+if (($I_equal(($I_tok), ("__builtin_atomic_exchange")))) {
+$T_Node  *$I_node = ($I_new_node(($I_ND_EXCH), ($I_tok)));
+(($I_tok)=($I_skip((($I_tok)->$I_next), ("("))));
+((($I_node)->$I_lhs)=($I_assign((&($I_tok)), ($I_tok))));
+(($I_tok)=($I_skip(($I_tok), (","))));
+((($I_node)->$I_rhs)=($I_assign((&($I_tok)), ($I_tok))));
+((*($I_rest))=($I_skip(($I_tok), (")"))));
+return ($I_node);
+}
+if (((($I_tok)->$I_kind)==($I_TK_IDENT))) {
+$T_anon_YcSHOx  *$I_sc = ($I_find_var(($I_tok)));
+((*($I_rest))=(($I_tok)->$I_next));
+if (((($I_sc)&(($I_sc)->$I_var))&((($I_sc)->$I_var)->$I_is_function))) {
+if (($I_current_fn)) {
+($I_strarray_push((&(($I_current_fn)->$I_refs)), ((($I_sc)->$I_var)->$I_name)));
+}
+else {
+(((($I_sc)->$I_var)->$I_is_root)=(1));
+}
+}
+if (($I_sc)) {
+if ((($I_sc)->$I_var)) {
+return ($I_new_var_node((($I_sc)->$I_var), ($I_tok)));
+}
+if ((($I_sc)->$I_enum_ty)) {
+return ($I_new_num((($I_sc)->$I_enum_val), ($I_tok)));
+}
+}
+if (($I_equal((($I_tok)->$I_next), ("(")))) {
+($I_error_tok(($I_tok), ("implicit declaration of a function")));
+}
+($I_error_tok(($I_tok), ("undefined variable")));
+}
+if (((($I_tok)->$I_kind)==($I_TK_STR))) {
+$T_Obj  *$I_var = ($I_new_string_literal((($I_tok)->$I_str), (($I_tok)->$I_ty)));
+((*($I_rest))=(($I_tok)->$I_next));
+return ($I_new_var_node(($I_var), ($I_tok)));
+}
+if (((($I_tok)->$I_kind)==($I_TK_NUM))) {
+$T_Node  *$I_node;
+if (($I_is_flonum((($I_tok)->$I_ty)))) {
+(($I_node)=($I_new_node(($I_ND_NUM), ($I_tok))));
+((($I_node)->$I_fval)=(($I_tok)->$I_fval));
+}
+else {
+(($I_node)=($I_new_num((($I_tok)->$I_val), ($I_tok))));
+}
+((($I_node)->$I_ty)=(($I_tok)->$I_ty));
+((*($I_rest))=(($I_tok)->$I_next));
+return ($I_node);
+}
+($I_error_tok(($I_tok), ("expected an expression")));
+}
+
+ $T_Token *$I_parse_typedef($T_Token *$I_tok, $T_Type *$I_basety)
+{
+i8  $I_first = (1);
+while ((!($I_consume((&($I_tok)), ($I_tok), (";"))))) {
+if ((!($I_first))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+(($I_first)=(0));
+$T_Type  *$I_ty = ($I_declarator((&($I_tok)), ($I_tok), ($I_basety)));
+if ((!(($I_ty)->$I_name))) {
+($I_error_tok((($I_ty)->$I_name_pos), ("typedef name omitted")));
+}
+((($I_push_scope(($I_get_ident((($I_ty)->$I_name)))))->$I_type_def)=($I_ty));
+}
+return ($I_tok);
+}
+
+ v0 $I_create_param_lvars($T_Type *$I_param)
+{
+if (($I_param)) {
+($I_create_param_lvars((($I_param)->$I_next)));
+if ((!(($I_param)->$I_name))) {
+($I_error_tok((($I_param)->$I_name_pos), ("parameter name omitted")));
+}
+($I_new_lvar(($I_get_ident((($I_param)->$I_name))), ($I_param)));
+}
+}
+
+ v0 $I_resolve_goto_labels(v0 $A_0)
+{
+for ($T_Node  *$I_x = ($I_gotos);
+($I_x); (($I_x)=(($I_x)->$I_goto_next))) {
+for ($T_Node  *$I_y = ($I_labels);
+($I_y); (($I_y)=(($I_y)->$I_goto_next))) {
+if ((!($I_strcmp((($I_x)->$I_label), (($I_y)->$I_label))))) {
+((($I_x)->$I_unique_label)=(($I_y)->$I_unique_label));
+break;
+}
+}
+if (((($I_x)->$I_unique_label)==([v0 *]((0))))) {
+($I_error_tok(((($I_x)->$I_tok)->$I_next), ("use of undeclared label")));
+}
+}
+(($I_gotos)=(($I_labels)=([v0 *]((0)))));
+}
+
+ $T_Obj *$I_find_func(i8 *$I_name)
+{
+$T_Scope  *$I_sc = ($I_scope);
+while ((($I_sc)->$I_next)) {
+(($I_sc)=(($I_sc)->$I_next));
+}
+$T_anon_YcSHOx  *$I_sc2 = ($I_hashmap_get((&(($I_sc)->$I_vars)), ($I_name)));
+if (((($I_sc2)&(($I_sc2)->$I_var))&((($I_sc2)->$I_var)->$I_is_function))) {
+return (($I_sc2)->$I_var);
+}
+return ([v0 *]((0)));
+}
+
+ v0 $I_mark_live($T_Obj *$I_var)
+{
+if (((!(($I_var)->$I_is_function))|(($I_var)->$I_is_live))) {
+return;
+}
+((($I_var)->$I_is_live)=(1));
+for (i32  $I_i = (0);
+(($I_i)<((($I_var)->$I_refs).$I_len)); (($I_i)++)) {
+$T_Obj  *$I_fn = ($I_find_func((((($I_var)->$I_refs).$I_data)[($I_i)])));
+if (($I_fn)) {
+($I_mark_live(($I_fn)));
+}
+}
+}
+
+ $T_Token *$I_function($T_Token *$I_tok, $T_Type *$I_basety, $T_anon_9Xm4fk *$I_attr)
+{
+$T_Type  *$I_ty = ($I_declarator((&($I_tok)), ($I_tok), ($I_basety)));
+if ((!(($I_ty)->$I_name))) {
+($I_error_tok((($I_ty)->$I_name_pos), ("function name omitted")));
+}
+i8  *$I_name_str = ($I_get_ident((($I_ty)->$I_name)));
+$T_Obj  *$I_fn = ($I_find_func(($I_name_str)));
+if (($I_fn)) {
+if ((!(($I_fn)->$I_is_function))) {
+($I_error_tok(($I_tok), ("redeclared as a different kind of symbol")));
+}
+if (((($I_fn)->$I_is_definition)&($I_equal(($I_tok), ("{"))))) {
+($I_error_tok(($I_tok), ("redefinition of %s"), ($I_name_str)));
+}
+if (((!(($I_fn)->$I_is_static))&(($I_attr)->$I_is_static))) {
+($I_error_tok(($I_tok), ("static declaration follows a non-static declaration")));
+}
+((($I_fn)->$I_is_definition)=((($I_fn)->$I_is_definition)|($I_equal(($I_tok), ("{")))));
+}
+else {
+(($I_fn)=($I_new_gvar(($I_name_str), ($I_ty))));
+((($I_fn)->$I_is_function)=(1));
+((($I_fn)->$I_is_definition)=($I_equal(($I_tok), ("{"))));
+((($I_fn)->$I_is_static)=((($I_attr)->$I_is_static)|((($I_attr)->$I_is_inline)&(!(($I_attr)->$I_is_extern)))));
+((($I_fn)->$I_is_inline)=(($I_attr)->$I_is_inline));
+}
+((($I_fn)->$I_is_root)=(!((($I_fn)->$I_is_static)&(($I_fn)->$I_is_inline))));
+if (($I_consume((&($I_tok)), ($I_tok), (";")))) {
+return ($I_tok);
+}
+(($I_current_fn)=($I_fn));
+(($I_locals)=([v0 *]((0))));
+($I_enter_scope());
+($I_create_param_lvars((($I_ty)->$I_params)));
+$T_Type  *$I_rty = (($I_ty)->$I_return_ty);
+if (((((($I_rty)->$I_kind)==($I_TY_STRUCT))|((($I_rty)->$I_kind)==($I_TY_UNION)))&((($I_rty)->$I_size)>(16)))) {
+($I_new_lvar((""), ($I_pointer_to(($I_rty)))));
+}
+((($I_fn)->$I_params)=($I_locals));
+if ((($I_ty)->$I_is_variadic)) {
+((($I_fn)->$I_va_area)=($I_new_lvar(("__va_area__"), ($I_array_of(($I_ty_char), (136))))));
+}
+((($I_fn)->$I_alloca_bottom)=($I_new_lvar(("__alloca_size__"), ($I_pointer_to(($I_ty_char))))));
+(($I_tok)=($I_skip(($I_tok), ("{"))));
+((($I_push_scope(("__func__")))->$I_var)=($I_new_string_literal((($I_fn)->$I_name), ($I_array_of(($I_ty_char), (($I_strlen((($I_fn)->$I_name)))+(1)))))));
+((($I_push_scope(("__FUNCTION__")))->$I_var)=($I_new_string_literal((($I_fn)->$I_name), ($I_array_of(($I_ty_char), (($I_strlen((($I_fn)->$I_name)))+(1)))))));
+((($I_fn)->$I_body)=($I_compound_stmt((&($I_tok)), ($I_tok))));
+((($I_fn)->$I_locals)=($I_locals));
+($I_leave_scope());
+($I_resolve_goto_labels());
+return ($I_tok);
+}
+
+ $T_Token *$I_global_variable($T_Token *$I_tok, $T_Type *$I_basety, $T_anon_9Xm4fk *$I_attr)
+{
+i8  $I_first = (1);
+while ((!($I_consume((&($I_tok)), ($I_tok), (";"))))) {
+if ((!($I_first))) {
+(($I_tok)=($I_skip(($I_tok), (","))));
+}
+(($I_first)=(0));
+$T_Type  *$I_ty = ($I_declarator((&($I_tok)), ($I_tok), ($I_basety)));
+if ((!(($I_ty)->$I_name))) {
+($I_error_tok((($I_ty)->$I_name_pos), ("variable name omitted")));
+}
+$T_Obj  *$I_var = ($I_new_gvar(($I_get_ident((($I_ty)->$I_name))), ($I_ty)));
+((($I_var)->$I_is_definition)=(!(($I_attr)->$I_is_extern)));
+((($I_var)->$I_is_static)=(($I_attr)->$I_is_static));
+((($I_var)->$I_is_tls)=(($I_attr)->$I_is_tls));
+if ((($I_attr)->$I_align)) {
+((($I_var)->$I_align)=(($I_attr)->$I_align));
+}
+if (($I_equal(($I_tok), ("=")))) {
+($I_gvar_initializer((&($I_tok)), (($I_tok)->$I_next), ($I_var)));
+}
+else {
+if (((!(($I_attr)->$I_is_extern))&(!(($I_attr)->$I_is_tls)))) {
+((($I_var)->$I_is_tentative)=(1));
+}
+}
+}
+return ($I_tok);
+}
+
+ i8 $I_is_function($T_Token *$I_tok)
+{
+if (($I_equal(($I_tok), (";")))) {
+return (0);
+}
+$T_Type  $I_dummy;
+$T_Type  *$I_ty = ($I_declarator((&($I_tok)), ($I_tok), (&($I_dummy))));
+return ((($I_ty)->$I_kind)==($I_TY_FUNC));
+}
+
+ v0 $I_scan_globals(v0 $A_0)
+{
+$T_Obj  $I_head;
+$T_Obj  *$I_cur = (&($I_head));
+for ($T_Obj  *$I_var = ($I_globals);
+($I_var); (($I_var)=(($I_var)->$I_next))) {
+if ((!(($I_var)->$I_is_tentative))) {
+(($I_cur)=((($I_cur)->$I_next)=($I_var)));
+continue;
+}
+$T_Obj  *$I_var2 = ($I_globals);
+for (0;($I_var2); (($I_var2)=(($I_var2)->$I_next))) {
+if ((((($I_var)!=($I_var2))&(($I_var2)->$I_is_definition))&(!($I_strcmp((($I_var)->$I_name), (($I_var2)->$I_name)))))) {
+break;
+}
+}
+if ((!($I_var2))) {
+(($I_cur)=((($I_cur)->$I_next)=($I_var)));
+}
+}
+((($I_cur)->$I_next)=([v0 *]((0))));
+(($I_globals)=(($I_head).$I_next));
+}
+
+ v0 $I_declare_builtin_functions(v0 $A_0)
+{
+$T_Type  *$I_ty = ($I_func_type(($I_pointer_to(($I_ty_void)))));
+((($I_ty)->$I_params)=($I_copy_type(($I_ty_int))));
+(($I_builtin_alloca)=($I_new_gvar(("alloca"), ($I_ty))));
+((($I_builtin_alloca)->$I_is_definition)=(0));
+}
+
+$T_Obj *$I_parse($T_Token *$I_tok)
+{
+($I_declare_builtin_functions());
+(($I_globals)=([v0 *]((0))));
+while (((($I_tok)->$I_kind)!=($I_TK_EOF))) {
+$T_anon_9Xm4fk  $I_attr;
+$T_Type  *$I_basety = ($I_declspec((&($I_tok)), ($I_tok), (&($I_attr))));
+if ((($I_attr).$I_is_typedef)) {
+(($I_tok)=($I_parse_typedef(($I_tok), ($I_basety))));
+continue;
+}
+if (($I_is_function(($I_tok)))) {
+(($I_tok)=($I_function(($I_tok), ($I_basety), (&($I_attr)))));
+continue;
+}
+(($I_tok)=($I_global_variable(($I_tok), ($I_basety), (&($I_attr)))));
+}
+for ($T_Obj  *$I_var = ($I_globals);
+($I_var); (($I_var)=(($I_var)->$I_next))) {
+if ((($I_var)->$I_is_root)) {
+($I_mark_live(($I_var)));
+}
+}
+($I_scan_globals());
+return ($I_globals);
+}
+
+
+v0 main () {}
