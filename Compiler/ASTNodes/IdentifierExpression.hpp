@@ -81,7 +81,7 @@ identifier_expression_standalone_type_check(AST &ast, uint node, TypeCheckState 
 	{
 		const VariableDefinition &var = type_check_state.parameters[identifier_id];
 		offset                        = -type_check_state.parameters_size + var.offset
-			- 8 - CPU::stack_frame_size;
+			- 8 - STACK_FRAME_SIZE;
 		id_kind_bit = (uint) IdentifierExpressionIdKind::STACK;
 		break;
 	}

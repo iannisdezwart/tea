@@ -24,8 +24,12 @@ while_statement_to_str(const AST &ast, uint node)
 void
 while_statement_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
 {
+	type_check_state.begin_local_scope();
+
 	ast_type_check(ast, ast.data[node].while_statement.condition_node, type_check_state);
 	ast_type_check(ast, ast.data[node].while_statement.body_node, type_check_state);
+
+	type_check_state.end_local_scope();
 }
 
 void
@@ -43,7 +47,7 @@ while_statement_code_gen(AST &ast, uint node, Assembler &assembler)
 
 	// Perform the check and move the result into the test register
 
-	test_reg = assembler.get_register();
+	test_reg       = assembler.get_register();
 	uint test_node = ast.data[node].while_statement.condition_node;
 	ast_get_value(ast, test_node, assembler, test_reg);
 

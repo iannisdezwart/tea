@@ -297,17 +297,6 @@ struct Type
 		}
 	}
 
-	/**
-	 * @returns A boolean indicating whether the type
-	 * fits in a register. A type only fits in a register
-	 * if it is a primitive type.
-	 */
-	bool
-	fits_in_register()
-	{
-		return is_primitive() && size <= 8;
-	}
-
 	enum struct Fits
 	{
 		YES,

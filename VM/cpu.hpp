@@ -36,30 +36,39 @@ struct CPU
 	// A pointer to the top (end) of the stack.
 	uint8_t *stack_top;
 
+	// The number of general purpose registers (R_0, R_1, ...)
+#define GENERAL_PURPOSE_REGISTER_COUNT 16
+#define TOTAL_REGISTER_COUNT           GENERAL_PURPOSE_REGISTER_COUNT + 5
+
 	// ===== Registers =====
 
 	// An array that contains the registers of the virtual machine.
-	uint64_t regs[13];
+	uint64_t regs[TOTAL_REGISTER_COUNT];
 
 	// === General purpose registers ===
 
-	// The number of general purpose registers (R_0, R_1, ...)
-	static constexpr size_t general_purpose_register_count = 8;
-
-#define R_0 0
-#define R_1 1
-#define R_2 2
-#define R_3 3
-#define R_4 4
-#define R_5 5
-#define R_6 6
-#define R_7 7
+#define R_0  0
+#define R_1  1
+#define R_2  2
+#define R_3  3
+#define R_4  4
+#define R_5  5
+#define R_6  6
+#define R_7  7
+#define R_8  8
+#define R_9  9
+#define R_10 10
+#define R_11 11
+#define R_12 12
+#define R_13 13
+#define R_14 14
+#define R_15 15
 
 	// === Special registers ===
 
 	// Instruction register
 
-#define R_INSTR_PTR 8
+#define R_INSTR_PTR GENERAL_PURPOSE_REGISTER_COUNT + 0
 
 	/**
 	 * @brief Sets the instruction pointer to a certain value.
@@ -82,7 +91,7 @@ struct CPU
 
 	// Stack pointer
 
-#define R_STACK_PTR 9
+#define R_STACK_PTR GENERAL_PURPOSE_REGISTER_COUNT + 1
 
 	/**
 	 * @brief Set the stack pointer to a certain value.
@@ -105,7 +114,7 @@ struct CPU
 
 	// Stack top pointer
 
-#define R_STACK_TOP_PTR 10
+#define R_STACK_TOP_PTR GENERAL_PURPOSE_REGISTER_COUNT + 2
 
 	/**
 	 * @brief Sets the stack top pointer to a certain value.
@@ -128,7 +137,7 @@ struct CPU
 
 	// Frame pointer
 
-#define R_FRAME_PTR 11
+#define R_FRAME_PTR GENERAL_PURPOSE_REGISTER_COUNT + 3
 
 	/**
 	 * @brief Sets the frame pointer to a certain value.
@@ -151,7 +160,12 @@ struct CPU
 
 	// Return value register
 
-#define R_RET 12
+#define R_RET GENERAL_PURPOSE_REGISTER_COUNT + 4
+
+// The size of a stack frame. This consists of the old values of the
+// general purpose registers, the old instruction pointer
+// (used as return address), and the size parameters in bytes.
+#define STACK_FRAME_SIZE (GENERAL_PURPOSE_REGISTER_COUNT + 5) * 8
 
 	// Holds the address of the current instruction being executed.
 	uint8_t *cur_instr_addr;
@@ -167,27 +181,36 @@ struct CPU
 
 		case R_0:
 			return "R_0";
-
 		case R_1:
 			return "R_1";
-
 		case R_2:
 			return "R_2";
-
 		case R_3:
 			return "R_3";
-
 		case R_4:
 			return "R_4";
-
 		case R_5:
 			return "R_5";
-
 		case R_6:
 			return "R_6";
-
 		case R_7:
 			return "R_7";
+		case R_8:
+			return "R_8";
+		case R_9:
+			return "R_9";
+		case R_10:
+			return "R_10";
+		case R_11:
+			return "R_11";
+		case R_12:
+			return "R_12";
+		case R_13:
+			return "R_13";
+		case R_14:
+			return "R_14";
+		case R_15:
+			return "R_15";
 
 		case R_INSTR_PTR:
 			return "R_INSTR_PTR";
@@ -254,13 +277,6 @@ struct CPU
 
 		regs[R_RET] = 0;
 	}
-
-	// The size of a stack frame.
-	// This consists of the old values of the
-	// four general purpose registers,
-	// the old instruction pointer (used as return address),
-	// and the size parameters in bytes.
-	static constexpr const ssize_t stack_frame_size = 80;
 
 	/**
 	 * @param id The id of the register to get.
@@ -383,6 +399,14 @@ struct CPU
 		push(get_reg_by_id(R_5));
 		push(get_reg_by_id(R_6));
 		push(get_reg_by_id(R_7));
+		push(get_reg_by_id(R_8));
+		push(get_reg_by_id(R_9));
+		push(get_reg_by_id(R_10));
+		push(get_reg_by_id(R_11));
+		push(get_reg_by_id(R_12));
+		push(get_reg_by_id(R_13));
+		push(get_reg_by_id(R_14));
+		push(get_reg_by_id(R_15));
 		push(get_instr_ptr());
 		push(get_frame_ptr());
 
@@ -404,6 +428,14 @@ struct CPU
 
 		set_frame_ptr(pop<uint8_t *>());
 		set_instr_ptr(pop<uint8_t *>());
+		set_reg_by_id(R_15, pop<uint64_t>());
+		set_reg_by_id(R_14, pop<uint64_t>());
+		set_reg_by_id(R_13, pop<uint64_t>());
+		set_reg_by_id(R_12, pop<uint64_t>());
+		set_reg_by_id(R_11, pop<uint64_t>());
+		set_reg_by_id(R_10, pop<uint64_t>());
+		set_reg_by_id(R_9, pop<uint64_t>());
+		set_reg_by_id(R_8, pop<uint64_t>());
 		set_reg_by_id(R_7, pop<uint64_t>());
 		set_reg_by_id(R_6, pop<uint64_t>());
 		set_reg_by_id(R_5, pop<uint64_t>());
@@ -1115,7 +1147,7 @@ struct CPU
 		case INC_INT_8:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
-			uint8_t value = get_reg_by_id(reg_id);
+			uint8_t value  = get_reg_by_id(reg_id);
 			value++;
 			set_reg_by_id(reg_id, value);
 			break;
@@ -1151,7 +1183,7 @@ struct CPU
 		case DEC_INT_8:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
-			uint8_t value = get_reg_by_id(reg_id);
+			uint8_t value  = get_reg_by_id(reg_id);
 			value--;
 			set_reg_by_id(reg_id, value);
 			break;
@@ -1160,7 +1192,7 @@ struct CPU
 		case DEC_INT_16:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
-			uint8_t value = get_reg_by_id(reg_id);
+			uint8_t value  = get_reg_by_id(reg_id);
 			value--;
 			set_reg_by_id(reg_id, value);
 			break;
@@ -1169,7 +1201,7 @@ struct CPU
 		case DEC_INT_32:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
-			uint8_t value = get_reg_by_id(reg_id);
+			uint8_t value  = get_reg_by_id(reg_id);
 			value--;
 			set_reg_by_id(reg_id, value);
 			break;
@@ -1178,7 +1210,7 @@ struct CPU
 		case DEC_INT_64:
 		{
 			uint8_t reg_id = fetch<uint8_t>();
-			uint8_t value = get_reg_by_id(reg_id);
+			uint8_t value  = get_reg_by_id(reg_id);
 			value--;
 			set_reg_by_id(reg_id, value);
 			break;

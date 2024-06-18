@@ -95,6 +95,8 @@ binary_operation_type_check_additive(AST &ast, uint node, TypeCheckState &type_c
 		ast.types[node] = ast.types[rhs_node];
 		return;
 	}
+
+	ast.types[node] = ast.types[lhs_node];
 }
 
 void
@@ -131,6 +133,8 @@ binary_operation_type_check_multiplicative(AST &ast, uint node, TypeCheckState &
 		ast.types[node] = ast.types[rhs_node];
 		return;
 	}
+
+	ast.types[node] = ast.types[lhs_node];
 }
 
 void
@@ -160,6 +164,8 @@ binary_operation_type_check_remainder(AST &ast, uint node, TypeCheckState &type_
 		ast.types[node] = ast.types[lhs_node];
 		return;
 	}
+
+	ast.types[node] = ast.types[rhs_node];
 }
 
 void
@@ -190,6 +196,8 @@ binary_operation_type_check_bitwise(AST &ast, uint node, TypeCheckState &type_ch
 		ast.types[node] = ast.types[lhs_node];
 		return;
 	}
+
+	ast.types[node] = ast.types[rhs_node];
 }
 
 void

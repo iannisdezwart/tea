@@ -41,7 +41,7 @@ unary_operation_type_check_primitive(AST &ast, uint node, TypeCheckState &type_c
 {
 	unary_operation_type_check_base(ast, node, type_check_state);
 
-	if (!ast.types[node].is_primitive())
+	if (ast.types[node].is_class(ast.extra_data))
 	{
 		err_at_token(ast.tokens[node], "Internal Error",
 			"Unsupported type (%s) for %s.\n"
@@ -56,7 +56,7 @@ unary_operation_type_check_logical_not(AST &ast, uint node, TypeCheckState &type
 {
 	unary_operation_type_check_base(ast, node, type_check_state);
 
-	if (!ast.types[node].is_primitive() && ast.types[node].pointer_depth(ast.extra_data) == 0)
+	if (ast.types[node].is_class(ast.extra_data))
 	{
 		err_at_token(ast.tokens[node], "Internal Error",
 			"Unsupported type (%s) for %s.\n"

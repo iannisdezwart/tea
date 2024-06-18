@@ -147,6 +147,12 @@ hex_chars_to_byte(char upper, char lower)
 	return hex_char_to_num(upper) << 4 | hex_char_to_num(lower);
 }
 
+char
+octal_chars_to_byte(char upper, char middle, char lower)
+{
+	return (upper - '0') << 6 | (middle - '0') << 3 | (lower - '0');
+}
+
 /**
  * Cast std::unique_ptr<T> to std::unique_ptr<U>.
  */

@@ -694,10 +694,10 @@ struct Tokeniser
 	push_token(TokenType type, std::string value)
 	{
 		Token token = {
-			.type              = type,
-			.value             = value,
-			.line              = line,
-			.col               = col,
+			.type  = type,
+			.value = value,
+			.line  = line,
+			.col   = col,
 		};
 
 		tokens.push_back(token);
@@ -911,6 +911,36 @@ struct Tokeniser
 	{
 		int c;
 		reader.read_char(c);
+
+		if (is_octal(c))
+		{
+			int oc1 = c;
+
+			int oc2;
+			FilePos restore = reader.read_char(oc2);
+
+			if (!is_octal(oc2))
+			{
+				reader.restore(restore);
+				return octal_chars_to_byte(0, 0, oc1);
+			}
+
+			if (oc1 >= '4')
+			{
+				return octal_chars_to_byte(0, oc1, oc2);
+			}
+
+			int oc3;
+			restore = reader.read_char(oc3);
+
+			if (!is_octal(oc3))
+			{
+				reader.restore(restore);
+				return octal_chars_to_byte(0, oc1, oc2);
+			}
+
+			return octal_chars_to_byte(oc1, oc2, oc3);
+		}
 
 		switch (c)
 		{

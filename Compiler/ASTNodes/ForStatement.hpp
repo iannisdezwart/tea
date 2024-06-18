@@ -35,6 +35,8 @@ for_statement_to_str(const AST &ast, uint node)
 void
 for_statement_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
 {
+	type_check_state.begin_local_scope();
+
 	ast_type_check(ast, ast.data[node].for_statement.init_node, type_check_state);
 
 	uint idx = ast.data[node].for_statement.rest_ed_idx;
@@ -47,6 +49,8 @@ for_statement_type_check(AST &ast, uint node, TypeCheckState &type_check_state)
 
 	uint body_node = ast.extra_data[idx + 2];
 	ast_type_check(ast, body_node, type_check_state);
+
+	type_check_state.end_local_scope();
 }
 
 void

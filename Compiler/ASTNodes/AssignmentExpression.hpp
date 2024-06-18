@@ -59,7 +59,7 @@ assignment_expression_type_check_arith(AST &ast, uint node, TypeCheckState &type
 {
 	assignment_expression_type_check_base(ast, node, type_check_state);
 
-	if (!ast.types[node].is_integer() && !ast.types[node].is_float())
+	if (!ast.types[node].is_integer() && !ast.types[node].is_float() && ast.types[node].pointer_depth(ast.extra_data) == 0)
 		err_at_token(ast.tokens[node],
 			"Type Error",
 			"Assignment expression %s is not defined for type %s",
