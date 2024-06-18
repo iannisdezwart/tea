@@ -91,7 +91,7 @@ struct IdentifierExpression final : public WriteValue
 		{
 			const VariableDefinition &var = type_check_state.parameters[id_name];
 			offset                        = -type_check_state.parameters_size + var.offset
-				- 8 - CPU::stack_frame_size;
+				- 8 - STACK_FRAME_SIZE;
 			break;
 		}
 

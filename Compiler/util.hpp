@@ -155,7 +155,7 @@ hex_chars_to_byte(char upper, char lower)
  * @returns The byte corresponding to the three octal characters.
  */
 char
-oct_chars_to_byte(char upper, char middle, char lower)
+octal_chars_to_byte(char upper, char middle, char lower)
 {
 	return (upper - '0') << 6 | (middle - '0') << 3 | (lower - '0');
 }

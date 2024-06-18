@@ -66,7 +66,7 @@ struct UnaryOperation final : public WriteValue
 		case UNARY_MINUS:
 		case BITWISE_NOT:
 		{
-			if (!type.is_primitive())
+			if (type.is_class())
 			{
 				err_at_token(accountable_token, "Internal Error",
 					"Unsupported type (%s) for operator %s.\n"
@@ -77,7 +77,7 @@ struct UnaryOperation final : public WriteValue
 		}
 		case LOGICAL_NOT:
 		{
-			if (!type.is_primitive() && type.pointer_depth() == 0)
+			if (type.is_class())
 			{
 				err_at_token(accountable_token, "Internal Error",
 					"Unsupported type (%s) for operator %s.\n"

@@ -115,6 +115,7 @@ struct BinaryOperation final : public ReadValue
 				return;
 			}
 
+			type = left->type;
 			break;
 		}
 
@@ -148,6 +149,7 @@ struct BinaryOperation final : public ReadValue
 				return;
 			}
 
+			type = left->type;
 			break;
 		}
 

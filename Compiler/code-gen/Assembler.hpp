@@ -87,7 +87,7 @@ struct Assembler : public BufferBuilder
 	 * @brief Construct a new CodeGenState object.
 	 */
 	Assembler(bool debug)
-		: free_registers(CPU::general_purpose_register_count, true),
+		: free_registers(GENERAL_PURPOSE_REGISTER_COUNT, true),
 		  debug(debug) {}
 
 	/**
@@ -108,7 +108,7 @@ struct Assembler : public BufferBuilder
 	{
 		// Find the first free register
 
-		for (uint8_t i = 0; i < CPU::general_purpose_register_count; i++)
+		for (uint8_t i = 0; i < GENERAL_PURPOSE_REGISTER_COUNT; i++)
 		{
 			if (free_registers[i])
 			{

@@ -80,7 +80,7 @@ struct AssignmentExpression final : public ReadValue
 		case PRODUCT_ASSIGNMENT:
 		case QUOTIENT_ASSIGNMENT:
 		case REMAINDER_ASSIGNMENT:
-			if (!type.is_integer() && type != Type::FLOATING_POINT)
+			if (!type.is_integer() && type != Type::FLOATING_POINT && type.pointer_depth() == 0)
 				err_at_token(accountable_token,
 					"Type Error",
 					"Operator %s is not defined for type %s",

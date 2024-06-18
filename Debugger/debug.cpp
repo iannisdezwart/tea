@@ -57,7 +57,7 @@ struct Shell
 	{
 		CallStackEntryArg entry_arg;
 		entry_arg.arg_name = param.name;
-		uint8_t *addr      = cpu->get_frame_ptr() - params_offset - 8 - CPU::stack_frame_size;
+		uint8_t *addr      = cpu->get_frame_ptr() - params_offset - 8 - STACK_FRAME_SIZE;
 
 		switch (param.type)
 		{
