@@ -1102,9 +1102,8 @@ struct Parser
 			ast.tags.push_back(AstTag::CAST_EXPRESSION);
 			ast.data.push_back(NodeData {
 				.cast_expression = {
-					.type_name_node  = type_name_node,
 					.expression_node = expr_node,
-
+					.type_name_node  = type_name_node,
 				},
 			});
 			ast.tokens.push_back(CompactToken(left_parenthesis));
@@ -1140,9 +1139,8 @@ struct Parser
 			ast.tags.push_back(AstTag::CAST_EXPRESSION);
 			ast.data.push_back(NodeData {
 				.cast_expression = {
-					.type_name_node  = type_name_node,
 					.expression_node = expr_node,
-
+					.type_name_node  = type_name_node,
 				},
 			});
 			ast.tokens.push_back(CompactToken(left_parenthesis));
@@ -1753,6 +1751,7 @@ struct Parser
 
 				uint ed_idx = ast.extra_data.size();
 				ast.extra_data.push_back(nested_if_statement);
+				else_block = ast.data.size();
 
 				ast.tags.push_back(AstTag::CODE_BLOCK);
 				ast.data.push_back(NodeData {

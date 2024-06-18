@@ -40,7 +40,7 @@ struct Compiler
 	 * @param output_file_name The name of the output file.
 	 */
 	Compiler(char *input_file_name, char *output_file_name, bool debug)
-		: output_file_name(output_file_name)
+		: output_file_name(output_file_name), debug(debug)
 	{
 		input_file = fopen(input_file_name, "r");
 
@@ -109,9 +109,12 @@ struct Compiler
 		const auto &names_by_id = std::get<1>(parse_res);
 		const auto &ids_by_name = std::get<2>(parse_res);
 
-		print_ast(ast, ast.class_declarations);
-		print_ast(ast, ast.global_declarations);
-		print_ast(ast, ast.function_declarations);
+		if (debug)
+		{
+			print_ast(ast, ast.class_declarations);
+			print_ast(ast, ast.global_declarations);
+			print_ast(ast, ast.function_declarations);
+		}
 
 		// Type checking.
 

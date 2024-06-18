@@ -79,8 +79,17 @@ unary_operation_type_check_dereference(AST &ast, uint node, TypeCheckState &type
 			ast.types[node].to_str(ast.extra_data).c_str());
 	}
 
-	uint array_sizes_idx     = ast.extra_data.size();
 	uint old_array_sizes_len = ast.extra_data[ast.types[node].array_sizes_idx];
+
+	if (old_array_sizes_len == 1)
+	{
+		// Pointer type becomes non-pointer type.
+		ast.types[node].array_sizes_idx = -1;
+		return;
+	}
+
+	// Remove a layer of pointer depth.
+	uint array_sizes_idx     = ast.extra_data.size();
 
 	// Copy the array sizes but skip the last element.
 	ast.extra_data.push_back(old_array_sizes_len - 1);
@@ -97,15 +106,26 @@ unary_operation_type_check_address_of(AST &ast, uint node, TypeCheckState &type_
 {
 	unary_operation_type_check_base(ast, node, type_check_state);
 
-	uint array_sizes_idx     = ast.extra_data.size();
-	uint old_array_sizes_len = ast.extra_data[ast.types[node].array_sizes_idx];
+	uint array_sizes_idx = ast.extra_data.size();
 
-	// Copy the array sizes but prepend a 0.
-	ast.extra_data.push_back(old_array_sizes_len + 1);
-	ast.extra_data.push_back(0);
-	for (int i = array_sizes_idx + 1; i < array_sizes_idx + old_array_sizes_len + 1; i++)
+	if (ast.types[node].array_sizes_idx == -1)
 	{
-		ast.extra_data.push_back(ast.extra_data[i]);
+		// Non-pointer type becomes pointer type.
+		ast.extra_data.push_back(1);
+		ast.extra_data.push_back(0);
+	}
+	else
+	{
+		// Already pointer type will have one more pointer depth.
+		uint old_array_sizes_len = ast.extra_data[ast.types[node].array_sizes_idx];
+
+		// Copy the array sizes but prepend a 0.
+		ast.extra_data.push_back(old_array_sizes_len + 1);
+		ast.extra_data.push_back(0);
+		for (int i = array_sizes_idx + 1; i < array_sizes_idx + old_array_sizes_len + 1; i++)
+		{
+			ast.extra_data.push_back(ast.extra_data[i]);
+		}
 	}
 
 	ast.types[node].array_sizes_idx = array_sizes_idx;

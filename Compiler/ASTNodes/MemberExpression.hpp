@@ -49,7 +49,7 @@ member_expression_type_check(AST &ast, uint node, TypeCheckState &type_check_sta
 	uint object_node = ast.data[node].member_expression.object_node;
 	uint member_node = ast.data[node].member_expression.member.node;
 
-	assert(ast.tags[member_node] == AstTag::IDENTIFIER_EXPRESSION_STANDALONE); // TODO: REMOVE
+	// assert(ast.tags[member_node] == AstTag::IDENTIFIER_EXPRESSION_STANDALONE); // TODO: REMOVE
 
 	ast.tags[member_node]                                          = AstTag::IDENTIFIER_EXPRESSION_MEMBER;
 	ast.data[member_node].identifier_expression_member.object.node = object_node;
