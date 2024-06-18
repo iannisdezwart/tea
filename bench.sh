@@ -1,20 +1,7 @@
 #!/bin/bash
 
-# Branches to perform benchmark on:
-# - main
-# - compact-token
-# - class-ids
-# - compact-type
-# - struct-of-arrays
-
-# Programs: (in SampleTranspiledPrograms dir)
-# - chibicc_combined.tea
-# - chibicc_parse.tea
-# - gzip.tea
-# - zlib.tea
-
-# first CLI arg is the number of iterations
-num_iterations=$1
+# first CLI arg is the number of iterations, 50 by default
+num_iterations=${1:-50}
 
 branches="main compact-token class-ids compact-type struct-of-arrays"
 
@@ -23,21 +10,24 @@ branches="main compact-token class-ids compact-type struct-of-arrays"
 
 run_branch() {
     branch=$1
-    echo "Running branch $branch"
-    git checkout $branch
+    git checkout $branch > /dev/null 2> /dev/null
     make clean > /dev/null 2> /dev/null
     make > /dev/null 2> /dev/null
     for program in SampleTranspiledPrograms/*
     do
         for i in $(seq 1 $num_iterations)
         do
-            echo "Running program $program iteration $i"
-            Compiler/compile $program /dev/null 2> /dev/null
+            output=$(nice -n -20 Compiler/compile $program /dev/null 2> /dev/null)
+            type_time=$(echo $output | grep -o "Type checking took [0-9]*" | grep -o "[0-9]*")
+            codegen_time=$(echo $output | grep -o "Code generation took [0-9]*" | grep -o "[0-9]*")
+            echo "$branch,$program,$i,$type_time,$codegen_time"
         done
     done
 }
 
 # Run all branches
+
+echo "branch,program,iteration,type_time,codegen_time"
 
 for branch in $branches
 do
