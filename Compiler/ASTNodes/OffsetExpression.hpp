@@ -150,10 +150,7 @@ struct OffsetExpression final : public WriteValue
 			break;
 
 		default:
-			p_warn(stderr, "Dereference assignment for "
-				       "	byte size %lu is not implemented\n",
-				pointed_type.byte_size());
-			abort();
+			break;
 		}
 	}
 };
