@@ -29,10 +29,12 @@ run_branch() {
     make > /dev/null 2> /dev/null
     for program in SampleTranspiledPrograms/*
     do
-        for i in {1..$num_iterations}
+        i=0
+        while [ $i -ne $num_iterations ]
         do
             echo "Running program $program iteration $i"
             Compiler/compile $program /dev/null 2> /dev/null
+            i=$((i+1))
         done
     done
 }
