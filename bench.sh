@@ -12,7 +12,7 @@ run_branch() {
     branch=$1
     git checkout $branch > /dev/null 2> /dev/null
     make clean > /dev/null 2> /dev/null
-    make > /dev/null 2> /dev/null
+    ENV_FLAGS="-DCALLGRIND" make > /dev/null 2> /dev/null
     for program in SampleTranspiledPrograms/*
     do
         for i in $(seq 1 $num_iterations)
