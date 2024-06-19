@@ -17,6 +17,17 @@
 #include "Compiler/code-gen/Assembler.hpp"
 #include "ASTNodes/VariableDeclaration.hpp"
 
+#ifdef MEASURE_MEM
+	#define MEASURE_MEM_CHECKPOINT(m)            \
+		do                                   \
+		{                                    \
+			std::cout << m << std::endl; \
+			std::cin.get();              \
+		} while (0)
+#else
+	#define MEASURE_MEM_CHECKPOINT(m)
+#endif
+
 /**
  * @brief Class responsible for compiling a source file into a byte code file.
  * Takes a source file name and compiles this file it into a given output file.
@@ -103,11 +114,13 @@ struct Compiler
 
 		// Parse the tokens.
 
+		MEASURE_MEM_CHECKPOINT("Before parsing");
 		Parser parser(tokens);
 		auto parse_res          = parser.parse();
 		AST &ast                = std::get<0>(parse_res);
 		const auto &names_by_id = std::get<1>(parse_res);
 		const auto &ids_by_name = std::get<2>(parse_res);
+		MEASURE_MEM_CHECKPOINT("After parsing");
 
 		if (debug)
 		{
@@ -124,6 +137,7 @@ struct Compiler
 		CALLGRIND_TOGGLE_COLLECT;
 
 		auto t1 = std::chrono::high_resolution_clock::now();
+		MEASURE_MEM_CHECKPOINT("Before type checking");
 
 		for (uint statement_node : ast.class_declarations)
 			class_declaration_predefine(ast, statement_node, type_check_state);
@@ -138,7 +152,9 @@ struct Compiler
 		for (uint statement_node : ast.function_declarations)
 			function_declaration_type_check_body(ast, statement_node, type_check_state);
 
+		MEASURE_MEM_CHECKPOINT("After type checking");
 		auto t2 = std::chrono::high_resolution_clock::now();
+		MEASURE_MEM_CHECKPOINT("Before code generation");
 
 		// Start assembling.
 		// Allocate space for globals & update stack and frame pointer.
@@ -187,6 +203,7 @@ struct Compiler
 
 		assembler.add_label(exit_label);
 
+		MEASURE_MEM_CHECKPOINT("After code generation");
 		auto t3 = std::chrono::high_resolution_clock::now();
 
 		CALLGRIND_TOGGLE_COLLECT;
