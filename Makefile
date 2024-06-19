@@ -4,7 +4,7 @@ doxygen: Doxyfile
 	mkdir -p doxygen
 	doxygen Doxyfile
 
-COMMON_FLAGS = -std=c++17 -I./ -Wall
+COMMON_FLAGS = -std=c++17 -I./ -Wall $(ENV_FLAGS)
 DEBUG = -g
 FAST = -O3
 
